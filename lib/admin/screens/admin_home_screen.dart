@@ -15,6 +15,8 @@ import '../../lists/order_history_list.dart';
 import '../../widgets/order_report.dart';
 import '../../models/office.dart';
 import '../../models/transaction_model.dart';
+import '../../services/customer_counter_service.dart';
+import '../../services/office_listing_service.dart';
 import '../sections/admin_customers_section.dart';
 import '../sections/admin_offices_section.dart';
 import '../sections/admin_transactions_section.dart';
@@ -35,6 +37,23 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
   CollectionReference get transactionsRef =>
       FirebaseFirestore.instance.collection('transactions');
 
+  @override
+  void initState() {
+    super.initState();
+    _selfHeal();
+  }
+
+  /// Rättar data som kan ha hamnat fel: publika kontorsposter som saknas
+  /// och en kundräknare som ligger efter redan utdelade klient-ID:n.
+  Future<void> _selfHeal() async {
+    try {
+      await OfficeListingService.syncAll();
+      await CustomerCounterService.ensureAtLeastMax();
+    } catch (e) {
+      debugPrint('Självläkning misslyckades: $e');
+    }
+  }
+
   Future<void> _addOffice({
     required String country,
     required String city,
@@ -45,18 +64,43 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
       for (final c in currencies) c: 0.0,
     };
 
-    await officesRef.add({
+    final ref = await officesRef.add({
       'country': country,
       'city': city,
       'currencies': currencies,
       'balances': balances,
       'paymentMethods': paymentMethods.map((m) => m.toMap()).toList(),
-      'createAt': FieldValue.serverTimestamp(),
+      'createdAt': FieldValue.serverTimestamp(),
+    });
+
+    // Publik post som kunder får läsa (utan saldon och betalningsuppgifter).
+    await OfficeListingService.upsert(ref.id, {
+      'country': country,
+      'city': city,
+      'currencies': currencies,
     });
   }
 
   Future<void> _deleteOffice(String id) async {
+    // Koppla loss managers så att de inte pekar på ett borttaget kontor.
+    final managers = await FirebaseFirestore.instance
+        .collection('users')
+        .where('officeId', isEqualTo: id)
+        .get();
+    for (final doc in managers.docs) {
+      await doc.reference.update({'officeId': FieldValue.delete()});
+    }
+
     await officesRef.doc(id).delete();
+    await OfficeListingService.remove(id);
+  }
+
+  /// Äldre kontor har `createAt`, nyare `createdAt`. Sortering sker här i
+  /// stället för i queryn, annars försvinner kontor som saknar det ena fältet.
+  DateTime? _officeCreated(QueryDocumentSnapshot doc) {
+    final data = doc.data() as Map<String, dynamic>;
+    final ts = (data['createdAt'] ?? data['createAt']) as Timestamp?;
+    return ts?.toDate();
   }
 
   Future<void> _topUpOfficeCurrency(
@@ -70,52 +114,78 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
     await transactionsRef.doc(id).delete();
   }
 
-  Future<void> _exportToCSV() async {
-    final query = await transactionsRef.orderBy('date', descending: true).get();
+  static const List<String> _exportHeader = <String>[
+    'Datum',
+    'Status',
+    'Klient-ID',
+    'Kontor',
+    'Från',
+    'Till',
+    'Belopp',
+    'Avgift',
+    'Utbetalas',
+  ];
 
-    final header = <String>[
-      'Datum',
-      'Sender',
-      'Receiver',
-      'Country',
-      'City',
-      'Currency',
-      'Amount',
-      'Fee',
-    ];
+  /// Hämtar alla transaktioner (senaste först) som rader för CSV/PDF.
+  /// Läser det nuvarande schemat (createAt, fromCurrency, amountFrom ...) och
+  /// faller tillbaka på de äldre fälten (date, currency, amount, fee).
+  /// Sorteringen sker här, inte i queryn, eftersom orderBy utelämnar
+  /// dokument som saknar fältet.
+  Future<List<List<String>>> _loadExportRows() async {
+    final query = await transactionsRef.get();
 
-    final List<List<String>> rows = [];
-
-    for (final doc in query.docs) {
-      final data = doc.data() as Map<String, dynamic>;
-      final date = (data['date'] as Timestamp?)?.toDate();
-
-      rows.add([
-        date?.toIso8601String() ?? '',
-        data['sender']?.toString() ?? '',
-        data['receiver']?.toString() ?? '',
-        data['country']?.toString() ?? '',
-        data['city']?.toString() ?? '',
-        data['currency']?.toString() ?? '',
-        (data['amount'] ?? 0).toString(),
-        (data['fee'] ?? 0).toString(),
-      ]);
+    DateTime? dateOf(Map<String, dynamic> data) {
+      final ts = (data['createAt'] ?? data['completedAt'] ?? data['date'])
+          as Timestamp?;
+      return ts?.toDate();
     }
 
+    final entries = query.docs
+        .map((doc) => doc.data() as Map<String, dynamic>)
+        .toList()
+      ..sort((a, b) {
+        final da = dateOf(a);
+        final dbb = dateOf(b);
+        if (da == null && dbb == null) return 0;
+        if (da == null) return 1;
+        if (dbb == null) return -1;
+        return dbb.compareTo(da); // senaste först
+      });
+
+    return entries.map((data) {
+      return <String>[
+        dateOf(data)?.toIso8601String() ?? '',
+        (data['status'] ?? '').toString(),
+        (data['clientId'] ?? '').toString(),
+        (data['officeId'] ?? '').toString(),
+        (data['fromCurrency'] ?? data['currency'] ?? '').toString(),
+        (data['toCurrency'] ?? '').toString(),
+        (data['amountFrom'] ?? data['amount'] ?? 0).toString(),
+        (data['feeAmountFrom'] ?? data['fee'] ?? 0).toString(),
+        (data['amountToNet'] ?? '').toString(),
+      ];
+    }).toList();
+  }
+
+  Future<void> _exportToCSV() async {
+    final rows = await _loadExportRows();
+
     if (rows.isEmpty) {
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Inga transaktioner att exportera')),
       );
       return;
     }
 
-    exportCSV.myCSV(header, rows);
+    exportCSV.myCSV(_exportHeader, rows);
   }
 
   Future<void> _exportToPDF() async {
-    final query = await transactionsRef.orderBy('date', descending: true).get();
+    final rows = await _loadExportRows();
 
-    if (query.docs.isEmpty) {
+    if (rows.isEmpty) {
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Inga transaktioner att exportera')),
       );
@@ -135,16 +205,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
               border: pw.TableBorder.all(width: 0.5),
               children: [
                 pw.TableRow(
-                  children: [
-                    'Datum',
-                    'Sender',
-                    'Receiver',
-                    'Country',
-                    'City',
-                    'Currency',
-                    'Amount',
-                    'Fee',
-                  ]
+                  children: _exportHeader
                       .map(
                         (h) => pw.Padding(
                           padding: const pw.EdgeInsets.all(4),
@@ -159,19 +220,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                       )
                       .toList(),
                 ),
-                ...query.docs.map((doc) {
-                  final data = doc.data() as Map<String, dynamic>;
-                  final date = (data['date'] as Timestamp?)?.toDate();
-                  final cells = <String>[
-                    date?.toIso8601String() ?? '',
-                    data['sender']?.toString() ?? '',
-                    data['receiver']?.toString() ?? '',
-                    data['country']?.toString() ?? '',
-                    data['city']?.toString() ?? '',
-                    data['currency']?.toString() ?? '',
-                    (data['amount'] ?? 0).toString(),
-                    (data['fee'] ?? 0).toString(),
-                  ];
+                ...rows.map((cells) {
                   return pw.TableRow(
                     children: cells
                         .map(
@@ -258,13 +307,22 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
               const SizedBox(height: 8),
 
               StreamBuilder<QuerySnapshot>(
-                stream: officesRef.orderBy('createdAt').snapshots(),
+                stream: officesRef.snapshots(),
                 builder: (context, snapshot) {
                   if (!snapshot.hasData) {
                     return const Center(child: CircularProgressIndicator());
                   }
 
-                  final docs = snapshot.data!.docs;
+                  final docs = List<QueryDocumentSnapshot>.from(
+                    snapshot.data!.docs,
+                  )..sort((a, b) {
+                      final ta = _officeCreated(a);
+                      final tb = _officeCreated(b);
+                      if (ta == null && tb == null) return 0;
+                      if (ta == null) return 1;
+                      if (tb == null) return -1;
+                      return ta.compareTo(tb);
+                    });
                   final offices = docs.map<Office>((d) {
                     final data = d.data() as Map<String, dynamic>;
                     final currencies =
@@ -312,7 +370,13 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                               builder: (ctx) => EditOfficeDialog(
                                 officeId: officeDoc.id,
                                  data: data,
-                                availableCurrencies: currencies,
+                                // Kontorets egna valutor + standardvalutor, så
+                                // att admin kan lägga till nya valutor också.
+                                availableCurrencies: <String>{
+                                  ...currencies,
+                                  'EUR', 'USD', 'SEK', 'RUB',
+                                  'USDT', 'GBP', 'AED', 'TRY',
+                                }.toList(),
                               ),
                             );
                           },

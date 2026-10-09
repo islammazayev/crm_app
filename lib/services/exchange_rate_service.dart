@@ -4,7 +4,9 @@ import 'package:http/http.dart' as http;
 class ExchangeRateService {
   static const _host   = 'api.freecurrencyapi.com';
   static const _path   = '/v1/latest';
-  static const _apiKey = 'fca_live_ovmlfuE66Q6NXaw1m8uLfwMUozIyITmqkdFMGg1W';
+  /// API-nyckeln ligger inte i koden. Starta/bygg appen med:
+  ///   flutter run --dart-define=FX_API_KEY=din_nyckel
+  static const _apiKey = String.fromEnvironment('FX_API_KEY');
 
   static String _normalizeCurrency(String c) {
     c = c.toUpperCase().trim();
@@ -16,6 +18,12 @@ class ExchangeRateService {
 
   /// Hämtar kurs från [from] till [to], t.ex. from: 'USDT', to: 'RUBLE'.
   static Future<double> getRate(String from, String to) async {
+    if (_apiKey.isEmpty) {
+      throw Exception(
+        'FX_API_KEY saknas. Starta appen med --dart-define=FX_API_KEY=...',
+      );
+    }
+
     final apiFrom = _normalizeCurrency(from);
     final apiTo   = _normalizeCurrency(to);
 
@@ -26,7 +34,6 @@ class ExchangeRateService {
     });
 
     final res = await http.get(uri);
-    print('GET $uri -> ${res.statusCode}, body=${res.body}');
 
     if (res.statusCode != 200) {
       throw Exception('Kunde inte hämta växelkurs: ${res.statusCode}');

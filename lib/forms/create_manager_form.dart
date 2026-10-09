@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
 class CreateManagerForm extends StatefulWidget {
@@ -44,43 +45,62 @@ class _CreateManagerFormState extends State<CreateManagerForm> {
     super.dispose();
   }
 
+  /// Skapar en manager utan att admin loggas ut.
+  ///
+  /// `createUserWithEmailAndPassword` loggar in den nya användaren på den
+  /// FirebaseApp den anropas på. Därför skapas kontot på en tillfällig,
+  /// sekundär app-instans. Admin förblir inloggad på standardinstansen och
+  /// skriver sedan `users/{uid}` som admin (reglerna tillåter bara admin att
+  /// skapa användare med rollen manager).
   Future<void> _createManager() async {
     if (!_formKey.currentState!.validate() || _selectedOfficeId == null) {
-      print('CreateManager: validation failed or no office selected');
       return;
     }
 
     setState(() => _creating = true);
-    print('CreateManager: starting');
+
+    FirebaseApp? secondaryApp;
 
     try {
       final email = _emailController.text.trim();
       final password = _passwordController.text.trim();
 
-      print('CreateManager: calling createUserWithEmailAndPassword');
-      final cred = await FirebaseAuth.instance
-          .createUserWithEmailAndPassword(email: email, password: password);
+      secondaryApp = await Firebase.initializeApp(
+        name: 'manager-creator-${DateTime.now().millisecondsSinceEpoch}',
+        options: Firebase.app().options,
+      );
+      final secondaryAuth = FirebaseAuth.instanceFor(app: secondaryApp);
 
-      final uid = cred.user!.uid;
-      print('CreateManager: got uid $uid');
+      final cred = await secondaryAuth.createUserWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+      final newUser = cred.user!;
 
-      await FirebaseFirestore.instance.collection('users').doc(uid).set({
-        'email': email,
-        'role': 'manager',
-        'officeId': _selectedOfficeId,
-        'firstName': _firstNameController.text.trim(),
-        'lastName': _lastNameController.text.trim(),
-        'phone': _phoneController.text.trim(),
-        'createAt': FieldValue.serverTimestamp(),
-      });
-      print('CreateManager: user doc created in Firestore');
+      try {
+        await FirebaseFirestore.instance
+            .collection('users')
+            .doc(newUser.uid)
+            .set({
+          'email': email,
+          'role': 'manager',
+          'officeId': _selectedOfficeId,
+          'firstName': _firstNameController.text.trim(),
+          'lastName': _lastNameController.text.trim(),
+          'phone': _phoneController.text.trim(),
+          'createAt': FieldValue.serverTimestamp(),
+        });
+      } catch (e) {
+        // Ta bort auth-kontot igen så att e-postadressen inte blir blockerad.
+        await newUser.delete();
+        rethrow;
+      }
+
+      await secondaryAuth.signOut();
 
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content:
-              Text('Manager skapad. Du är nu inloggad som den nya användaren.'),
-        ),
+        const SnackBar(content: Text('Manager skapad.')),
       );
 
       _formKey.currentState!.reset();
@@ -89,22 +109,21 @@ class _CreateManagerFormState extends State<CreateManagerForm> {
       _emailController.clear();
       _phoneController.clear();
       _passwordController.clear();
-      print('CreateManager: form cleared');
     } on FirebaseAuthException catch (e) {
-      print('CreateManager: FirebaseAuthException ${e.code} ${e.message}');
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Kunde inte skapa manager: ${e.message}')),
       );
     } catch (e) {
-      print('CreateManager: unexpected error $e');
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Oväntat fel: $e')),
       );
     } finally {
+      try {
+        await secondaryApp?.delete();
+      } catch (_) {}
       if (mounted) setState(() => _creating = false);
-      print('CreateManager: finished');
     }
   }
 

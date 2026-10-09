@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
+import '../../services/office_listing_service.dart';
+
 // ─── Hjälpklass för betalningsmetod-formulär ─────────────────────────────────
 class PaymentMethodFormItem {
   final TextEditingController idController = TextEditingController();
@@ -96,6 +98,13 @@ class _EditOfficeDialogState extends State<EditOfficeDialog> {
         'city': _cityCtrl.text.trim(),
         'currencies': _selectedCurrencies.toList(),
         'paymentMethods': paymentMethods,
+      });
+
+      // Håll kundernas publika kontorslista i synk (land, stad, valutor).
+      await OfficeListingService.upsert(widget.officeId, {
+        'country': _countryCtrl.text.trim(),
+        'city': _cityCtrl.text.trim(),
+        'currencies': _selectedCurrencies.toList(),
       });
 
       if (!mounted) return;

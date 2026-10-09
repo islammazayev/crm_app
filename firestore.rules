@@ -1,0 +1,203 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ─── Hjälpfunktioner ────────────────────────────────────────────
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function userPath() {
+      return /databases/$(database)/documents/users/$(request.auth.uid);
+    }
+
+    function hasProfile() {
+      return isSignedIn() && exists(userPath());
+    }
+
+    function role() {
+      return hasProfile() ? get(userPath()).data.get('role', null) : null;
+    }
+
+    function isAdmin() {
+      return role() == 'admin';
+    }
+
+    function isManager() {
+      return role() == 'manager';
+    }
+
+    function isCustomer() {
+      return role() == 'customer';
+    }
+
+    function myOfficeId() {
+      return hasProfile() ? get(userPath()).data.get('officeId', null) : null;
+    }
+
+    function metaCustomersPath() {
+      return /databases/$(database)/documents/meta/customers;
+    }
+
+    function lastClientIdBefore() {
+      return exists(metaCustomersPath())
+        ? get(metaCustomersPath()).data.get('lastClientId', 0)
+        : 0;
+    }
+
+    // ─── USERS ──────────────────────────────────────────────────────
+    match /users/{userId} {
+      allow read: if isSignedIn() && (isAdmin() || request.auth.uid == userId);
+
+      // Ny användare får bara skapa sitt eget konto, och bara som kund.
+      // Managers och admins skapas av en admin (som skriver som admin).
+      allow create: if isSignedIn()
+        && request.auth.uid == userId
+        && request.resource.data.role == 'customer'
+        && request.resource.data.keys()
+             .hasOnly(['email', 'firstName', 'lastName', 'phone', 'role', 'createAt']);
+
+      // Admin får göra allt (skapa managers, koppla kontor, radera).
+      allow write: if isAdmin();
+
+      // Användare får uppdatera sig själva men inte ändra role/officeId/clientId.
+      allow update: if isSignedIn()
+        && request.auth.uid == userId
+        && !request.resource.data.diff(resource.data).affectedKeys()
+             .hasAny(['role', 'officeId', 'clientId']);
+    }
+
+    // ─── CUSTOMERS ──────────────────────────────────────────────────
+    match /customers/{docId} {
+      // Admin läser allt, kund läser bara sin egen post.
+      // Managers läser inte kunder: kundens namn och klient-ID sparas
+      // i själva transaktionen när kunden skickar sin förfrågan.
+      allow read: if isAdmin()
+        || (isSignedIn() && resource.data.userId == request.auth.uid);
+
+      allow write: if isAdmin();
+
+      // Kunden skapar sin egen post en gång (dokument-ID = uid).
+      // clientId måste komma från räknaren i meta/customers och räknaren
+      // måste ha ökats med exakt 1 i samma transaktion.
+      allow create: if isCustomer()
+        && docId == request.auth.uid
+        && request.resource.data.userId == request.auth.uid
+        && request.resource.data.keys().hasOnly(
+             ['clientId', 'firstName', 'lastName', 'email', 'phone', 'userId', 'createAt'])
+        && request.resource.data.clientId is int
+        && getAfter(metaCustomersPath()).data.lastClientId == lastClientIdBefore() + 1
+        && request.resource.data.clientId == getAfter(metaCustomersPath()).data.lastClientId;
+
+      // Kunden får ändra sina kontaktuppgifter men inte clientId/userId.
+      allow update: if isCustomer()
+        && resource.data.userId == request.auth.uid
+        && !request.resource.data.diff(resource.data).affectedKeys()
+             .hasAny(['clientId', 'userId', 'createAt']);
+    }
+
+    // ─── META ───────────────────────────────────────────────────────
+    match /meta/{docId} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
+
+      // Kunder får bara räkna upp kundräknaren med exakt 1 (vid registrering).
+      allow create: if docId == 'customers'
+        && isCustomer()
+        && request.resource.data.keys().hasOnly(['lastClientId'])
+        && request.resource.data.lastClientId == 1;
+
+      allow update: if docId == 'customers'
+        && isCustomer()
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['lastClientId'])
+        && request.resource.data.lastClientId == resource.data.get('lastClientId', 0) + 1;
+    }
+
+    // ─── OFFICES (privat: saldon, betalningsuppgifter, manager) ─────
+    match /offices/{officeId} {
+      allow read, write: if isAdmin();
+
+      // Manager läser bara sitt eget kontor.
+      allow read: if isManager()
+        && myOfficeId() != null
+        && myOfficeId() == officeId;
+    }
+
+    // ─── OFFICE LISTINGS (publik, ofarlig kopia för kunder) ─────────
+    // Innehåller bara land, stad och valutor. Skrivs av admin-appen.
+    match /officeListings/{officeId} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
+    }
+
+    // ─── TRANSACTIONS ───────────────────────────────────────────────
+    match /transactions/{docId} {
+      allow read: if isAdmin()
+        || (isManager()
+            && myOfficeId() != null
+            && resource.data.officeId == myOfficeId())
+        || (isCustomer() && resource.data.customerId == request.auth.uid);
+
+      // Kunden skickar en förfrågan. Kontoret måste finnas i officeListings
+      // och hantera både från- och tillvaluta.
+      allow create: if isCustomer()
+        && request.resource.data.customerId == request.auth.uid
+        && request.resource.data.status == 'customer_requested'
+        && request.resource.data.createAt == request.time
+        && request.resource.data.keys().hasOnly([
+             'customerId', 'clientId', 'customerName', 'customerPhone',
+             'officeId', 'fromCurrency', 'toCurrency', 'amountFrom',
+             'amountTo', 'feePercent', 'feeAmount', 'paymentMethod',
+             'status', 'createAt'
+           ])
+        && request.resource.data.amountFrom is number
+        && request.resource.data.amountFrom > 0
+        && request.resource.data.officeId is string
+        && request.resource.data.fromCurrency is string
+        && request.resource.data.toCurrency is string
+        && request.resource.data.fromCurrency != request.resource.data.toCurrency
+        && exists(/databases/$(database)/documents/officeListings/$(request.resource.data.officeId))
+        && request.resource.data.fromCurrency in
+             get(/databases/$(database)/documents/officeListings/$(request.resource.data.officeId)).data.currencies
+        && request.resource.data.toCurrency in
+             get(/databases/$(database)/documents/officeListings/$(request.resource.data.officeId)).data.currencies;
+
+      allow update: if isAdmin()
+
+        // Manager: föreslå villkor, eller markera genomförd efter kundens accept.
+        || (
+          isManager()
+          && myOfficeId() != null
+          && resource.data.officeId == myOfficeId()
+          && request.resource.data.officeId == resource.data.officeId
+          && request.resource.data.diff(resource.data).changedKeys().hasOnly([
+               'status', 'feePercent', 'feeAmountFrom', 'rateFromTo',
+               'amountToGross', 'amountToNet', 'feeAmountTo',
+               'chosenPaymentMethodId', 'managerProposedAt', 'completedAt'
+             ])
+          && (
+            (
+              request.resource.data.status == 'manager_proposed'
+              && resource.data.status in ['customer_requested', 'manager_proposed']
+            )
+            || (
+              request.resource.data.status == 'completed'
+              && resource.data.status == 'customer_accepted'
+            )
+          )
+        )
+
+        // Kund: acceptera eller avböja ett förslag från managern.
+        || (
+          isCustomer()
+          && resource.data.customerId == request.auth.uid
+          && resource.data.status == 'manager_proposed'
+          && request.resource.data.status in ['customer_accepted', 'customer_rejected']
+          && request.resource.data.diff(resource.data).changedKeys()
+               .hasOnly(['status', 'customerDecisionAt'])
+        );
+
+      allow delete: if isAdmin();
+    }
+  }
+}

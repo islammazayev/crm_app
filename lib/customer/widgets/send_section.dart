@@ -2,6 +2,43 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
+/// Ett kontor så som kunden får se det (från `officeListings`):
+/// bara land, stad och vilka valutor kontoret hanterar.
+class _OfficeListing {
+  final String id;
+  final String country;
+  final String city;
+  final List<String> currencies;
+
+  _OfficeListing({
+    required this.id,
+    required this.country,
+    required this.city,
+    required this.currencies,
+  });
+
+  factory _OfficeListing.fromDoc(
+      QueryDocumentSnapshot<Map<String, dynamic>> doc) {
+    final data = doc.data();
+    return _OfficeListing(
+      id: doc.id,
+      country: (data['country'] ?? '').toString(),
+      city: (data['city'] ?? '').toString(),
+      currencies: (data['currencies'] as List? ?? [])
+          .map((e) => e.toString())
+          .toList(),
+    );
+  }
+
+  String get label {
+    if (city.isEmpty) return country.isEmpty ? 'Kontor' : country;
+    return country.isEmpty ? city : '$city – $country';
+  }
+}
+
+/// Skicka-flödet: kunden väljer först vilken valuta hen vill skicka. Därefter
+/// visas bara de kontor som hanterar den valutan, och sist väljer kunden
+/// vilken valuta mottagaren ska få (bland kontorets valutor).
 class SendSection extends StatefulWidget {
   const SendSection({super.key});
 
@@ -10,14 +47,15 @@ class SendSection extends StatefulWidget {
 }
 
 class _SendSectionState extends State<SendSection> {
-  String? _selectedOfficeId;
   String? _selectedFromCurrency;
+  String? _selectedOfficeId;
   String? _selectedToCurrency;
   final _amountCtrl = TextEditingController();
 
   bool _loadingOffices = true;
+  bool _sending = false;
   String? _error;
-  List<QueryDocumentSnapshot<Map<String, dynamic>>> _offices = [];
+  List<_OfficeListing> _offices = [];
 
   @override
   void initState() {
@@ -27,15 +65,16 @@ class _SendSectionState extends State<SendSection> {
 
   Future<void> _loadOffices() async {
     try {
-      final snap = await FirebaseFirestore.instance
-          .collection('offices')
-          .get();
+      final snap =
+          await FirebaseFirestore.instance.collection('officeListings').get();
 
+      if (!mounted) return;
       setState(() {
-        _offices = snap.docs;
+        _offices = snap.docs.map(_OfficeListing.fromDoc).toList();
         _loadingOffices = false;
       });
     } catch (e) {
+      if (!mounted) return;
       setState(() {
         _error = 'Kunde inte ladda kontor: $e';
         _loadingOffices = false;
@@ -43,22 +82,122 @@ class _SendSectionState extends State<SendSection> {
     }
   }
 
-  List<String> get _currenciesForSelectedOffice {
-    if (_selectedOfficeId == null) return [];
-    final office =
-        _offices.firstWhere((o) => o.id == _selectedOfficeId);
-    final data = office.data();
-    final list = data['currencies'];
-    if (list is List) {
-      return list.map((e) => e.toString()).toList();
-    }
-    return [];
-  }
-
   @override
   void dispose() {
     _amountCtrl.dispose();
     super.dispose();
+  }
+
+  /// Alla valutor som minst ett kontor hanterar.
+  List<String> get _allCurrencies {
+    final set = <String>{};
+    for (final o in _offices) {
+      set.addAll(o.currencies);
+    }
+    final list = set.toList()..sort();
+    return list;
+  }
+
+  /// Kontor som hanterar valutan kunden vill skicka.
+  List<_OfficeListing> get _officesForFromCurrency {
+    final from = _selectedFromCurrency;
+    if (from == null) return [];
+    return _offices.where((o) => o.currencies.contains(from)).toList();
+  }
+
+  _OfficeListing? get _selectedOffice {
+    final id = _selectedOfficeId;
+    if (id == null) return null;
+    for (final o in _offices) {
+      if (o.id == id) return o;
+    }
+    return null;
+  }
+
+  /// Valutor mottagaren kan få: kontorets valutor utom den som skickas.
+  List<String> get _toCurrencies {
+    final office = _selectedOffice;
+    final from = _selectedFromCurrency;
+    if (office == null) return [];
+    return office.currencies.where((c) => c != from).toList();
+  }
+
+  void _snack(String message) {
+    ScaffoldMessenger.of(context)
+        .showSnackBar(SnackBar(content: Text(message)));
+  }
+
+  Future<void> _send() async {
+    final from = _selectedFromCurrency;
+    final officeId = _selectedOfficeId;
+    final to = _selectedToCurrency;
+    final amount =
+        double.tryParse(_amountCtrl.text.trim().replaceAll(',', '.'));
+
+    if (from == null ||
+        officeId == null ||
+        to == null ||
+        amount == null ||
+        amount <= 0) {
+      _snack('Fyll i alla fält med ett giltigt belopp');
+      return;
+    }
+
+    setState(() => _sending = true);
+    try {
+      final user = FirebaseAuth.instance.currentUser!;
+
+      // Kundens profil (klient-ID, namn, telefon). Hämtas med userId så att
+      // det fungerar oavsett vilket dokument-ID kundposten har.
+      final customerSnap = await FirebaseFirestore.instance
+          .collection('customers')
+          .where('userId', isEqualTo: user.uid)
+          .limit(1)
+          .get();
+
+      if (customerSnap.docs.isEmpty) {
+        throw Exception('Hittar ingen kundprofil för den här användaren');
+      }
+
+      final customer = customerSnap.docs.first.data();
+      final customerName =
+          '${customer['firstName'] ?? ''} ${customer['lastName'] ?? ''}'
+              .trim();
+
+      await FirebaseFirestore.instance.collection('transactions').add({
+        'customerId': user.uid,
+        'clientId': (customer['clientId'] ?? '').toString(),
+        // Kopieras in så att kontorets manager ser vem kunden är utan att
+        // behöva läsa kundregistret.
+        'customerName': customerName,
+        'customerPhone': (customer['phone'] ?? '').toString(),
+        'officeId': officeId,
+        'fromCurrency': from,
+        'toCurrency': to,
+        'amountFrom': amount,
+        'amountTo': null,
+        'feePercent': null,
+        'feeAmount': null,
+        'paymentMethod': null,
+        'status': 'customer_requested',
+        'createAt': FieldValue.serverTimestamp(),
+      });
+
+      if (!mounted) return;
+      _snack('Begäran skickad till kontoret');
+
+      _amountCtrl.clear();
+      setState(() {
+        _selectedFromCurrency = null;
+        _selectedOfficeId = null;
+        _selectedToCurrency = null;
+      });
+    } catch (e) {
+      if (!mounted) return;
+      _snack('Fel vid skapande av transaktion: $e');
+    } finally {
+      if (mounted) setState(() => _sending = false);
+    }
   }
 
   @override
@@ -71,29 +210,34 @@ class _SendSectionState extends State<SendSection> {
       return Center(child: Text(_error!));
     }
 
-    return Padding(
+    if (_offices.isEmpty) {
+      return const Center(
+        child: Padding(
+          padding: EdgeInsets.all(16),
+          child: Text('Det finns inga kontor att skicka via just nu.'),
+        ),
+      );
+    }
+
+    final officeChoices = _officesForFromCurrency;
+
+    return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // 1. Välj kontor
+          // 1. Valutan du skickar
           DropdownButtonFormField<String>(
-            value: _selectedOfficeId,
-            decoration: const InputDecoration(labelText: 'Välj kontor'),
-            items: _offices.map((doc) {
-              final data = doc.data();
-              final name = data['officeName']?.toString() ??
-                  data['city']?.toString() ??
-                  'Office';
-              return DropdownMenuItem(
-                value: doc.id,
-                child: Text(name),
-              );
-            }).toList(),
+            value: _selectedFromCurrency,
+            decoration:
+                const InputDecoration(labelText: 'Valuta du skickar'),
+            items: _allCurrencies
+                .map((c) => DropdownMenuItem(value: c, child: Text(c)))
+                .toList(),
             onChanged: (value) {
               setState(() {
-                _selectedOfficeId = value;
-                _selectedFromCurrency = null;
+                _selectedFromCurrency = value;
+                _selectedOfficeId = null;
                 _selectedToCurrency = null;
               });
             },
@@ -101,25 +245,45 @@ class _SendSectionState extends State<SendSection> {
 
           const SizedBox(height: 16),
 
-          // 2. Från‑valuta
+          // 2. Kontor som hanterar den valutan
           DropdownButtonFormField<String>(
-            value: _selectedFromCurrency,
-            decoration:
-                const InputDecoration(labelText: 'Valuta du skickar från'),
-            items: _currenciesForSelectedOffice.map((c) {
-              return DropdownMenuItem(
-                value: c,
-                child: Text(c),
-              );
-            }).toList(),
-            onChanged: (value) {
-              setState(() => _selectedFromCurrency = value);
-            },
+            value: _selectedOfficeId,
+            decoration: InputDecoration(
+              labelText: _selectedFromCurrency == null
+                  ? 'Välj kontor (välj valuta först)'
+                  : 'Kontor som hanterar $_selectedFromCurrency',
+            ),
+            items: officeChoices
+                .map((o) => DropdownMenuItem(value: o.id, child: Text(o.label)))
+                .toList(),
+            onChanged: _selectedFromCurrency == null
+                ? null
+                : (value) {
+                    setState(() {
+                      _selectedOfficeId = value;
+                      _selectedToCurrency = null;
+                    });
+                  },
           ),
 
           const SizedBox(height: 16),
 
-          // 3. Belopp
+          // 3. Valutan mottagaren får
+          DropdownButtonFormField<String>(
+            value: _selectedToCurrency,
+            decoration: const InputDecoration(
+                labelText: 'Valuta mottagaren tar emot'),
+            items: _toCurrencies
+                .map((c) => DropdownMenuItem(value: c, child: Text(c)))
+                .toList(),
+            onChanged: _selectedOfficeId == null
+                ? null
+                : (value) => setState(() => _selectedToCurrency = value),
+          ),
+
+          const SizedBox(height: 16),
+
+          // 4. Belopp
           TextFormField(
             controller: _amountCtrl,
             keyboardType:
@@ -127,90 +291,17 @@ class _SendSectionState extends State<SendSection> {
             decoration: const InputDecoration(labelText: 'Belopp att skicka'),
           ),
 
-          const SizedBox(height: 16),
-
-          // 4. Till‑valuta
-          DropdownButtonFormField<String>(
-            value: _selectedToCurrency,
-            decoration: const InputDecoration(
-                labelText: 'Valuta mottagaren tar emot'),
-            items: _currenciesForSelectedOffice.map((c) {
-              return DropdownMenuItem(
-                value: c,
-                child: Text(c),
-              );
-            }).toList(),
-            onChanged: (value) {
-              setState(() => _selectedToCurrency = value);
-            },
-          ),
-
           const SizedBox(height: 24),
 
           ElevatedButton(
-            onPressed: () async {
-              if (_selectedOfficeId == null ||
-                  _selectedFromCurrency == null ||
-                  _selectedToCurrency == null ||
-                  _amountCtrl.text.trim().isEmpty) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Fyll i alla fält')),
-                );
-                return;
-              }
-
-              try {
-                final user = FirebaseAuth.instance.currentUser!;
-                final amountFrom = double.parse(
-                    _amountCtrl.text.replaceAll(',', '.'));
-
-                // HÄMTA clientId för den inloggade kunden
-                final customerSnap = await FirebaseFirestore.instance
-                    .collection('customers')
-                    .doc(user.uid)
-                    .get();
-
-                final clientId =
-                    customerSnap.data()?['clientId']?.toString() ?? '';
-
-                await FirebaseFirestore.instance
-                    .collection('transactions')
-                    .add({
-                  'customerId': user.uid,
-                  'clientId': clientId,           // <-- viktigt för manager
-                  'officeId': _selectedOfficeId,
-                  'fromCurrency': _selectedFromCurrency,
-                  'toCurrency': _selectedToCurrency,
-                  'amountFrom': amountFrom,
-                  'amountTo': null,
-                  'feePercent': null,
-                  'feeAmount': null,
-                  'paymentMethod': null,
-                  'status': 'customer_requested',
-                  'createAt': FieldValue.serverTimestamp(),
-                });
-
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                      content:
-                          Text('Begäran skickad till kontoret')),
-                );
-
-                _amountCtrl.clear();
-                setState(() {
-                  _selectedOfficeId = null;
-                  _selectedFromCurrency = null;
-                  _selectedToCurrency = null;
-                });
-              } catch (e) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                      content:
-                          Text('Fel vid skapande av transaktion: $e')),
-                );
-              }
-            },
-            child: const Text('Skicka'),
+            onPressed: _sending ? null : _send,
+            child: _sending
+                ? const SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  )
+                : const Text('Skicka'),
           ),
         ],
       ),
