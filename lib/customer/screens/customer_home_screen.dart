@@ -1,0 +1,109 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
+
+import '../../widgets/customer_welcome_screen.dart';
+import 'customer_register_screen.dart';
+
+
+class CustomerHomeScreen extends StatefulWidget {
+  const CustomerHomeScreen({super.key});
+
+  @override
+  State<CustomerHomeScreen> createState() => _CustomerHomeScreenState();
+}
+
+class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
+  bool _loading = true;
+  String? _error;
+  String? _clientId;
+  String? _fullName;
+  String? _phone;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadCustomer();
+  }
+
+  Future<void> _loadCustomer() async {
+    try {
+      final user = FirebaseAuth.instance.currentUser;
+      if (user == null) {
+        setState(() {
+          _error = 'Ingen inloggad användare.';
+          _loading = false;
+        });
+        return;
+      }
+
+      final snap = await FirebaseFirestore.instance
+          .collection('customers')
+          .where('userId', isEqualTo: user.uid)
+          .limit(1)
+          .get();
+
+      if (snap.docs.isEmpty) {
+        setState(() {
+          _loading = false;
+        });
+      } else {
+        final data = snap.docs.first.data();
+        final first = data['firstName'] as String? ?? '';
+        final last = data['lastName'] as String? ?? '';
+        final phone = data['phone'] as String? ?? '';
+
+        setState(() {
+          _clientId = data['clientId'] as String?;
+          _fullName = '$first $last'.trim();
+          _phone = phone;
+          _loading = false;
+        });
+
+      }
+    } catch (e) {
+      setState(() {
+        _error = 'Kunde inte ladda kund: $e';
+        _loading = false;
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (_loading) {
+      return const Scaffold(
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
+
+    if (_error != null) {
+      return Scaffold(
+        appBar: AppBar(
+          title: const Text('CRM – Customer'),
+          actions: [
+            IconButton(
+              tooltip: 'Logga ut',
+              icon: const Icon(Icons.logout),
+              onPressed: () async {
+                await FirebaseAuth.instance.signOut();
+              },
+            ),
+          ],
+        ),
+        body: Center(child: Text(_error!)),
+      );
+    }
+
+if (_clientId != null && _fullName != null && _phone != null) {
+  return CustomerWelcomeScreen(
+    clientId: _clientId!,
+    fullName: _fullName!,
+    phone: _phone!,
+  );
+}
+
+    // Skulle bara hända om du manuellt skapat user utan customer
+    return const CustomerRegisterScreen();
+  }
+}

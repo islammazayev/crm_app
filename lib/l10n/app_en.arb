@@ -1,0 +1,6 @@
+{
+  "appTitle": "CRM App",
+  "@appTitle": {
+    "description": "The application title"
+  }
+}
