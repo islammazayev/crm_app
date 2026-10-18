@@ -6,7 +6,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
-import 'package:to_csv/to_csv.dart' as exportCSV;
+import 'package:to_csv/to_csv.dart' as exportCsv;
 
 import '../../forms/office_form.dart';
 import '../../forms/create_manager_form.dart';
@@ -192,7 +192,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
       return;
     }
 
-    exportCSV.myCSV(_exportHeader, rows);
+    exportCsv.myCSV(_exportHeader, rows);
   }
 
   Future<void> _exportToPDF() async {
@@ -422,7 +422,8 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
                                       DropdownButtonFormField<String>(
-                                        value: selectedCurrency,
+                                        key: ValueKey(selectedCurrency),
+                                        initialValue: selectedCurrency,
                                         items: currencies
                                             .map(
                                               (c) => DropdownMenuItem(
@@ -501,7 +502,8 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                       offSnap.hasData ? offSnap.data!.docs : <QueryDocumentSnapshot>[];
 
                   return DropdownButtonFormField<String?>(
-                    value: _selectedOfficeId,
+                    key: ValueKey(_selectedOfficeId),
+                    initialValue: _selectedOfficeId,
                     decoration: const InputDecoration(
                       labelText: 'Filtrera på kontor (valfritt)',
                       border: OutlineInputBorder(),
