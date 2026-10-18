@@ -15,10 +15,12 @@ import '../../lists/order_history_list.dart';
 import '../../widgets/order_report.dart';
 import '../../models/office.dart';
 import '../../models/transaction_model.dart';
+import '../../services/currency_migration_service.dart';
 import '../../services/customer_counter_service.dart';
 import '../../services/office_listing_service.dart';
 import '../../utils/balances.dart';
 import '../../utils/client_id.dart';
+import '../../utils/currencies.dart';
 import '../sections/admin_customers_section.dart';
 import '../sections/admin_offices_section.dart';
 
@@ -53,6 +55,11 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
       await OfficeListingService.syncAll();
     } catch (e) {
       debugPrint('Självläkning (officeListings) misslyckades: $e');
+    }
+    try {
+      await CurrencyMigrationService.run();
+    } catch (e) {
+      debugPrint('Självläkning (valutakoder) misslyckades: $e');
     }
     try {
       await CustomerCounterService.ensureAtLeastMax();
@@ -376,9 +383,8 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                                 // Kontorets egna valutor + standardvalutor, så
                                 // att admin kan lägga till nya valutor också.
                                 availableCurrencies: <String>{
-                                  ...currencies,
-                                  'EUR', 'USD', 'SEK', 'RUB',
-                                  'USDT', 'GBP', 'AED', 'TRY',
+                                  ...normalizeCurrencies(currencies),
+                                  ...kSupportedCurrencies,
                                 }.toList(),
                               ),
                             );
