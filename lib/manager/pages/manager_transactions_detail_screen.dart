@@ -25,6 +25,7 @@ class _ManagerTransactionDetailScreenState
   double? _feeAmountFrom;
   double? _feeAmountTo;
   bool _calculating = false;
+  bool _autoCalcStarted = false;
 
   String? _selectedMethodId;
 
@@ -142,6 +143,23 @@ class _ManagerTransactionDetailScreenState
 
           final feePercentInput =
               double.tryParse(_feeController.text.replaceAll(',', '.'));
+
+          // Räkna direkt med standardavgiften när sidan öppnas, så att knappen
+          // "Föreslå villkor" inte är avstängd tills managern ändrar avgiften.
+          if (!_autoCalcStarted &&
+              _rate == null &&
+              (status == 'customer_requested' ||
+                  status == 'manager_proposed')) {
+            _autoCalcStarted = true;
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (!mounted) return;
+              _recalculate(
+                amountFrom: amountFrom,
+                fromCurrency: fromCurrency,
+                toCurrency: toCurrency,
+              );
+            });
+          }
 
           return Padding(
             padding: const EdgeInsets.all(16),

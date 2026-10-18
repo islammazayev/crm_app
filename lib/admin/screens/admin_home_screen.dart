@@ -18,9 +18,9 @@ import '../../models/transaction_model.dart';
 import '../../services/customer_counter_service.dart';
 import '../../services/office_listing_service.dart';
 import '../../utils/balances.dart';
+import '../../utils/client_id.dart';
 import '../sections/admin_customers_section.dart';
 import '../sections/admin_offices_section.dart';
-import '../sections/admin_transactions_section.dart';
 
 class AdminHomeScreen extends StatefulWidget {
   const AdminHomeScreen({super.key});
@@ -253,7 +253,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
 
     final blob = html.Blob([bytes], 'application/pdf');
     final url = html.Url.createObjectUrlFromBlob(blob);
-    final anchor = html.AnchorElement(href: url)
+    html.AnchorElement(href: url)
       ..setAttribute('download', 'orderrapport.pdf')
       ..click();
     html.Url.revokeObjectUrl(url);
@@ -393,6 +393,17 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                                 officeDoc.data() as Map<String, dynamic>;
                             final currencies =
                                 List<String>.from(data['currencies'] ?? []);
+                            if (currencies.isEmpty) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text(
+                                    'Kontoret har inga valutor. Lägg till en '
+                                    'valuta via Ändra kontor först.',
+                                  ),
+                                ),
+                              );
+                              return;
+                            }
                             String selectedCurrency = currencies.first;
 
                             final controller = TextEditingController();
@@ -586,25 +597,6 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                   }
                   final docs = snapshot.data!.docs;
 
-                  // Bygg TransactionModel-lista
-                  final allTransactions = docs.map((d) {
-                    final data = d.data() as Map<String, dynamic>;
-                    return TransactionModel(
-                      sender: data['sender'] ?? '',
-                      receiver: data['receiver'] ?? '',
-                      currency: data['currency'] ?? '',
-                      amount: (data['amount'] ?? 0).toDouble(),
-                      fee: (data['feeAmountFrom'] ?? data['fee'] ?? 0)
-                          .toDouble(),
-                      country: data['country'] ?? '',
-                      city: data['city'] ?? '',
-                      date: (data['completedAt'] as Timestamp? ??
-                              data['date'] as Timestamp?)
-                              ?.toDate() ??
-                          DateTime.now(),
-                    );
-                  }).toList();
-
                   // Filtrera på officeId
                   var filtered = _selectedOfficeId == null
                       ? List.of(docs)
@@ -642,24 +634,38 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                     }).toList();
                   }
 
-                  // Bygg filtrerade TransactionModel
+                  // Bygg filtrerade TransactionModel. Läser det nuvarande schemat
+                  // (kundens förfrågningar) och faller tillbaka på äldre fält.
                   final filteredTransactions = filtered.map((d) {
                     final data = d.data() as Map<String, dynamic>;
+                    final clientId = formatClientId(data['clientId']);
+                    final customerName =
+                        (data['customerName'] ?? '').toString().trim();
+                    final label = [
+                      if (clientId.isNotEmpty) 'Klient $clientId',
+                      if (customerName.isNotEmpty) customerName,
+                    ].join(' · ');
+
                     return TransactionModel(
-                      sender: data['sender'] ?? '',
-                      receiver: data['receiver'] ?? '',
-                      currency: data['currency'] ?? '',
-                      amount: (data['amountFrom'] ?? data['amount'] ?? 0)
-                          .toDouble(),
-                      fee: (data['feeAmountFrom'] ?? data['fee'] ?? 0)
-                          .toDouble(),
-                      country: data['country'] ?? '',
-                      city: data['city'] ?? '',
+                      sender: customerName.isNotEmpty
+                          ? customerName
+                          : (data['sender'] ?? '').toString(),
+                      receiver: (data['receiver'] ?? '').toString(),
+                      currency:
+                          (data['fromCurrency'] ?? data['currency'] ?? '')
+                              .toString(),
+                      amount: _toDouble(data['amountFrom'] ?? data['amount']),
+                      fee: _toDouble(data['feeAmountFrom'] ?? data['fee']),
+                      country: (data['country'] ?? '').toString(),
+                      city: (data['city'] ?? '').toString(),
                       date: (data['createAt'] as Timestamp? ??
                               data['completedAt'] as Timestamp? ??
                               data['date'] as Timestamp?)
                               ?.toDate() ??
                           DateTime.now(),
+                      status: (data['status'] ?? '').toString(),
+                      label: label,
+                      toCurrency: (data['toCurrency'] ?? '').toString(),
                     );
                   }).toList();
 
@@ -687,4 +693,12 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
       ),
     );
   }
+}
+
+/// Läser ett tal ur Firestore-data. Tal används som de är, text som ser ut som
+/// ett tal omvandlas och allt annat blir 0 (så att rapporten aldrig kraschar).
+double _toDouble(Object? value) {
+  if (value is num) return value.toDouble();
+  if (value is String) return double.tryParse(value.replaceAll(',', '.')) ?? 0;
+  return 0;
 }

@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import '../services/user_role_service.dart';
 import '../admin/screens/admin_home_screen.dart';
@@ -20,8 +21,24 @@ class HomeScreen extends StatelessWidget {
         }
 
         if (!snapshot.hasData || snapshot.data == null) {
-          return const Scaffold(
-            body: Center(child: Text('Ingen roll hittades för användaren')),
+          return Scaffold(
+            body: Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    snapshot.hasError
+                        ? 'Fel: ${snapshot.error}'
+                        : 'Ingen roll hittades för användaren',
+                  ),
+                  const SizedBox(height: 12),
+                  TextButton(
+                    onPressed: () => FirebaseAuth.instance.signOut(),
+                    child: const Text('Logga ut'),
+                  ),
+                ],
+              ),
+            ),
           );
         }
 

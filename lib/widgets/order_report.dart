@@ -8,15 +8,28 @@ class OrderReport extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    double profit = transactions.fold(0, (sum, t) => sum + t.fee);
-    int count = transactions.length;
+    // Bara genomförda ordrar ger vinst. Avgiften ligger i den valuta kunden
+    // skickar, så vinsten summeras per valuta och aldrig över valutor.
+    final done = transactions.where((t) => t.isCompleted).toList();
 
-    // Skapa summering per dag
-    final perDay = <String, double>{};
+    final profitByCurrency = <String, double>{};
+    final perDay = <String, Map<String, double>>{};
     final dateFormat = DateFormat('yyyy-MM-dd');
-    for (final t in transactions) {
-      final key = dateFormat.format(t.date);
-      perDay[key] = (perDay[key] ?? 0) + t.fee;
+
+    for (final t in done) {
+      final currency = t.currency.isEmpty ? '?' : t.currency;
+      profitByCurrency[currency] = (profitByCurrency[currency] ?? 0) + t.fee;
+
+      final day = dateFormat.format(t.date);
+      final dayTotals = perDay.putIfAbsent(day, () => <String, double>{});
+      dayTotals[currency] = (dayTotals[currency] ?? 0) + t.fee;
+    }
+
+    String format(Map<String, double> totals) {
+      if (totals.isEmpty) return '0.00';
+      return totals.entries
+          .map((e) => '${e.value.toStringAsFixed(2)} ${e.key}')
+          .join(' · ');
     }
 
     return Padding(
@@ -25,17 +38,18 @@ class OrderReport extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            "Totalt antal ordrar: $count",
+            "Totalt antal ordrar: ${transactions.length} "
+            "(genomförda: ${done.length})",
             style: const TextStyle(fontWeight: FontWeight.bold),
           ),
           Text(
-            "Total företagets vinst: ${profit.toStringAsFixed(2)}",
+            "Total företagets vinst (genomförda): ${format(profitByCurrency)}",
             style: const TextStyle(fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 12),
           const Text("Vinst per dag:", style: TextStyle(fontWeight: FontWeight.bold)),
           for (final entry in perDay.entries)
-            Text("${entry.key}: ${entry.value.toStringAsFixed(2)}"),
+            Text("${entry.key}: ${format(entry.value)}"),
         ],
       ),
     );

@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -12,11 +13,46 @@ class ManagerHomeScreen extends StatefulWidget {
 }
 
 class _ManagerHomeScreenState extends State<ManagerHomeScreen> {
+  String _officeLabel = '';
+
+  @override
+  void initState() {
+    super.initState();
+    _loadOfficeLabel();
+  }
+
+  /// Hämtar land och stad för managerns kontor till rubriken.
+  Future<void> _loadOfficeLabel() async {
+    try {
+      final user = FirebaseAuth.instance.currentUser;
+      if (user == null) return;
+      final db = FirebaseFirestore.instance;
+
+      final userSnap = await db.collection('users').doc(user.uid).get();
+      final officeId = userSnap.data()?['officeId']?.toString();
+      if (officeId == null || officeId.isEmpty) return;
+
+      final listing = await db.collection('officeListings').doc(officeId).get();
+      final data = listing.data();
+      if (data == null) return;
+
+      final label = [data['country'], data['city']]
+          .map((e) => (e ?? '').toString())
+          .where((e) => e.isNotEmpty)
+          .join(' – ');
+      if (mounted) setState(() => _officeLabel = label);
+    } catch (_) {
+      // Rubriken är bara en bekvämlighet, fel här ska inte störa något.
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('CRM – Manager (Ryssland – Grozny)'),
+        title: Text(_officeLabel.isEmpty
+            ? 'CRM – Manager'
+            : 'CRM – Manager ($_officeLabel)'),
         actions: [
           IconButton(
             tooltip: 'Logga ut',

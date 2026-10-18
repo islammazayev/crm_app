@@ -6,7 +6,13 @@ class TransactionModel {
   final double fee;
   final String country;
   final String city;
-  final DateTime date;     // <-- NYTT!
+  final DateTime date;
+
+  /// Fälten nedan finns bara på kundernas förfrågningar (nya flödet).
+  /// Äldre poster saknar dem och får tomma värden.
+  final String status; // t.ex. 'completed'
+  final String label; // t.ex. "Klient 003 · Anna Svensson"
+  final String toCurrency;
 
   TransactionModel({
     required this.sender,
@@ -16,6 +22,13 @@ class TransactionModel {
     required this.fee,
     required this.country,
     required this.city,
-    required this.date,    // <-- NYTT!
+    required this.date,
+    this.status = '',
+    this.label = '',
+    this.toCurrency = '',
   });
+
+  /// Bara genomförda ordrar ger vinst. Äldre poster (utan status) räknas som
+  /// genomförda.
+  bool get isCompleted => status.isEmpty || status == 'completed';
 }

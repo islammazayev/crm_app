@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import '../pages/manager_transactions_page.dart';
@@ -17,9 +16,6 @@ class _ManagerHomePageState extends State<ManagerHomePage> {
   String? _error;
   bool _loading = true;
 
-  // Adam Muzajevs manager-UID (från users-samlingen)
-  static const String kWebTestManagerUid = '8CjQ4dq1NGb5pjTDfr4Dbz3DlpC3';
-
   @override
   void initState() {
     super.initState();
@@ -28,22 +24,15 @@ class _ManagerHomePageState extends State<ManagerHomePage> {
 
   Future<void> _loadManagerOffice() async {
     try {
-      String? userId;
-
-      if (kIsWeb) {
-        // På web använder vi test-managerns UID (förbi auth-buggen)
-        userId = kWebTestManagerUid;
-      } else {
-        final user = FirebaseAuth.instance.currentUser;
-        if (user == null) {
-          setState(() {
-            _error = 'Ingen inloggad användare.';
-            _loading = false;
-          });
-          return;
-        }
-        userId = user.uid;
+      final user = FirebaseAuth.instance.currentUser;
+      if (user == null) {
+        setState(() {
+          _error = 'Ingen inloggad användare.';
+          _loading = false;
+        });
+        return;
       }
+      final userId = user.uid;
 
       final snap = await FirebaseFirestore.instance
           .collection('users')
