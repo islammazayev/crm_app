@@ -1,3 +1,5 @@
+import '../utils/balances.dart';
+
 class OfficePaymentMethod {
   final String id;
   final String label;
@@ -66,7 +68,6 @@ class Office {
   }
 
   factory Office.fromMap(String id, Map<String, dynamic> map) {
-    final rawBalances = (map['balances'] as Map<String, dynamic>? ?? {});
     return Office(
       id: id,
       country: (map['country'] ?? '').toString(),
@@ -74,9 +75,7 @@ class Office {
       currencies: (map['currencies'] as List? ?? [])
           .map((e) => e.toString())
           .toList(),
-      balances: rawBalances.map(
-        (key, value) => MapEntry(key, (value as num).toDouble()),
-      ),
+      balances: parseBalances(map['balances'], officeId: id),
       managerUserId: map['managerUserId']?.toString(),
       paymentMethods: (map['paymentMethods'] as List? ?? [])
           .map((e) => OfficePaymentMethod.fromMap(

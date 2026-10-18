@@ -17,6 +17,7 @@ import '../../models/office.dart';
 import '../../models/transaction_model.dart';
 import '../../services/customer_counter_service.dart';
 import '../../services/office_listing_service.dart';
+import '../../utils/balances.dart';
 import '../sections/admin_customers_section.dart';
 import '../sections/admin_offices_section.dart';
 import '../sections/admin_transactions_section.dart';
@@ -46,11 +47,17 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
   /// Rättar data som kan ha hamnat fel: publika kontorsposter som saknas
   /// och en kundräknare som ligger efter redan utdelade klient-ID:n.
   Future<void> _selfHeal() async {
+    // Varje steg körs för sig, så att ett fel i det ena inte stoppar det andra,
+    // och så att loggen visar vilket steg som misslyckades.
     try {
       await OfficeListingService.syncAll();
+    } catch (e) {
+      debugPrint('Självläkning (officeListings) misslyckades: $e');
+    }
+    try {
       await CustomerCounterService.ensureAtLeastMax();
     } catch (e) {
-      debugPrint('Självläkning misslyckades: $e');
+      debugPrint('Självläkning (kundräknare) misslyckades: $e');
     }
   }
 
@@ -327,12 +334,8 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                     final data = d.data() as Map<String, dynamic>;
                     final currencies =
                         List<String>.from(data['currencies'] ?? []);
-                    final rawBalances =
-                        Map<String, dynamic>.from(data['balances'] ?? {});
-                    final balances = <String, double>{
-                      for (final e in rawBalances.entries)
-                        e.key: (e.value ?? 0).toDouble(),
-                    };
+                    final balances =
+                        parseBalances(data['balances'], officeId: d.id);
                     final rawMethods =
                         data['paymentMethods'] as List? ?? [];
                     final paymentMethods = rawMethods
