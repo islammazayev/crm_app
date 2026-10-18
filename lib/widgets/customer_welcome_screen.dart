@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../customer/widgets/send_section.dart';
+import '../utils/client_id.dart';
 import '../customer/screens/customer_transactions_screen.dart';
 
 class CustomerWelcomeScreen extends StatelessWidget {
@@ -53,7 +54,7 @@ class CustomerWelcomeScreen extends StatelessWidget {
                   const SizedBox(height: 4),
                   Text('Telefon: $phone'),
                   const SizedBox(height: 4),
-                  Text('Klient‑ID: $clientId'),
+                  Text('Klient‑ID: ${formatClientId(clientId)}'),
                 ],
               ),
             ),

@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
+import '../../utils/client_id.dart';
 import '../../widgets/customer_welcome_screen.dart';
 
 class CustomerRegisterScreen extends StatefulWidget {
@@ -35,66 +36,85 @@ class _CustomerRegisterScreenState extends State<CustomerRegisterScreen> {
 
     setState(() => _loading = true);
 
+    User? createdUser;
+
     try {
-      // 1. Skapa auth‑konto
-      final cred = await FirebaseAuth.instance
-          .createUserWithEmailAndPassword(
-        email: _emailCtrl.text.trim(),
+      final email = _emailCtrl.text.trim();
+      final firstName = _firstNameCtrl.text.trim();
+      final lastName = _lastNameCtrl.text.trim();
+      final phone = _phoneCtrl.text.trim();
+
+      // 1. Skapa auth-konto
+      final cred = await FirebaseAuth.instance.createUserWithEmailAndPassword(
+        email: email,
         password: _passwordCtrl.text.trim(),
       );
-
+      createdUser = cred.user;
       final uid = cred.user!.uid;
 
+      final db = FirebaseFirestore.instance;
+
       // 2. Skapa users/{uid} med role: customer
-      await FirebaseFirestore.instance.collection('users').doc(uid).set({
-        'email': _emailCtrl.text.trim(),
-        'firstName': _firstNameCtrl.text.trim(),
-        'lastName': _lastNameCtrl.text.trim(),
-        'phone': _phoneCtrl.text.trim(),
+      await db.collection('users').doc(uid).set({
+        'email': email,
+        'firstName': firstName,
+        'lastName': lastName,
+        'phone': phone,
         'role': 'customer',
         'createAt': FieldValue.serverTimestamp(),
       });
 
-      // 3. Räkna fram nästa clientId (001, 002, 003 ...)
-      final snap =
-          await FirebaseFirestore.instance.collection('customers').get();
-      final nextNumber = (snap.docs.length + 1).toString().padLeft(3, '0');
-      final clientId = nextNumber;
+      // 3. Hämta nästa klient-ID från den gemensamma räknaren och skapa
+      //    customers/{uid} i samma transaktion, så att två kunder aldrig
+      //    kan få samma ID.
+      final metaRef = db.collection('meta').doc('customers');
+      final customerRef = db.collection('customers').doc(uid);
 
-      // 4. Skapa customers‑post kopplad till userId
-      await FirebaseFirestore.instance.collection('customers').add({
-        'clientId': clientId,
-        'firstName': _firstNameCtrl.text.trim(),
-        'lastName': _lastNameCtrl.text.trim(),
-        'email': _emailCtrl.text.trim(),
-        'phone': _phoneCtrl.text.trim(),
-        'userId': uid,
-        'createAt': FieldValue.serverTimestamp(),
+      final int clientId = await db.runTransaction<int>((tx) async {
+        final snap = await tx.get(metaRef);
+        final last = (snap.data()?['lastClientId'] as num?)?.toInt() ?? 0;
+        final next = last + 1;
+
+        tx.set(metaRef, {'lastClientId': next}, SetOptions(merge: true));
+        tx.set(customerRef, {
+          'clientId': next,
+          'firstName': firstName,
+          'lastName': lastName,
+          'email': email,
+          'phone': phone,
+          'userId': uid,
+          'createAt': FieldValue.serverTimestamp(),
+        });
+
+        return next;
       });
 
-      final fullName =
-          '${_firstNameCtrl.text.trim()} ${_lastNameCtrl.text.trim()}';
-      final phone = _phoneCtrl.text.trim();
+      final fullName = '$firstName $lastName'.trim();
 
       if (!mounted) return;
 
       Navigator.of(context).pushAndRemoveUntil(
         MaterialPageRoute(
           builder: (_) => CustomerWelcomeScreen(
-            clientId: clientId,
+            clientId: formatClientId(clientId),
             fullName: fullName,
             phone: phone,
           ),
         ),
         (route) => false,
       );
-
     } on FirebaseAuthException catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Fel vid registrering: ${e.message}')),
       );
     } catch (e) {
+      // Något gick fel efter att kontot skapats: ta bort det halvfärdiga
+      // kontot så att personen kan försöka igen med samma e-postadress.
+      try {
+        await createdUser?.delete();
+      } catch (_) {}
+
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Kunde inte skapa kund: $e')),

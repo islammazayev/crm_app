@@ -54,7 +54,7 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
         final phone = data['phone'] as String? ?? '';
 
         setState(() {
-          _clientId = data['clientId'] as String?;
+          _clientId = data['clientId']?.toString();
           _fullName = '$first $last'.trim();
           _phone = phone;
           _loading = false;
