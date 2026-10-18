@@ -113,6 +113,23 @@ service cloud.firestore {
         && request.resource.data.lastClientId == resource.data.get('lastClientId', 0) + 1;
     }
 
+    // Kontrollerar att saldoändringen på kontoret motsvarar den transaktion som
+    // samtidigt sätts till completed (se offices-regeln).
+    function bookingMatchesTransaction(officeId) {
+      let txPath = /databases/$(database)/documents/transactions/$(request.resource.data.lastBookedTransactionId);
+      let before = get(txPath).data;
+      let after = getAfter(txPath).data;
+      let oldB = resource.data.balances;
+      let newB = request.resource.data.balances;
+      return before.officeId == officeId
+        && before.status == 'customer_accepted'
+        && after.status == 'completed'
+        && newB.diff(oldB).affectedKeys().hasOnly([before.fromCurrency, before.toCurrency])
+        && math.abs(newB.get(before.fromCurrency, 0) - (oldB.get(before.fromCurrency, 0) + before.amountFrom)) < 0.01
+        && math.abs(newB.get(before.toCurrency, 0) - (oldB.get(before.toCurrency, 0) - before.amountToNet)) < 0.01
+        && newB.get(before.toCurrency, 0) >= 0;
+    }
+
     // ─── OFFICES (privat: saldon, betalningsuppgifter, manager) ─────
     match /offices/{officeId} {
       allow read, write: if isAdmin();
@@ -121,6 +138,18 @@ service cloud.firestore {
       allow read: if isManager()
         && myOfficeId() != null
         && myOfficeId() == officeId;
+
+      // Manager får bara bokföra saldot för EN transaktion i sitt kontor, i
+      // samma batch som transaktionen går från customer_accepted till
+      // completed. Kontoret får fromCurrency +amountFrom och toCurrency
+      // -amountToNet, ingenting annat får ändras och saldot får inte bli < 0.
+      allow update: if isManager()
+        && myOfficeId() != null
+        && myOfficeId() == officeId
+        && request.resource.data.diff(resource.data).changedKeys()
+             .hasOnly(['balances', 'lastBookedTransactionId'])
+        && request.resource.data.lastBookedTransactionId is string
+        && bookingMatchesTransaction(officeId);
     }
 
     // ─── OFFICE LISTINGS (publik, ofarlig kopia för kunder) ─────────
@@ -162,6 +191,31 @@ service cloud.firestore {
         && request.resource.data.toCurrency in
              get(/databases/$(database)/documents/officeListings/$(request.resource.data.officeId)).data.currencies;
 
+      // Manager registrerar en kund som kommer in på kontoret (utan konto).
+      // Villkoren är redan överenskomna, så den börjar som customer_accepted.
+      allow create: if isManager()
+        && myOfficeId() != null
+        && request.resource.data.officeId == myOfficeId()
+        && request.resource.data.customerId == ''
+        && request.resource.data.createdByManager == true
+        && request.resource.data.status == 'customer_accepted'
+        && request.resource.data.createAt == request.time
+        && request.resource.data.keys().hasOnly([
+             'customerId', 'customerName', 'customerPhone', 'officeId',
+             'fromCurrency', 'toCurrency', 'amountFrom', 'feePercent',
+             'feeAmountFrom', 'rateFromTo', 'amountToGross', 'amountToNet',
+             'feeAmountTo', 'status', 'createAt', 'createdByManager'
+           ])
+        && request.resource.data.amountFrom is number
+        && request.resource.data.amountFrom > 0
+        && request.resource.data.amountToNet is number
+        && request.resource.data.amountToNet > 0
+        && request.resource.data.fromCurrency != request.resource.data.toCurrency
+        && request.resource.data.fromCurrency in
+             get(/databases/$(database)/documents/officeListings/$(request.resource.data.officeId)).data.currencies
+        && request.resource.data.toCurrency in
+             get(/databases/$(database)/documents/officeListings/$(request.resource.data.officeId)).data.currencies;
+
       allow update: if isAdmin()
 
         // Manager: föreslå villkor, eller markera genomförd efter kundens accept.
@@ -173,16 +227,31 @@ service cloud.firestore {
           && request.resource.data.diff(resource.data).changedKeys().hasOnly([
                'status', 'feePercent', 'feeAmountFrom', 'rateFromTo',
                'amountToGross', 'amountToNet', 'feeAmountTo',
-               'chosenPaymentMethodId', 'managerProposedAt', 'completedAt'
+               'chosenPaymentMethodId', 'paymentMethodLabel',
+               'paymentMethodDetails', 'paymentSentAt',
+               'managerProposedAt', 'completedAt'
              ])
           && (
             (
               request.resource.data.status == 'manager_proposed'
               && resource.data.status in ['customer_requested', 'manager_proposed']
             )
+            // Skicka betalningsuppgifter till kunden efter accept (status oförändrad).
+            || (
+              request.resource.data.status == 'customer_accepted'
+              && resource.data.status == 'customer_accepted'
+              && request.resource.data.diff(resource.data).changedKeys().hasOnly([
+                   'chosenPaymentMethodId', 'paymentMethodLabel',
+                   'paymentMethodDetails', 'paymentSentAt'
+                 ])
+            )
             || (
               request.resource.data.status == 'completed'
               && resource.data.status == 'customer_accepted'
+              && request.resource.data.diff(resource.data).changedKeys().hasOnly([
+                   'status', 'chosenPaymentMethodId', 'paymentMethodLabel',
+                   'paymentMethodDetails', 'paymentSentAt', 'completedAt'
+                 ])
             )
           )
         )

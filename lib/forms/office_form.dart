@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../models/office.dart';
+import '../utils/currencies.dart';
 
 class OfficeForm extends StatefulWidget {
   final Future<void> Function({
@@ -22,7 +23,7 @@ class _OfficeFormState extends State<OfficeForm> {
   final _formKey = GlobalKey<FormState>();
   final _countryController = TextEditingController();
   final _cityController = TextEditingController();
-  final _currenciesController = TextEditingController();
+  final Set<String> _selectedCurrencies = {};
 
   // Betalningsmetoder som byggs upp dynamiskt
   final List<_PaymentMethodEntry> _methods = [];
@@ -31,7 +32,6 @@ class _OfficeFormState extends State<OfficeForm> {
   void dispose() {
     _countryController.dispose();
     _cityController.dispose();
-    _currenciesController.dispose();
     for (final m in _methods) {
       m.dispose();
     }
@@ -52,20 +52,13 @@ class _OfficeFormState extends State<OfficeForm> {
   void _submit() async {
     if (!_formKey.currentState!.validate()) return;
 
-    final raw = _currenciesController.text.trim();
-    final List<String> currencies = raw.isEmpty
-        ? []
-        : raw
-            .split(',')
-            .map((c) => c.trim().toUpperCase())
-            .where((c) => c.isNotEmpty)
-            .toList();
+    final List<String> currencies = kSupportedCurrencies
+        .where(_selectedCurrencies.contains)
+        .toList();
 
     if (currencies.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Ange minst en valuta, separerad med komma'),
-        ),
+        const SnackBar(content: Text('Välj minst en valuta')),
       );
       return;
     }
@@ -76,11 +69,8 @@ class _OfficeFormState extends State<OfficeForm> {
       final m = _methods[i];
       final label = m.labelController.text.trim();
       final details = m.detailsController.text.trim();
-      final supported = m.currenciesController.text
-          .trim()
-          .split(',')
-          .map((c) => c.trim().toUpperCase())
-          .where((c) => c.isNotEmpty)
+      final supported = kSupportedCurrencies
+          .where(m.supportedCurrencies.contains)
           .toList();
 
       if (label.isEmpty) continue; // hoppa över tomma rader
@@ -103,8 +93,8 @@ class _OfficeFormState extends State<OfficeForm> {
     // Rensa formuläret
     _countryController.clear();
     _cityController.clear();
-    _currenciesController.clear();
     setState(() {
+      _selectedCurrencies.clear();
       for (final m in _methods) {
         m.dispose();
       }
@@ -134,14 +124,20 @@ class _OfficeFormState extends State<OfficeForm> {
                 (v == null || v.trim().isEmpty) ? 'Ange stad' : null,
           ),
           const SizedBox(height: 8),
-          TextFormField(
-            controller: _currenciesController,
-            decoration: const InputDecoration(
-              labelText: 'Valutor',
-              hintText: 't.ex. SEK, EUR, USD',
-            ),
-            validator: (v) =>
-                (v == null || v.trim().isEmpty) ? 'Ange minst en valuta' : null,
+          const Text('Valutor',
+              style: TextStyle(fontSize: 12, color: Colors.grey)),
+          const SizedBox(height: 4),
+          Wrap(
+            spacing: 8,
+            children: kSupportedCurrencies.map((c) {
+              return FilterChip(
+                label: Text(c),
+                selected: _selectedCurrencies.contains(c),
+                onSelected: (v) => setState(() {
+                  v ? _selectedCurrencies.add(c) : _selectedCurrencies.remove(c);
+                }),
+              );
+            }).toList(),
           ),
 
           // --- Betalningsmetoder ---
@@ -192,12 +188,11 @@ class _OfficeFormState extends State<OfficeForm> {
 class _PaymentMethodEntry {
   final TextEditingController labelController = TextEditingController();
   final TextEditingController detailsController = TextEditingController();
-  final TextEditingController currenciesController = TextEditingController();
+  final Set<String> supportedCurrencies = {};
 
   void dispose() {
     labelController.dispose();
     detailsController.dispose();
-    currenciesController.dispose();
   }
 }
 
@@ -256,12 +251,22 @@ class _PaymentMethodRow extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 8),
-            TextField(
-              controller: entry.currenciesController,
-              decoration: const InputDecoration(
-                labelText: 'Stödjer valutor (kommaseparerat)',
-                hintText: 't.ex. EUR, USD',
-                border: OutlineInputBorder(),
+            const Text('Stödjer valutor',
+                style: TextStyle(fontSize: 12, color: Colors.grey)),
+            StatefulBuilder(
+              builder: (context, setLocal) => Wrap(
+                spacing: 8,
+                children: kSupportedCurrencies.map((c) {
+                  return FilterChip(
+                    label: Text(c),
+                    selected: entry.supportedCurrencies.contains(c),
+                    onSelected: (v) => setLocal(() {
+                      v
+                          ? entry.supportedCurrencies.add(c)
+                          : entry.supportedCurrencies.remove(c);
+                    }),
+                  );
+                }).toList(),
               ),
             ),
           ],

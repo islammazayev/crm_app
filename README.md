@@ -52,3 +52,18 @@ Gör samma `--dart-define` när du bygger (`flutter build web --dart-define=FX_A
 Första admin-kontot skapas manuellt: skapa användaren under Authentication i Firebase-konsolen och lägg
 ett dokument `users/{uid}` med `role: "admin"` i Firestore. Kunder skapas via registreringen i appen
 och managers skapas av en admin i adminvyn.
+
+## Betalningsuppgifter, saldon och valutakoder
+
+- När kunden har accepterat väljer managern en betalningsmetod och trycker
+  "Skicka betalningsuppgifter till kund". Namn och uppgifter kopieras in i
+  transaktionen (`paymentMethodLabel`, `paymentMethodDetails`) och kunden ser
+  dem direkt i sin transaktion. Först därefter kan den markeras som genomförd.
+- "Markera som genomförd" bokför kontorets saldo i samma batch: kontoret får
+  `+amountFrom` i `fromCurrency` och `-amountToNet` i `toCurrency`. Saldot får
+  inte bli negativt. Reglerna kontrollerar att ändringen matchar transaktionen.
+- Valutakoder är alltid ISO-liknande (`RUB`, `EUR`, ...) enligt
+  `lib/utils/currencies.dart`. Gamla `RUBLE`/`EURO` rättas automatiskt när en
+  admin öppnar appen (`CurrencyMigrationService`).
+- Managern kan skapa en transaktion för en kund utan konto ("Skapa ny
+  transaktion"). Den startar som `customer_accepted`.

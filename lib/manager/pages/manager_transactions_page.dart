@@ -6,7 +6,17 @@ import 'manager_transactions_detail_screen.dart';
 
 class ManagerTransactionsPage extends StatelessWidget {
   final String officeId;
-  const ManagerTransactionsPage({super.key, required this.officeId});
+
+  /// Om satt visas bara transaktioner med någon av dessa statusar.
+  final List<String>? statuses;
+  final String title;
+
+  const ManagerTransactionsPage({
+    super.key,
+    required this.officeId,
+    this.statuses,
+    this.title = 'Transaktioner',
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -16,7 +26,7 @@ class ManagerTransactionsPage extends StatelessWidget {
         .orderBy('createAt', descending: true);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Transaktioner')),
+      appBar: AppBar(title: Text(title)),
       body: StreamBuilder<QuerySnapshot>(
         stream: query.snapshots(),
         builder: (context, snapshot) {
@@ -27,7 +37,12 @@ class ManagerTransactionsPage extends StatelessWidget {
             return const Center(child: CircularProgressIndicator());
           }
 
-          final docs = snapshot.data!.docs;
+          // Filtreras i appen så att inga fler index behövs.
+          final docs = snapshot.data!.docs.where((d) {
+            if (statuses == null) return true;
+            final status = (d.data() as Map<String, dynamic>)['status'];
+            return statuses!.contains(status);
+          }).toList();
           if (docs.isEmpty) {
             return const Center(child: Text('Inga transaktioner ännu'));
           }
