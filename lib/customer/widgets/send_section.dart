@@ -228,7 +228,8 @@ class _SendSectionState extends State<SendSection> {
         children: [
           // 1. Valutan du skickar
           DropdownButtonFormField<String>(
-            value: _selectedFromCurrency,
+            key: ValueKey(_selectedFromCurrency),
+            initialValue: _selectedFromCurrency,
             decoration:
                 const InputDecoration(labelText: 'Valuta du skickar'),
             items: _allCurrencies
@@ -247,7 +248,8 @@ class _SendSectionState extends State<SendSection> {
 
           // 2. Kontor som hanterar den valutan
           DropdownButtonFormField<String>(
-            value: _selectedOfficeId,
+            key: ValueKey(_selectedOfficeId),
+            initialValue: _selectedOfficeId,
             decoration: InputDecoration(
               labelText: _selectedFromCurrency == null
                   ? 'Välj kontor (välj valuta först)'
@@ -270,7 +272,8 @@ class _SendSectionState extends State<SendSection> {
 
           // 3. Valutan mottagaren får
           DropdownButtonFormField<String>(
-            value: _selectedToCurrency,
+            key: ValueKey(_selectedToCurrency),
+            initialValue: _selectedToCurrency,
             decoration: const InputDecoration(
                 labelText: 'Valuta mottagaren tar emot'),
             items: _toCurrencies
