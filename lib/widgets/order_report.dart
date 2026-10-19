@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../models/transaction_model.dart';
 import 'package:intl/intl.dart';
+import '../l10n/locale_controller.dart';
 
 class OrderReport extends StatelessWidget {
   final List<TransactionModel> transactions;
@@ -32,22 +33,26 @@ class OrderReport extends StatelessWidget {
           .join(' · ');
     }
 
+    final l10n = context.l10n;
+
     return Padding(
       padding: const EdgeInsets.all(16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            "Totalt antal ordrar: ${transactions.length} "
-            "(genomförda: ${done.length})",
+            l10n.reportTotalOrders(transactions.length, done.length),
             style: const TextStyle(fontWeight: FontWeight.bold),
           ),
           Text(
-            "Total företagets vinst (genomförda): ${format(profitByCurrency)}",
+            l10n.reportTotalProfit(format(profitByCurrency)),
             style: const TextStyle(fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 12),
-          const Text("Vinst per dag:", style: TextStyle(fontWeight: FontWeight.bold)),
+          Text(
+            l10n.reportProfitPerDay,
+            style: const TextStyle(fontWeight: FontWeight.bold),
+          ),
           for (final entry in perDay.entries)
             Text("${entry.key}: ${format(entry.value)}"),
         ],

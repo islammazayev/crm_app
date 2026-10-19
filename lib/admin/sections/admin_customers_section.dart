@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 import '../../forms/customer_form.dart';
+import '../../l10n/locale_controller.dart';
 import '../../models/customer.dart';
 
 class AdminCustomersSection extends StatefulWidget {
@@ -116,7 +117,7 @@ class _AdminCustomersSectionState extends State<AdminCustomersSection> {
       });
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Ingen kund hittades med klient-ID $raw')),
+          SnackBar(content: Text(context.l10n.noCustomerWithClientId(raw))),
         );
       }
       return;
@@ -146,34 +147,35 @@ class _AdminCustomersSectionState extends State<AdminCustomersSection> {
     final lastNameCtrl = TextEditingController(text: c.lastName);
     final phoneCtrl = TextEditingController(text: c.phone);
     final emailCtrl = TextEditingController(text: c.email);
+    final l10n = context.l10n;
 
     await showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: Text('Redigera kund #${c.clientId.toString().padLeft(3, '0')}'),
+        title: Text(l10n.editCustomerTitle(c.clientId.toString().padLeft(3, '0'))),
         content: SingleChildScrollView(
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               TextField(
                 controller: firstNameCtrl,
-                decoration: const InputDecoration(labelText: 'Förnamn'),
+                decoration: InputDecoration(labelText: l10n.firstName),
               ),
               const SizedBox(height: 8),
               TextField(
                 controller: lastNameCtrl,
-                decoration: const InputDecoration(labelText: 'Efternamn'),
+                decoration: InputDecoration(labelText: l10n.lastName),
               ),
               const SizedBox(height: 8),
               TextField(
                 controller: phoneCtrl,
-                decoration: const InputDecoration(labelText: 'Telefon'),
+                decoration: InputDecoration(labelText: l10n.phone),
                 keyboardType: TextInputType.phone,
               ),
               const SizedBox(height: 8),
               TextField(
                 controller: emailCtrl,
-                decoration: const InputDecoration(labelText: 'E-post'),
+                decoration: InputDecoration(labelText: l10n.email),
                 keyboardType: TextInputType.emailAddress,
               ),
             ],
@@ -182,7 +184,7 @@ class _AdminCustomersSectionState extends State<AdminCustomersSection> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: const Text('Avbryt'),
+            child: Text(l10n.cancel),
           ),
           ElevatedButton(
             onPressed: () async {
@@ -207,11 +209,11 @@ class _AdminCustomersSectionState extends State<AdminCustomersSection> {
               if (ctx.mounted) Navigator.pop(ctx);
               if (mounted) {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Kund uppdaterad!')),
+                  SnackBar(content: Text(l10n.customerUpdated)),
                 );
               }
             },
-            child: const Text('Spara'),
+            child: Text(l10n.save),
           ),
         ],
       ),
@@ -225,24 +227,26 @@ class _AdminCustomersSectionState extends State<AdminCustomersSection> {
 
   // Bekräfta och ta bort kund
   Future<void> _deleteCustomer(Customer c) async {
+    final l10n = context.l10n;
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Ta bort kund'),
+        title: Text(l10n.deleteCustomerTitle),
         content: Text(
-          'Vill du verkligen ta bort kund '
-          '#${c.clientId.toString().padLeft(3, '0')} '
-          '${c.firstName} ${c.lastName}?',
+          l10n.deleteCustomerConfirm(
+            c.clientId.toString().padLeft(3, '0'),
+            '${c.firstName} ${c.lastName}',
+          ),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('Avbryt'),
+            child: Text(l10n.cancel),
           ),
           TextButton(
             style: TextButton.styleFrom(foregroundColor: Colors.red),
             onPressed: () => Navigator.pop(ctx, true),
-            child: const Text('Ta bort'),
+            child: Text(l10n.delete),
           ),
         ],
       ),
@@ -257,7 +261,7 @@ class _AdminCustomersSectionState extends State<AdminCustomersSection> {
       });
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Kund borttagen.')),
+          SnackBar(content: Text(l10n.customerDeleted)),
         );
       }
     }
@@ -265,12 +269,14 @@ class _AdminCustomersSectionState extends State<AdminCustomersSection> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          'Skapa / uppdatera kund',
-          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+        Text(
+          l10n.createUpdateCustomer,
+          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
         ),
         CustomerForm(
           onSubmit: ({
@@ -296,16 +302,16 @@ class _AdminCustomersSectionState extends State<AdminCustomersSection> {
               child: TextField(
                 controller: _clientIdSearchController,
                 keyboardType: TextInputType.number,
-                decoration: const InputDecoration(
-                  labelText: 'Sök klient-ID',
-                  hintText: 't.ex. 007',
+                decoration: InputDecoration(
+                  labelText: l10n.searchClientId,
+                  hintText: l10n.clientIdHint,
                 ),
               ),
             ),
             const SizedBox(width: 8),
             ElevatedButton(
               onPressed: _searchByClientId,
-              child: const Text('Sök'),
+              child: Text(l10n.search),
             ),
           ],
         ),
@@ -324,7 +330,11 @@ class _AdminCustomersSectionState extends State<AdminCustomersSection> {
                     children: [
                       Expanded(
                         child: Text(
-                          'Kund #${_clientIdSearchResult!.clientId.toString().padLeft(3, '0')}',
+                          l10n.customerNumber(
+                            _clientIdSearchResult!.clientId
+                                .toString()
+                                .padLeft(3, '0'),
+                          ),
                           style: const TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 16,
@@ -333,14 +343,14 @@ class _AdminCustomersSectionState extends State<AdminCustomersSection> {
                       ),
                       // Ändra-knapp
                       IconButton(
-                        tooltip: 'Redigera',
+                        tooltip: l10n.edit,
                         icon: const Icon(Icons.edit, color: Colors.blue),
                         onPressed: () =>
                             _openEditDialog(_clientIdSearchResult!),
                       ),
                       // Ta bort-knapp
                       IconButton(
-                        tooltip: 'Ta bort',
+                        tooltip: l10n.delete,
                         icon: const Icon(Icons.delete, color: Colors.red),
                         onPressed: () =>
                             _deleteCustomer(_clientIdSearchResult!),
@@ -348,11 +358,11 @@ class _AdminCustomersSectionState extends State<AdminCustomersSection> {
                     ],
                   ),
                   const SizedBox(height: 6),
-                  Text(
-                      'Namn: ${_clientIdSearchResult!.firstName} ${_clientIdSearchResult!.lastName}'),
-                  Text('Telefon: ${_clientIdSearchResult!.phone}'),
+                  Text(l10n.nameValue(
+                      '${_clientIdSearchResult!.firstName} ${_clientIdSearchResult!.lastName}')),
+                  Text(l10n.phoneValue(_clientIdSearchResult!.phone)),
                   if (_clientIdSearchResult!.email.isNotEmpty)
-                    Text('E-post: ${_clientIdSearchResult!.email}'),
+                    Text(l10n.emailValue(_clientIdSearchResult!.email)),
                 ],
               ),
             ),

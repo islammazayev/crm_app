@@ -2,6 +2,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
+import '../../l10n/app_localizations.dart';
+import '../../l10n/locale_controller.dart';
+
 /// Ett kontor så som kunden får se det (från `officeListings`):
 /// bara land, stad och vilka valutor kontoret hanterar.
 class _OfficeListing {
@@ -30,8 +33,8 @@ class _OfficeListing {
     );
   }
 
-  String get label {
-    if (city.isEmpty) return country.isEmpty ? 'Kontor' : country;
+  String label(AppLocalizations l10n) {
+    if (city.isEmpty) return country.isEmpty ? l10n.office : country;
     return country.isEmpty ? city : '$city – $country';
   }
 }
@@ -54,7 +57,7 @@ class _SendSectionState extends State<SendSection> {
 
   bool _loadingOffices = true;
   bool _sending = false;
-  String? _error;
+  String Function(AppLocalizations l10n)? _error;
   List<_OfficeListing> _offices = [];
 
   @override
@@ -76,7 +79,7 @@ class _SendSectionState extends State<SendSection> {
     } catch (e) {
       if (!mounted) return;
       setState(() {
-        _error = 'Kunde inte ladda kontor: $e';
+        _error = (l10n) => l10n.couldNotLoadOffices('$e');
         _loadingOffices = false;
       });
     }
@@ -128,6 +131,7 @@ class _SendSectionState extends State<SendSection> {
   }
 
   Future<void> _send() async {
+    final l10n = context.l10n;
     final from = _selectedFromCurrency;
     final officeId = _selectedOfficeId;
     final to = _selectedToCurrency;
@@ -139,7 +143,7 @@ class _SendSectionState extends State<SendSection> {
         to == null ||
         amount == null ||
         amount <= 0) {
-      _snack('Fyll i alla fält med ett giltigt belopp');
+      _snack(l10n.fillAllFieldsValidAmount);
       return;
     }
 
@@ -156,7 +160,7 @@ class _SendSectionState extends State<SendSection> {
           .get();
 
       if (customerSnap.docs.isEmpty) {
-        throw Exception('Hittar ingen kundprofil för den här användaren');
+        throw Exception(l10n.noCustomerProfile);
       }
 
       final customer = customerSnap.docs.first.data();
@@ -184,7 +188,7 @@ class _SendSectionState extends State<SendSection> {
       });
 
       if (!mounted) return;
-      _snack('Begäran skickad till kontoret');
+      _snack(l10n.requestSentToOffice);
 
       _amountCtrl.clear();
       setState(() {
@@ -194,7 +198,7 @@ class _SendSectionState extends State<SendSection> {
       });
     } catch (e) {
       if (!mounted) return;
-      _snack('Fel vid skapande av transaktion: $e');
+      _snack(l10n.couldNotCreateTransaction('$e'));
     } finally {
       if (mounted) setState(() => _sending = false);
     }
@@ -202,19 +206,21 @@ class _SendSectionState extends State<SendSection> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
+
     if (_loadingOffices) {
       return const Center(child: CircularProgressIndicator());
     }
 
     if (_error != null) {
-      return Center(child: Text(_error!));
+      return Center(child: Text(_error!(l10n)));
     }
 
     if (_offices.isEmpty) {
-      return const Center(
+      return Center(
         child: Padding(
-          padding: EdgeInsets.all(16),
-          child: Text('Det finns inga kontor att skicka via just nu.'),
+          padding: const EdgeInsets.all(16),
+          child: Text(l10n.noOfficesAvailable),
         ),
       );
     }
@@ -230,8 +236,7 @@ class _SendSectionState extends State<SendSection> {
           DropdownButtonFormField<String>(
             key: ValueKey(_selectedFromCurrency),
             initialValue: _selectedFromCurrency,
-            decoration:
-                const InputDecoration(labelText: 'Valuta du skickar'),
+            decoration: InputDecoration(labelText: l10n.currencyYouSend),
             items: _allCurrencies
                 .map((c) => DropdownMenuItem(value: c, child: Text(c)))
                 .toList(),
@@ -252,11 +257,12 @@ class _SendSectionState extends State<SendSection> {
             initialValue: _selectedOfficeId,
             decoration: InputDecoration(
               labelText: _selectedFromCurrency == null
-                  ? 'Välj kontor (välj valuta först)'
-                  : 'Kontor som hanterar $_selectedFromCurrency',
+                  ? l10n.chooseOfficeFirstCurrency
+                  : l10n.officesHandlingCurrency(_selectedFromCurrency!),
             ),
             items: officeChoices
-                .map((o) => DropdownMenuItem(value: o.id, child: Text(o.label)))
+                .map((o) =>
+                    DropdownMenuItem(value: o.id, child: Text(o.label(l10n))))
                 .toList(),
             onChanged: _selectedFromCurrency == null
                 ? null
@@ -274,8 +280,7 @@ class _SendSectionState extends State<SendSection> {
           DropdownButtonFormField<String>(
             key: ValueKey(_selectedToCurrency),
             initialValue: _selectedToCurrency,
-            decoration: const InputDecoration(
-                labelText: 'Valuta mottagaren tar emot'),
+            decoration: InputDecoration(labelText: l10n.currencyRecipientGets),
             items: _toCurrencies
                 .map((c) => DropdownMenuItem(value: c, child: Text(c)))
                 .toList(),
@@ -291,7 +296,7 @@ class _SendSectionState extends State<SendSection> {
             controller: _amountCtrl,
             keyboardType:
                 const TextInputType.numberWithOptions(decimal: true),
-            decoration: const InputDecoration(labelText: 'Belopp att skicka'),
+            decoration: InputDecoration(labelText: l10n.amountToSend),
           ),
 
           const SizedBox(height: 24),
@@ -304,7 +309,7 @@ class _SendSectionState extends State<SendSection> {
                     height: 20,
                     child: CircularProgressIndicator(strokeWidth: 2),
                   )
-                : const Text('Skicka'),
+                : Text(l10n.send),
           ),
         ],
       ),

@@ -1,9 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import '../l10n/locale_controller.dart';
 import '../services/user_role_service.dart';
 import '../admin/screens/admin_home_screen.dart';
 import '../manager/screens/manager_home_screen.dart';
-//import '../manager/screens/manager_home_page.dart';
 import '../customer/screens/customer_home_screen.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -28,13 +28,13 @@ class HomeScreen extends StatelessWidget {
                 children: [
                   Text(
                     snapshot.hasError
-                        ? 'Fel: ${snapshot.error}'
-                        : 'Ingen roll hittades för användaren',
+                        ? context.l10n.errorWithDetails('${snapshot.error}')
+                        : context.l10n.noRoleFound,
                   ),
                   const SizedBox(height: 12),
                   TextButton(
                     onPressed: () => FirebaseAuth.instance.signOut(),
-                    child: const Text('Logga ut'),
+                    child: Text(context.l10n.logout),
                   ),
                 ],
               ),

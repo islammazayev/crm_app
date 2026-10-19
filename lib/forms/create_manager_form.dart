@@ -3,6 +3,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
+import '../l10n/auth_error_text.dart';
+import '../l10n/locale_controller.dart';
+
 class CreateManagerForm extends StatefulWidget {
   final List<QueryDocumentSnapshot> officeDocs;
 
@@ -100,7 +103,7 @@ class _CreateManagerFormState extends State<CreateManagerForm> {
 
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Manager skapad.')),
+        SnackBar(content: Text(context.l10n.managerCreated)),
       );
 
       _formKey.currentState!.reset();
@@ -112,12 +115,16 @@ class _CreateManagerFormState extends State<CreateManagerForm> {
     } on FirebaseAuthException catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Kunde inte skapa manager: ${e.message}')),
+        SnackBar(
+          content: Text(
+            context.l10n.couldNotCreateManager(authErrorText(context.l10n, e)),
+          ),
+        ),
       );
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Oväntat fel: $e')),
+        SnackBar(content: Text(context.l10n.unexpectedError('$e'))),
       );
     } finally {
       try {
@@ -129,8 +136,10 @@ class _CreateManagerFormState extends State<CreateManagerForm> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
+
     if (widget.officeDocs.isEmpty) {
-      return const Text('Skapa minst ett kontor innan du lägger till manager.');
+      return Text(l10n.createOfficeBeforeManager);
     }
 
     return Form(
@@ -138,9 +147,9 @@ class _CreateManagerFormState extends State<CreateManagerForm> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'Skapa ny manager',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          Text(
+            l10n.createNewManager,
+            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 8),
           Row(
@@ -148,18 +157,18 @@ class _CreateManagerFormState extends State<CreateManagerForm> {
               Expanded(
                 child: TextFormField(
                   controller: _firstNameController,
-                  decoration: const InputDecoration(labelText: 'Förnamn'),
+                  decoration: InputDecoration(labelText: l10n.firstName),
                   validator: (v) =>
-                      (v == null || v.trim().isEmpty) ? 'Ange förnamn' : null,
+                      (v == null || v.trim().isEmpty) ? l10n.enterFirstName : null,
                 ),
               ),
               const SizedBox(width: 8),
               Expanded(
                 child: TextFormField(
                   controller: _lastNameController,
-                  decoration: const InputDecoration(labelText: 'Efternamn'),
+                  decoration: InputDecoration(labelText: l10n.lastName),
                   validator: (v) =>
-                      (v == null || v.trim().isEmpty) ? 'Ange efternamn' : null,
+                      (v == null || v.trim().isEmpty) ? l10n.enterLastName : null,
                 ),
               ),
             ],
@@ -167,24 +176,24 @@ class _CreateManagerFormState extends State<CreateManagerForm> {
           const SizedBox(height: 8),
           TextFormField(
             controller: _emailController,
-            decoration: const InputDecoration(labelText: 'E-post'),
+            decoration: InputDecoration(labelText: l10n.email),
             keyboardType: TextInputType.emailAddress,
             validator: (v) =>
-                (v == null || v.trim().isEmpty) ? 'Ange e-post' : null,
+                (v == null || v.trim().isEmpty) ? l10n.enterEmail : null,
           ),
           const SizedBox(height: 8),
           TextFormField(
             controller: _phoneController,
-            decoration: const InputDecoration(labelText: 'Telefon'),
+            decoration: InputDecoration(labelText: l10n.phone),
             keyboardType: TextInputType.phone,
           ),
           const SizedBox(height: 8),
           TextFormField(
             controller: _passwordController,
-            decoration: const InputDecoration(labelText: 'Lösenord'),
+            decoration: InputDecoration(labelText: l10n.password),
             obscureText: true,
             validator: (v) =>
-                (v == null || v.length < 6) ? 'Minst 6 tecken' : null,
+                (v == null || v.length < 6) ? l10n.passwordMinLength : null,
           ),
           const SizedBox(height: 8),
           DropdownButtonFormField<String>(
@@ -198,7 +207,7 @@ class _CreateManagerFormState extends State<CreateManagerForm> {
                 ),
             ],
             onChanged: (v) => setState(() => _selectedOfficeId = v),
-            decoration: const InputDecoration(labelText: 'Kontor'),
+            decoration: InputDecoration(labelText: l10n.office),
           ),
           const SizedBox(height: 12),
           ElevatedButton.icon(
@@ -210,7 +219,7 @@ class _CreateManagerFormState extends State<CreateManagerForm> {
                     child: CircularProgressIndicator(strokeWidth: 2),
                   )
                 : const Icon(Icons.person_add),
-            label: const Text('Skapa manager'),
+            label: Text(l10n.createManager),
           ),
         ],
       ),

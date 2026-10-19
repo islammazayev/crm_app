@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
+import '../../l10n/locale_controller.dart';
 import '../../utils/client_id.dart';
 import 'manager_transactions_detail_screen.dart';
 
@@ -9,13 +10,14 @@ class ManagerTransactionsPage extends StatelessWidget {
 
   /// Om satt visas bara transaktioner med någon av dessa statusar.
   final List<String>? statuses;
-  final String title;
+  /// Rubrik i appbaren. Utan rubrik visas "Transaktioner".
+  final String? title;
 
   const ManagerTransactionsPage({
     super.key,
     required this.officeId,
     this.statuses,
-    this.title = 'Transaktioner',
+    this.title,
   });
 
   @override
@@ -25,13 +27,15 @@ class ManagerTransactionsPage extends StatelessWidget {
         .where('officeId', isEqualTo: officeId)
         .orderBy('createAt', descending: true);
 
+    final l10n = context.l10n;
+
     return Scaffold(
-      appBar: AppBar(title: Text(title)),
+      appBar: AppBar(title: Text(title ?? l10n.transactions)),
       body: StreamBuilder<QuerySnapshot>(
         stream: query.snapshots(),
         builder: (context, snapshot) {
           if (snapshot.hasError) {
-            return Center(child: Text('Fel: ${snapshot.error}'));
+            return Center(child: Text(l10n.errorWithDetails('${snapshot.error}')));
           }
           if (!snapshot.hasData) {
             return const Center(child: CircularProgressIndicator());
@@ -44,7 +48,7 @@ class ManagerTransactionsPage extends StatelessWidget {
             return statuses!.contains(status);
           }).toList();
           if (docs.isEmpty) {
-            return const Center(child: Text('Inga transaktioner ännu'));
+            return Center(child: Text(l10n.noTransactionsYet));
           }
 
           return ListView.builder(
@@ -66,19 +70,19 @@ class ManagerTransactionsPage extends StatelessWidget {
               String statusText;
               switch (status) {
                 case 'customer_requested':
-                  statusText = 'Ny förfrågan från kund';
+                  statusText = l10n.managerStatusRequested;
                   break;
                 case 'manager_proposed':
-                  statusText = 'Förslag skickat – väntar på kund';
+                  statusText = l10n.managerStatusProposed;
                   break;
                 case 'customer_accepted':
-                  statusText = 'Kund har accepterat förslaget';
+                  statusText = l10n.managerStatusAccepted;
                   break;
                 case 'customer_rejected':
-                  statusText = 'Kund avbröt transaktionen';
+                  statusText = l10n.managerStatusRejected;
                   break;
                 case 'completed':
-                  statusText = 'Genomförd';
+                  statusText = l10n.statusCompleted;
                   break;
                 default:
                   statusText = status;
@@ -86,7 +90,7 @@ class ManagerTransactionsPage extends StatelessWidget {
 
               final titleLines = <String>[];
               if (clientId.isNotEmpty) {
-                titleLines.add('Klient‑ID: $clientId');
+                titleLines.add(l10n.clientIdValue(clientId));
               }
               if (name.isNotEmpty) {
                 titleLines.add(name);
@@ -94,7 +98,7 @@ class ManagerTransactionsPage extends StatelessWidget {
 
               return ListTile(
                 title: Text(
-                  titleLines.isNotEmpty ? titleLines.join('\n') : 'Okänd klient',
+                  titleLines.isNotEmpty ? titleLines.join('\n') : l10n.unknownClient,
                 ),
                 subtitle: Text(
                   '$amountFrom $fromCurrency → $toCurrency'

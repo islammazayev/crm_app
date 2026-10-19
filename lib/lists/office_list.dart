@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
+import '../l10n/locale_controller.dart';
 import '../models/office.dart';
 
 class OfficeList extends StatefulWidget {
@@ -50,8 +51,10 @@ class _OfficeListState extends State<OfficeList> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
+
     if (widget.offices.isEmpty) {
-      return const Center(child: Text('Inga kontor skapade ännu.'));
+      return Center(child: Text(l10n.noOfficesYet));
     }
 
     final filtered = <MapEntry<int, Office>>[];
@@ -70,25 +73,25 @@ class _OfficeListState extends State<OfficeList> {
         // ── Sökfält ───────────────────────────────────────────────
         TextField(
           controller: _searchController,
-          decoration: const InputDecoration(
-            labelText: 'Sök på land eller stad...',
-            prefixIcon: Icon(Icons.search),
-            border: OutlineInputBorder(),
+          decoration: InputDecoration(
+            labelText: l10n.searchCountryOrCity,
+            prefixIcon: const Icon(Icons.search),
+            border: const OutlineInputBorder(),
           ),
         ),
         if (_hasSearched) ...[  
           const SizedBox(height: 8),
           Text(
-            '${filtered.length} kontor hittade',
+            l10n.officesFound(filtered.length),
             style: const TextStyle(color: Colors.grey, fontSize: 13),
           ),
           const SizedBox(height: 8),
           if (filtered.isEmpty)
-            const Padding(
-              padding: EdgeInsets.only(top: 16),
+            Padding(
+              padding: const EdgeInsets.only(top: 16),
               child: Text(
-                'Inga kontor matchar sökningen.',
-                style: TextStyle(color: Colors.grey),
+                l10n.noOfficesMatch,
+                style: const TextStyle(color: Colors.grey),
               ),
             )
           else
@@ -116,7 +119,7 @@ class _OfficeListState extends State<OfficeList> {
                   subtitle: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Saldo: $balancesText'),
+                      Text(l10n.balanceValue(balancesText)),
                       StreamBuilder<QuerySnapshot>(
                         stream: usersRef
                             .where('officeId', isEqualTo: officeId)
@@ -126,11 +129,11 @@ class _OfficeListState extends State<OfficeList> {
                         builder: (context, snapshot) {
                           if (snapshot.connectionState ==
                               ConnectionState.waiting) {
-                            return const Text('Manager: laddar …');
+                            return Text(l10n.managerLoading);
                           }
                           if (!snapshot.hasData ||
                               snapshot.data!.docs.isEmpty) {
-                            return const Text('Manager: –');
+                            return Text(l10n.managerNone);
                           }
                           final doc = snapshot.data!.docs.first;
                           final data = doc.data() as Map<String, dynamic>;
@@ -144,14 +147,14 @@ class _OfficeListState extends State<OfficeList> {
                               .where((s) => s.isNotEmpty)
                               .join(' ');
                           final managerLine = fullName.isNotEmpty
-                              ? 'Manager: $fullName'
-                              : 'Manager: (okänd)';
+                              ? l10n.managerValue(fullName)
+                              : l10n.managerUnknown;
                           final contactParts = <String>[];
                           if (email.isNotEmpty) {
-                            contactParts.add('E-post: $email');
+                            contactParts.add(l10n.emailValue(email));
                           }
                           if (phone.isNotEmpty) {
-                            contactParts.add('Telefon: $phone');
+                            contactParts.add(l10n.phoneValue(phone));
                           }
                           final contactLine = contactParts.join(' · ');
                           return Column(
@@ -173,21 +176,21 @@ class _OfficeListState extends State<OfficeList> {
                         IconButton(
                           icon: const Icon(Icons.edit_outlined,
                               color: Colors.blue),
-                          tooltip: 'Ändra kontor',
+                          tooltip: l10n.editOffice,
                           onPressed: () => widget.onEdit!(originalIndex),
                         ),
                       // ─ Fyll på saldo-knapp ───────────────────
                       if (widget.onTopUp != null)
                         IconButton(
                           icon: const Icon(Icons.add_card),
-                          tooltip: 'Fyll på saldo',
+                          tooltip: l10n.topUpBalance,
                           onPressed: () => widget.onTopUp!(originalIndex),
                         ),
                       // ─ Radera-knapp ─────────────────────────
                       if (widget.onDelete != null)
                         IconButton(
                           icon: const Icon(Icons.delete, color: Colors.red),
-                          tooltip: 'Radera kontor',
+                          tooltip: l10n.deleteOffice,
                           onPressed: () => widget.onDelete!(originalIndex),
                         ),
                     ],

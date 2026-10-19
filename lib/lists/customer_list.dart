@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../l10n/locale_controller.dart';
 import '../models/customer.dart';
 
 class CustomerList extends StatelessWidget {
@@ -13,10 +14,11 @@ class CustomerList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     if (customers.isEmpty) {
-      return const Padding(
-        padding: EdgeInsets.all(16),
-        child: Text("Inga kunder ännu."),
+      return Padding(
+        padding: const EdgeInsets.all(16),
+        child: Text(l10n.noCustomersYet),
       );
     }
     return ListView.builder(
@@ -30,8 +32,8 @@ class CustomerList extends StatelessWidget {
           subtitle: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text("Telefon: ${c.phone}"),
-              if (c.email.isNotEmpty) Text("E-post: ${c.email}"),
+              Text(l10n.phoneValue(c.phone)),
+              if (c.email.isNotEmpty) Text(l10n.emailValue(c.email)),
             ],
           ),
           isThreeLine: c.email.isNotEmpty,
@@ -43,19 +45,21 @@ class CustomerList extends StatelessWidget {
                     final ok = await showDialog<bool>(
                       context: context,
                       builder: (context) => AlertDialog(
-                        title: const Text('Ta bort kund'),
+                        title: Text(l10n.deleteCustomerTitle),
                         content: Text(
-                          'Vill du verkligen ta bort #$idText '
-                          '${c.firstName} ${c.lastName}?',
+                          l10n.deleteCustomerConfirm(
+                            idText,
+                            '${c.firstName} ${c.lastName}',
+                          ),
                         ),
                         actions: [
                           TextButton(
                             onPressed: () => Navigator.pop(context, false),
-                            child: const Text('Avbryt'),
+                            child: Text(l10n.cancel),
                           ),
                           TextButton(
                             onPressed: () => Navigator.pop(context, true),
-                            child: const Text('Ta bort'),
+                            child: Text(l10n.delete),
                           ),
                         ],
                       ),

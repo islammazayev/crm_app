@@ -2,7 +2,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
+import '../../l10n/auth_error_text.dart';
+import '../../l10n/locale_controller.dart';
 import '../../utils/client_id.dart';
+import '../../widgets/language_button.dart';
 import '../../widgets/customer_welcome_screen.dart';
 
 class CustomerRegisterScreen extends StatefulWidget {
@@ -106,7 +109,7 @@ class _CustomerRegisterScreenState extends State<CustomerRegisterScreen> {
     } on FirebaseAuthException catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Fel vid registrering: ${e.message}')),
+        SnackBar(content: Text(authErrorText(context.l10n, e))),
       );
     } catch (e) {
       // Något gick fel efter att kontot skapats: ta bort det halvfärdiga
@@ -117,7 +120,7 @@ class _CustomerRegisterScreenState extends State<CustomerRegisterScreen> {
 
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Kunde inte skapa kund: $e')),
+        SnackBar(content: Text(context.l10n.couldNotCreateCustomer('$e'))),
       );
     } finally {
       if (mounted) setState(() => _loading = false);
@@ -126,8 +129,13 @@ class _CustomerRegisterScreenState extends State<CustomerRegisterScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
+
     return Scaffold(
-      appBar: AppBar(title: const Text('Registrera dig som kund')),
+      appBar: AppBar(
+        title: Text(l10n.registerTitle),
+        actions: const [LanguageButton()],
+      ),
       body: Padding(
         padding: const EdgeInsets.all(24),
         child: Form(
@@ -136,32 +144,32 @@ class _CustomerRegisterScreenState extends State<CustomerRegisterScreen> {
             children: [
               TextFormField(
                 controller: _firstNameCtrl,
-                decoration: const InputDecoration(labelText: 'Förnamn'),
+                decoration: InputDecoration(labelText: l10n.firstName),
                 validator: (v) =>
-                    v == null || v.trim().isEmpty ? 'Ange förnamn' : null,
+                    v == null || v.trim().isEmpty ? l10n.enterFirstName : null,
               ),
               TextFormField(
                 controller: _lastNameCtrl,
-                decoration: const InputDecoration(labelText: 'Efternamn'),
+                decoration: InputDecoration(labelText: l10n.lastName),
                 validator: (v) =>
-                    v == null || v.trim().isEmpty ? 'Ange efternamn' : null,
+                    v == null || v.trim().isEmpty ? l10n.enterLastName : null,
               ),
               TextFormField(
                 controller: _emailCtrl,
-                decoration: const InputDecoration(labelText: 'E‑post'),
+                decoration: InputDecoration(labelText: l10n.email),
                 validator: (v) =>
-                    v == null || !v.contains('@') ? 'Ange giltig e‑post' : null,
+                    v == null || !v.contains('@') ? l10n.enterValidEmail : null,
               ),
               TextFormField(
                 controller: _phoneCtrl,
-                decoration: const InputDecoration(labelText: 'Telefon'),
+                decoration: InputDecoration(labelText: l10n.phone),
               ),
               TextFormField(
                 controller: _passwordCtrl,
-                decoration: const InputDecoration(labelText: 'Lösenord'),
+                decoration: InputDecoration(labelText: l10n.password),
                 obscureText: true,
                 validator: (v) =>
-                    v == null || v.length < 6 ? 'Minst 6 tecken' : null,
+                    v == null || v.length < 6 ? l10n.passwordMinLength : null,
               ),
               const SizedBox(height: 16),
               ElevatedButton(
@@ -172,7 +180,7 @@ class _CustomerRegisterScreenState extends State<CustomerRegisterScreen> {
                         height: 20,
                         child: CircularProgressIndicator(strokeWidth: 2),
                       )
-                    : const Text('Registrera'),
+                    : Text(l10n.register),
               ),
             ],
           ),

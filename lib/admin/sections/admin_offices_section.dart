@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
+import '../../l10n/locale_controller.dart';
 import '../../services/office_listing_service.dart';
 import '../../utils/currencies.dart';
 
@@ -111,12 +112,12 @@ class _EditOfficeDialogState extends State<EditOfficeDialog> {
       if (!mounted) return;
       Navigator.pop(context);
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Kontor uppdaterat!')),
+        SnackBar(content: Text(context.l10n.officeUpdated)),
       );
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text('Fel: $e')));
+          .showSnackBar(SnackBar(content: Text(context.l10n.errorWithDetails('$e'))));
     } finally {
       if (mounted) setState(() => _saving = false);
     }
@@ -124,6 +125,8 @@ class _EditOfficeDialogState extends State<EditOfficeDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
+
     return Dialog(
       child: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
@@ -133,9 +136,9 @@ class _EditOfficeDialogState extends State<EditOfficeDialog> {
           children: [
             Row(
               children: [
-                const Text(
-                  'Redigera kontor',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                Text(
+                  l10n.editOfficeTitle,
+                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
                 const Spacer(),
                 IconButton(
@@ -147,21 +150,21 @@ class _EditOfficeDialogState extends State<EditOfficeDialog> {
             const SizedBox(height: 16),
             TextField(
               controller: _countryCtrl,
-              decoration: const InputDecoration(
-                labelText: 'Land',
-                border: OutlineInputBorder(),
+              decoration: InputDecoration(
+                labelText: l10n.country,
+                border: const OutlineInputBorder(),
               ),
             ),
             const SizedBox(height: 12),
             TextField(
               controller: _cityCtrl,
-              decoration: const InputDecoration(
-                labelText: 'Stad',
-                border: OutlineInputBorder(),
+              decoration: InputDecoration(
+                labelText: l10n.city,
+                border: const OutlineInputBorder(),
               ),
             ),
             const SizedBox(height: 12),
-            const Text('Valutor', style: TextStyle(fontWeight: FontWeight.bold)),
+            Text(l10n.currencies, style: const TextStyle(fontWeight: FontWeight.bold)),
             const SizedBox(height: 6),
             Wrap(
               spacing: 8,
@@ -185,15 +188,15 @@ class _EditOfficeDialogState extends State<EditOfficeDialog> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text(
-                  'Betalningsmetoder',
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                Text(
+                  l10n.paymentMethods,
+                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
                 ),
                 TextButton.icon(
                   onPressed: () =>
                       setState(() => _methods.add(PaymentMethodFormItem())),
                   icon: const Icon(Icons.add),
-                  label: const Text('Lägg till'),
+                  label: Text(l10n.add),
                 ),
               ],
             ),
@@ -210,7 +213,7 @@ class _EditOfficeDialogState extends State<EditOfficeDialog> {
                     children: [
                       Row(
                         children: [
-                          Text('Metod ${i + 1}',
+                          Text(l10n.methodNumber(i + 1),
                               style: const TextStyle(
                                   fontWeight: FontWeight.bold)),
                           const Spacer(),
@@ -225,17 +228,17 @@ class _EditOfficeDialogState extends State<EditOfficeDialog> {
                       const SizedBox(height: 8),
                       TextField(
                         controller: m.idController,
-                        decoration: const InputDecoration(
-                          labelText: 'ID (t.ex. usdt-trc20)',
-                          border: OutlineInputBorder(),
+                        decoration: InputDecoration(
+                          labelText: l10n.methodIdLabel,
+                          border: const OutlineInputBorder(),
                         ),
                       ),
                       const SizedBox(height: 10),
                       TextField(
                         controller: m.labelController,
-                        decoration: const InputDecoration(
-                          labelText: 'Namn',
-                          border: OutlineInputBorder(),
+                        decoration: InputDecoration(
+                          labelText: l10n.name,
+                          border: const OutlineInputBorder(),
                         ),
                       ),
                       const SizedBox(height: 10),
@@ -243,14 +246,14 @@ class _EditOfficeDialogState extends State<EditOfficeDialog> {
                         controller: m.detailsController,
                         minLines: 3,
                         maxLines: 6,
-                        decoration: const InputDecoration(
-                          labelText: 'Detaljer (IBAN, wallet etc.)',
-                          border: OutlineInputBorder(),
+                        decoration: InputDecoration(
+                          labelText: l10n.methodDetailsShort,
+                          border: const OutlineInputBorder(),
                         ),
                       ),
                       const SizedBox(height: 10),
-                      const Text('Stöds för valuta (fromCurrency)',
-                          style: TextStyle(fontWeight: FontWeight.w600)),
+                      Text(l10n.supportedFromCurrency,
+                          style: const TextStyle(fontWeight: FontWeight.w600)),
                       const SizedBox(height: 6),
                       Wrap(
                         spacing: 8,
@@ -286,7 +289,7 @@ class _EditOfficeDialogState extends State<EditOfficeDialog> {
                         height: 20,
                         child: CircularProgressIndicator(strokeWidth: 2),
                       )
-                    : const Text('Spara ändringar'),
+                    : Text(l10n.saveChanges),
               ),
             ),
           ],
@@ -361,9 +364,10 @@ class _AdminOfficesSectionState extends State<AdminOfficesSection> {
   }
 
   Future<void> _saveOffice() async {
+    final l10n = context.l10n;
     if (!_formKey.currentState!.validate()) return;
     if (_selectedCurrencies.isEmpty) {
-      _snack('Välj minst en valuta');
+      _snack(l10n.chooseAtLeastOneCurrency);
       return;
     }
     setState(() => _saving = true);
@@ -414,30 +418,31 @@ class _AdminOfficesSectionState extends State<AdminOfficesSection> {
       });
 
       if (!mounted) return;
-      _snack('Kontor skapat!');
+      _snack(l10n.officeCreated);
     } catch (e) {
       if (!mounted) return;
-      _snack('Fel: $e');
+      _snack(l10n.errorWithDetails('$e'));
     } finally {
       if (mounted) setState(() => _saving = false);
     }
   }
 
   Future<void> _deleteOffice(String officeId) async {
+    final l10n = context.l10n;
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Radera kontor?'),
-        content: const Text('Kontoret tas bort permanent. Är du säker?'),
+        title: Text(l10n.deleteOfficeQuestion),
+        content: Text(l10n.deleteOfficeConfirm),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('Avbryt'),
+            child: Text(l10n.cancel),
           ),
           TextButton(
             onPressed: () => Navigator.pop(ctx, true),
-            child:
-                const Text('Radera', style: TextStyle(color: Colors.red)),
+            child: Text(l10n.deleteAction,
+                style: const TextStyle(color: Colors.red)),
           ),
         ],
       ),
@@ -456,14 +461,16 @@ class _AdminOfficesSectionState extends State<AdminOfficesSection> {
           .doc(officeId)
           .delete();
       if (!mounted) return;
-      _snack('Kontor raderat');
+      _snack(l10n.officeDeleted);
     } catch (e) {
       if (!mounted) return;
-      _snack('Fel vid radering: $e');
+      _snack(l10n.deleteError('$e'));
     }
   }
 
   Widget _buildMethodCard(int i, PaymentMethodFormItem m) {
+    final l10n = context.l10n;
+
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
       child: Padding(
@@ -473,7 +480,7 @@ class _AdminOfficesSectionState extends State<AdminOfficesSection> {
           children: [
             Row(
               children: [
-                Text('Metod ${i + 1}',
+                Text(l10n.methodNumber(i + 1),
                     style: const TextStyle(fontWeight: FontWeight.bold)),
                 const Spacer(),
                 IconButton(
@@ -486,17 +493,17 @@ class _AdminOfficesSectionState extends State<AdminOfficesSection> {
             const SizedBox(height: 8),
             TextFormField(
               controller: m.idController,
-              decoration: const InputDecoration(
-                labelText: 'ID (t.ex. usdt-trc20)',
-                border: OutlineInputBorder(),
+              decoration: InputDecoration(
+                labelText: l10n.methodIdLabel,
+                border: const OutlineInputBorder(),
               ),
             ),
             const SizedBox(height: 10),
             TextFormField(
               controller: m.labelController,
-              decoration: const InputDecoration(
-                labelText: 'Namn',
-                border: OutlineInputBorder(),
+              decoration: InputDecoration(
+                labelText: l10n.name,
+                border: const OutlineInputBorder(),
               ),
             ),
             const SizedBox(height: 10),
@@ -504,14 +511,14 @@ class _AdminOfficesSectionState extends State<AdminOfficesSection> {
               controller: m.detailsController,
               minLines: 3,
               maxLines: 6,
-              decoration: const InputDecoration(
-                labelText: 'Detaljer (IBAN, wallet etc.)',
-                border: OutlineInputBorder(),
+              decoration: InputDecoration(
+                labelText: l10n.methodDetailsShort,
+                border: const OutlineInputBorder(),
               ),
             ),
             const SizedBox(height: 10),
-            const Text('Stöds för valuta (fromCurrency)',
-                style: TextStyle(fontWeight: FontWeight.w600)),
+            Text(l10n.supportedFromCurrency,
+                style: const TextStyle(fontWeight: FontWeight.w600)),
             const SizedBox(height: 6),
             Wrap(
               spacing: 8,
@@ -539,15 +546,17 @@ class _AdminOfficesSectionState extends State<AdminOfficesSection> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
+
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // ── Skapa kontor ──────────────────────────────────────────────────
-          const Text(
-            'Skapa kontor',
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          Text(
+            l10n.createOffice,
+            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 16),
           Form(
@@ -557,26 +566,26 @@ class _AdminOfficesSectionState extends State<AdminOfficesSection> {
               children: [
                 TextFormField(
                   controller: _countryController,
-                  decoration: const InputDecoration(
-                    labelText: 'Land',
-                    border: OutlineInputBorder(),
+                  decoration: InputDecoration(
+                    labelText: l10n.country,
+                    border: const OutlineInputBorder(),
                   ),
                   validator: (v) =>
-                      (v == null || v.trim().isEmpty) ? 'Ange land' : null,
+                      (v == null || v.trim().isEmpty) ? l10n.enterCountry : null,
                 ),
                 const SizedBox(height: 12),
                 TextFormField(
                   controller: _cityController,
-                  decoration: const InputDecoration(
-                    labelText: 'Stad',
-                    border: OutlineInputBorder(),
+                  decoration: InputDecoration(
+                    labelText: l10n.city,
+                    border: const OutlineInputBorder(),
                   ),
                   validator: (v) =>
-                      (v == null || v.trim().isEmpty) ? 'Ange stad' : null,
+                      (v == null || v.trim().isEmpty) ? l10n.enterCity : null,
                 ),
                 const SizedBox(height: 12),
-                const Text('Valutor',
-                    style: TextStyle(fontWeight: FontWeight.bold)),
+                Text(l10n.currencies,
+                    style: const TextStyle(fontWeight: FontWeight.bold)),
                 const SizedBox(height: 6),
                 Wrap(
                   spacing: 8,
@@ -608,14 +617,14 @@ class _AdminOfficesSectionState extends State<AdminOfficesSection> {
                         keyboardType: const TextInputType.numberWithOptions(
                             decimal: true),
                         decoration: InputDecoration(
-                          labelText: 'Startsaldo $c',
+                          labelText: l10n.startBalance(c),
                           border: const OutlineInputBorder(),
                         ),
                       ),
                     )),
                 const SizedBox(height: 4),
-                const Text('Tilldela manager',
-                    style: TextStyle(fontWeight: FontWeight.bold)),
+                Text(l10n.assignManager,
+                    style: const TextStyle(fontWeight: FontWeight.bold)),
                 const SizedBox(height: 6),
                 StreamBuilder<QuerySnapshot>(
                   stream: FirebaseFirestore.instance
@@ -628,17 +637,17 @@ class _AdminOfficesSectionState extends State<AdminOfficesSection> {
                     }
                     final docs = snap.data!.docs;
                     if (docs.isEmpty) {
-                      return const Text(
-                        'Inga managers registrerade ännu.',
-                        style: TextStyle(color: Colors.grey),
+                      return Text(
+                        l10n.noManagersYet,
+                        style: const TextStyle(color: Colors.grey),
                       );
                     }
                     return DropdownButtonFormField<String>(
                       key: ValueKey(_selectedManagerDocId),
                       initialValue: _selectedManagerDocId,
-                      decoration: const InputDecoration(
-                        labelText: 'Manager',
-                        border: OutlineInputBorder(),
+                      decoration: InputDecoration(
+                        labelText: l10n.manager,
+                        border: const OutlineInputBorder(),
                       ),
                       items: docs.map((doc) {
                         final d =
@@ -661,24 +670,24 @@ class _AdminOfficesSectionState extends State<AdminOfficesSection> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Text(
-                      'Betalningsmetoder',
-                      style: TextStyle(
+                    Text(
+                      l10n.paymentMethods,
+                      style: const TextStyle(
                           fontWeight: FontWeight.bold, fontSize: 16),
                     ),
                     ElevatedButton.icon(
                       onPressed: _addPaymentMethod,
                       icon: const Icon(Icons.add),
-                      label: const Text('Lägg till'),
+                      label: Text(l10n.add),
                     ),
                   ],
                 ),
                 const SizedBox(height: 8),
                 if (_paymentMethods.isEmpty)
-                  const Text(
-                    'Inga betalningsmetoder tillagda ännu.',
+                  Text(
+                    l10n.noPaymentMethodsAdded,
                     style:
-                        TextStyle(color: Colors.grey, fontSize: 13),
+                        const TextStyle(color: Colors.grey, fontSize: 13),
                   ),
                 ..._paymentMethods
                     .asMap()
@@ -696,7 +705,7 @@ class _AdminOfficesSectionState extends State<AdminOfficesSection> {
                             child:
                                 CircularProgressIndicator(strokeWidth: 2),
                           )
-                        : const Text('Skapa kontor'),
+                        : Text(l10n.createOffice),
                   ),
                 ),
               ],
@@ -706,17 +715,17 @@ class _AdminOfficesSectionState extends State<AdminOfficesSection> {
           const Divider(height: 48),
 
           // ── Sök & hantera kontor ──────────────────────────────────────────
-          const Text(
-            'Sök & hantera kontor',
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          Text(
+            l10n.searchManageOffices,
+            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 12),
           TextField(
             controller: _searchController,
-            decoration: const InputDecoration(
-              labelText: 'Sök på land eller stad...',
-              prefixIcon: Icon(Icons.search),
-              border: OutlineInputBorder(),
+            decoration: InputDecoration(
+              labelText: l10n.searchCountryOrCity,
+              prefixIcon: const Icon(Icons.search),
+              border: const OutlineInputBorder(),
             ),
           ),
           const SizedBox(height: 16),
@@ -727,7 +736,7 @@ class _AdminOfficesSectionState extends State<AdminOfficesSection> {
                 .snapshots(),
             builder: (context, snapshot) {
               if (snapshot.hasError) {
-                return Text('Fel: ${snapshot.error}');
+                return Text(l10n.errorWithDetails('${snapshot.error}'));
               }
               if (!snapshot.hasData) {
                 return const Center(child: CircularProgressIndicator());
@@ -747,9 +756,9 @@ class _AdminOfficesSectionState extends State<AdminOfficesSection> {
                     }).toList();
 
               if (docs.isEmpty) {
-                return const Text(
-                  'Inga kontor hittades.',
-                  style: TextStyle(color: Colors.grey),
+                return Text(
+                  l10n.noOfficesFound,
+                  style: const TextStyle(color: Colors.grey),
                 );
               }
 
@@ -777,8 +786,8 @@ class _AdminOfficesSectionState extends State<AdminOfficesSection> {
                         style: const TextStyle(
                             fontWeight: FontWeight.bold),
                       ),
-                      subtitle: Text(
-                          'Valutor: $currencies\n$methodCount betalningsmetod(er)'),
+                      subtitle:
+                          Text(l10n.officeSummary(currencies, methodCount)),
                       isThreeLine: true,
                       trailing: Row(
                         mainAxisSize: MainAxisSize.min,
@@ -786,7 +795,7 @@ class _AdminOfficesSectionState extends State<AdminOfficesSection> {
                           IconButton(
                             icon: const Icon(Icons.edit_outlined,
                                 color: Colors.blue),
-                            tooltip: 'Redigera',
+                            tooltip: l10n.edit,
                             onPressed: () => showDialog(
                               context: context,
                               builder: (ctx) => EditOfficeDialog(
@@ -799,7 +808,7 @@ class _AdminOfficesSectionState extends State<AdminOfficesSection> {
                           IconButton(
                             icon: const Icon(Icons.delete_outline,
                                 color: Colors.red),
-                            tooltip: 'Radera',
+                            tooltip: l10n.deleteAction,
                             onPressed: () => _deleteOffice(officeId),
                           ),
                         ],

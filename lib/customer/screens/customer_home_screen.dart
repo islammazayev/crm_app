@@ -2,7 +2,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
+import '../../l10n/app_localizations.dart';
+import '../../l10n/locale_controller.dart';
 import '../../widgets/customer_welcome_screen.dart';
+import '../../widgets/language_button.dart';
 import 'customer_register_screen.dart';
 
 
@@ -15,7 +18,8 @@ class CustomerHomeScreen extends StatefulWidget {
 
 class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
   bool _loading = true;
-  String? _error;
+  /// Felet översätts först när det visas (språket kan bytas under tiden).
+  String Function(AppLocalizations l10n)? _error;
   String? _clientId;
   String? _fullName;
   String? _phone;
@@ -31,7 +35,7 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
       final user = FirebaseAuth.instance.currentUser;
       if (user == null) {
         setState(() {
-          _error = 'Ingen inloggad användare.';
+          _error = (l10n) => l10n.noSignedInUser;
           _loading = false;
         });
         return;
@@ -63,7 +67,7 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
       }
     } catch (e) {
       setState(() {
-        _error = 'Kunde inte ladda kund: $e';
+        _error = (l10n) => l10n.couldNotLoadCustomer('$e');
         _loading = false;
       });
     }
@@ -80,10 +84,11 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
     if (_error != null) {
       return Scaffold(
         appBar: AppBar(
-          title: const Text('CRM – Customer'),
+          title: Text(context.l10n.customerAppBarTitle),
           actions: [
+            const LanguageButton(),
             IconButton(
-              tooltip: 'Logga ut',
+              tooltip: context.l10n.logout,
               icon: const Icon(Icons.logout),
               onPressed: () async {
                 await FirebaseAuth.instance.signOut();
@@ -91,7 +96,7 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
             ),
           ],
         ),
-        body: Center(child: Text(_error!)),
+        body: Center(child: Text(_error!(context.l10n))),
       );
     }
 
