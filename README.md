@@ -34,11 +34,16 @@ Reglerna ligger i `firestore.rules` och indexen i `firestore.indexes.json`.
 # 1. Deploya regler och index
 firebase deploy --only firestore
 
-# 2. Starta appen. Valutakursernas API-nyckel ligger inte i koden:
-flutter run --dart-define=FX_API_KEY=din_nyckel
+# 2. Lägg API-nyckeln för valutakurser (freecurrencyapi.com) i en lokal fil.
+#    fx_key.json ignoreras av git, så nyckeln hamnar aldrig i repot.
+cp fx_key.example.json fx_key.json   # klistra sedan in nyckeln i filen
+
+# 3. Starta eller bygg appen
+flutter run --dart-define-from-file=fx_key.json
+flutter build web --dart-define-from-file=fx_key.json
 ```
 
-Gör samma `--dart-define` när du bygger (`flutter build web --dart-define=FX_API_KEY=...`).
+Obs: i webbygget hamnar nyckeln i den publicerade JavaScript-koden och kan läsas av den som letar.
 
 ### Första gången efter uppdateringen
 

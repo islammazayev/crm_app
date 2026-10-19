@@ -7,7 +7,7 @@ class ExchangeRateService {
   static const _host   = 'api.freecurrencyapi.com';
   static const _path   = '/v1/latest';
   /// API-nyckeln ligger inte i koden. Starta/bygg appen med:
-  ///   flutter run --dart-define=FX_API_KEY=din_nyckel
+  ///   flutter run --dart-define-from-file=fx_key.json
   static const _apiKey = String.fromEnvironment('FX_API_KEY');
 
   static String _normalizeCurrency(String c) {
