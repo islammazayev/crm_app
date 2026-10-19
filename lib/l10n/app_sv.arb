@@ -1,3 +1,649 @@
 {
-  "appTitle": "CRM App"
+  "@@locale": "sv",
+  "appTitle": "CRM App",
+  "languageTooltip": "Språk",
+  "languageSystem": "Enhetens språk",
+  "errorWithDetails": "Fel: {error}",
+  "@errorWithDetails": {
+    "placeholders": {
+      "error": {
+        "type": "Object"
+      }
+    }
+  },
+  "noRoleFound": "Ingen roll hittades för användaren",
+  "logout": "Logga ut",
+  "cancel": "Avbryt",
+  "delete": "Ta bort",
+  "phoneValue": "Telefon: {phone}",
+  "@phoneValue": {
+    "placeholders": {
+      "phone": {
+        "type": "Object"
+      }
+    }
+  },
+  "emailValue": "E-post: {email}",
+  "@emailValue": {
+    "placeholders": {
+      "email": {
+        "type": "Object"
+      }
+    }
+  },
+  "clientIdValue": "Klient-ID: {clientId}",
+  "@clientIdValue": {
+    "placeholders": {
+      "clientId": {
+        "type": "Object"
+      }
+    }
+  },
+  "statusRequested": "Ny förfrågan",
+  "statusProposed": "Förslag skickat",
+  "statusAccepted": "Accepterad av kund",
+  "statusRejected": "Avböjd av kund",
+  "statusCompleted": "Genomförd",
+  "customerStatusRequested": "Skickad – väntar på manager",
+  "customerStatusProposed": "Förslag från manager – klicka för detaljer",
+  "customerStatusAccepted": "Accepterad – betalningsuppgifter kommer",
+  "customerStatusRejected": "Avböjd",
+  "reportTotalOrders": "Totalt antal ordrar: {total} (genomförda: {completed})",
+  "@reportTotalOrders": {
+    "placeholders": {
+      "total": {
+        "type": "Object"
+      },
+      "completed": {
+        "type": "Object"
+      }
+    }
+  },
+  "reportTotalProfit": "Total företagets vinst (genomförda): {profit}",
+  "@reportTotalProfit": {
+    "placeholders": {
+      "profit": {
+        "type": "Object"
+      }
+    }
+  },
+  "reportProfitPerDay": "Vinst per dag:",
+  "noOrdersYet": "Inga ordrar ännu.",
+  "orderStatusLine": "Status: {status}",
+  "@orderStatusLine": {
+    "placeholders": {
+      "status": {
+        "type": "Object"
+      }
+    }
+  },
+  "orderDetails": "Valuta: {currency}, Belopp: {amount}, Avgift: {fee}",
+  "@orderDetails": {
+    "placeholders": {
+      "currency": {
+        "type": "Object"
+      },
+      "amount": {
+        "type": "Object"
+      },
+      "fee": {
+        "type": "Object"
+      }
+    }
+  },
+  "dateValue": "Datum: {date}",
+  "@dateValue": {
+    "placeholders": {
+      "date": {
+        "type": "Object"
+      }
+    }
+  },
+  "noCustomersYet": "Inga kunder ännu.",
+  "deleteCustomerTitle": "Ta bort kund",
+  "deleteCustomerConfirm": "Vill du verkligen ta bort #{clientId} {name}?",
+  "@deleteCustomerConfirm": {
+    "placeholders": {
+      "clientId": {
+        "type": "Object"
+      },
+      "name": {
+        "type": "Object"
+      }
+    }
+  },
+  "customerAppBarTitle": "CRM – Kund",
+  "myTransactions": "Mina transaktioner",
+  "welcomeName": "Välkommen, {name}",
+  "@welcomeName": {
+    "placeholders": {
+      "name": {
+        "type": "Object"
+      }
+    }
+  },
+  "tabSend": "Skicka",
+  "tabBuy": "Köpa",
+  "tabSell": "Sälja",
+  "tabExchange": "Växla",
+  "comingSoon": "{section} – innehåll kommer senare",
+  "@comingSoon": {
+    "placeholders": {
+      "section": {
+        "type": "Object"
+      }
+    }
+  },
+  "noTransactionsYet": "Inga transaktioner ännu",
+  "transaction": "Transaktion",
+  "transactions": "Transaktioner",
+  "youSend": "Du skickar: {amount} {currency}",
+  "@youSend": {
+    "placeholders": {
+      "amount": {
+        "type": "Object"
+      },
+      "currency": {
+        "type": "Object"
+      }
+    }
+  },
+  "exchangeRateValue": "Växelkurs: 1 {from} = {rate} {to}",
+  "@exchangeRateValue": {
+    "placeholders": {
+      "from": {
+        "type": "Object"
+      },
+      "rate": {
+        "type": "Object"
+      },
+      "to": {
+        "type": "Object"
+      }
+    }
+  },
+  "grossReceived": "Brutto mottaget: {amount} {currency}",
+  "@grossReceived": {
+    "placeholders": {
+      "amount": {
+        "type": "Object"
+      },
+      "currency": {
+        "type": "Object"
+      }
+    }
+  },
+  "feeValue": "Avgift: {percent}% ({feeFrom} {from} ≈ {feeTo} {to})",
+  "@feeValue": {
+    "placeholders": {
+      "percent": {
+        "type": "Object"
+      },
+      "feeFrom": {
+        "type": "Object"
+      },
+      "from": {
+        "type": "Object"
+      },
+      "feeTo": {
+        "type": "Object"
+      },
+      "to": {
+        "type": "Object"
+      }
+    }
+  },
+  "youReceive": "Du får ut: {amount} {currency}",
+  "@youReceive": {
+    "placeholders": {
+      "amount": {
+        "type": "Object"
+      },
+      "currency": {
+        "type": "Object"
+      }
+    }
+  },
+  "paymentTo": "Betalning till: {label}",
+  "@paymentTo": {
+    "placeholders": {
+      "label": {
+        "type": "Object"
+      }
+    }
+  },
+  "payAmountTo": "Betala {amount} {currency} till:",
+  "@payAmountTo": {
+    "placeholders": {
+      "amount": {
+        "type": "Object"
+      },
+      "currency": {
+        "type": "Object"
+      }
+    }
+  },
+  "acceptedWaitingPayment": "Du har accepterat. Managern skickar betalningsuppgifter inom kort.",
+  "accept": "Acceptera",
+  "reject": "Avböj",
+  "waitingForProposal": "Väntar på att managern ska skicka ett förslag.",
+  "noSignedInUser": "Ingen inloggad användare.",
+  "couldNotLoadCustomer": "Kunde inte ladda kund: {error}",
+  "@couldNotLoadCustomer": {
+    "placeholders": {
+      "error": {
+        "type": "Object"
+      }
+    }
+  },
+  "managerStatusRequested": "Ny förfrågan från kund",
+  "managerStatusProposed": "Förslag skickat – väntar på kund",
+  "managerStatusAccepted": "Kund har accepterat förslaget",
+  "managerStatusRejected": "Kund avbröt transaktionen",
+  "unknownClient": "Okänd klient",
+  "authWrongCredentials": "Fel e-post eller lösenord.",
+  "authInvalidEmail": "Ogiltig e-postadress.",
+  "authEmailInUse": "Det finns redan ett konto med den här e-postadressen.",
+  "authWeakPassword": "Lösenordet är för svagt.",
+  "authMissingEmail": "Ange din e-postadress först.",
+  "authTooManyRequests": "För många försök. Vänta en stund och försök igen.",
+  "authNetworkError": "Ingen anslutning. Kontrollera internet och försök igen.",
+  "authUserDisabled": "Kontot är avstängt.",
+  "loginTagline": "VALUTAVÄXLING",
+  "login": "Logga in",
+  "loginSubtitle": "Ange dina uppgifter för att fortsätta",
+  "email": "E-post",
+  "password": "Lösenord",
+  "resetLinkSent": "Återställningslänk har skickats till din e-post.",
+  "forgotPassword": "Glömt lösenord?",
+  "registerAccount": "Registrera konto",
+  "registerTitle": "Registrera dig som kund",
+  "firstName": "Förnamn",
+  "lastName": "Efternamn",
+  "phone": "Telefon",
+  "enterFirstName": "Ange förnamn",
+  "enterLastName": "Ange efternamn",
+  "enterValidEmail": "Ange giltig e-post",
+  "passwordMinLength": "Minst 6 tecken",
+  "register": "Registrera",
+  "couldNotCreateCustomer": "Kunde inte skapa kund: {error}",
+  "@couldNotCreateCustomer": {
+    "placeholders": {
+      "error": {
+        "type": "Object"
+      }
+    }
+  },
+  "clientIdMustBeInteger": "Klient-ID måste vara ett heltal",
+  "customerSaved": "Kund sparad!",
+  "createUpdateCustomer": "Skapa / uppdatera kund",
+  "clientIdOptional": "Klient-ID (valfritt)",
+  "clientIdHint": "t.ex. 007",
+  "saveCustomer": "Spara kund",
+  "office": "Kontor",
+  "couldNotLoadOffices": "Kunde inte ladda kontor: {error}",
+  "@couldNotLoadOffices": {
+    "placeholders": {
+      "error": {
+        "type": "Object"
+      }
+    }
+  },
+  "fillAllFieldsValidAmount": "Fyll i alla fält med ett giltigt belopp",
+  "noCustomerProfile": "Hittar ingen kundprofil för den här användaren",
+  "requestSentToOffice": "Begäran skickad till kontoret",
+  "couldNotCreateTransaction": "Fel vid skapande av transaktion: {error}",
+  "@couldNotCreateTransaction": {
+    "placeholders": {
+      "error": {
+        "type": "Object"
+      }
+    }
+  },
+  "noOfficesAvailable": "Det finns inga kontor att skicka via just nu.",
+  "currencyYouSend": "Valuta du skickar",
+  "chooseOfficeFirstCurrency": "Välj kontor (välj valuta först)",
+  "officesHandlingCurrency": "Kontor som hanterar {currency}",
+  "@officesHandlingCurrency": {
+    "placeholders": {
+      "currency": {
+        "type": "Object"
+      }
+    }
+  },
+  "currencyRecipientGets": "Valuta mottagaren tar emot",
+  "amountToSend": "Belopp att skicka",
+  "send": "Skicka",
+  "managerCreated": "Manager skapad.",
+  "couldNotCreateManager": "Kunde inte skapa manager: {error}",
+  "@couldNotCreateManager": {
+    "placeholders": {
+      "error": {
+        "type": "Object"
+      }
+    }
+  },
+  "unexpectedError": "Oväntat fel: {error}",
+  "@unexpectedError": {
+    "placeholders": {
+      "error": {
+        "type": "Object"
+      }
+    }
+  },
+  "createOfficeBeforeManager": "Skapa minst ett kontor innan du lägger till manager.",
+  "createNewManager": "Skapa ny manager",
+  "enterEmail": "Ange e-post",
+  "createManager": "Skapa manager",
+  "couldNotLoadOfficeCurrencies": "Kunde inte läsa kontorets valutor: {error}",
+  "@couldNotLoadOfficeCurrencies": {
+    "placeholders": {
+      "error": {
+        "type": "Object"
+      }
+    }
+  },
+  "enterCustomerName": "Ange kundens namn.",
+  "chooseTwoDifferentCurrencies": "Välj två olika valutor.",
+  "enterAmountAboveZero": "Ange ett belopp större än 0.",
+  "enterFeeRange": "Ange en avgift mellan 0 och 100 %.",
+  "createNewTransaction": "Skapa ny transaktion",
+  "customerName": "Kundens namn",
+  "phoneOptional": "Telefon (valfritt)",
+  "customerGivesCurrency": "Kunden lämnar (valuta)",
+  "customerGetsCurrency": "Kunden får (valuta)",
+  "amountCustomerGives": "Belopp som kunden lämnar",
+  "feePercentLabel": "Avgift (%)",
+  "creating": "Skapar …",
+  "createTransaction": "Skapa transaktion",
+  "chooseAtLeastOneCurrency": "Välj minst en valuta",
+  "country": "Land",
+  "city": "Stad",
+  "enterCountry": "Ange land",
+  "enterCity": "Ange stad",
+  "currencies": "Valutor",
+  "paymentMethods": "Betalningsmetoder",
+  "add": "Lägg till",
+  "noPaymentMethodsYet": "Inga betalningsmetoder ännu. Tryck \"Lägg till\" för att lägga till.",
+  "createOffice": "Skapa kontor",
+  "methodNumber": "Metod {number}",
+  "@methodNumber": {
+    "placeholders": {
+      "number": {
+        "type": "Object"
+      }
+    }
+  },
+  "removeMethod": "Ta bort metod",
+  "methodName": "Namn på metod",
+  "methodNameHint": "t.ex. SEB SEK-konto, USDT TRC20",
+  "methodDetails": "Detaljer (kontonummer, IBAN, wallet-adress etc.)",
+  "methodDetailsHint": "t.ex. IBAN: SE12 3456...",
+  "supportsCurrencies": "Stödjer valutor",
+  "managerAppBarTitle": "CRM – Manager",
+  "managerAppBarTitleWithOffice": "CRM – Manager ({office})",
+  "@managerAppBarTitleWithOffice": {
+    "placeholders": {
+      "office": {
+        "type": "Object"
+      }
+    }
+  },
+  "managerPanel": "Manager-panel",
+  "managerPanelIntro": "Välj vad du vill arbeta med. Här ser du snabbt nya, pågående och färdiga transaktioner.",
+  "createTransactionCardSubtitle": "Registrera en kund som kommer in på kontoret och saknar konto.",
+  "newCustomerTransactions": "Nya kundtransaktioner",
+  "newCustomerTransactionsSubtitle": "Se nya beställningar från kunder som ännu inte har påbörjats.",
+  "ongoingTransactions": "Pågående transaktioner",
+  "ongoingTransactionsSubtitle": "Förslag som väntar på kund samt accepterade ärenden som ska betalas och genomföras.",
+  "finishedTransactions": "Färdiga transaktioner",
+  "finishedTransactionsSubtitle": "Genomförda och avböjda transaktioner.",
+  "calculationError": "Fel vid beräkning: {error}",
+  "@calculationError": {
+    "placeholders": {
+      "error": {
+        "type": "Object"
+      }
+    }
+  },
+  "paymentDetailsSent": "Betalningsuppgifter skickade till kunden.",
+  "insufficientBalance": "Kontoret har för lågt saldo i {currency} ({available} finns, {needed} behövs). Be admin fylla på saldo.",
+  "@insufficientBalance": {
+    "placeholders": {
+      "currency": {
+        "type": "Object"
+      },
+      "available": {
+        "type": "Object"
+      },
+      "needed": {
+        "type": "Object"
+      }
+    }
+  },
+  "transactionManager": "Transaktion (manager)",
+  "customerSends": "Kund skickar: {amount} {currency}",
+  "@customerSends": {
+    "placeholders": {
+      "amount": {
+        "type": "Object"
+      },
+      "currency": {
+        "type": "Object"
+      }
+    }
+  },
+  "toCurrencyValue": "Till valuta: {currency}",
+  "@toCurrencyValue": {
+    "placeholders": {
+      "currency": {
+        "type": "Object"
+      }
+    }
+  },
+  "customerReceives": "Kunden får ut: {amount} {currency}",
+  "@customerReceives": {
+    "placeholders": {
+      "amount": {
+        "type": "Object"
+      },
+      "currency": {
+        "type": "Object"
+      }
+    }
+  },
+  "calculating": "Beräknar...",
+  "paymentMethodValue": "Betalningsmetod: {label}",
+  "@paymentMethodValue": {
+    "placeholders": {
+      "label": {
+        "type": "Object"
+      }
+    }
+  },
+  "officeNotFound": "Kontoret hittades inte.",
+  "noPaymentMethodsForCurrency": "Inga betalningsmetoder för den här valutan.",
+  "choosePaymentMethodForCustomer": "Välj betalningsmetod att skicka till kund:",
+  "proposeTerms": "Föreslå villkor",
+  "sentToCustomer": "Skickat till kund: {label}",
+  "@sentToCustomer": {
+    "placeholders": {
+      "label": {
+        "type": "Object"
+      }
+    }
+  },
+  "resendPaymentDetails": "Skicka om betalningsuppgifter",
+  "sendPaymentDetailsToCustomer": "Skicka betalningsuppgifter till kund",
+  "markAsCompleted": "Markera som genomförd",
+  "noOfficesYet": "Inga kontor skapade ännu.",
+  "searchCountryOrCity": "Sök på land eller stad...",
+  "officesFound": "{count, plural, =1{1 kontor hittat} other{{count} kontor hittade}}",
+  "noOfficesMatch": "Inga kontor matchar sökningen.",
+  "balanceValue": "Saldo: {balances}",
+  "@balanceValue": {
+    "placeholders": {
+      "balances": {
+        "type": "Object"
+      }
+    }
+  },
+  "managerLoading": "Manager: laddar …",
+  "managerNone": "Manager: –",
+  "managerValue": "Manager: {name}",
+  "@managerValue": {
+    "placeholders": {
+      "name": {
+        "type": "Object"
+      }
+    }
+  },
+  "managerUnknown": "Manager: (okänd)",
+  "editOffice": "Ändra kontor",
+  "topUpBalance": "Fyll på saldo",
+  "deleteOffice": "Radera kontor",
+  "noCustomerWithClientId": "Ingen kund hittades med klient-ID {clientId}",
+  "@noCustomerWithClientId": {
+    "placeholders": {
+      "clientId": {
+        "type": "Object"
+      }
+    }
+  },
+  "editCustomerTitle": "Redigera kund #{clientId}",
+  "@editCustomerTitle": {
+    "placeholders": {
+      "clientId": {
+        "type": "Object"
+      }
+    }
+  },
+  "customerUpdated": "Kund uppdaterad!",
+  "save": "Spara",
+  "customerDeleted": "Kund borttagen.",
+  "searchClientId": "Sök klient-ID",
+  "search": "Sök",
+  "customerNumber": "Kund #{clientId}",
+  "@customerNumber": {
+    "placeholders": {
+      "clientId": {
+        "type": "Object"
+      }
+    }
+  },
+  "edit": "Redigera",
+  "nameValue": "Namn: {name}",
+  "@nameValue": {
+    "placeholders": {
+      "name": {
+        "type": "Object"
+      }
+    }
+  },
+  "@officesFound": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "officeUpdated": "Kontor uppdaterat!",
+  "editOfficeTitle": "Redigera kontor",
+  "methodIdLabel": "ID (t.ex. usdt-trc20)",
+  "name": "Namn",
+  "methodDetailsShort": "Detaljer (IBAN, wallet etc.)",
+  "supportedFromCurrency": "Stöds för valuta (fromCurrency)",
+  "saveChanges": "Spara ändringar",
+  "officeCreated": "Kontor skapat!",
+  "deleteOfficeQuestion": "Radera kontor?",
+  "deleteOfficeConfirm": "Kontoret tas bort permanent. Är du säker?",
+  "deleteAction": "Radera",
+  "officeDeleted": "Kontor raderat",
+  "deleteError": "Fel vid radering: {error}",
+  "@deleteError": {
+    "placeholders": {
+      "error": {
+        "type": "Object"
+      }
+    }
+  },
+  "startBalance": "Startsaldo {currency}",
+  "@startBalance": {
+    "placeholders": {
+      "currency": {
+        "type": "Object"
+      }
+    }
+  },
+  "assignManager": "Tilldela manager",
+  "noManagersYet": "Inga managers registrerade ännu.",
+  "manager": "Manager",
+  "noPaymentMethodsAdded": "Inga betalningsmetoder tillagda ännu.",
+  "searchManageOffices": "Sök & hantera kontor",
+  "noOfficesFound": "Inga kontor hittades.",
+  "officeSummary": "Valutor: {currencies}\n{count, plural, =1{1 betalningsmetod} other{{count} betalningsmetoder}}",
+  "@officeSummary": {
+    "placeholders": {
+      "currencies": {
+        "type": "Object"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "exportDate": "Datum",
+  "exportStatus": "Status",
+  "exportClientId": "Klient-ID",
+  "exportOffice": "Kontor",
+  "exportFrom": "Från",
+  "exportTo": "Till",
+  "exportAmount": "Belopp",
+  "exportFee": "Avgift",
+  "exportPayout": "Utbetalas",
+  "noTransactionsToExport": "Inga transaktioner att exportera",
+  "orderReport": "Orderrapport",
+  "adminAppBarTitle": "CRM – Admin",
+  "adminHeadline": "Adminvy: Full kontroll",
+  "manageOffices": "Hantera kontor",
+  "officeHasNoCurrencies": "Kontoret har inga valutor. Lägg till en valuta via Ändra kontor först.",
+  "currency": "Valuta",
+  "amount": "Belopp",
+  "ok": "OK",
+  "orderHistory": "Orderhistorik",
+  "filterByOffice": "Filtrera på kontor (valfritt)",
+  "allOffices": "Alla kontor",
+  "chooseDateRange": "Välj datumintervall",
+  "clearDates": "Rensa datum",
+  "exportCsv": "Exportera CSV",
+  "exportPdf": "Exportera PDF",
+  "chooseDateRangeHint": "Välj ett datumintervall för att visa transaktioner.",
+  "clientShort": "Klient {clientId}",
+  "@clientShort": {
+    "placeholders": {
+      "clientId": {
+        "type": "Object"
+      }
+    }
+  },
+  "rateMissingApiKey": "API-nyckel för valutakurser saknas. Bygg appen med --dart-define-from-file=fx_key.json.",
+  "rateHttpError": "Kunde inte hämta växelkurs (HTTP {code}).",
+  "@rateHttpError": {
+    "placeholders": {
+      "code": {
+        "type": "Object"
+      }
+    }
+  },
+  "rateNotFound": "Ingen kurs hittades för {from} → {to}.",
+  "@rateNotFound": {
+    "placeholders": {
+      "from": {
+        "type": "Object"
+      },
+      "to": {
+        "type": "Object"
+      }
+    }
+  }
 }

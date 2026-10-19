@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
+import '../../l10n/locale_controller.dart';
 import 'customer_transactions_screen.dart' show customerStatusText;
 
 class CustomerTransactionDetailScreen extends StatelessWidget {
@@ -17,13 +18,15 @@ class CustomerTransactionDetailScreen extends StatelessWidget {
         .collection('transactions')
         .doc(transactionId);
 
+    final l10n = context.l10n;
+
     return Scaffold(
-      appBar: AppBar(title: const Text('Transaktion')),
+      appBar: AppBar(title: Text(l10n.transaction)),
       body: StreamBuilder<DocumentSnapshot>(
         stream: docRef.snapshots(),
         builder: (context, snapshot) {
           if (snapshot.hasError) {
-            return Center(child: Text('Fel: ${snapshot.error}'));
+            return Center(child: Text(l10n.errorWithDetails('${snapshot.error}')));
           }
           if (!snapshot.hasData || !snapshot.data!.exists) {
             return const Center(child: CircularProgressIndicator());
@@ -62,27 +65,38 @@ class CustomerTransactionDetailScreen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Du skickar: $amountFrom $fromCurrency'),
+                Text(l10n.youSend(amountFrom, fromCurrency)),
                 const SizedBox(height: 8),
                 Text(
-                  'Växelkurs: 1 $fromCurrency = ${rateFromTo.toStringAsFixed(6)} $toCurrency',
+                  l10n.exchangeRateValue(
+                    fromCurrency,
+                    rateFromTo.toStringAsFixed(6),
+                    toCurrency,
+                  ),
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  'Brutto mottaget: ${amountToGross.toStringAsFixed(2)} $toCurrency',
+                  l10n.grossReceived(
+                    amountToGross.toStringAsFixed(2),
+                    toCurrency,
+                  ),
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  'Avgift: ${feePercent.toStringAsFixed(2)}% '
-                  '(${feeAmountFrom.toStringAsFixed(2)} $fromCurrency '
-                  '≈ ${feeAmountTo.toStringAsFixed(2)} $toCurrency)',
+                  l10n.feeValue(
+                    feePercent.toStringAsFixed(2),
+                    feeAmountFrom.toStringAsFixed(2),
+                    fromCurrency,
+                    feeAmountTo.toStringAsFixed(2),
+                    toCurrency,
+                  ),
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  'Du får ut: ${amountToNet.toStringAsFixed(2)} $toCurrency',
+                  l10n.youReceive(amountToNet.toStringAsFixed(2), toCurrency),
                 ),
                 const SizedBox(height: 8),
-                Text('Status: ${customerStatusText(status)}'),
+                Text(l10n.orderStatusLine(customerStatusText(l10n, status))),
                 if (paymentLabel.isNotEmpty &&
                     (status == 'customer_accepted' ||
                         status == 'completed')) ...[
@@ -95,8 +109,8 @@ class CustomerTransactionDetailScreen extends StatelessWidget {
                         children: [
                           Text(
                             status == 'completed'
-                                ? 'Betalning till: $paymentLabel'
-                                : 'Betala $amountFrom $fromCurrency till:',
+                                ? l10n.paymentTo(paymentLabel)
+                                : l10n.payAmountTo(amountFrom, fromCurrency),
                             style:
                                 const TextStyle(fontWeight: FontWeight.bold),
                           ),
@@ -112,9 +126,9 @@ class CustomerTransactionDetailScreen extends StatelessWidget {
                   ),
                 ] else if (status == 'customer_accepted') ...[
                   const SizedBox(height: 16),
-                  const Text(
-                    'Du har accepterat. Managern skickar betalningsuppgifter inom kort.',
-                    style: TextStyle(color: Colors.grey),
+                  Text(
+                    l10n.acceptedWaitingPayment,
+                    style: const TextStyle(color: Colors.grey),
                   ),
                 ],
                 const Spacer(),
@@ -136,7 +150,7 @@ class CustomerTransactionDetailScreen extends StatelessWidget {
                             });
                             if (context.mounted) Navigator.pop(context);
                           },
-                          child: const Text('Acceptera'),
+                          child: Text(l10n.accept),
                         ),
                       ),
                       const SizedBox(width: 12),
@@ -153,15 +167,15 @@ class CustomerTransactionDetailScreen extends StatelessWidget {
                             });
                             if (context.mounted) Navigator.pop(context);
                           },
-                          child: const Text('Avböj'),
+                          child: Text(l10n.reject),
                         ),
                       ),
                     ],
                   )
                 else if (status == 'customer_requested')
-                  const Text(
-                    'Väntar på att managern ska skicka ett förslag.',
-                    style: TextStyle(color: Colors.grey),
+                  Text(
+                    l10n.waitingForProposal,
+                    style: const TextStyle(color: Colors.grey),
                   ),
               ],
             ),

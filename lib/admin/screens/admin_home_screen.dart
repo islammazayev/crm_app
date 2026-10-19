@@ -3,13 +3,18 @@ import 'package:file_saver/file_saver.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart' show rootBundle;
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:to_csv/to_csv.dart' as export_csv;
 
 import '../../forms/office_form.dart';
 import '../../forms/create_manager_form.dart';
+import '../../l10n/app_localizations.dart';
+import '../../l10n/locale_controller.dart';
+import '../../l10n/status_text.dart';
 import '../../lists/office_list.dart';
+import '../../widgets/language_button.dart';
 import '../../lists/order_history_list.dart';
 import '../../widgets/order_report.dart';
 import '../../models/office.dart';
@@ -127,24 +132,24 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
     await transactionsRef.doc(id).delete();
   }
 
-  static const List<String> _exportHeader = <String>[
-    'Datum',
-    'Status',
-    'Klient-ID',
-    'Kontor',
-    'Från',
-    'Till',
-    'Belopp',
-    'Avgift',
-    'Utbetalas',
-  ];
+  static List<String> _exportHeader(AppLocalizations l10n) => <String>[
+        l10n.exportDate,
+        l10n.exportStatus,
+        l10n.exportClientId,
+        l10n.exportOffice,
+        l10n.exportFrom,
+        l10n.exportTo,
+        l10n.exportAmount,
+        l10n.exportFee,
+        l10n.exportPayout,
+      ];
 
   /// Hämtar alla transaktioner (senaste först) som rader för CSV/PDF.
   /// Läser det nuvarande schemat (createAt, fromCurrency, amountFrom ...) och
   /// faller tillbaka på de äldre fälten (date, currency, amount, fee).
   /// Sorteringen sker här, inte i queryn, eftersom orderBy utelämnar
   /// dokument som saknar fältet.
-  Future<List<List<String>>> _loadExportRows() async {
+  Future<List<List<String>>> _loadExportRows(AppLocalizations l10n) async {
     final query = await transactionsRef.get();
 
     DateTime? dateOf(Map<String, dynamic> data) {
@@ -168,7 +173,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
     return entries.map((data) {
       return <String>[
         dateOf(data)?.toIso8601String() ?? '',
-        (data['status'] ?? '').toString(),
+        statusText(l10n, (data['status'] ?? '').toString()),
         (data['clientId'] ?? '').toString(),
         (data['officeId'] ?? '').toString(),
         (data['fromCurrency'] ?? data['currency'] ?? '').toString(),
@@ -181,44 +186,53 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
   }
 
   Future<void> _exportToCSV() async {
-    final rows = await _loadExportRows();
+    final l10n = context.l10n;
+    final rows = await _loadExportRows(l10n);
 
     if (rows.isEmpty) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Inga transaktioner att exportera')),
+        SnackBar(content: Text(l10n.noTransactionsToExport)),
       );
       return;
     }
 
-    export_csv.myCSV(_exportHeader, rows);
+    export_csv.myCSV(_exportHeader(l10n), rows);
   }
 
   Future<void> _exportToPDF() async {
-    final rows = await _loadExportRows();
+    final l10n = context.l10n;
+    final rows = await _loadExportRows(l10n);
 
     if (rows.isEmpty) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Inga transaktioner att exportera')),
+        SnackBar(content: Text(l10n.noTransactionsToExport)),
       );
       return;
     }
 
-    final pdf = pw.Document();
+    // Standardtypsnittet i pdf saknar kyrilliska och turkiska tecken.
+    final pdf = pw.Document(
+      theme: pw.ThemeData.withFont(
+        base: pw.Font.ttf(
+            await rootBundle.load('assets/fonts/Roboto-Regular.ttf')),
+        bold: pw.Font.ttf(await rootBundle.load('assets/fonts/Roboto-Bold.ttf')),
+      ),
+    );
 
     pdf.addPage(
       pw.MultiPage(
         pageFormat: PdfPageFormat.a4,
         build: (context) {
           return [
-            pw.Text('Orderrapport', style: pw.TextStyle(fontSize: 24)),
+            pw.Text(l10n.orderReport, style: pw.TextStyle(fontSize: 24)),
             pw.SizedBox(height: 16),
             pw.Table(
               border: pw.TableBorder.all(width: 0.5),
               children: [
                 pw.TableRow(
-                  children: _exportHeader
+                  children: _exportHeader(l10n)
                       .map(
                         (h) => pw.Padding(
                           padding: const pw.EdgeInsets.all(4),
@@ -277,12 +291,15 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('CRM – Admin'),
+        title: Text(l10n.adminAppBarTitle),
         actions: [
+          const LanguageButton(),
           IconButton(
-            tooltip: 'Logga ut',
+            tooltip: l10n.logout,
             icon: const Icon(Icons.logout),
             onPressed: () async {
               await FirebaseAuth.instance.signOut();
@@ -296,9 +313,9 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
-                'Adminvy: Full kontroll',
-                style: TextStyle(fontSize: 24),
+              Text(
+                l10n.adminHeadline,
+                style: const TextStyle(fontSize: 24),
               ),
 
               const SizedBox(height: 16),
@@ -308,9 +325,9 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
 
               const SizedBox(height: 32),
 
-              const Text(
-                "Hantera kontor",
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              Text(
+                l10n.manageOffices,
+                style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               ),
               OfficeForm(
                 onSubmit: ({
@@ -410,11 +427,8 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                                 List<String>.from(data['currencies'] ?? []);
                             if (currencies.isEmpty) {
                               ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text(
-                                    'Kontoret har inga valutor. Lägg till en '
-                                    'valuta via Ändra kontor först.',
-                                  ),
+                                SnackBar(
+                                  content: Text(l10n.officeHasNoCurrencies),
                                 ),
                               );
                               return;
@@ -426,7 +440,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                               context: context,
                               builder: (context) {
                                 return AlertDialog(
-                                  title: const Text('Fyll på saldo'),
+                                  title: Text(l10n.topUpBalance),
                                   content: Column(
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
@@ -446,8 +460,8 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                                             selectedCurrency = v;
                                           }
                                         },
-                                        decoration: const InputDecoration(
-                                          labelText: 'Valuta',
+                                        decoration: InputDecoration(
+                                          labelText: l10n.currency,
                                         ),
                                       ),
                                       const SizedBox(height: 8),
@@ -457,8 +471,8 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                                             const TextInputType
                                                 .numberWithOptions(
                                                     decimal: true),
-                                        decoration: const InputDecoration(
-                                          labelText: 'Belopp',
+                                        decoration: InputDecoration(
+                                          labelText: l10n.amount,
                                         ),
                                       ),
                                     ],
@@ -467,12 +481,12 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                                     TextButton(
                                       onPressed: () =>
                                           Navigator.pop(context, false),
-                                      child: const Text('Avbryt'),
+                                      child: Text(l10n.cancel),
                                     ),
                                     TextButton(
                                       onPressed: () =>
                                           Navigator.pop(context, true),
-                                      child: const Text('OK'),
+                                      child: Text(l10n.ok),
                                     ),
                                   ],
                                 );
@@ -497,9 +511,9 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
 
               const SizedBox(height: 32),
 
-              const Text(
-                'Orderhistorik',
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              Text(
+                l10n.orderHistory,
+                style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 12),
 
@@ -513,16 +527,16 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                   return DropdownButtonFormField<String?>(
                     key: ValueKey(_selectedOfficeId),
                     initialValue: _selectedOfficeId,
-                    decoration: const InputDecoration(
-                      labelText: 'Filtrera på kontor (valfritt)',
-                      border: OutlineInputBorder(),
-                      contentPadding:
+                    decoration: InputDecoration(
+                      labelText: l10n.filterByOffice,
+                      border: const OutlineInputBorder(),
+                      contentPadding: const
                           EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                     ),
                     items: [
-                      const DropdownMenuItem<String?>(
+                      DropdownMenuItem<String?>(
                         value: null,
-                        child: Text('Alla kontor'),
+                        child: Text(l10n.allOffices),
                       ),
                       ...officeDocs.map((d) {
                         final data = d.data() as Map<String, dynamic>;
@@ -562,26 +576,26 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                       }
                     },
                     child: Text(_selectedRange == null
-                        ? 'Välj datumintervall'
+                        ? l10n.chooseDateRange
                         : '${_selectedRange!.start.toLocal().toString().split(' ').first} – ${_selectedRange!.end.toLocal().toString().split(' ').first}'),
                   ),
                   if (_selectedRange != null)
                     IconButton(
                       icon: const Icon(Icons.clear),
-                      tooltip: 'Rensa datum',
+                      tooltip: l10n.clearDates,
                       onPressed: () => setState(() => _selectedRange = null),
                     ),
                   const Spacer(),
                   ElevatedButton.icon(
                     onPressed: _exportToCSV,
                     icon: const Icon(Icons.table_chart),
-                    label: const Text('Exportera CSV'),
+                    label: Text(l10n.exportCsv),
                   ),
                   const SizedBox(width: 8),
                   ElevatedButton.icon(
                     onPressed: _exportToPDF,
                     icon: const Icon(Icons.picture_as_pdf),
-                    label: const Text('Exportera PDF'),
+                    label: Text(l10n.exportPdf),
                   ),
                 ],
               ),
@@ -590,12 +604,12 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
 
               // Visa ingenting förrän datumintervall valts
               if (_selectedRange == null)
-                const Padding(
-                  padding: EdgeInsets.symmetric(vertical: 32),
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 32),
                   child: Center(
                     child: Text(
-                      'Välj ett datumintervall för att visa transaktioner.',
-                      style: TextStyle(color: Colors.grey),
+                      l10n.chooseDateRangeHint,
+                      style: const TextStyle(color: Colors.grey),
                     ),
                   ),
                 )
@@ -659,7 +673,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                     final customerName =
                         (data['customerName'] ?? '').toString().trim();
                     final label = [
-                      if (clientId.isNotEmpty) 'Klient $clientId',
+                      if (clientId.isNotEmpty) l10n.clientShort(clientId),
                       if (customerName.isNotEmpty) customerName,
                     ].join(' · ');
 

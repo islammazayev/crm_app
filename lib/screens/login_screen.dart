@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../../customer/screens/customer_register_screen.dart';
+import '../l10n/app_localizations.dart';
+import '../l10n/auth_error_text.dart';
+import '../l10n/locale_controller.dart';
 import '../theme/app_theme.dart';
+import '../widgets/language_button.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -14,39 +18,46 @@ class _LoginScreenState extends State<LoginScreen> {
   final _passwordCtrl = TextEditingController();
   bool _obscure = true;
   bool _loading = false;
-  String _error   = '';
-  String _message = '';
+  // Texterna översätts först när de visas, så de följer med vid språkbyte.
+  String Function(AppLocalizations l10n)? _error;
+  String Function(AppLocalizations l10n)? _message;
 
   Future<void> _login() async {
-    setState(() { _error = ''; _message = ''; _loading = true; });
+    setState(() { _error = null; _message = null; _loading = true; });
     try {
       await FirebaseAuth.instance.signInWithEmailAndPassword(
         email:    _emailCtrl.text.trim(),
         password: _passwordCtrl.text.trim(),
       );
     } catch (e) {
-      setState(() => _error = e.toString());
+      setState(() => _error = (l10n) => authErrorText(l10n, e));
     } finally {
       if (mounted) setState(() => _loading = false);
     }
   }
 
   Future<void> _resetPassword() async {
-    setState(() { _error = ''; _message = ''; });
+    setState(() { _error = null; _message = null; });
     try {
       await FirebaseAuth.instance.sendPasswordResetEmail(
         email: _emailCtrl.text.trim(),
       );
-      setState(() => _message = 'Återställningslänk har skickats till din e-post.');
+      setState(() => _message = (l10n) => l10n.resetLinkSent);
     } catch (e) {
-      setState(() => _error = e.toString());
+      setState(() => _error = (l10n) => authErrorText(l10n, e));
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
+
     return Scaffold(
       backgroundColor: AppColors.bg,
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        actions: const [LanguageButton()],
+      ),
       body: Center(
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 48),
@@ -101,9 +112,9 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                       ),
                       const SizedBox(height: 4),
-                      const Text(
-                        'ОБМЕН ВАЛЮТ',
-                        style: TextStyle(
+                      Text(
+                        l10n.loginTagline,
+                        style: const TextStyle(
                           color: AppColors.textMuted,
                           fontSize: 12,
                           letterSpacing: 3,
@@ -127,18 +138,18 @@ class _LoginScreenState extends State<LoginScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      const Text(
-                        'Logga in',
-                        style: TextStyle(
+                      Text(
+                        l10n.login,
+                        style: const TextStyle(
                           color: AppColors.textPrimary,
                           fontSize: 20,
                           fontWeight: FontWeight.w700,
                         ),
                       ),
                       const SizedBox(height: 6),
-                      const Text(
-                        'Ange dina uppgifter för att fortsätta',
-                        style: TextStyle(
+                      Text(
+                        l10n.loginSubtitle,
+                        style: const TextStyle(
                           color: AppColors.textMuted,
                           fontSize: 13,
                         ),
@@ -151,9 +162,9 @@ class _LoginScreenState extends State<LoginScreen> {
                         keyboardType: TextInputType.emailAddress,
                         textInputAction: TextInputAction.next,
                         style: const TextStyle(color: AppColors.textPrimary),
-                        decoration: const InputDecoration(
-                          labelText: 'E-post',
-                          prefixIcon: Icon(Icons.email_outlined),
+                        decoration: InputDecoration(
+                          labelText: l10n.email,
+                          prefixIcon: const Icon(Icons.email_outlined),
                         ),
                       ),
                       const SizedBox(height: 14),
@@ -166,7 +177,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         onSubmitted: (_) => _login(),
                         style: const TextStyle(color: AppColors.textPrimary),
                         decoration: InputDecoration(
-                          labelText: 'Lösenord',
+                          labelText: l10n.password,
                           prefixIcon: const Icon(Icons.lock_outline),
                           suffixIcon: IconButton(
                             icon: Icon(_obscure
@@ -179,7 +190,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
 
                       // Felmeddelande
-                      if (_error.isNotEmpty) ...
+                      if (_error != null) ...
                         [
                           const SizedBox(height: 12),
                           Container(
@@ -197,7 +208,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 const SizedBox(width: 8),
                                 Expanded(
                                   child: Text(
-                                    _error,
+                                    _error!(l10n),
                                     style: const TextStyle(
                                         color: AppColors.error, fontSize: 12),
                                   ),
@@ -208,7 +219,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         ],
 
                       // Bekräftelsemeddelande
-                      if (_message.isNotEmpty) ...
+                      if (_message != null) ...
                         [
                           const SizedBox(height: 12),
                           Container(
@@ -220,7 +231,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                   color: AppColors.primary.withValues(alpha: 0.3)),
                             ),
                             child: Text(
-                              _message,
+                              _message!(l10n),
                               style: const TextStyle(
                                   color: AppColors.primary, fontSize: 12),
                             ),
@@ -243,7 +254,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                     color: Color(0xFF003300),
                                   ),
                                 )
-                              : const Text('Logga in'),
+                              : Text(l10n.login),
                         ),
                       ),
                     ],
@@ -258,7 +269,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   children: [
                     TextButton(
                       onPressed: _resetPassword,
-                      child: const Text('Glömt lösenord?'),
+                      child: Text(l10n.forgotPassword),
                     ),
                     const Text('·',
                         style: TextStyle(color: AppColors.textFaint)),
@@ -267,7 +278,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         MaterialPageRoute(
                             builder: (_) => const CustomerRegisterScreen()),
                       ),
-                      child: const Text('Registrera konto'),
+                      child: Text(l10n.registerAccount),
                     ),
                   ],
                 ),

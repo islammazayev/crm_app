@@ -2,7 +2,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
+import '../../l10n/locale_controller.dart';
 import '../../theme/app_theme.dart';
+import '../../widgets/language_button.dart';
 import '../pages/manager_create_transaction_screen.dart';
 import '../pages/manager_transactions_page.dart';
 
@@ -51,14 +53,17 @@ class _ManagerHomeScreenState extends State<ManagerHomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
+
     return Scaffold(
       appBar: AppBar(
         title: Text(_officeLabel.isEmpty
-            ? 'CRM – Manager'
-            : 'CRM – Manager ($_officeLabel)'),
+            ? l10n.managerAppBarTitle
+            : l10n.managerAppBarTitleWithOffice(_officeLabel)),
         actions: [
+          const LanguageButton(),
           IconButton(
-            tooltip: 'Logga ut',
+            tooltip: l10n.logout,
             icon: const Icon(Icons.logout),
             onPressed: () async {
               await FirebaseAuth.instance.signOut();
@@ -71,11 +76,11 @@ class _ManagerHomeScreenState extends State<ManagerHomeScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const SectionHeader(title: 'Manager-panel'),
+            SectionHeader(title: l10n.managerPanel),
             const SizedBox(height: 8),
-            const Text(
-              'Välj vad du vill arbeta med. Här ser du snabbt nya, pågående och färdiga transaktioner.',
-              style: TextStyle(
+            Text(
+              l10n.managerPanelIntro,
+              style: const TextStyle(
                 color: AppColors.textMuted,
                 fontSize: 14,
                 height: 1.5,
@@ -140,9 +145,8 @@ class _ManagerHomeScreenState extends State<ManagerHomeScreen> {
                           _ActionCard(
                             icon: Icons.add_circle_outline,
                             iconColor: AppColors.primary,
-                            title: 'Skapa ny transaktion',
-                            subtitle:
-                                'Registrera en kund som kommer in på kontoret och saknar konto.',
+                            title: l10n.createNewTransaction,
+                            subtitle: l10n.createTransactionCardSubtitle,
                             badge: '+',
                             onTap: () {
                               Navigator.push(
@@ -159,32 +163,29 @@ class _ManagerHomeScreenState extends State<ManagerHomeScreen> {
                           _ActionCard(
                             icon: Icons.mark_email_unread_outlined,
                             iconColor: AppColors.warning,
-                            title: 'Nya kundtransaktioner',
-                            subtitle:
-                                'Se nya beställningar från kunder som ännu inte har påbörjats.',
+                            title: l10n.newCustomerTransactions,
+                            subtitle: l10n.newCustomerTransactionsSubtitle,
                             badge: '${count(newStatuses)}',
                             onTap: () => open(
-                                'Nya kundtransaktioner', newStatuses),
+                                l10n.newCustomerTransactions, newStatuses),
                           ),
                           _ActionCard(
                             icon: Icons.sync_alt,
                             iconColor: AppColors.info,
-                            title: 'Pågående transaktioner',
-                            subtitle:
-                                'Förslag som väntar på kund samt accepterade ärenden som ska betalas och genomföras.',
+                            title: l10n.ongoingTransactions,
+                            subtitle: l10n.ongoingTransactionsSubtitle,
                             badge: '${count(ongoingStatuses)}',
                             onTap: () => open(
-                                'Pågående transaktioner', ongoingStatuses),
+                                l10n.ongoingTransactions, ongoingStatuses),
                           ),
                           _ActionCard(
                             icon: Icons.task_alt,
                             iconColor: AppColors.success,
-                            title: 'Färdiga transaktioner',
-                            subtitle:
-                                'Genomförda och avböjda transaktioner.',
+                            title: l10n.finishedTransactions,
+                            subtitle: l10n.finishedTransactionsSubtitle,
                             badge: '${count(doneStatuses)}',
                             onTap: () =>
-                                open('Färdiga transaktioner', doneStatuses),
+                                open(l10n.finishedTransactions, doneStatuses),
                           ),
                         ],
                       );

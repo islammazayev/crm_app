@@ -2,21 +2,23 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
+import '../../l10n/app_localizations.dart';
+import '../../l10n/locale_controller.dart';
 import '../screens/customer_transaction_detail_screen.dart';
 
 /// Kundvänlig text för transaktionens status.
-String customerStatusText(String status) {
+String customerStatusText(AppLocalizations l10n, String status) {
   switch (status) {
     case 'customer_requested':
-      return 'Skickad – väntar på manager';
+      return l10n.customerStatusRequested;
     case 'manager_proposed':
-      return 'Förslag från manager – klicka för detaljer';
+      return l10n.customerStatusProposed;
     case 'customer_accepted':
-      return 'Accepterad – betalningsuppgifter kommer';
+      return l10n.customerStatusAccepted;
     case 'customer_rejected':
-      return 'Avböjd';
+      return l10n.customerStatusRejected;
     case 'completed':
-      return 'Genomförd';
+      return l10n.statusCompleted;
     default:
       return status;
   }
@@ -34,19 +36,21 @@ class CustomerTransactionsScreen extends StatelessWidget {
         .where('customerId', isEqualTo: currentUserId)
         .orderBy('createAt', descending: true);
 
+    final l10n = context.l10n;
+
     return Scaffold(
-      appBar: AppBar(title: const Text('Mina transaktioner')),
+      appBar: AppBar(title: Text(l10n.myTransactions)),
       body: StreamBuilder<QuerySnapshot>(
         stream: query.snapshots(),
         builder: (context, snapshot) {
           if (snapshot.hasError) {
-            return Center(child: Text('Fel: ${snapshot.error}'));
+            return Center(child: Text(l10n.errorWithDetails('${snapshot.error}')));
           }
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           }
           if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-            return const Center(child: Text('Inga transaktioner ännu'));
+            return Center(child: Text(l10n.noTransactionsYet));
           }
 
           final docs = snapshot.data!.docs;
@@ -63,7 +67,7 @@ class CustomerTransactionsScreen extends StatelessWidget {
               final status = data['status']?.toString() ?? '';
               final createdAt = (data['createAt'] as Timestamp?)?.toDate();
 
-              final statusText = customerStatusText(status);
+              final statusText = customerStatusText(l10n, status);
 
               return ListTile(
                 title: Text('$amountFrom $fromCurrency → $toCurrency'),

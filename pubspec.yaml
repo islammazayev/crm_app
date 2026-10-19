@@ -24,6 +24,7 @@ dependencies:
   firebase_auth: ^6.7.0
   firebase_messaging: ^16.0.1
   cloud_firestore: ^6.10.0
+  shared_preferences: ^2.5.6
 
 dev_dependencies:
   flutter_test:
@@ -33,3 +34,9 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   generate: true
+
+  # Roboto (Apache 2.0) används i PDF-exporten, som annars saknar
+  # kyrilliska och turkiska tecken.
+  assets:
+    - assets/fonts/Roboto-Regular.ttf
+    - assets/fonts/Roboto-Bold.ttf

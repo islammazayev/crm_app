@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../l10n/locale_controller.dart';
 import '../models/office.dart';
 import '../utils/currencies.dart';
 
@@ -58,7 +59,7 @@ class _OfficeFormState extends State<OfficeForm> {
 
     if (currencies.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Välj minst en valuta')),
+        SnackBar(content: Text(context.l10n.chooseAtLeastOneCurrency)),
       );
       return;
     }
@@ -104,6 +105,8 @@ class _OfficeFormState extends State<OfficeForm> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
+
     return Form(
       key: _formKey,
       child: Column(
@@ -112,20 +115,20 @@ class _OfficeFormState extends State<OfficeForm> {
           // --- Kontor-info ---
           TextFormField(
             controller: _countryController,
-            decoration: const InputDecoration(labelText: 'Land'),
+            decoration: InputDecoration(labelText: l10n.country),
             validator: (v) =>
-                (v == null || v.trim().isEmpty) ? 'Ange land' : null,
+                (v == null || v.trim().isEmpty) ? l10n.enterCountry : null,
           ),
           const SizedBox(height: 8),
           TextFormField(
             controller: _cityController,
-            decoration: const InputDecoration(labelText: 'Stad'),
+            decoration: InputDecoration(labelText: l10n.city),
             validator: (v) =>
-                (v == null || v.trim().isEmpty) ? 'Ange stad' : null,
+                (v == null || v.trim().isEmpty) ? l10n.enterCity : null,
           ),
           const SizedBox(height: 8),
-          const Text('Valutor',
-              style: TextStyle(fontSize: 12, color: Colors.grey)),
+          Text(l10n.currencies,
+              style: const TextStyle(fontSize: 12, color: Colors.grey)),
           const SizedBox(height: 4),
           Wrap(
             spacing: 8,
@@ -144,25 +147,25 @@ class _OfficeFormState extends State<OfficeForm> {
           const SizedBox(height: 20),
           Row(
             children: [
-              const Text(
-                'Betalningsmetoder',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              Text(
+                l10n.paymentMethods,
+                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
               const SizedBox(width: 12),
               TextButton.icon(
                 onPressed: _addMethod,
                 icon: const Icon(Icons.add, size: 18),
-                label: const Text('Lägg till'),
+                label: Text(l10n.add),
               ),
             ],
           ),
 
           if (_methods.isEmpty)
-            const Padding(
-              padding: EdgeInsets.symmetric(vertical: 8),
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8),
               child: Text(
-                'Inga betalningsmetoder ännu. Tryck "Lägg till" för att lägga till.',
-                style: TextStyle(color: Colors.grey, fontSize: 13),
+                l10n.noPaymentMethodsYet,
+                style: const TextStyle(color: Colors.grey, fontSize: 13),
               ),
             ),
 
@@ -176,7 +179,7 @@ class _OfficeFormState extends State<OfficeForm> {
           const SizedBox(height: 16),
           ElevatedButton(
             onPressed: _submit,
-            child: const Text('Skapa kontor'),
+            child: Text(l10n.createOffice),
           ),
         ],
       ),
@@ -210,6 +213,8 @@ class _PaymentMethodRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
+
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
       child: Padding(
@@ -220,13 +225,13 @@ class _PaymentMethodRow extends StatelessWidget {
             Row(
               children: [
                 Text(
-                  'Metod ${index + 1}',
+                  l10n.methodNumber(index + 1),
                   style: const TextStyle(fontWeight: FontWeight.bold),
                 ),
                 const Spacer(),
                 IconButton(
                   icon: const Icon(Icons.delete_outline, color: Colors.red),
-                  tooltip: 'Ta bort metod',
+                  tooltip: l10n.removeMethod,
                   onPressed: onRemove,
                 ),
               ],
@@ -234,25 +239,25 @@ class _PaymentMethodRow extends StatelessWidget {
             const SizedBox(height: 8),
             TextField(
               controller: entry.labelController,
-              decoration: const InputDecoration(
-                labelText: 'Namn på metod',
-                hintText: 't.ex. SEB SEK-konto, USDT TRC20',
-                border: OutlineInputBorder(),
+              decoration: InputDecoration(
+                labelText: l10n.methodName,
+                hintText: l10n.methodNameHint,
+                border: const OutlineInputBorder(),
               ),
             ),
             const SizedBox(height: 8),
             TextField(
               controller: entry.detailsController,
               maxLines: 3,
-              decoration: const InputDecoration(
-                labelText: 'Detaljer (kontonummer, IBAN, wallet-adress etc.)',
-                hintText: 't.ex. IBAN: SE12 3456...',
-                border: OutlineInputBorder(),
+              decoration: InputDecoration(
+                labelText: l10n.methodDetails,
+                hintText: l10n.methodDetailsHint,
+                border: const OutlineInputBorder(),
               ),
             ),
             const SizedBox(height: 8),
-            const Text('Stödjer valutor',
-                style: TextStyle(fontSize: 12, color: Colors.grey)),
+            Text(l10n.supportsCurrencies,
+                style: const TextStyle(fontSize: 12, color: Colors.grey)),
             StatefulBuilder(
               builder: (context, setLocal) => Wrap(
                 spacing: 8,

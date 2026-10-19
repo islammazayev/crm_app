@@ -1,5 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import '../../l10n/locale_controller.dart';
+import '../../l10n/rate_error_text.dart';
+import '../../l10n/status_text.dart';
 import '../../services/exchange_rate_service.dart';
 import '../../utils/balances.dart';
 
@@ -69,7 +72,11 @@ class _ManagerTransactionDetailScreenState
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Fel vid beräkning: $e')),
+        SnackBar(
+          content: Text(
+            context.l10n.calculationError(rateErrorText(context.l10n, e)),
+          ),
+        ),
       );
     } finally {
       if (mounted) setState(() => _calculating = false);
@@ -108,12 +115,12 @@ class _ManagerTransactionDetailScreenState
       });
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Betalningsuppgifter skickade till kunden.')),
+        SnackBar(content: Text(context.l10n.paymentDetailsSent)),
       );
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text('Fel: $e')));
+          .showSnackBar(SnackBar(content: Text(context.l10n.errorWithDetails('$e'))));
     } finally {
       if (mounted) setState(() => _busy = false);
     }
@@ -129,6 +136,7 @@ class _ManagerTransactionDetailScreenState
     required double amountFrom,
     required double amountToNet,
   }) async {
+    final l10n = context.l10n;
     setState(() => _busy = true);
     try {
       final db = FirebaseFirestore.instance;
@@ -139,9 +147,11 @@ class _ManagerTransactionDetailScreenState
       final available = balances[toCurrency] ?? 0;
       if (available < amountToNet) {
         throw Exception(
-          'Kontoret har för lågt saldo i $toCurrency '
-          '(${available.toStringAsFixed(2)} finns, '
-          '${amountToNet.toStringAsFixed(2)} behövs). Be admin fylla på saldo.',
+          l10n.insufficientBalance(
+            toCurrency,
+            available.toStringAsFixed(2),
+            amountToNet.toStringAsFixed(2),
+          ),
         );
       }
 
@@ -161,7 +171,7 @@ class _ManagerTransactionDetailScreenState
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text('Fel: ${e.toString().replaceFirst('Exception: ', '')}')));
+          .showSnackBar(SnackBar(content: Text(l10n.errorWithDetails(e.toString().replaceFirst('Exception: ', '')))));
     } finally {
       if (mounted) setState(() => _busy = false);
     }
@@ -173,13 +183,15 @@ class _ManagerTransactionDetailScreenState
         .collection('transactions')
         .doc(widget.transactionId);
 
+    final l10n = context.l10n;
+
     return Scaffold(
-      appBar: AppBar(title: const Text('Transaktion (manager)')),
+      appBar: AppBar(title: Text(l10n.transactionManager)),
       body: StreamBuilder<DocumentSnapshot>(
         stream: txRef.snapshots(),
         builder: (context, snapshot) {
           if (snapshot.hasError) {
-            return Center(child: Text('Fel: ${snapshot.error}'));
+            return Center(child: Text(l10n.errorWithDetails('${snapshot.error}')));
           }
           if (!snapshot.hasData || !snapshot.data!.exists) {
             return const Center(child: CircularProgressIndicator());
@@ -246,11 +258,11 @@ class _ManagerTransactionDetailScreenState
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Kund skickar: $amountFrom $fromCurrency'),
+                Text(l10n.customerSends(amountFrom, fromCurrency)),
                 const SizedBox(height: 8),
-                Text('Till valuta: $toCurrency'),
+                Text(l10n.toCurrencyValue(toCurrency)),
                 const SizedBox(height: 8),
-                Text('Status: $status'),
+                Text(l10n.orderStatusLine(statusText(l10n, status))),
                 const SizedBox(height: 16),
 
                 if (status == 'customer_requested' ||
@@ -260,9 +272,9 @@ class _ManagerTransactionDetailScreenState
                     keyboardType: const TextInputType.numberWithOptions(
                       decimal: true,
                     ),
-                    decoration: const InputDecoration(
-                      labelText: 'Avgift (%)',
-                      border: OutlineInputBorder(),
+                    decoration: InputDecoration(
+                      labelText: l10n.feePercentLabel,
+                      border: const OutlineInputBorder(),
                     ),
                     onChanged: (_) {
                       _recalculate(
@@ -275,49 +287,81 @@ class _ManagerTransactionDetailScreenState
                   const SizedBox(height: 16),
                   if (_rate != null && feePercentInput != null) ...[
                     Text(
-                      'Växelkurs: 1 $fromCurrency = ${_rate!.toStringAsFixed(6)} $toCurrency',
+                      l10n.exchangeRateValue(
+                        fromCurrency,
+                        _rate!.toStringAsFixed(6),
+                        toCurrency,
+                      ),
                     ),
                     const SizedBox(height: 8),
                     if (_amountToGross != null)
                       Text(
-                        'Brutto mottaget: ${_amountToGross!.toStringAsFixed(2)} $toCurrency',
+                        l10n.grossReceived(
+                          _amountToGross!.toStringAsFixed(2),
+                          toCurrency,
+                        ),
                       ),
                     const SizedBox(height: 8),
                     if (_feeAmountFrom != null && _feeAmountTo != null)
                       Text(
-                        'Avgift: ${feePercentInput.toStringAsFixed(2)}% (${_feeAmountFrom!.toStringAsFixed(2)} $fromCurrency ≈ ${_feeAmountTo!.toStringAsFixed(2)} $toCurrency)',
+                        l10n.feeValue(
+                          feePercentInput.toStringAsFixed(2),
+                          _feeAmountFrom!.toStringAsFixed(2),
+                          fromCurrency,
+                          _feeAmountTo!.toStringAsFixed(2),
+                          toCurrency,
+                        ),
                       ),
                     const SizedBox(height: 8),
                     if (_amountToNet != null)
                       Text(
-                        'Kunden får ut: ${_amountToNet!.toStringAsFixed(2)} $toCurrency',
+                        l10n.customerReceives(
+                          _amountToNet!.toStringAsFixed(2),
+                          toCurrency,
+                        ),
                       ),
                   ] else if (_calculating)
-                    const Text('Beräknar...'),
+                    Text(l10n.calculating),
                 ],
 
                 if (status == 'customer_accepted' ||
                     status == 'completed') ...[
                   Text(
-                    'Växelkurs: 1 $fromCurrency = ${savedRateFromTo.toStringAsFixed(6)} $toCurrency',
+                    l10n.exchangeRateValue(
+                      fromCurrency,
+                      savedRateFromTo.toStringAsFixed(6),
+                      toCurrency,
+                    ),
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'Brutto mottaget: ${savedAmountToGross.toStringAsFixed(2)} $toCurrency',
+                    l10n.grossReceived(
+                      savedAmountToGross.toStringAsFixed(2),
+                      toCurrency,
+                    ),
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'Avgift: ${savedFeePercent.toStringAsFixed(2)}% (${savedFeeAmountFrom.toStringAsFixed(2)} $fromCurrency ≈ ${savedFeeAmountTo.toStringAsFixed(2)} $toCurrency)',
+                    l10n.feeValue(
+                      savedFeePercent.toStringAsFixed(2),
+                      savedFeeAmountFrom.toStringAsFixed(2),
+                      fromCurrency,
+                      savedFeeAmountTo.toStringAsFixed(2),
+                      toCurrency,
+                    ),
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'Kunden får ut: ${savedAmountToNet.toStringAsFixed(2)} $toCurrency',
+                    l10n.customerReceives(
+                      savedAmountToNet.toStringAsFixed(2),
+                      toCurrency,
+                    ),
                   ),
                 ],
 
                 if (status == 'completed' && paymentSent) ...[
                   const SizedBox(height: 8),
-                  Text('Betalningsmetod: $paymentLabel'),
+                  Text(l10n.paymentMethodValue(paymentLabel)),
                 ],
 
                 if (status == 'customer_accepted' && officeId.isNotEmpty)
@@ -335,9 +379,9 @@ class _ManagerTransactionDetailScreenState
                       }
 
                       if (!snap.hasData || !snap.data!.exists) {
-                        return const Padding(
-                          padding: EdgeInsets.only(top: 16),
-                          child: Text('Office hittades inte.'),
+                        return Padding(
+                          padding: const EdgeInsets.only(top: 16),
+                          child: Text(l10n.officeNotFound),
                         );
                       }
 
@@ -356,11 +400,9 @@ class _ManagerTransactionDetailScreenState
                       };
 
                       if (methods.isEmpty) {
-                        return const Padding(
-                          padding: EdgeInsets.only(top: 16),
-                          child: Text(
-                            'Inga betalningsmetoder för den här valutan.',
-                          ),
+                        return Padding(
+                          padding: const EdgeInsets.only(top: 16),
+                          child: Text(l10n.noPaymentMethodsForCurrency),
                         );
                       }
 
@@ -368,9 +410,9 @@ class _ManagerTransactionDetailScreenState
                         child: ListView(
                           padding: const EdgeInsets.only(top: 16),
                           children: [
-                            const Text(
-                              'Välj betalningsmetod att skicka till kund:',
-                              style: TextStyle(fontWeight: FontWeight.bold),
+                            Text(
+                              l10n.choosePaymentMethodForCustomer,
+                              style: const TextStyle(fontWeight: FontWeight.bold),
                             ),
                             const SizedBox(height: 8),
                             RadioGroup<String>(
@@ -433,7 +475,7 @@ class _ManagerTransactionDetailScreenState
                                 Navigator.pop(context);
                               }
                             },
-                      child: const Text('Föreslå villkor'),
+                      child: Text(l10n.proposeTerms),
                     ),
                   ),
 
@@ -446,7 +488,7 @@ class _ManagerTransactionDetailScreenState
                           Padding(
                             padding: const EdgeInsets.only(bottom: 8),
                             child: Text(
-                              'Skickat till kund: $paymentLabel',
+                              l10n.sentToCustomer(paymentLabel),
                               style: const TextStyle(color: Colors.grey),
                             ),
                           ),
@@ -459,8 +501,8 @@ class _ManagerTransactionDetailScreenState
                                 ? null
                                 : () => _sendPaymentDetails(txRef),
                             child: Text(paymentSent
-                                ? 'Skicka om betalningsuppgifter'
-                                : 'Skicka betalningsuppgifter till kund'),
+                                ? l10n.resendPaymentDetails
+                                : l10n.sendPaymentDetailsToCustomer),
                           ),
                         ),
                         const SizedBox(height: 8),
@@ -480,7 +522,7 @@ class _ManagerTransactionDetailScreenState
                                       amountFrom: amountFrom,
                                       amountToNet: savedAmountToNet,
                                     ),
-                            child: const Text('Markera som genomförd'),
+                            child: Text(l10n.markAsCompleted),
                           ),
                         ),
                       ],

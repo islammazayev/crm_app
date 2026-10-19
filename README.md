@@ -72,3 +72,15 @@ och managers skapas av en admin i adminvyn.
   admin öppnar appen (`CurrencyMigrationService`).
 - Managern kan skapa en transaktion för en kund utan konto ("Skapa ny
   transaktion"). Den startar som `customer_accepted`.
+
+## Språk
+
+Appen finns på ryska, engelska, svenska och turkiska.
+
+- Första gången öppnas appen på enhetens språk. Finns det språket inte i appen visas **ryska**.
+- Språket byts med 🌐 uppe till höger (inloggning, registrering och alla tre rollernas startsidor).
+  Valet sparas på enheten. "Enhetens språk" går tillbaka till automatiskt val.
+- Texterna ligger i `lib/l10n/app_<språk>.arb`. `app_sv.arb` är mallen: lägg nya texter där
+  först, översätt dem i de andra filerna och kör `flutter gen-l10n` (görs också automatiskt vid bygge).
+- I koden hämtas texter med `context.l10n.nyckel` (se `lib/l10n/locale_controller.dart`).
+- Nytt språk: lägg till `app_<kod>.arb` och koden i `LocaleController.languages`.

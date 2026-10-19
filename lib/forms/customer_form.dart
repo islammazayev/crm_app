@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../l10n/locale_controller.dart';
+
 class CustomerForm extends StatefulWidget {
   final Future<void> Function({
     int? clientId,
@@ -41,7 +43,7 @@ class _CustomerFormState extends State<CustomerForm> {
       clientId = int.tryParse(_clientIdController.text.trim());
       if (clientId == null) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Klient-ID måste vara ett heltal')),
+          SnackBar(content: Text(context.l10n.clientIdMustBeInteger)),
         );
         return;
       }
@@ -63,28 +65,30 @@ class _CustomerFormState extends State<CustomerForm> {
 
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Kund sparad!')),
+        SnackBar(content: Text(context.l10n.customerSaved)),
       );
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
+
     return Form(
       key: _formKey,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'Skapa / uppdatera kund',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          Text(
+            l10n.createUpdateCustomer,
+            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 8),
           TextFormField(
             controller: _clientIdController,
-            decoration: const InputDecoration(
-              labelText: 'Klient-ID (valfritt)',
-              hintText: 't.ex. 007',
+            decoration: InputDecoration(
+              labelText: l10n.clientIdOptional,
+              hintText: l10n.clientIdHint,
             ),
             keyboardType: TextInputType.number,
           ),
@@ -94,19 +98,19 @@ class _CustomerFormState extends State<CustomerForm> {
               Expanded(
                 child: TextFormField(
                   controller: _firstNameController,
-                  decoration: const InputDecoration(labelText: 'Förnamn'),
+                  decoration: InputDecoration(labelText: l10n.firstName),
                   validator: (v) =>
-                      (v == null || v.trim().isEmpty) ? 'Ange förnamn' : null,
+                      (v == null || v.trim().isEmpty) ? l10n.enterFirstName : null,
                 ),
               ),
               const SizedBox(width: 8),
               Expanded(
                 child: TextFormField(
                   controller: _lastNameController,
-                  decoration: const InputDecoration(labelText: 'Efternamn'),
+                  decoration: InputDecoration(labelText: l10n.lastName),
                   validator: (v) =>
                       (v == null || v.trim().isEmpty)
-                          ? 'Ange efternamn'
+                          ? l10n.enterLastName
                           : null,
                 ),
               ),
@@ -115,19 +119,19 @@ class _CustomerFormState extends State<CustomerForm> {
           const SizedBox(height: 8),
           TextFormField(
             controller: _phoneController,
-            decoration: const InputDecoration(labelText: 'Telefon'),
+            decoration: InputDecoration(labelText: l10n.phone),
             keyboardType: TextInputType.phone,
           ),
           const SizedBox(height: 8),
           TextFormField(
             controller: _emailController,
-            decoration: const InputDecoration(labelText: 'E-post'),
+            decoration: InputDecoration(labelText: l10n.email),
             keyboardType: TextInputType.emailAddress,
           ),
           const SizedBox(height: 12),
           ElevatedButton(
             onPressed: _submit,
-            child: const Text('Spara kund'),
+            child: Text(l10n.saveCustomer),
           ),
         ],
       ),

@@ -1,22 +1,7 @@
 import 'package:flutter/material.dart';
+import '../l10n/locale_controller.dart';
+import '../l10n/status_text.dart';
 import '../models/transaction_model.dart';
-
-String _statusText(String status) {
-  switch (status) {
-    case 'customer_requested':
-      return 'Ny förfrågan';
-    case 'manager_proposed':
-      return 'Förslag skickat';
-    case 'customer_accepted':
-      return 'Accepterad av kund';
-    case 'customer_rejected':
-      return 'Avböjd av kund';
-    case 'completed':
-      return 'Genomförd';
-    default:
-      return status;
-  }
-}
 
 class OrderHistoryList extends StatelessWidget {
   final List<TransactionModel> transactions;
@@ -25,10 +10,11 @@ class OrderHistoryList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     if (transactions.isEmpty) {
-      return const Padding(
-        padding: EdgeInsets.all(16),
-        child: Text("Inga ordrar ännu."),
+      return Padding(
+        padding: const EdgeInsets.all(16),
+        child: Text(l10n.noOrdersYet),
       );
     }
     return ListView.builder(
@@ -42,13 +28,15 @@ class OrderHistoryList extends StatelessWidget {
             ? "${t.currency} → ${t.toCurrency}"
             : t.currency;
         final statusLine =
-            t.status.isNotEmpty ? "Status: ${_statusText(t.status)}\n" : "";
+            t.status.isNotEmpty
+                ? "${l10n.orderStatusLine(statusText(l10n, t.status))}\n"
+                : "";
         return ListTile(
           title: Text(title),
           subtitle: Text(
-            "Valuta: $currency, Belopp: ${t.amount}, Avgift: ${t.fee}\n"
+            "${l10n.orderDetails(currency, t.amount, t.fee)}\n"
             "$statusLine"
-            "Datum: ${t.date.toLocal().toString().split('.').first}"
+            "${l10n.dateValue(t.date.toLocal().toString().split('.').first)}"
           ),
           isThreeLine: t.status.isNotEmpty,
           trailing: IconButton(

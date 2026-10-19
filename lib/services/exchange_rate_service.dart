@@ -3,6 +3,22 @@ import 'package:http/http.dart' as http;
 
 import '../utils/currencies.dart';
 
+/// Fel från [ExchangeRateService]. Texten översätts i appen (se rateErrorText).
+class ExchangeRateException implements Exception {
+  final ExchangeRateError kind;
+  final String from;
+  final String to;
+  final int? statusCode;
+
+  const ExchangeRateException(this.kind,
+      {this.from = '', this.to = '', this.statusCode});
+
+  @override
+  String toString() => 'ExchangeRateException($kind, $from→$to, $statusCode)';
+}
+
+enum ExchangeRateError { missingApiKey, httpError, notFound }
+
 class ExchangeRateService {
   static const _host   = 'api.freecurrencyapi.com';
   static const _path   = '/v1/latest';
@@ -19,9 +35,7 @@ class ExchangeRateService {
   /// Hämtar kurs från [from] till [to], t.ex. from: 'USDT', to: 'RUBLE'.
   static Future<double> getRate(String from, String to) async {
     if (_apiKey.isEmpty) {
-      throw Exception(
-        'FX_API_KEY saknas. Starta appen med --dart-define=FX_API_KEY=...',
-      );
+      throw const ExchangeRateException(ExchangeRateError.missingApiKey);
     }
 
     final apiFrom = _normalizeCurrency(from);
@@ -36,7 +50,8 @@ class ExchangeRateService {
     final res = await http.get(uri);
 
     if (res.statusCode != 200) {
-      throw Exception('Kunde inte hämta växelkurs: ${res.statusCode}');
+      throw ExchangeRateException(ExchangeRateError.httpError,
+          statusCode: res.statusCode);
     }
 
     final Map<String, dynamic> json = jsonDecode(res.body);
@@ -44,7 +59,8 @@ class ExchangeRateService {
     final num? value = data[apiTo] as num?;
 
     if (value == null) {
-      throw Exception('Ingen kurs $apiFrom → $apiTo');
+      throw ExchangeRateException(ExchangeRateError.notFound,
+          from: apiFrom, to: apiTo);
     }
 
     return value.toDouble();

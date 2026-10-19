@@ -1,6 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
+import '../../l10n/app_localizations.dart';
+import '../../l10n/locale_controller.dart';
+import '../../l10n/rate_error_text.dart';
 import '../../services/exchange_rate_service.dart';
 import 'manager_transactions_detail_screen.dart';
 
@@ -28,7 +31,7 @@ class _ManagerCreateTransactionScreenState
   String? _to;
   bool _loading = true;
   bool _saving = false;
-  String? _error;
+  String Function(AppLocalizations l10n)? _error;
 
   @override
   void initState() {
@@ -62,31 +65,32 @@ class _ManagerCreateTransactionScreenState
     } catch (e) {
       if (!mounted) return;
       setState(() {
-        _error = 'Kunde inte läsa kontorets valutor: $e';
+        _error = (l10n) => l10n.couldNotLoadOfficeCurrencies('$e');
         _loading = false;
       });
     }
   }
 
   Future<void> _create() async {
+    final l10n = context.l10n;
     final amount = double.tryParse(_amountCtrl.text.replaceAll(',', '.'));
     final feePercent = double.tryParse(_feeCtrl.text.replaceAll(',', '.'));
     final name = _nameCtrl.text.trim();
 
     if (name.isEmpty) {
-      _snack('Ange kundens namn.');
+      _snack(l10n.enterCustomerName);
       return;
     }
     if (_from == null || _to == null || _from == _to) {
-      _snack('Välj två olika valutor.');
+      _snack(l10n.chooseTwoDifferentCurrencies);
       return;
     }
     if (amount == null || amount <= 0) {
-      _snack('Ange ett belopp större än 0.');
+      _snack(l10n.enterAmountAboveZero);
       return;
     }
     if (feePercent == null || feePercent < 0 || feePercent >= 100) {
-      _snack('Ange en avgift mellan 0 och 100 %.');
+      _snack(l10n.enterFeeRange);
       return;
     }
 
@@ -124,7 +128,7 @@ class _ManagerCreateTransactionScreenState
         ),
       );
     } catch (e) {
-      _snack('Fel: $e');
+      _snack(l10n.errorWithDetails(rateErrorText(l10n, e)));
       if (mounted) setState(() => _saving = false);
     }
   }
@@ -135,37 +139,39 @@ class _ManagerCreateTransactionScreenState
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
+
     return Scaffold(
-      appBar: AppBar(title: const Text('Skapa ny transaktion')),
+      appBar: AppBar(title: Text(l10n.createNewTransaction)),
       body: _loading
           ? const Center(child: CircularProgressIndicator())
           : _error != null
-              ? Center(child: Text(_error!))
+              ? Center(child: Text(_error!(l10n)))
               : ListView(
                   padding: const EdgeInsets.all(16),
                   children: [
                     TextField(
                       controller: _nameCtrl,
-                      decoration: const InputDecoration(
-                        labelText: 'Kundens namn',
-                        border: OutlineInputBorder(),
+                      decoration: InputDecoration(
+                        labelText: l10n.customerName,
+                        border: const OutlineInputBorder(),
                       ),
                     ),
                     const SizedBox(height: 12),
                     TextField(
                       controller: _phoneCtrl,
                       keyboardType: TextInputType.phone,
-                      decoration: const InputDecoration(
-                        labelText: 'Telefon (valfritt)',
-                        border: OutlineInputBorder(),
+                      decoration: InputDecoration(
+                        labelText: l10n.phoneOptional,
+                        border: const OutlineInputBorder(),
                       ),
                     ),
                     const SizedBox(height: 12),
                     DropdownButtonFormField<String>(
                       initialValue: _from,
-                      decoration: const InputDecoration(
-                        labelText: 'Kunden lämnar (valuta)',
-                        border: OutlineInputBorder(),
+                      decoration: InputDecoration(
+                        labelText: l10n.customerGivesCurrency,
+                        border: const OutlineInputBorder(),
                       ),
                       items: _currencies
                           .map((c) =>
@@ -176,9 +182,9 @@ class _ManagerCreateTransactionScreenState
                     const SizedBox(height: 12),
                     DropdownButtonFormField<String>(
                       initialValue: _to,
-                      decoration: const InputDecoration(
-                        labelText: 'Kunden får (valuta)',
-                        border: OutlineInputBorder(),
+                      decoration: InputDecoration(
+                        labelText: l10n.customerGetsCurrency,
+                        border: const OutlineInputBorder(),
                       ),
                       items: _currencies
                           .where((c) => c != _from)
@@ -192,9 +198,9 @@ class _ManagerCreateTransactionScreenState
                       controller: _amountCtrl,
                       keyboardType: const TextInputType.numberWithOptions(
                           decimal: true),
-                      decoration: const InputDecoration(
-                        labelText: 'Belopp som kunden lämnar',
-                        border: OutlineInputBorder(),
+                      decoration: InputDecoration(
+                        labelText: l10n.amountCustomerGives,
+                        border: const OutlineInputBorder(),
                       ),
                     ),
                     const SizedBox(height: 12),
@@ -202,15 +208,15 @@ class _ManagerCreateTransactionScreenState
                       controller: _feeCtrl,
                       keyboardType: const TextInputType.numberWithOptions(
                           decimal: true),
-                      decoration: const InputDecoration(
-                        labelText: 'Avgift (%)',
-                        border: OutlineInputBorder(),
+                      decoration: InputDecoration(
+                        labelText: l10n.feePercentLabel,
+                        border: const OutlineInputBorder(),
                       ),
                     ),
                     const SizedBox(height: 20),
                     ElevatedButton(
                       onPressed: _saving ? null : _create,
-                      child: Text(_saving ? 'Skapar …' : 'Skapa transaktion'),
+                      child: Text(_saving ? l10n.creating : l10n.createTransaction),
                     ),
                   ],
                 ),
