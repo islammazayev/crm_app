@@ -188,7 +188,8 @@ class _CreateManagerFormState extends State<CreateManagerForm> {
           ),
           const SizedBox(height: 8),
           DropdownButtonFormField<String>(
-            value: _selectedOfficeId,
+            key: ValueKey(_selectedOfficeId),
+            initialValue: _selectedOfficeId,
             items: [
               for (final doc in widget.officeDocs)
                 DropdownMenuItem(

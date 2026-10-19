@@ -373,30 +373,34 @@ class _ManagerTransactionDetailScreenState
                               style: TextStyle(fontWeight: FontWeight.bold),
                             ),
                             const SizedBox(height: 8),
-                            ...methods.map((method) {
-                              final id = (method['id'] ?? '').toString();
-                              final label =
-                                  (method['label'] ?? '').toString();
-                              final details =
-                                  (method['details'] ?? '').toString();
+                            RadioGroup<String>(
+                              groupValue: _selectedMethodId,
+                              onChanged: (value) {
+                                setState(() {
+                                  _selectedMethodId = value;
+                                });
+                              },
+                              child: Column(
+                                children: methods.map((method) {
+                                  final id = (method['id'] ?? '').toString();
+                                  final label =
+                                      (method['label'] ?? '').toString();
+                                  final details =
+                                      (method['details'] ?? '').toString();
 
-                              return Card(
-                                child: RadioListTile<String>(
-                                  value: id,
-                                  groupValue: _selectedMethodId,
-                                  onChanged: (value) {
-                                    setState(() {
-                                      _selectedMethodId = value;
-                                    });
-                                  },
-                                  title: Text(label),
-                                  subtitle: Text(
-                                    details,
-                                    softWrap: true,
-                                  ),
-                                ),
-                              );
-                            }),
+                                  return Card(
+                                    child: RadioListTile<String>(
+                                      value: id,
+                                      title: Text(label),
+                                      subtitle: Text(
+                                        details,
+                                        softWrap: true,
+                                      ),
+                                    ),
+                                  );
+                                }).toList(),
+                              ),
+                            ),
                           ],
                         ),
                       );

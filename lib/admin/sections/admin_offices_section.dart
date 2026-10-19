@@ -634,7 +634,8 @@ class _AdminOfficesSectionState extends State<AdminOfficesSection> {
                       );
                     }
                     return DropdownButtonFormField<String>(
-                      value: _selectedManagerDocId,
+                      key: ValueKey(_selectedManagerDocId),
+                      initialValue: _selectedManagerDocId,
                       decoration: const InputDecoration(
                         labelText: 'Manager',
                         border: OutlineInputBorder(),

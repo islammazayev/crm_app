@@ -67,7 +67,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           color: AppColors.primaryDim,
                           borderRadius: BorderRadius.circular(20),
                           border: Border.all(
-                              color: AppColors.primary.withOpacity(0.4), width: 1),
+                              color: AppColors.primary.withValues(alpha: 0.4), width: 1),
                         ),
                         child: const Icon(
                           Icons.currency_exchange,
@@ -185,10 +185,10 @@ class _LoginScreenState extends State<LoginScreen> {
                           Container(
                             padding: const EdgeInsets.all(12),
                             decoration: BoxDecoration(
-                              color: AppColors.error.withOpacity(0.1),
+                              color: AppColors.error.withValues(alpha: 0.1),
                               borderRadius: BorderRadius.circular(10),
                               border: Border.all(
-                                  color: AppColors.error.withOpacity(0.3)),
+                                  color: AppColors.error.withValues(alpha: 0.3)),
                             ),
                             child: Row(
                               children: [
@@ -214,10 +214,10 @@ class _LoginScreenState extends State<LoginScreen> {
                           Container(
                             padding: const EdgeInsets.all(12),
                             decoration: BoxDecoration(
-                              color: AppColors.primary.withOpacity(0.1),
+                              color: AppColors.primary.withValues(alpha: 0.1),
                               borderRadius: BorderRadius.circular(10),
                               border: Border.all(
-                                  color: AppColors.primary.withOpacity(0.3)),
+                                  color: AppColors.primary.withValues(alpha: 0.3)),
                             ),
                             child: Text(
                               _message,

@@ -230,7 +230,7 @@ class _ActionCard extends StatelessWidget {
             border: Border.all(color: AppColors.surfaceBorder),
             boxShadow: [
               BoxShadow(
-                color: iconColor.withOpacity(0.08),
+                color: iconColor.withValues(alpha: 0.08),
                 blurRadius: 24,
                 offset: const Offset(0, 10),
               ),
@@ -244,9 +244,9 @@ class _ActionCard extends StatelessWidget {
                   width: 64,
                   height: 64,
                   decoration: BoxDecoration(
-                    color: iconColor.withOpacity(0.12),
+                    color: iconColor.withValues(alpha: 0.12),
                     borderRadius: BorderRadius.circular(18),
-                    border: Border.all(color: iconColor.withOpacity(0.25)),
+                    border: Border.all(color: iconColor.withValues(alpha: 0.25)),
                   ),
                   child: Icon(icon, color: iconColor, size: 30),
                 ),
@@ -277,7 +277,7 @@ class _ActionCard extends StatelessWidget {
                               color: AppColors.primaryDim,
                               borderRadius: BorderRadius.circular(999),
                               border: Border.all(
-                                color: AppColors.primary.withOpacity(0.25),
+                                color: AppColors.primary.withValues(alpha: 0.25),
                               ),
                             ),
                             child: Text(
