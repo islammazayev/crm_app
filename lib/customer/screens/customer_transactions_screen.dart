@@ -4,6 +4,24 @@ import 'package:flutter/material.dart';
 
 import '../screens/customer_transaction_detail_screen.dart';
 
+/// Kundvänlig text för transaktionens status.
+String customerStatusText(String status) {
+  switch (status) {
+    case 'customer_requested':
+      return 'Skickad – väntar på manager';
+    case 'manager_proposed':
+      return 'Förslag från manager – klicka för detaljer';
+    case 'customer_accepted':
+      return 'Accepterad – betalningsuppgifter kommer';
+    case 'customer_rejected':
+      return 'Avböjd';
+    case 'completed':
+      return 'Genomförd';
+    default:
+      return status;
+  }
+}
+
 class CustomerTransactionsScreen extends StatelessWidget {
   const CustomerTransactionsScreen({super.key});
 
@@ -14,7 +32,6 @@ class CustomerTransactionsScreen extends StatelessWidget {
     final query = FirebaseFirestore.instance
         .collection('transactions')
         .where('customerId', isEqualTo: currentUserId)
-        .where('status', whereIn: ['customer_requested', 'manager_proposed'])
         .orderBy('createAt', descending: true);
 
     return Scaffold(
@@ -46,14 +63,7 @@ class CustomerTransactionsScreen extends StatelessWidget {
               final status = data['status']?.toString() ?? '';
               final createdAt = (data['createAt'] as Timestamp?)?.toDate();
 
-              String statusText;
-              if (status == 'customer_requested') {
-                statusText = 'Skickad – väntar på manager';
-              } else if (status == 'manager_proposed') {
-                statusText = 'Förslag från manager – klicka för detaljer';
-              } else {
-                statusText = status;
-              }
+              final statusText = customerStatusText(status);
 
               return ListTile(
                 title: Text('$amountFrom $fromCurrency → $toCurrency'),

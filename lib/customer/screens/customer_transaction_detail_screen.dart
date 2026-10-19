@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
+import 'customer_transactions_screen.dart' show customerStatusText;
+
 class CustomerTransactionDetailScreen extends StatelessWidget {
   final String transactionId;
 
@@ -50,6 +52,10 @@ class CustomerTransactionDetailScreen extends StatelessWidget {
               (data['feeAmountTo'] ?? 0 as num).toDouble();
 
           final String status = (data['status'] ?? '').toString();
+          final String paymentLabel =
+              (data['paymentMethodLabel'] ?? '').toString();
+          final String paymentDetails =
+              (data['paymentMethodDetails'] ?? '').toString();
 
           return Padding(
             padding: const EdgeInsets.all(16),
@@ -76,7 +82,41 @@ class CustomerTransactionDetailScreen extends StatelessWidget {
                   'Du får ut: ${amountToNet.toStringAsFixed(2)} $toCurrency',
                 ),
                 const SizedBox(height: 8),
-                Text('Status: $status'),
+                Text('Status: ${customerStatusText(status)}'),
+                if (paymentLabel.isNotEmpty &&
+                    (status == 'customer_accepted' ||
+                        status == 'completed')) ...[
+                  const SizedBox(height: 16),
+                  Card(
+                    child: Padding(
+                      padding: const EdgeInsets.all(12),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            status == 'completed'
+                                ? 'Betalning till: $paymentLabel'
+                                : 'Betala $amountFrom $fromCurrency till:',
+                            style:
+                                const TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                          if (status != 'completed') ...[
+                            const SizedBox(height: 4),
+                            Text(paymentLabel),
+                          ],
+                          const SizedBox(height: 8),
+                          SelectableText(paymentDetails),
+                        ],
+                      ),
+                    ),
+                  ),
+                ] else if (status == 'customer_accepted') ...[
+                  const SizedBox(height: 16),
+                  const Text(
+                    'Du har accepterat. Managern skickar betalningsuppgifter inom kort.',
+                    style: TextStyle(color: Colors.grey),
+                  ),
+                ],
                 const Spacer(),
 
                 // Knappar bara när manager har föreslagit villkor
@@ -118,9 +158,9 @@ class CustomerTransactionDetailScreen extends StatelessWidget {
                       ),
                     ],
                   )
-                else
+                else if (status == 'customer_requested')
                   const Text(
-                    'Förslaget är redan hanterat.',
+                    'Väntar på att managern ska skicka ett förslag.',
                     style: TextStyle(color: Colors.grey),
                   ),
               ],

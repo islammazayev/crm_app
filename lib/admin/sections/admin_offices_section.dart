@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 import '../../services/office_listing_service.dart';
+import '../../utils/currencies.dart';
 
 // ─── Hjälpklass för betalningsmetod-formulär ─────────────────────────────────
 class PaymentMethodFormItem {
@@ -308,9 +309,7 @@ class _AdminOfficesSectionState extends State<AdminOfficesSection> {
   final _countryController = TextEditingController();
   final _cityController = TextEditingController();
 
-  final List<String> _availableCurrencies = [
-    'EUR', 'USD', 'SEK', 'RUB', 'USDT', 'GBP', 'AED', 'TRY',
-  ];
+  final List<String> _availableCurrencies = kSupportedCurrencies;
   Set<String> _selectedCurrencies = {};
   final Map<String, TextEditingController> _balanceControllers = {};
   String? _selectedManagerDocId;
@@ -635,7 +634,8 @@ class _AdminOfficesSectionState extends State<AdminOfficesSection> {
                       );
                     }
                     return DropdownButtonFormField<String>(
-                      value: _selectedManagerDocId,
+                      key: ValueKey(_selectedManagerDocId),
+                      initialValue: _selectedManagerDocId,
                       decoration: const InputDecoration(
                         labelText: 'Manager',
                         border: OutlineInputBorder(),

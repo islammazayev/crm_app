@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import '../../services/exchange_rate_service.dart';
+import '../../utils/balances.dart';
 
 class ManagerTransactionDetailScreen extends StatefulWidget {
   final String transactionId;
@@ -25,8 +26,11 @@ class _ManagerTransactionDetailScreenState
   double? _feeAmountFrom;
   double? _feeAmountTo;
   bool _calculating = false;
+  bool _autoCalcStarted = false;
 
   String? _selectedMethodId;
+  Map<String, Map<String, dynamic>> _methodCache = {};
+  bool _busy = false;
 
   @override
   void dispose() {
@@ -90,6 +94,79 @@ class _ManagerTransactionDetailScreenState
         .toList();
   }
 
+  /// Sparar vald betalningsmetod i transaktionen så att kunden ser uppgifterna.
+  Future<void> _sendPaymentDetails(DocumentReference txRef) async {
+    final method = _methodCache[_selectedMethodId];
+    if (method == null) return;
+    setState(() => _busy = true);
+    try {
+      await txRef.update({
+        'chosenPaymentMethodId': _selectedMethodId,
+        'paymentMethodLabel': (method['label'] ?? '').toString(),
+        'paymentMethodDetails': (method['details'] ?? '').toString(),
+        'paymentSentAt': FieldValue.serverTimestamp(),
+      });
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Betalningsuppgifter skickade till kunden.')),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('Fel: $e')));
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
+  }
+
+  /// Markerar som genomförd och bokför saldot i kontoret i en gemensam batch:
+  /// kontoret får in skickad valuta och betalar ut kundens nettobelopp.
+  Future<void> _complete({
+    required DocumentReference txRef,
+    required String officeId,
+    required String fromCurrency,
+    required String toCurrency,
+    required double amountFrom,
+    required double amountToNet,
+  }) async {
+    setState(() => _busy = true);
+    try {
+      final db = FirebaseFirestore.instance;
+      final officeRef = db.collection('offices').doc(officeId);
+      final officeSnap = await officeRef.get();
+      final balances =
+          parseBalances(officeSnap.data()?['balances'], officeId: officeId);
+      final available = balances[toCurrency] ?? 0;
+      if (available < amountToNet) {
+        throw Exception(
+          'Kontoret har för lågt saldo i $toCurrency '
+          '(${available.toStringAsFixed(2)} finns, '
+          '${amountToNet.toStringAsFixed(2)} behövs). Be admin fylla på saldo.',
+        );
+      }
+
+      final batch = db.batch();
+      batch.update(txRef, {
+        'status': 'completed',
+        'completedAt': FieldValue.serverTimestamp(),
+      });
+      batch.update(officeRef, {
+        'balances.$fromCurrency': FieldValue.increment(amountFrom),
+        'balances.$toCurrency': FieldValue.increment(-amountToNet),
+        'lastBookedTransactionId': txRef.id,
+      });
+      await batch.commit();
+
+      if (mounted) Navigator.pop(context);
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('Fel: ${e.toString().replaceFirst('Exception: ', '')}')));
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final txRef = FirebaseFirestore.instance
@@ -123,6 +200,10 @@ class _ManagerTransactionDetailScreenState
           final String? chosenPaymentMethodId =
               data['chosenPaymentMethodId'] as String?;
 
+          final String paymentLabel =
+              (data['paymentMethodLabel'] ?? '').toString();
+          final bool paymentSent = paymentLabel.isNotEmpty;
+
           if (_selectedMethodId == null && chosenPaymentMethodId != null) {
             _selectedMethodId = chosenPaymentMethodId;
           }
@@ -142,6 +223,23 @@ class _ManagerTransactionDetailScreenState
 
           final feePercentInput =
               double.tryParse(_feeController.text.replaceAll(',', '.'));
+
+          // Räkna direkt med standardavgiften när sidan öppnas, så att knappen
+          // "Föreslå villkor" inte är avstängd tills managern ändrar avgiften.
+          if (!_autoCalcStarted &&
+              _rate == null &&
+              (status == 'customer_requested' ||
+                  status == 'manager_proposed')) {
+            _autoCalcStarted = true;
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (!mounted) return;
+              _recalculate(
+                amountFrom: amountFrom,
+                fromCurrency: fromCurrency,
+                toCurrency: toCurrency,
+              );
+            });
+          }
 
           return Padding(
             padding: const EdgeInsets.all(16),
@@ -217,6 +315,11 @@ class _ManagerTransactionDetailScreenState
                   ),
                 ],
 
+                if (status == 'completed' && paymentSent) ...[
+                  const SizedBox(height: 8),
+                  Text('Betalningsmetod: $paymentLabel'),
+                ],
+
                 if (status == 'customer_accepted' && officeId.isNotEmpty)
                   FutureBuilder<DocumentSnapshot>(
                     future: FirebaseFirestore.instance
@@ -248,6 +351,10 @@ class _ManagerTransactionDetailScreenState
                         fromCurrency: fromCurrency,
                       );
 
+                      _methodCache = {
+                        for (final m in methods) (m['id'] ?? '').toString(): m,
+                      };
+
                       if (methods.isEmpty) {
                         return const Padding(
                           padding: EdgeInsets.only(top: 16),
@@ -266,30 +373,34 @@ class _ManagerTransactionDetailScreenState
                               style: TextStyle(fontWeight: FontWeight.bold),
                             ),
                             const SizedBox(height: 8),
-                            ...methods.map((method) {
-                              final id = (method['id'] ?? '').toString();
-                              final label =
-                                  (method['label'] ?? '').toString();
-                              final details =
-                                  (method['details'] ?? '').toString();
+                            RadioGroup<String>(
+                              groupValue: _selectedMethodId,
+                              onChanged: (value) {
+                                setState(() {
+                                  _selectedMethodId = value;
+                                });
+                              },
+                              child: Column(
+                                children: methods.map((method) {
+                                  final id = (method['id'] ?? '').toString();
+                                  final label =
+                                      (method['label'] ?? '').toString();
+                                  final details =
+                                      (method['details'] ?? '').toString();
 
-                              return Card(
-                                child: RadioListTile<String>(
-                                  value: id,
-                                  groupValue: _selectedMethodId,
-                                  onChanged: (value) {
-                                    setState(() {
-                                      _selectedMethodId = value;
-                                    });
-                                  },
-                                  title: Text(label),
-                                  subtitle: Text(
-                                    details,
-                                    softWrap: true,
-                                  ),
-                                ),
-                              );
-                            }),
+                                  return Card(
+                                    child: RadioListTile<String>(
+                                      value: id,
+                                      title: Text(label),
+                                      subtitle: Text(
+                                        details,
+                                        softWrap: true,
+                                      ),
+                                    ),
+                                  );
+                                }).toList(),
+                              ),
+                            ),
                           ],
                         ),
                       );
@@ -329,28 +440,50 @@ class _ManagerTransactionDetailScreenState
                 if (status == 'customer_accepted')
                   SafeArea(
                     top: false,
-                    child: SizedBox(
-                      width: double.infinity,
-                      child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.green,
+                    child: Column(
+                      children: [
+                        if (paymentSent)
+                          Padding(
+                            padding: const EdgeInsets.only(bottom: 8),
+                            child: Text(
+                              'Skickat till kund: $paymentLabel',
+                              style: const TextStyle(color: Colors.grey),
+                            ),
+                          ),
+                        SizedBox(
+                          width: double.infinity,
+                          child: OutlinedButton(
+                            onPressed: (_busy ||
+                                    _selectedMethodId == null ||
+                                    !_methodCache.containsKey(_selectedMethodId))
+                                ? null
+                                : () => _sendPaymentDetails(txRef),
+                            child: Text(paymentSent
+                                ? 'Skicka om betalningsuppgifter'
+                                : 'Skicka betalningsuppgifter till kund'),
+                          ),
                         ),
-                        onPressed: _selectedMethodId == null
-                            ? null
-                            : () async {
-                                await txRef.update({
-                                  'chosenPaymentMethodId': _selectedMethodId,
-                                  'status': 'completed',
-                                  'completedAt':
-                                      FieldValue.serverTimestamp(),
-                                });
-
-                                if (context.mounted) {
-                                  Navigator.pop(context);
-                                }
-                              },
-                        child: const Text('Markera som genomförd'),
-                      ),
+                        const SizedBox(height: 8),
+                        SizedBox(
+                          width: double.infinity,
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.green,
+                            ),
+                            onPressed: (_busy || !paymentSent)
+                                ? null
+                                : () => _complete(
+                                      txRef: txRef,
+                                      officeId: officeId,
+                                      fromCurrency: fromCurrency,
+                                      toCurrency: toCurrency,
+                                      amountFrom: amountFrom,
+                                      amountToNet: savedAmountToNet,
+                                    ),
+                            child: const Text('Markera som genomförd'),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
               ],

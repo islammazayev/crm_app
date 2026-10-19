@@ -1,18 +1,18 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
+import '../utils/currencies.dart';
+
 class ExchangeRateService {
   static const _host   = 'api.freecurrencyapi.com';
   static const _path   = '/v1/latest';
   /// API-nyckeln ligger inte i koden. Starta/bygg appen med:
-  ///   flutter run --dart-define=FX_API_KEY=din_nyckel
+  ///   flutter run --dart-define-from-file=fx_key.json
   static const _apiKey = String.fromEnvironment('FX_API_KEY');
 
   static String _normalizeCurrency(String c) {
-    c = c.toUpperCase().trim();
+    c = normalizeCurrency(c);
     if (c == 'USDT') return 'USD';  // mappa krypto till fiat för API:t
-    if (c == 'RUBLE') return 'RUB'; // din app-text → riktig ISO-kod
-    if (c == 'EURO') return 'EUR';
     return c;
   }
 

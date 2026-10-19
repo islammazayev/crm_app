@@ -1,8 +1,10 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 import '../../theme/app_theme.dart';
-import 'manager_home_page.dart';
+import '../pages/manager_create_transaction_screen.dart';
+import '../pages/manager_transactions_page.dart';
 
 class ManagerHomeScreen extends StatefulWidget {
   const ManagerHomeScreen({super.key});
@@ -12,11 +14,48 @@ class ManagerHomeScreen extends StatefulWidget {
 }
 
 class _ManagerHomeScreenState extends State<ManagerHomeScreen> {
+  String _officeLabel = '';
+  String? _officeId;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadOfficeLabel();
+  }
+
+  /// Hämtar land och stad för managerns kontor till rubriken.
+  Future<void> _loadOfficeLabel() async {
+    try {
+      final user = FirebaseAuth.instance.currentUser;
+      if (user == null) return;
+      final db = FirebaseFirestore.instance;
+
+      final userSnap = await db.collection('users').doc(user.uid).get();
+      final officeId = userSnap.data()?['officeId']?.toString();
+      if (officeId == null || officeId.isEmpty) return;
+      if (mounted) setState(() => _officeId = officeId);
+
+      final listing = await db.collection('officeListings').doc(officeId).get();
+      final data = listing.data();
+      if (data == null) return;
+
+      final label = [data['country'], data['city']]
+          .map((e) => (e ?? '').toString())
+          .where((e) => e.isNotEmpty)
+          .join(' – ');
+      if (mounted) setState(() => _officeLabel = label);
+    } catch (_) {
+      // Rubriken är bara en bekvämlighet, fel här ska inte störa något.
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('CRM – Manager (Ryssland – Grozny)'),
+        title: Text(_officeLabel.isEmpty
+            ? 'CRM – Manager'
+            : 'CRM – Manager ($_officeLabel)'),
         actions: [
           IconButton(
             tooltip: 'Logga ut',
@@ -43,82 +82,116 @@ class _ManagerHomeScreenState extends State<ManagerHomeScreen> {
               ),
             ),
             const SizedBox(height: 20),
-            LayoutBuilder(
-              builder: (context, constraints) {
-                final isWide = constraints.maxWidth >= 760;
-                return GridView.count(
-                  crossAxisCount: isWide ? 2 : 1,
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  crossAxisSpacing: 16,
-                  mainAxisSpacing: 16,
-                  childAspectRatio: isWide ? 2.5 : 2.1,
-                  children: [
-                    _ActionCard(
-                      icon: Icons.add_circle_outline,
-                      iconColor: AppColors.primary,
-                      title: 'Skapa ny transaktion',
-                      subtitle:
-                          'Starta en ny manuell transaktion direkt från manager-vyn.',
-                      badge: '1',
-                      onTap: () {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('Här kopplar vi senare formuläret för ny transaktion.'),
+            if (_officeId == null)
+              const Padding(
+                padding: EdgeInsets.all(24),
+                child: Center(child: CircularProgressIndicator()),
+              )
+            else
+              StreamBuilder<QuerySnapshot>(
+                stream: FirebaseFirestore.instance
+                    .collection('transactions')
+                    .where('officeId', isEqualTo: _officeId)
+                    .snapshots(),
+                builder: (context, snapshot) {
+                  final counts = <String, int>{};
+                  for (final d in snapshot.data?.docs ?? const []) {
+                    final status =
+                        (d.data() as Map<String, dynamic>)['status']
+                            ?.toString() ??
+                            '';
+                    counts[status] = (counts[status] ?? 0) + 1;
+                  }
+                  int count(List<String> statuses) => statuses.fold(
+                      0, (total, st) => total + (counts[st] ?? 0));
+
+                  const newStatuses = ['customer_requested'];
+                  const ongoingStatuses = [
+                    'manager_proposed',
+                    'customer_accepted',
+                  ];
+                  const doneStatuses = ['completed', 'customer_rejected'];
+                  final officeId = _officeId!;
+
+                  void open(String title, List<String> statuses) {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => ManagerTransactionsPage(
+                          officeId: officeId,
+                          statuses: statuses,
+                          title: title,
+                        ),
+                      ),
+                    );
+                  }
+
+                  return LayoutBuilder(
+                    builder: (context, constraints) {
+                      final isWide = constraints.maxWidth >= 760;
+                      return GridView.count(
+                        crossAxisCount: isWide ? 2 : 1,
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        crossAxisSpacing: 16,
+                        mainAxisSpacing: 16,
+                        childAspectRatio: isWide ? 2.5 : 2.1,
+                        children: [
+                          _ActionCard(
+                            icon: Icons.add_circle_outline,
+                            iconColor: AppColors.primary,
+                            title: 'Skapa ny transaktion',
+                            subtitle:
+                                'Registrera en kund som kommer in på kontoret och saknar konto.',
+                            badge: '+',
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) =>
+                                      ManagerCreateTransactionScreen(
+                                    officeId: officeId,
+                                  ),
+                                ),
+                              );
+                            },
                           ),
-                        );
-                      },
-                    ),
-                    _ActionCard(
-                      icon: Icons.mark_email_unread_outlined,
-                      iconColor: AppColors.warning,
-                      title: 'Nya kundtransaktioner',
-                      subtitle:
-                          'Se nya beställningar från kunder som ännu inte har påbörjats.',
-                      badge: '2',
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => const ManagerHomePage(),
+                          _ActionCard(
+                            icon: Icons.mark_email_unread_outlined,
+                            iconColor: AppColors.warning,
+                            title: 'Nya kundtransaktioner',
+                            subtitle:
+                                'Se nya beställningar från kunder som ännu inte har påbörjats.',
+                            badge: '${count(newStatuses)}',
+                            onTap: () => open(
+                                'Nya kundtransaktioner', newStatuses),
                           ),
-                        );
-                      },
-                    ),
-                    _ActionCard(
-                      icon: Icons.sync_alt,
-                      iconColor: AppColors.info,
-                      title: 'Pågående transaktioner',
-                      subtitle:
-                          'Öppna alla ärenden som behandlas just nu och följ statusen.',
-                      badge: '3',
-                      onTap: () {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('Här visar vi senare pågående transaktioner.'),
+                          _ActionCard(
+                            icon: Icons.sync_alt,
+                            iconColor: AppColors.info,
+                            title: 'Pågående transaktioner',
+                            subtitle:
+                                'Förslag som väntar på kund samt accepterade ärenden som ska betalas och genomföras.',
+                            badge: '${count(ongoingStatuses)}',
+                            onTap: () => open(
+                                'Pågående transaktioner', ongoingStatuses),
                           ),
-                        );
-                      },
-                    ),
-                    _ActionCard(
-                      icon: Icons.task_alt,
-                      iconColor: AppColors.success,
-                      title: 'Färdiga transaktioner',
-                      subtitle:
-                          'Se slutförda transaktioner och kontrollera avslutade ärenden.',
-                      badge: '4',
-                      onTap: () {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('Här visar vi senare färdiga transaktioner.'),
+                          _ActionCard(
+                            icon: Icons.task_alt,
+                            iconColor: AppColors.success,
+                            title: 'Färdiga transaktioner',
+                            subtitle:
+                                'Genomförda och avböjda transaktioner.',
+                            badge: '${count(doneStatuses)}',
+                            onTap: () =>
+                                open('Färdiga transaktioner', doneStatuses),
                           ),
-                        );
-                      },
-                    ),
-                  ],
-                );
-              },
-            ),
+                        ],
+                      );
+                    },
+                  );
+                },
+              ),
           ],
         ),
       ),
@@ -157,7 +230,7 @@ class _ActionCard extends StatelessWidget {
             border: Border.all(color: AppColors.surfaceBorder),
             boxShadow: [
               BoxShadow(
-                color: iconColor.withOpacity(0.08),
+                color: iconColor.withValues(alpha: 0.08),
                 blurRadius: 24,
                 offset: const Offset(0, 10),
               ),
@@ -171,9 +244,9 @@ class _ActionCard extends StatelessWidget {
                   width: 64,
                   height: 64,
                   decoration: BoxDecoration(
-                    color: iconColor.withOpacity(0.12),
+                    color: iconColor.withValues(alpha: 0.12),
                     borderRadius: BorderRadius.circular(18),
-                    border: Border.all(color: iconColor.withOpacity(0.25)),
+                    border: Border.all(color: iconColor.withValues(alpha: 0.25)),
                   ),
                   child: Icon(icon, color: iconColor, size: 30),
                 ),
@@ -204,7 +277,7 @@ class _ActionCard extends StatelessWidget {
                               color: AppColors.primaryDim,
                               borderRadius: BorderRadius.circular(999),
                               border: Border.all(
-                                color: AppColors.primary.withOpacity(0.25),
+                                color: AppColors.primary.withValues(alpha: 0.25),
                               ),
                             ),
                             child: Text(
