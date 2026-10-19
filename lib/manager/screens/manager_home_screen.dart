@@ -103,7 +103,7 @@ class _ManagerHomeScreenState extends State<ManagerHomeScreen> {
                     counts[status] = (counts[status] ?? 0) + 1;
                   }
                   int count(List<String> statuses) => statuses.fold(
-                      0, (sum, st) => sum + (counts[st] ?? 0));
+                      0, (total, st) => total + (counts[st] ?? 0));
 
                   const newStatuses = ['customer_requested'];
                   const ongoingStatuses = [

@@ -1,12 +1,11 @@
-import 'dart:html' as html;
-import 'dart:typed_data';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:file_saver/file_saver.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
-import 'package:to_csv/to_csv.dart' as exportCsv;
+import 'package:to_csv/to_csv.dart' as export_csv;
 
 import '../../forms/office_form.dart';
 import '../../forms/create_manager_form.dart';
@@ -192,7 +191,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
       return;
     }
 
-    exportCsv.myCSV(_exportHeader, rows);
+    export_csv.myCSV(_exportHeader, rows);
   }
 
   Future<void> _exportToPDF() async {
@@ -258,12 +257,22 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
 
     final Uint8List bytes = await pdf.save();
 
-    final blob = html.Blob([bytes], 'application/pdf');
-    final url = html.Url.createObjectUrlFromBlob(blob);
-    html.AnchorElement(href: url)
-      ..setAttribute('download', 'orderrapport.pdf')
-      ..click();
-    html.Url.revokeObjectUrl(url);
+    // Webben laddar ner filen direkt, övriga plattformar visar en spara-dialog.
+    if (kIsWeb) {
+      await FileSaver.instance.saveFile(
+        name: 'orderrapport',
+        bytes: bytes,
+        fileExtension: 'pdf',
+        mimeType: MimeType.pdf,
+      );
+    } else {
+      await FileSaver.instance.saveAs(
+        name: 'orderrapport',
+        bytes: bytes,
+        fileExtension: 'pdf',
+        mimeType: MimeType.pdf,
+      );
+    }
   }
 
   @override

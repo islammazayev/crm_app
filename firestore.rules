@@ -245,6 +245,8 @@ service cloud.firestore {
                    'paymentMethodDetails', 'paymentSentAt'
                  ])
             )
+            // Genomförd bara i samma batch som kontorets saldo bokförs för
+            // just den här transaktionen (se offices-regeln).
             || (
               request.resource.data.status == 'completed'
               && resource.data.status == 'customer_accepted'
@@ -252,6 +254,8 @@ service cloud.firestore {
                    'status', 'chosenPaymentMethodId', 'paymentMethodLabel',
                    'paymentMethodDetails', 'paymentSentAt', 'completedAt'
                  ])
+              && getAfter(/databases/$(database)/documents/offices/$(resource.data.officeId))
+                   .data.get('lastBookedTransactionId', '') == docId
             )
           )
         )
