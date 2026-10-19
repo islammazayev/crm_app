@@ -46,3 +46,6 @@ app.*.map.json
 
 # Lokal API-nyckel för valutakurser
 fx_key.json
+
+# Firebase CLI:s cache vid deploy
+.firebase/
