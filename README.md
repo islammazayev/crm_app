@@ -45,6 +45,18 @@ flutter build web --dart-define-from-file=fx_key.json
 
 Obs: i webbygget hamnar nyckeln i den publicerade JavaScript-koden och kan läsas av den som letar.
 
+### Publicera webbappen
+
+Webbappen ligger på Firebase Hosting: **https://crm-app-1e5fe.web.app**
+
+```bash
+scripts/deploy_web.sh            # bygger och publicerar live
+scripts/deploy_web.sh preview    # tillfällig förhandsadress (7 dagar) att testa på först
+```
+
+Skriptet bygger med `fx_key.json` och kör `firebase deploy --only hosting`. Reglerna
+deployas inte här, utan med `firebase deploy --only firestore`.
+
 ### Första gången efter uppdateringen
 
 1. Deploya reglerna (ovan).
