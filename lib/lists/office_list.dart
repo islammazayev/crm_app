@@ -79,13 +79,15 @@ class _OfficeListState extends State<OfficeList> {
             border: const OutlineInputBorder(),
           ),
         ),
-        if (_hasSearched) ...[  
-          const SizedBox(height: 8),
+        const SizedBox(height: 8),
+        if (_hasSearched) ...[
           Text(
             l10n.officesFound(filtered.length),
             style: const TextStyle(color: Colors.grey, fontSize: 13),
           ),
           const SizedBox(height: 8),
+        ],
+        ...[
           if (filtered.isEmpty)
             Padding(
               padding: const EdgeInsets.only(top: 16),
@@ -199,7 +201,7 @@ class _OfficeListState extends State<OfficeList> {
               );
             },
           ),
-        ], // end if (_hasSearched)
+        ],
       ],
     );
   }

@@ -872,4 +872,47 @@ class AppLocalizationsEn extends AppLocalizations {
   String rateNotFound(Object from, Object to) {
     return 'No rate found for $from → $to.';
   }
+
+  @override
+  String get customers => 'Customers';
+
+  @override
+  String get offices => 'Offices';
+
+  @override
+  String get managers => 'Managers';
+
+  @override
+  String get adminPanel => 'Admin panel';
+
+  @override
+  String get adminPanelIntro =>
+      'Choose what to manage. The number on each card shows how many there are.';
+
+  @override
+  String get customersCardSubtitle =>
+      'Create, search, edit and delete customers.';
+
+  @override
+  String get officesCardSubtitle =>
+      'Create offices, edit currencies and payment methods, and top up balances.';
+
+  @override
+  String get managersCardSubtitle =>
+      'Create managers and see which office they work at.';
+
+  @override
+  String get ordersCardSubtitle =>
+      'All transactions with filters, profit report and CSV/PDF export.';
+
+  @override
+  String get existingManagers => 'Existing managers';
+
+  @override
+  String get noOfficeAssigned => 'No office';
+
+  @override
+  String officeValue(Object office) {
+    return 'Office: $office';
+  }
 }

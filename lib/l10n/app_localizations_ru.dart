@@ -878,4 +878,46 @@ class AppLocalizationsRu extends AppLocalizations {
   String rateNotFound(Object from, Object to) {
     return 'Курс для $from → $to не найден.';
   }
+
+  @override
+  String get customers => 'Клиенты';
+
+  @override
+  String get offices => 'Офисы';
+
+  @override
+  String get managers => 'Менеджеры';
+
+  @override
+  String get adminPanel => 'Панель администратора';
+
+  @override
+  String get adminPanelIntro =>
+      'Выберите, чем управлять. Число на карточке показывает количество.';
+
+  @override
+  String get customersCardSubtitle =>
+      'Создание, поиск, изменение и удаление клиентов.';
+
+  @override
+  String get officesCardSubtitle =>
+      'Создание офисов, валюты и способы оплаты, пополнение баланса.';
+
+  @override
+  String get managersCardSubtitle => 'Создание менеджеров и их офисы.';
+
+  @override
+  String get ordersCardSubtitle =>
+      'Все переводы с фильтрами, отчётом о прибыли и экспортом в CSV/PDF.';
+
+  @override
+  String get existingManagers => 'Текущие менеджеры';
+
+  @override
+  String get noOfficeAssigned => 'Нет офиса';
+
+  @override
+  String officeValue(Object office) {
+    return 'Офис: $office';
+  }
 }

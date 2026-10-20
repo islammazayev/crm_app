@@ -242,5 +242,17 @@
   "clientShort": "Клиент {clientId}",
   "rateMissingApiKey": "Нет API-ключа для курсов валют. Соберите приложение с --dart-define-from-file=fx_key.json.",
   "rateHttpError": "Не удалось получить курс (HTTP {code}).",
-  "rateNotFound": "Курс для {from} → {to} не найден."
+  "rateNotFound": "Курс для {from} → {to} не найден.",
+  "customers": "Клиенты",
+  "offices": "Офисы",
+  "managers": "Менеджеры",
+  "adminPanel": "Панель администратора",
+  "adminPanelIntro": "Выберите, чем управлять. Число на карточке показывает количество.",
+  "customersCardSubtitle": "Создание, поиск, изменение и удаление клиентов.",
+  "officesCardSubtitle": "Создание офисов, валюты и способы оплаты, пополнение баланса.",
+  "managersCardSubtitle": "Создание менеджеров и их офисы.",
+  "ordersCardSubtitle": "Все переводы с фильтрами, отчётом о прибыли и экспортом в CSV/PDF.",
+  "existingManagers": "Текущие менеджеры",
+  "noOfficeAssigned": "Нет офиса",
+  "officeValue": "Офис: {office}"
 }

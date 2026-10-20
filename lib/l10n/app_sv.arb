@@ -645,5 +645,24 @@
         "type": "Object"
       }
     }
+  },
+  "customers": "Kunder",
+  "offices": "Kontor",
+  "managers": "Managers",
+  "adminPanel": "Admin-panel",
+  "adminPanelIntro": "Välj vad du vill hantera. Siffran på varje kort visar hur många det finns.",
+  "customersCardSubtitle": "Skapa, sök, ändra och ta bort kunder.",
+  "officesCardSubtitle": "Skapa kontor, ändra valutor och betalningsmetoder och fyll på saldon.",
+  "managersCardSubtitle": "Skapa managers och se vilket kontor de arbetar på.",
+  "ordersCardSubtitle": "Alla transaktioner med filter, vinstrapport och export till CSV/PDF.",
+  "existingManagers": "Befintliga managers",
+  "noOfficeAssigned": "Inget kontor",
+  "officeValue": "Kontor: {office}",
+  "@officeValue": {
+    "placeholders": {
+      "office": {
+        "type": "Object"
+      }
+    }
   }
 }

@@ -1,0 +1,435 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:file_saver/file_saver.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart' show rootBundle;
+import 'package:pdf/pdf.dart';
+import 'package:pdf/widgets.dart' as pw;
+import 'package:to_csv/to_csv.dart' as export_csv;
+
+import '../../l10n/app_localizations.dart';
+import '../../l10n/locale_controller.dart';
+import '../../l10n/status_text.dart';
+import '../../lists/order_history_list.dart';
+import '../../models/transaction_model.dart';
+import '../../utils/client_id.dart';
+import '../../widgets/order_report.dart';
+
+/// Admin: orderhistorik med filter på kontor och datum, rapport och export.
+class AdminOrdersPage extends StatefulWidget {
+  const AdminOrdersPage({super.key});
+
+  @override
+  State<AdminOrdersPage> createState() => _AdminOrdersPageState();
+}
+
+class _AdminOrdersPageState extends State<AdminOrdersPage> {
+  DateTimeRange? _selectedRange;
+  String? _selectedOfficeId; // null = alla kontor
+
+  CollectionReference get officesRef =>
+      FirebaseFirestore.instance.collection('offices');
+  CollectionReference get transactionsRef =>
+      FirebaseFirestore.instance.collection('transactions');
+
+  Future<void> _deleteTransaction(String id) async {
+    await transactionsRef.doc(id).delete();
+  }
+
+  static List<String> _exportHeader(AppLocalizations l10n) => <String>[
+    l10n.exportDate,
+    l10n.exportStatus,
+    l10n.exportClientId,
+    l10n.exportOffice,
+    l10n.exportFrom,
+    l10n.exportTo,
+    l10n.exportAmount,
+    l10n.exportFee,
+    l10n.exportPayout,
+  ];
+
+  /// Hämtar alla transaktioner (senaste först) som rader för CSV/PDF.
+  /// Läser det nuvarande schemat (createAt, fromCurrency, amountFrom ...) och
+  /// faller tillbaka på de äldre fälten (date, currency, amount, fee).
+  /// Sorteringen sker här, inte i queryn, eftersom orderBy utelämnar
+  /// dokument som saknar fältet.
+  Future<List<List<String>>> _loadExportRows(AppLocalizations l10n) async {
+    final query = await transactionsRef.get();
+
+    DateTime? dateOf(Map<String, dynamic> data) {
+      final ts =
+          (data['createAt'] ?? data['completedAt'] ?? data['date'])
+              as Timestamp?;
+      return ts?.toDate();
+    }
+
+    final entries =
+        query.docs.map((doc) => doc.data() as Map<String, dynamic>).toList()
+          ..sort((a, b) {
+            final da = dateOf(a);
+            final dbb = dateOf(b);
+            if (da == null && dbb == null) return 0;
+            if (da == null) return 1;
+            if (dbb == null) return -1;
+            return dbb.compareTo(da); // senaste först
+          });
+
+    return entries.map((data) {
+      return <String>[
+        dateOf(data)?.toIso8601String() ?? '',
+        statusText(l10n, (data['status'] ?? '').toString()),
+        (data['clientId'] ?? '').toString(),
+        (data['officeId'] ?? '').toString(),
+        (data['fromCurrency'] ?? data['currency'] ?? '').toString(),
+        (data['toCurrency'] ?? '').toString(),
+        (data['amountFrom'] ?? data['amount'] ?? 0).toString(),
+        (data['feeAmountFrom'] ?? data['fee'] ?? 0).toString(),
+        (data['amountToNet'] ?? '').toString(),
+      ];
+    }).toList();
+  }
+
+  Future<void> _exportToCSV() async {
+    final l10n = context.l10n;
+    final rows = await _loadExportRows(l10n);
+
+    if (rows.isEmpty) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l10n.noTransactionsToExport)));
+      return;
+    }
+
+    export_csv.myCSV(_exportHeader(l10n), rows);
+  }
+
+  Future<void> _exportToPDF() async {
+    final l10n = context.l10n;
+    final rows = await _loadExportRows(l10n);
+
+    if (rows.isEmpty) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l10n.noTransactionsToExport)));
+      return;
+    }
+
+    // Standardtypsnittet i pdf saknar kyrilliska och turkiska tecken.
+    final pdf = pw.Document(
+      theme: pw.ThemeData.withFont(
+        base: pw.Font.ttf(
+          await rootBundle.load('assets/fonts/Roboto-Regular.ttf'),
+        ),
+        bold: pw.Font.ttf(
+          await rootBundle.load('assets/fonts/Roboto-Bold.ttf'),
+        ),
+      ),
+    );
+
+    pdf.addPage(
+      pw.MultiPage(
+        pageFormat: PdfPageFormat.a4,
+        build: (context) {
+          return [
+            pw.Text(l10n.orderReport, style: pw.TextStyle(fontSize: 24)),
+            pw.SizedBox(height: 16),
+            pw.Table(
+              border: pw.TableBorder.all(width: 0.5),
+              children: [
+                pw.TableRow(
+                  children: _exportHeader(l10n)
+                      .map(
+                        (h) => pw.Padding(
+                          padding: const pw.EdgeInsets.all(4),
+                          child: pw.Text(
+                            h,
+                            style: pw.TextStyle(
+                              fontSize: 10,
+                              fontWeight: pw.FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      )
+                      .toList(),
+                ),
+                ...rows.map((cells) {
+                  return pw.TableRow(
+                    children: cells
+                        .map(
+                          (c) => pw.Padding(
+                            padding: const pw.EdgeInsets.all(4),
+                            child: pw.Text(
+                              c,
+                              style: const pw.TextStyle(fontSize: 9),
+                            ),
+                          ),
+                        )
+                        .toList(),
+                  );
+                }),
+              ],
+            ),
+          ];
+        },
+      ),
+    );
+
+    final Uint8List bytes = await pdf.save();
+
+    // Webben laddar ner filen direkt, övriga plattformar visar en spara-dialog.
+    if (kIsWeb) {
+      await FileSaver.instance.saveFile(
+        name: 'orderrapport',
+        bytes: bytes,
+        fileExtension: 'pdf',
+        mimeType: MimeType.pdf,
+      );
+    } else {
+      await FileSaver.instance.saveAs(
+        name: 'orderrapport',
+        bytes: bytes,
+        fileExtension: 'pdf',
+        mimeType: MimeType.pdf,
+      );
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+
+    return Scaffold(
+      appBar: AppBar(title: Text(l10n.orderHistory)),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Office-filter
+            StreamBuilder<QuerySnapshot>(
+              stream: officesRef.snapshots(),
+              builder: (context, offSnap) {
+                final officeDocs = offSnap.hasData
+                    ? offSnap.data!.docs
+                    : <QueryDocumentSnapshot>[];
+
+                return DropdownButtonFormField<String?>(
+                  key: ValueKey(_selectedOfficeId),
+                  initialValue: _selectedOfficeId,
+                  decoration: InputDecoration(
+                    labelText: l10n.filterByOffice,
+                    border: const OutlineInputBorder(),
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 8,
+                    ),
+                  ),
+                  items: [
+                    DropdownMenuItem<String?>(
+                      value: null,
+                      child: Text(l10n.allOffices),
+                    ),
+                    ...officeDocs.map((d) {
+                      final data = d.data() as Map<String, dynamic>;
+                      final label =
+                          '${data['country'] ?? ''} – ${data['city'] ?? ''}';
+                      return DropdownMenuItem<String?>(
+                        value: d.id,
+                        child: Text(label),
+                      );
+                    }),
+                  ],
+                  onChanged: (v) => setState(() => _selectedOfficeId = v),
+                );
+              },
+            ),
+
+            const SizedBox(height: 12),
+
+            // Datumintervall + export
+            Row(
+              children: [
+                ElevatedButton(
+                  onPressed: () async {
+                    final now = DateTime.now();
+                    final picked = await showDateRangePicker(
+                      context: context,
+                      firstDate: DateTime(now.year - 3),
+                      lastDate: DateTime(now.year + 1),
+                      initialDateRange:
+                          _selectedRange ??
+                          DateTimeRange(
+                            start: DateTime(now.year, now.month, now.day),
+                            end: DateTime(now.year, now.month, now.day),
+                          ),
+                    );
+                    if (picked != null) {
+                      setState(() => _selectedRange = picked);
+                    }
+                  },
+                  child: Text(
+                    _selectedRange == null
+                        ? l10n.chooseDateRange
+                        : '${_selectedRange!.start.toLocal().toString().split(' ').first} – ${_selectedRange!.end.toLocal().toString().split(' ').first}',
+                  ),
+                ),
+                if (_selectedRange != null)
+                  IconButton(
+                    icon: const Icon(Icons.clear),
+                    tooltip: l10n.clearDates,
+                    onPressed: () => setState(() => _selectedRange = null),
+                  ),
+                const Spacer(),
+                ElevatedButton.icon(
+                  onPressed: _exportToCSV,
+                  icon: const Icon(Icons.table_chart),
+                  label: Text(l10n.exportCsv),
+                ),
+                const SizedBox(width: 8),
+                ElevatedButton.icon(
+                  onPressed: _exportToPDF,
+                  icon: const Icon(Icons.picture_as_pdf),
+                  label: Text(l10n.exportPdf),
+                ),
+              ],
+            ),
+
+            const SizedBox(height: 8),
+
+            // Visa ingenting förrän datumintervall valts
+            if (_selectedRange == null)
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 32),
+                child: Center(
+                  child: Text(
+                    l10n.chooseDateRangeHint,
+                    style: const TextStyle(color: Colors.grey),
+                  ),
+                ),
+              )
+            else
+              // Transaktionslista med dubbelt filter
+              StreamBuilder<QuerySnapshot>(
+                stream: transactionsRef
+                    .orderBy('createAt', descending: true)
+                    .snapshots(),
+                builder: (context, snapshot) {
+                  if (!snapshot.hasData) {
+                    return const Padding(
+                      padding: EdgeInsets.all(16),
+                      child: Center(child: CircularProgressIndicator()),
+                    );
+                  }
+                  final docs = snapshot.data!.docs;
+
+                  // Filtrera på officeId
+                  var filtered = _selectedOfficeId == null
+                      ? List.of(docs)
+                      : docs
+                            .where(
+                              (d) =>
+                                  (d.data()
+                                      as Map<String, dynamic>)['officeId'] ==
+                                  _selectedOfficeId,
+                            )
+                            .toList();
+
+                  // Filtrera på datum
+                  // Använder createAt (primärt), sedan completedAt, sedan date
+                  if (_selectedRange != null) {
+                    filtered = filtered.where((d) {
+                      final data = d.data() as Map<String, dynamic>;
+                      final date =
+                          (data['createAt'] as Timestamp? ??
+                                  data['completedAt'] as Timestamp? ??
+                                  data['date'] as Timestamp?)
+                              ?.toDate();
+                      if (date == null) return false;
+                      final rangeStart = DateTime(
+                        _selectedRange!.start.year,
+                        _selectedRange!.start.month,
+                        _selectedRange!.start.day,
+                      );
+                      final rangeEnd = DateTime(
+                        _selectedRange!.end.year,
+                        _selectedRange!.end.month,
+                        _selectedRange!.end.day,
+                        23,
+                        59,
+                        59,
+                      );
+                      return !date.isBefore(rangeStart) &&
+                          !date.isAfter(rangeEnd);
+                    }).toList();
+                  }
+
+                  // Bygg filtrerade TransactionModel. Läser det nuvarande schemat
+                  // (kundens förfrågningar) och faller tillbaka på äldre fält.
+                  final filteredTransactions = filtered.map((d) {
+                    final data = d.data() as Map<String, dynamic>;
+                    final clientId = formatClientId(data['clientId']);
+                    final customerName = (data['customerName'] ?? '')
+                        .toString()
+                        .trim();
+                    final label = [
+                      if (clientId.isNotEmpty) l10n.clientShort(clientId),
+                      if (customerName.isNotEmpty) customerName,
+                    ].join(' · ');
+
+                    return TransactionModel(
+                      sender: customerName.isNotEmpty
+                          ? customerName
+                          : (data['sender'] ?? '').toString(),
+                      receiver: (data['receiver'] ?? '').toString(),
+                      currency: (data['fromCurrency'] ?? data['currency'] ?? '')
+                          .toString(),
+                      amount: _toDouble(data['amountFrom'] ?? data['amount']),
+                      fee: _toDouble(data['feeAmountFrom'] ?? data['fee']),
+                      country: (data['country'] ?? '').toString(),
+                      city: (data['city'] ?? '').toString(),
+                      date:
+                          (data['createAt'] as Timestamp? ??
+                                  data['completedAt'] as Timestamp? ??
+                                  data['date'] as Timestamp?)
+                              ?.toDate() ??
+                          DateTime.now(),
+                      status: (data['status'] ?? '').toString(),
+                      label: label,
+                      toCurrency: (data['toCurrency'] ?? '').toString(),
+                    );
+                  }).toList();
+
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      OrderReport(transactions: filteredTransactions),
+                      SizedBox(
+                        height: 300,
+                        child: OrderHistoryList(
+                          transactions: filteredTransactions,
+                          onDelete: (index) {
+                            final id = filtered[index].id;
+                            _deleteTransaction(id);
+                          },
+                        ),
+                      ),
+                    ],
+                  );
+                },
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Läser ett tal ur Firestore-data. Tal används som de är, text som ser ut som
+/// ett tal omvandlas och allt annat blir 0 (så att rapporten aldrig kraschar).
+double _toDouble(Object? value) {
+  if (value is num) return value.toDouble();
+  if (value is String) return double.tryParse(value.replaceAll(',', '.')) ?? 0;
+  return 0;
+}

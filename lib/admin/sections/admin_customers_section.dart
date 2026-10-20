@@ -274,10 +274,6 @@ class _AdminCustomersSectionState extends State<AdminCustomersSection> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          l10n.createUpdateCustomer,
-          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-        ),
         CustomerForm(
           onSubmit: ({
             int? clientId,
