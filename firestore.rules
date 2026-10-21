@@ -63,6 +63,12 @@ service cloud.firestore {
         && request.resource.data.transactionNo == getAfter(metaTransactionsPath()).data.lastTransactionNo;
     }
 
+    // Numret är valfritt (äldre appversioner skickar inget, och admin numrerar
+    // dem i efterhand), men finns det måste det vara nästa lediga nummer.
+    function hasValidTransactionNo() {
+      return !('transactionNo' in request.resource.data) || hasNextTransactionNo();
+    }
+
     // ─── USERS ──────────────────────────────────────────────────────
     match /users/{userId} {
       allow read: if isSignedIn() && (isAdmin() || request.auth.uid == userId);
@@ -209,7 +215,7 @@ service cloud.firestore {
              'amountTo', 'feePercent', 'feeAmount', 'paymentMethod',
              'status', 'createAt', 'transactionNo'
            ])
-        && hasNextTransactionNo()
+        && hasValidTransactionNo()
         && request.resource.data.amountFrom is number
         && request.resource.data.amountFrom > 0
         && request.resource.data.officeId is string
@@ -238,7 +244,7 @@ service cloud.firestore {
              'feeAmountTo', 'status', 'createAt', 'createdByManager',
              'transactionNo'
            ])
-        && hasNextTransactionNo()
+        && hasValidTransactionNo()
         && request.resource.data.amountFrom is number
         && request.resource.data.amountFrom > 0
         && request.resource.data.amountToNet is number
