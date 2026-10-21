@@ -261,5 +261,7 @@
   "clearSearch": "Clear search",
   "customersShown": "Showing {shown} of {total} customers",
   "noCustomersMatch": "No customers match the search.",
-  "placesValue": "Offices: {places}"
+  "placesValue": "Offices: {places}",
+  "typeToSearchCustomers": "{total, plural, =1{Type in the search box to show customers (1 customer in total).} other{Type in the search box to show customers ({total} customers in total).}}",
+  "customersShownLimited": "Showing the first {shown} of {count} matches. Type more to narrow it down."
 }

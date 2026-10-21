@@ -1679,6 +1679,18 @@ abstract class AppLocalizations {
   /// In sv, this message translates to:
   /// **'Kontor: {places}'**
   String placesValue(Object places);
+
+  /// No description provided for @typeToSearchCustomers.
+  ///
+  /// In sv, this message translates to:
+  /// **'{total, plural, =1{Skriv i sökrutan för att visa kunder (1 kund totalt).} other{Skriv i sökrutan för att visa kunder ({total} kunder totalt).}}'**
+  String typeToSearchCustomers(int total);
+
+  /// No description provided for @customersShownLimited.
+  ///
+  /// In sv, this message translates to:
+  /// **'Visar de första {shown} av {count} träffar. Skriv mer för att begränsa.'**
+  String customersShownLimited(int shown, int count);
 }
 
 class _AppLocalizationsDelegate

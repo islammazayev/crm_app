@@ -940,4 +940,21 @@ class AppLocalizationsTr extends AppLocalizations {
   String placesValue(Object places) {
     return 'Şubeler: $places';
   }
+
+  @override
+  String typeToSearchCustomers(int total) {
+    String _temp0 = intl.Intl.pluralLogic(
+      total,
+      locale: localeName,
+      other:
+          'Müşterileri görmek için arama kutusuna yazın (toplam $total müşteri).',
+      one: 'Müşterileri görmek için arama kutusuna yazın (toplam 1 müşteri).',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String customersShownLimited(int shown, int count) {
+    return '$count eşleşmenin ilk $shown tanesi gösteriliyor. Daraltmak için daha fazla yazın.';
+  }
 }

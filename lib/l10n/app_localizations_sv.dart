@@ -945,4 +945,20 @@ class AppLocalizationsSv extends AppLocalizations {
   String placesValue(Object places) {
     return 'Kontor: $places';
   }
+
+  @override
+  String typeToSearchCustomers(int total) {
+    String _temp0 = intl.Intl.pluralLogic(
+      total,
+      locale: localeName,
+      other: 'Skriv i sökrutan för att visa kunder ($total kunder totalt).',
+      one: 'Skriv i sökrutan för att visa kunder (1 kund totalt).',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String customersShownLimited(int shown, int count) {
+    return 'Visar de första $shown av $count träffar. Skriv mer för att begränsa.';
+  }
 }

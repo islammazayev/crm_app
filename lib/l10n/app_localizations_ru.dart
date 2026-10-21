@@ -946,4 +946,22 @@ class AppLocalizationsRu extends AppLocalizations {
   String placesValue(Object places) {
     return 'Офисы: $places';
   }
+
+  @override
+  String typeToSearchCustomers(int total) {
+    String _temp0 = intl.Intl.pluralLogic(
+      total,
+      locale: localeName,
+      other: 'Начните вводить, чтобы увидеть клиентов (всего $total клиента).',
+      many: 'Начните вводить, чтобы увидеть клиентов (всего $total клиентов).',
+      few: 'Начните вводить, чтобы увидеть клиентов (всего $total клиента).',
+      one: 'Начните вводить, чтобы увидеть клиентов (всего $total клиент).',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String customersShownLimited(int shown, int count) {
+    return 'Показаны первые $shown из $count совпадений. Уточните запрос.';
+  }
 }
