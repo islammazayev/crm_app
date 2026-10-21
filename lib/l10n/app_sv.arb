@@ -727,8 +727,8 @@
   },
   "searchOfficesLabel": "Sök på land, stad eller valuta",
   "searchManagersLabel": "Sök på namn, e-post, telefon eller kontor",
-  "searchTransactionsLabel": "Klient-ID, namn, telefon, kontor, valuta eller status",
-  "searchTransactionsHint": "t.ex. 00, Ali, Grozny, RUB, genomförd",
+  "searchTransactionsLabel": "Nr, klient-ID, namn, telefon, kontor, valuta eller status",
+  "searchTransactionsHint": "t.ex. T-00012, 00, Ali, Grozny, RUB",
   "searchOrChooseDatesHint": "Skriv i sökrutan eller välj ett datumintervall för att visa transaktioner.",
   "editManagerTitle": "Ändra manager",
   "managerUpdated": "Manager uppdaterad.",
@@ -827,5 +827,14 @@
     }
   },
   "sendNewProposal": "Skicka nytt förslag",
-  "counterOfferAccepted": "Motförslaget är accepterat."
+  "counterOfferAccepted": "Motförslaget är accepterat.",
+  "transactionNoValue": "Transaktion {no}",
+  "@transactionNoValue": {
+    "placeholders": {
+      "no": {
+        "type": "Object"
+      }
+    }
+  },
+  "exportNo": "Nr"
 }

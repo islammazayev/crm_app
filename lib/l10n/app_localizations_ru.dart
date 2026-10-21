@@ -1002,10 +1002,10 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get searchTransactionsLabel =>
-      'ID клиента, имя, телефон, офис, валюта или статус';
+      '№, ID клиента, имя, телефон, офис, валюта или статус';
 
   @override
-  String get searchTransactionsHint => 'напр. 00, Али, Грозный, RUB, выполнено';
+  String get searchTransactionsHint => 'напр. T-00012, 00, Али, Грозный, RUB';
 
   @override
   String get searchOrChooseDatesHint =>
@@ -1149,4 +1149,12 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get counterOfferAccepted => 'Встречное предложение принято.';
+
+  @override
+  String transactionNoValue(Object no) {
+    return 'Перевод $no';
+  }
+
+  @override
+  String get exportNo => '№';
 }

@@ -995,10 +995,10 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String get searchTransactionsLabel =>
-      'Klient-ID, namn, telefon, kontor, valuta eller status';
+      'Nr, klient-ID, namn, telefon, kontor, valuta eller status';
 
   @override
-  String get searchTransactionsHint => 't.ex. 00, Ali, Grozny, RUB, genomförd';
+  String get searchTransactionsHint => 't.ex. T-00012, 00, Ali, Grozny, RUB';
 
   @override
   String get searchOrChooseDatesHint =>
@@ -1141,4 +1141,12 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String get counterOfferAccepted => 'Motförslaget är accepterat.';
+
+  @override
+  String transactionNoValue(Object no) {
+    return 'Transaktion $no';
+  }
+
+  @override
+  String get exportNo => 'Nr';
 }

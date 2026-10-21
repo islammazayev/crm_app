@@ -269,8 +269,8 @@
   "searchMatches": "{count, plural, one{{count} совпадение} few{{count} совпадения} many{{count} совпадений} other{{count} совпадения}}",
   "searchOfficesLabel": "Поиск по стране, городу или валюте",
   "searchManagersLabel": "Поиск по имени, почте, телефону или офису",
-  "searchTransactionsLabel": "ID клиента, имя, телефон, офис, валюта или статус",
-  "searchTransactionsHint": "напр. 00, Али, Грозный, RUB, выполнено",
+  "searchTransactionsLabel": "№, ID клиента, имя, телефон, офис, валюта или статус",
+  "searchTransactionsHint": "напр. T-00012, 00, Али, Грозный, RUB",
   "searchOrChooseDatesHint": "Введите запрос или выберите период, чтобы увидеть переводы.",
   "editManagerTitle": "Изменить менеджера",
   "managerUpdated": "Менеджер обновлён.",
@@ -307,5 +307,7 @@
   "counterOfferManagerHint": "Примите комиссию клиента или отправьте новое предложение. Клиент больше не может предлагать.",
   "acceptCounterOffer": "Принять {fee}%",
   "sendNewProposal": "Отправить новое предложение",
-  "counterOfferAccepted": "Встречное предложение принято."
+  "counterOfferAccepted": "Встречное предложение принято.",
+  "transactionNoValue": "Перевод {no}",
+  "exportNo": "№"
 }

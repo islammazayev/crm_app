@@ -991,10 +991,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get searchTransactionsLabel =>
-      'Client ID, name, phone, office, currency or status';
+      'No., client ID, name, phone, office, currency or status';
 
   @override
-  String get searchTransactionsHint => 'e.g. 00, Ali, Grozny, RUB, completed';
+  String get searchTransactionsHint => 'e.g. T-00012, 00, Ali, Grozny, RUB';
 
   @override
   String get searchOrChooseDatesHint =>
@@ -1137,4 +1137,12 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get counterOfferAccepted => 'The counter-offer was accepted.';
+
+  @override
+  String transactionNoValue(Object no) {
+    return 'Transaction $no';
+  }
+
+  @override
+  String get exportNo => 'No.';
 }

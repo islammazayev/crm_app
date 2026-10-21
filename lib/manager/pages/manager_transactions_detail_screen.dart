@@ -4,6 +4,7 @@ import '../../l10n/locale_controller.dart';
 import '../../l10n/rate_error_text.dart';
 import '../../l10n/status_text.dart';
 import '../../services/exchange_rate_service.dart';
+import '../../utils/transaction_no.dart';
 import '../../utils/balances.dart';
 
 class ManagerTransactionDetailScreen extends StatefulWidget {
@@ -323,6 +324,18 @@ class _ManagerTransactionDetailScreenState
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                if (formatTransactionNo(data['transactionNo']).isNotEmpty) ...[
+                  Text(
+                    l10n.transactionNoValue(
+                      formatTransactionNo(data['transactionNo']),
+                    ),
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                ],
                 Text(l10n.customerSends(amountFrom, fromCurrency)),
                 const SizedBox(height: 8),
                 Text(l10n.toCurrencyValue(toCurrency)),

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 
 import '../../l10n/locale_controller.dart';
 import '../../utils/client_id.dart';
+import '../../utils/transaction_no.dart';
 import 'manager_transactions_detail_screen.dart';
 
 class ManagerTransactionsPage extends StatelessWidget {
@@ -10,6 +11,7 @@ class ManagerTransactionsPage extends StatelessWidget {
 
   /// Om satt visas bara transaktioner med någon av dessa statusar.
   final List<String>? statuses;
+
   /// Rubrik i appbaren. Utan rubrik visas "Transaktioner".
   final String? title;
 
@@ -35,7 +37,9 @@ class ManagerTransactionsPage extends StatelessWidget {
         stream: query.snapshots(),
         builder: (context, snapshot) {
           if (snapshot.hasError) {
-            return Center(child: Text(l10n.errorWithDetails('${snapshot.error}')));
+            return Center(
+              child: Text(l10n.errorWithDetails('${snapshot.error}')),
+            );
           }
           if (!snapshot.hasData) {
             return const Center(child: CircularProgressIndicator());
@@ -92,6 +96,8 @@ class ManagerTransactionsPage extends StatelessWidget {
               }
 
               final titleLines = <String>[];
+              final no = formatTransactionNo(data['transactionNo']);
+              if (no.isNotEmpty) titleLines.add(no);
               if (clientId.isNotEmpty) {
                 titleLines.add(l10n.clientIdValue(clientId));
               }
@@ -101,7 +107,9 @@ class ManagerTransactionsPage extends StatelessWidget {
 
               return ListTile(
                 title: Text(
-                  titleLines.isNotEmpty ? titleLines.join('\n') : l10n.unknownClient,
+                  titleLines.isNotEmpty
+                      ? titleLines.join('\n')
+                      : l10n.unknownClient,
                 ),
                 subtitle: Text(
                   '$amountFrom $fromCurrency → $toCurrency'
@@ -114,9 +122,8 @@ class ManagerTransactionsPage extends StatelessWidget {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (_) => ManagerTransactionDetailScreen(
-                        transactionId: doc.id,
-                      ),
+                      builder: (_) =>
+                          ManagerTransactionDetailScreen(transactionId: doc.id),
                     ),
                   );
                 },

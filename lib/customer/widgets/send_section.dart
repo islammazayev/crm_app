@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 import '../../l10n/app_localizations.dart';
 import '../../l10n/locale_controller.dart';
+import '../../services/transaction_number_service.dart';
 
 /// Ett kontor så som kunden får se det (från `officeListings`):
 /// bara land, stad och vilka valutor kontoret hanterar.
@@ -168,7 +169,7 @@ class _SendSectionState extends State<SendSection> {
           '${customer['firstName'] ?? ''} ${customer['lastName'] ?? ''}'
               .trim();
 
-      await FirebaseFirestore.instance.collection('transactions').add({
+      await TransactionNumberService.create({
         'customerId': user.uid,
         'clientId': (customer['clientId'] ?? '').toString(),
         // Kopieras in så att kontorets manager ser vem kunden är utan att

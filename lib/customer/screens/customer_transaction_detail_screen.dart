@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 import '../../l10n/locale_controller.dart';
+import '../../utils/transaction_no.dart';
 import 'customer_transactions_screen.dart' show customerStatusText;
 
 class CustomerTransactionDetailScreen extends StatelessWidget {
@@ -62,6 +63,18 @@ class CustomerTransactionDetailScreen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                if (formatTransactionNo(data['transactionNo']).isNotEmpty) ...[
+                  Text(
+                    l10n.transactionNoValue(
+                      formatTransactionNo(data['transactionNo']),
+                    ),
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                ],
                 Text(l10n.youSend(amountFrom, fromCurrency)),
                 const SizedBox(height: 8),
                 Text(

@@ -1725,13 +1725,13 @@ abstract class AppLocalizations {
   /// No description provided for @searchTransactionsLabel.
   ///
   /// In sv, this message translates to:
-  /// **'Klient-ID, namn, telefon, kontor, valuta eller status'**
+  /// **'Nr, klient-ID, namn, telefon, kontor, valuta eller status'**
   String get searchTransactionsLabel;
 
   /// No description provided for @searchTransactionsHint.
   ///
   /// In sv, this message translates to:
-  /// **'t.ex. 00, Ali, Grozny, RUB, genomförd'**
+  /// **'t.ex. T-00012, 00, Ali, Grozny, RUB'**
   String get searchTransactionsHint;
 
   /// No description provided for @searchOrChooseDatesHint.
@@ -1955,6 +1955,18 @@ abstract class AppLocalizations {
   /// In sv, this message translates to:
   /// **'Motförslaget är accepterat.'**
   String get counterOfferAccepted;
+
+  /// No description provided for @transactionNoValue.
+  ///
+  /// In sv, this message translates to:
+  /// **'Transaktion {no}'**
+  String transactionNoValue(Object no);
+
+  /// No description provided for @exportNo.
+  ///
+  /// In sv, this message translates to:
+  /// **'Nr'**
+  String get exportNo;
 }
 
 class _AppLocalizationsDelegate

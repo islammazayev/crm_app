@@ -6,6 +6,7 @@ import '../../screens/auth_gate.dart';
 import '../../services/currency_migration_service.dart';
 import '../../services/customer_counter_service.dart';
 import '../../services/office_listing_service.dart';
+import '../../services/transaction_number_service.dart';
 import '../../theme/app_theme.dart';
 import '../../widgets/action_card.dart';
 import '../../widgets/language_button.dart';
@@ -48,6 +49,11 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
       await CustomerCounterService.ensureAtLeastMax();
     } catch (e) {
       debugPrint('Självläkning (kundräknare) misslyckades: $e');
+    }
+    try {
+      await TransactionNumberService.backfill();
+    } catch (e) {
+      debugPrint('Självläkning (transaktionsnummer) misslyckades: $e');
     }
   }
 

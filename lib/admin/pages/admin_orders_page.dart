@@ -14,6 +14,7 @@ import '../../lists/order_history_list.dart';
 import '../../models/transaction_model.dart';
 import '../../utils/client_id.dart';
 import '../../utils/search_match.dart';
+import '../../utils/transaction_no.dart';
 import '../../widgets/confirm_delete.dart';
 import '../../widgets/order_report.dart';
 import '../../widgets/search_summary.dart';
@@ -151,6 +152,7 @@ class _AdminOrdersPageState extends State<AdminOrdersPage> {
   }
 
   static List<String> _exportHeader(AppLocalizations l10n) => <String>[
+    l10n.exportNo,
     l10n.exportDate,
     l10n.exportStatus,
     l10n.exportClientId,
@@ -190,6 +192,7 @@ class _AdminOrdersPageState extends State<AdminOrdersPage> {
 
     return entries.map((data) {
       return <String>[
+        formatTransactionNo(data['transactionNo']),
         dateOf(data)?.toIso8601String() ?? '',
         statusText(l10n, (data['status'] ?? '').toString()),
         (data['clientId'] ?? '').toString(),
@@ -510,9 +513,14 @@ class _AdminOrdersPageState extends State<AdminOrdersPage> {
                           ids: [
                             formatClientId(data['clientId']),
                             '${data['clientId'] ?? ''}',
+                            '${data['transactionNo'] ?? ''}',
+                            formatTransactionNo(
+                              data['transactionNo'],
+                            ).replaceFirst('T-', ''),
                           ],
                           phones: [phone],
                           texts: [
+                            formatTransactionNo(data['transactionNo']),
                             '${data['customerName'] ?? data['sender'] ?? ''}',
                             phone,
                             officeLabels['${data['officeId']}'] ?? '',
@@ -533,7 +541,9 @@ class _AdminOrdersPageState extends State<AdminOrdersPage> {
                       final customerName = (data['customerName'] ?? '')
                           .toString()
                           .trim();
+                      final no = formatTransactionNo(data['transactionNo']);
                       final label = [
+                        if (no.isNotEmpty) no,
                         if (clientId.isNotEmpty) l10n.clientShort(clientId),
                         if (customerName.isNotEmpty) customerName,
                       ].join(' · ');
