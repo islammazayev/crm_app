@@ -1565,6 +1565,78 @@ abstract class AppLocalizations {
   /// In sv, this message translates to:
   /// **'Ingen kurs hittades för {from} → {to}.'**
   String rateNotFound(Object from, Object to);
+
+  /// No description provided for @customers.
+  ///
+  /// In sv, this message translates to:
+  /// **'Kunder'**
+  String get customers;
+
+  /// No description provided for @offices.
+  ///
+  /// In sv, this message translates to:
+  /// **'Kontor'**
+  String get offices;
+
+  /// No description provided for @managers.
+  ///
+  /// In sv, this message translates to:
+  /// **'Managers'**
+  String get managers;
+
+  /// No description provided for @adminPanel.
+  ///
+  /// In sv, this message translates to:
+  /// **'Admin-panel'**
+  String get adminPanel;
+
+  /// No description provided for @adminPanelIntro.
+  ///
+  /// In sv, this message translates to:
+  /// **'Välj vad du vill hantera. Siffran på varje kort visar hur många det finns.'**
+  String get adminPanelIntro;
+
+  /// No description provided for @customersCardSubtitle.
+  ///
+  /// In sv, this message translates to:
+  /// **'Skapa, sök, ändra och ta bort kunder.'**
+  String get customersCardSubtitle;
+
+  /// No description provided for @officesCardSubtitle.
+  ///
+  /// In sv, this message translates to:
+  /// **'Skapa kontor, ändra valutor och betalningsmetoder och fyll på saldon.'**
+  String get officesCardSubtitle;
+
+  /// No description provided for @managersCardSubtitle.
+  ///
+  /// In sv, this message translates to:
+  /// **'Skapa managers och se vilket kontor de arbetar på.'**
+  String get managersCardSubtitle;
+
+  /// No description provided for @ordersCardSubtitle.
+  ///
+  /// In sv, this message translates to:
+  /// **'Alla transaktioner med filter, vinstrapport och export till CSV/PDF.'**
+  String get ordersCardSubtitle;
+
+  /// No description provided for @existingManagers.
+  ///
+  /// In sv, this message translates to:
+  /// **'Befintliga managers'**
+  String get existingManagers;
+
+  /// No description provided for @noOfficeAssigned.
+  ///
+  /// In sv, this message translates to:
+  /// **'Inget kontor'**
+  String get noOfficeAssigned;
+
+  /// No description provided for @officeValue.
+  ///
+  /// In sv, this message translates to:
+  /// **'Kontor: {office}'**
+  String officeValue(Object office);
 }
 
 class _AppLocalizationsDelegate

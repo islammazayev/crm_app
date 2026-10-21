@@ -242,5 +242,17 @@
   "clientShort": "Client {clientId}",
   "rateMissingApiKey": "The exchange-rate API key is missing. Build the app with --dart-define-from-file=fx_key.json.",
   "rateHttpError": "Could not fetch the exchange rate (HTTP {code}).",
-  "rateNotFound": "No rate found for {from} → {to}."
+  "rateNotFound": "No rate found for {from} → {to}.",
+  "customers": "Customers",
+  "offices": "Offices",
+  "managers": "Managers",
+  "adminPanel": "Admin panel",
+  "adminPanelIntro": "Choose what to manage. The number on each card shows how many there are.",
+  "customersCardSubtitle": "Create, search, edit and delete customers.",
+  "officesCardSubtitle": "Create offices, edit currencies and payment methods, and top up balances.",
+  "managersCardSubtitle": "Create managers and see which office they work at.",
+  "ordersCardSubtitle": "All transactions with filters, profit report and CSV/PDF export.",
+  "existingManagers": "Existing managers",
+  "noOfficeAssigned": "No office",
+  "officeValue": "Office: {office}"
 }

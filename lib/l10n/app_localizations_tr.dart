@@ -872,4 +872,47 @@ class AppLocalizationsTr extends AppLocalizations {
   String rateNotFound(Object from, Object to) {
     return '$from → $to için kur bulunamadı.';
   }
+
+  @override
+  String get customers => 'Müşteriler';
+
+  @override
+  String get offices => 'Şubeler';
+
+  @override
+  String get managers => 'Yöneticiler';
+
+  @override
+  String get adminPanel => 'Yönetim paneli';
+
+  @override
+  String get adminPanelIntro =>
+      'Neyi yöneteceğinizi seçin. Her karttaki sayı kaç tane olduğunu gösterir.';
+
+  @override
+  String get customersCardSubtitle =>
+      'Müşteri oluşturun, arayın, düzenleyin ve silin.';
+
+  @override
+  String get officesCardSubtitle =>
+      'Şube oluşturun, döviz ve ödeme yöntemlerini düzenleyin, bakiye yükleyin.';
+
+  @override
+  String get managersCardSubtitle =>
+      'Yönetici oluşturun ve hangi şubede çalıştıklarını görün.';
+
+  @override
+  String get ordersCardSubtitle =>
+      'Filtreler, kâr raporu ve CSV/PDF dışa aktarma ile tüm işlemler.';
+
+  @override
+  String get existingManagers => 'Mevcut yöneticiler';
+
+  @override
+  String get noOfficeAssigned => 'Şube yok';
+
+  @override
+  String officeValue(Object office) {
+    return 'Şube: $office';
+  }
 }

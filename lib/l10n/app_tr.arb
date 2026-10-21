@@ -242,5 +242,17 @@
   "clientShort": "Müşteri {clientId}",
   "rateMissingApiKey": "Döviz kuru API anahtarı eksik. Uygulamayı --dart-define-from-file=fx_key.json ile derleyin.",
   "rateHttpError": "Döviz kuru alınamadı (HTTP {code}).",
-  "rateNotFound": "{from} → {to} için kur bulunamadı."
+  "rateNotFound": "{from} → {to} için kur bulunamadı.",
+  "customers": "Müşteriler",
+  "offices": "Şubeler",
+  "managers": "Yöneticiler",
+  "adminPanel": "Yönetim paneli",
+  "adminPanelIntro": "Neyi yöneteceğinizi seçin. Her karttaki sayı kaç tane olduğunu gösterir.",
+  "customersCardSubtitle": "Müşteri oluşturun, arayın, düzenleyin ve silin.",
+  "officesCardSubtitle": "Şube oluşturun, döviz ve ödeme yöntemlerini düzenleyin, bakiye yükleyin.",
+  "managersCardSubtitle": "Yönetici oluşturun ve hangi şubede çalıştıklarını görün.",
+  "ordersCardSubtitle": "Filtreler, kâr raporu ve CSV/PDF dışa aktarma ile tüm işlemler.",
+  "existingManagers": "Mevcut yöneticiler",
+  "noOfficeAssigned": "Şube yok",
+  "officeValue": "Şube: {office}"
 }

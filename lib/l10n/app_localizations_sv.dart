@@ -877,4 +877,46 @@ class AppLocalizationsSv extends AppLocalizations {
   String rateNotFound(Object from, Object to) {
     return 'Ingen kurs hittades för $from → $to.';
   }
+
+  @override
+  String get customers => 'Kunder';
+
+  @override
+  String get offices => 'Kontor';
+
+  @override
+  String get managers => 'Managers';
+
+  @override
+  String get adminPanel => 'Admin-panel';
+
+  @override
+  String get adminPanelIntro =>
+      'Välj vad du vill hantera. Siffran på varje kort visar hur många det finns.';
+
+  @override
+  String get customersCardSubtitle => 'Skapa, sök, ändra och ta bort kunder.';
+
+  @override
+  String get officesCardSubtitle =>
+      'Skapa kontor, ändra valutor och betalningsmetoder och fyll på saldon.';
+
+  @override
+  String get managersCardSubtitle =>
+      'Skapa managers och se vilket kontor de arbetar på.';
+
+  @override
+  String get ordersCardSubtitle =>
+      'Alla transaktioner med filter, vinstrapport och export till CSV/PDF.';
+
+  @override
+  String get existingManagers => 'Befintliga managers';
+
+  @override
+  String get noOfficeAssigned => 'Inget kontor';
+
+  @override
+  String officeValue(Object office) {
+    return 'Kontor: $office';
+  }
 }
