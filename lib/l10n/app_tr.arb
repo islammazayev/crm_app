@@ -271,5 +271,15 @@
   "searchManagersLabel": "Ad, e-posta, telefon veya şubeye göre ara",
   "searchTransactionsLabel": "Müşteri No, ad, telefon, şube, döviz veya durum",
   "searchTransactionsHint": "örn. 00, Ali, Grozni, RUB, tamamlandı",
-  "searchOrChooseDatesHint": "İşlemleri görmek için arama kutusuna yazın veya bir tarih aralığı seçin."
+  "searchOrChooseDatesHint": "İşlemleri görmek için arama kutusuna yazın veya bir tarih aralığı seçin.",
+  "editManagerTitle": "Yöneticiyi düzenle",
+  "managerUpdated": "Yönetici güncellendi.",
+  "deleteManagerTitle": "Yönetici silinsin mi?",
+  "deleteManagerConfirm": "{name} artık uygulamaya erişemeyecek. Giriş hesabı kalır; Firebase konsolunda Authentication bölümünden silinebilir.",
+  "managerDeleted": "Yönetici silindi.",
+  "editTransactionTitle": "İşlemi düzenle",
+  "statusChangeNoBalance": "Durumu değiştirmek şube bakiyesini değiştirmez.",
+  "transactionUpdated": "İşlem güncellendi.",
+  "deleteTransactionTitle": "İşlem silinsin mi?",
+  "deleteTransactionConfirm": "İşlem kalıcı olarak silinecek. Şube bakiyesi değişmez."
 }
