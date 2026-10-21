@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 
 import '../l10n/locale_controller.dart';
 import '../models/office.dart';
+import '../utils/search_match.dart';
+import '../widgets/search_summary.dart';
 
 class OfficeList extends StatefulWidget {
   final List<Office> offices;
@@ -27,7 +29,6 @@ class OfficeList extends StatefulWidget {
 class _OfficeListState extends State<OfficeList> {
   final TextEditingController _searchController = TextEditingController();
   String _searchQuery = '';
-  bool _hasSearched = false;
 
   CollectionReference get usersRef =>
       FirebaseFirestore.instance.collection('users');
@@ -37,8 +38,7 @@ class _OfficeListState extends State<OfficeList> {
     super.initState();
     _searchController.addListener(() {
       setState(() {
-        _searchQuery = _searchController.text.toLowerCase().trim();
-        _hasSearched = _searchQuery.isNotEmpty;
+        _searchQuery = _searchController.text;
       });
     });
   }
@@ -57,15 +57,20 @@ class _OfficeListState extends State<OfficeList> {
       return Center(child: Text(l10n.noOfficesYet));
     }
 
-    final filtered = <MapEntry<int, Office>>[];
-    for (int i = 0; i < widget.offices.length; i++) {
-      final office = widget.offices[i];
-      if (_searchQuery.isEmpty ||
-          office.country.toLowerCase().contains(_searchQuery) ||
-          office.city.toLowerCase().contains(_searchQuery)) {
-        filtered.add(MapEntry(i, office));
+    final empty = isEmptySearch(_searchQuery);
+    final matches = <MapEntry<int, Office>>[];
+    if (!empty) {
+      for (int i = 0; i < widget.offices.length; i++) {
+        final office = widget.offices[i];
+        if (matchesSearch(
+          _searchQuery,
+          texts: [office.country, office.city, ...office.currencies],
+        )) {
+          matches.add(MapEntry(i, office));
+        }
       }
     }
+    final filtered = matches.take(maxSearchResults).toList();
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -74,30 +79,19 @@ class _OfficeListState extends State<OfficeList> {
         TextField(
           controller: _searchController,
           decoration: InputDecoration(
-            labelText: l10n.searchCountryOrCity,
+            labelText: l10n.searchOfficesLabel,
             prefixIcon: const Icon(Icons.search),
             border: const OutlineInputBorder(),
           ),
         ),
-        const SizedBox(height: 8),
-        if (_hasSearched) ...[
-          Text(
-            l10n.officesFound(filtered.length),
-            style: const TextStyle(color: Colors.grey, fontSize: 13),
-          ),
-          const SizedBox(height: 8),
-        ],
-        ...[
-          if (filtered.isEmpty)
-            Padding(
-              padding: const EdgeInsets.only(top: 16),
-              child: Text(
-                l10n.noOfficesMatch,
-                style: const TextStyle(color: Colors.grey),
-              ),
-            )
-          else
-            ListView.builder(
+        SearchSummary(
+          empty: empty,
+          total: widget.offices.length,
+          matches: matches.length,
+          shown: filtered.length,
+        ),
+        if (filtered.isNotEmpty)
+          ListView.builder(
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
             itemCount: filtered.length,
@@ -139,15 +133,15 @@ class _OfficeListState extends State<OfficeList> {
                           }
                           final doc = snapshot.data!.docs.first;
                           final data = doc.data() as Map<String, dynamic>;
-                          final firstName =
-                              (data['firstName'] ?? '').toString();
-                          final lastName =
-                              (data['lastName'] ?? '').toString();
+                          final firstName = (data['firstName'] ?? '')
+                              .toString();
+                          final lastName = (data['lastName'] ?? '').toString();
                           final email = (data['email'] ?? '').toString();
                           final phone = (data['phone'] ?? '').toString();
-                          final fullName = [firstName, lastName]
-                              .where((s) => s.isNotEmpty)
-                              .join(' ');
+                          final fullName = [
+                            firstName,
+                            lastName,
+                          ].where((s) => s.isNotEmpty).join(' ');
                           final managerLine = fullName.isNotEmpty
                               ? l10n.managerValue(fullName)
                               : l10n.managerUnknown;
@@ -176,8 +170,10 @@ class _OfficeListState extends State<OfficeList> {
                       // ─ Ändra-knapp ───────────────────────────
                       if (widget.onEdit != null)
                         IconButton(
-                          icon: const Icon(Icons.edit_outlined,
-                              color: Colors.blue),
+                          icon: const Icon(
+                            Icons.edit_outlined,
+                            color: Colors.blue,
+                          ),
                           tooltip: l10n.editOffice,
                           onPressed: () => widget.onEdit!(originalIndex),
                         ),
@@ -201,7 +197,6 @@ class _OfficeListState extends State<OfficeList> {
               );
             },
           ),
-        ],
       ],
     );
   }

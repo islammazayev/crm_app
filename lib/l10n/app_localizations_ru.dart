@@ -964,4 +964,50 @@ class AppLocalizationsRu extends AppLocalizations {
   String customersShownLimited(int shown, int count) {
     return 'Показаны первые $shown из $count совпадений. Уточните запрос.';
   }
+
+  @override
+  String typeToSearch(int total) {
+    String _temp0 = intl.Intl.pluralLogic(
+      total,
+      locale: localeName,
+      other: 'Начните вводить, чтобы увидеть результаты (всего $total).',
+      many: 'Начните вводить, чтобы увидеть результаты (всего $total).',
+      few: 'Начните вводить, чтобы увидеть результаты (всего $total).',
+      one: 'Начните вводить, чтобы увидеть результаты (всего $total).',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get noSearchMatches => 'Ничего не найдено.';
+
+  @override
+  String searchMatches(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count совпадения',
+      many: '$count совпадений',
+      few: '$count совпадения',
+      one: '$count совпадение',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get searchOfficesLabel => 'Поиск по стране, городу или валюте';
+
+  @override
+  String get searchManagersLabel => 'Поиск по имени, почте, телефону или офису';
+
+  @override
+  String get searchTransactionsLabel =>
+      'ID клиента, имя, телефон, офис, валюта или статус';
+
+  @override
+  String get searchTransactionsHint => 'напр. 00, Али, Грозный, RUB, выполнено';
+
+  @override
+  String get searchOrChooseDatesHint =>
+      'Введите запрос или выберите период, чтобы увидеть переводы.';
 }
