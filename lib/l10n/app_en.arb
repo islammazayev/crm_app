@@ -263,5 +263,13 @@
   "noCustomersMatch": "No customers match the search.",
   "placesValue": "Offices: {places}",
   "typeToSearchCustomers": "{total, plural, =1{Type in the search box to show customers (1 customer in total).} other{Type in the search box to show customers ({total} customers in total).}}",
-  "customersShownLimited": "Showing the first {shown} of {count} matches. Type more to narrow it down."
+  "customersShownLimited": "Showing the first {shown} of {count} matches. Type more to narrow it down.",
+  "typeToSearch": "{total, plural, =1{Type in the search box to show matches (1 in total).} other{Type in the search box to show matches ({total} in total).}}",
+  "noSearchMatches": "No matches.",
+  "searchMatches": "{count, plural, =1{1 match} other{{count} matches}}",
+  "searchOfficesLabel": "Search by country, city or currency",
+  "searchManagersLabel": "Search by name, email, phone or office",
+  "searchTransactionsLabel": "Client ID, name, phone, office, currency or status",
+  "searchTransactionsHint": "e.g. 00, Ali, Grozny, RUB, completed",
+  "searchOrChooseDatesHint": "Type in the search box or choose a date range to show transactions."
 }

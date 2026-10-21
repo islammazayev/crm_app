@@ -707,5 +707,27 @@
         "type": "int"
       }
     }
-  }
+  },
+  "typeToSearch": "{total, plural, =1{Skriv i sökrutan för att visa träffar (1 totalt).} other{Skriv i sökrutan för att visa träffar ({total} totalt).}}",
+  "@typeToSearch": {
+    "placeholders": {
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "noSearchMatches": "Inga träffar.",
+  "searchMatches": "{count, plural, =1{1 träff} other{{count} träffar}}",
+  "@searchMatches": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "searchOfficesLabel": "Sök på land, stad eller valuta",
+  "searchManagersLabel": "Sök på namn, e-post, telefon eller kontor",
+  "searchTransactionsLabel": "Klient-ID, namn, telefon, kontor, valuta eller status",
+  "searchTransactionsHint": "t.ex. 00, Ali, Grozny, RUB, genomförd",
+  "searchOrChooseDatesHint": "Skriv i sökrutan eller välj ett datumintervall för att visa transaktioner."
 }

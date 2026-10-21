@@ -263,5 +263,13 @@
   "noCustomersMatch": "Нет клиентов по этому запросу.",
   "placesValue": "Офисы: {places}",
   "typeToSearchCustomers": "{total, plural, one{Начните вводить, чтобы увидеть клиентов (всего {total} клиент).} few{Начните вводить, чтобы увидеть клиентов (всего {total} клиента).} many{Начните вводить, чтобы увидеть клиентов (всего {total} клиентов).} other{Начните вводить, чтобы увидеть клиентов (всего {total} клиента).}}",
-  "customersShownLimited": "Показаны первые {shown} из {count} совпадений. Уточните запрос."
+  "customersShownLimited": "Показаны первые {shown} из {count} совпадений. Уточните запрос.",
+  "typeToSearch": "{total, plural, one{Начните вводить, чтобы увидеть результаты (всего {total}).} few{Начните вводить, чтобы увидеть результаты (всего {total}).} many{Начните вводить, чтобы увидеть результаты (всего {total}).} other{Начните вводить, чтобы увидеть результаты (всего {total}).}}",
+  "noSearchMatches": "Ничего не найдено.",
+  "searchMatches": "{count, plural, one{{count} совпадение} few{{count} совпадения} many{{count} совпадений} other{{count} совпадения}}",
+  "searchOfficesLabel": "Поиск по стране, городу или валюте",
+  "searchManagersLabel": "Поиск по имени, почте, телефону или офису",
+  "searchTransactionsLabel": "ID клиента, имя, телефон, офис, валюта или статус",
+  "searchTransactionsHint": "напр. 00, Али, Грозный, RUB, выполнено",
+  "searchOrChooseDatesHint": "Введите запрос или выберите период, чтобы увидеть переводы."
 }

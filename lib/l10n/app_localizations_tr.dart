@@ -957,4 +957,46 @@ class AppLocalizationsTr extends AppLocalizations {
   String customersShownLimited(int shown, int count) {
     return '$count eşleşmenin ilk $shown tanesi gösteriliyor. Daraltmak için daha fazla yazın.';
   }
+
+  @override
+  String typeToSearch(int total) {
+    String _temp0 = intl.Intl.pluralLogic(
+      total,
+      locale: localeName,
+      other: 'Sonuçları görmek için arama kutusuna yazın (toplam $total).',
+      one: 'Sonuçları görmek için arama kutusuna yazın (toplam 1).',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get noSearchMatches => 'Sonuç yok.';
+
+  @override
+  String searchMatches(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count sonuç',
+      one: '1 sonuç',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get searchOfficesLabel => 'Ülke, şehir veya dövize göre ara';
+
+  @override
+  String get searchManagersLabel => 'Ad, e-posta, telefon veya şubeye göre ara';
+
+  @override
+  String get searchTransactionsLabel =>
+      'Müşteri No, ad, telefon, şube, döviz veya durum';
+
+  @override
+  String get searchTransactionsHint => 'örn. 00, Ali, Grozni, RUB, tamamlandı';
+
+  @override
+  String get searchOrChooseDatesHint =>
+      'İşlemleri görmek için arama kutusuna yazın veya bir tarih aralığı seçin.';
 }

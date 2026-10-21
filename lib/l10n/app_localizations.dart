@@ -1691,6 +1691,54 @@ abstract class AppLocalizations {
   /// In sv, this message translates to:
   /// **'Visar de första {shown} av {count} träffar. Skriv mer för att begränsa.'**
   String customersShownLimited(int shown, int count);
+
+  /// No description provided for @typeToSearch.
+  ///
+  /// In sv, this message translates to:
+  /// **'{total, plural, =1{Skriv i sökrutan för att visa träffar (1 totalt).} other{Skriv i sökrutan för att visa träffar ({total} totalt).}}'**
+  String typeToSearch(int total);
+
+  /// No description provided for @noSearchMatches.
+  ///
+  /// In sv, this message translates to:
+  /// **'Inga träffar.'**
+  String get noSearchMatches;
+
+  /// No description provided for @searchMatches.
+  ///
+  /// In sv, this message translates to:
+  /// **'{count, plural, =1{1 träff} other{{count} träffar}}'**
+  String searchMatches(int count);
+
+  /// No description provided for @searchOfficesLabel.
+  ///
+  /// In sv, this message translates to:
+  /// **'Sök på land, stad eller valuta'**
+  String get searchOfficesLabel;
+
+  /// No description provided for @searchManagersLabel.
+  ///
+  /// In sv, this message translates to:
+  /// **'Sök på namn, e-post, telefon eller kontor'**
+  String get searchManagersLabel;
+
+  /// No description provided for @searchTransactionsLabel.
+  ///
+  /// In sv, this message translates to:
+  /// **'Klient-ID, namn, telefon, kontor, valuta eller status'**
+  String get searchTransactionsLabel;
+
+  /// No description provided for @searchTransactionsHint.
+  ///
+  /// In sv, this message translates to:
+  /// **'t.ex. 00, Ali, Grozny, RUB, genomförd'**
+  String get searchTransactionsHint;
+
+  /// No description provided for @searchOrChooseDatesHint.
+  ///
+  /// In sv, this message translates to:
+  /// **'Skriv i sökrutan eller välj ett datumintervall för att visa transaktioner.'**
+  String get searchOrChooseDatesHint;
 }
 
 class _AppLocalizationsDelegate

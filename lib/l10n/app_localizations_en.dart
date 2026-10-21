@@ -957,4 +957,46 @@ class AppLocalizationsEn extends AppLocalizations {
   String customersShownLimited(int shown, int count) {
     return 'Showing the first $shown of $count matches. Type more to narrow it down.';
   }
+
+  @override
+  String typeToSearch(int total) {
+    String _temp0 = intl.Intl.pluralLogic(
+      total,
+      locale: localeName,
+      other: 'Type in the search box to show matches ($total in total).',
+      one: 'Type in the search box to show matches (1 in total).',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get noSearchMatches => 'No matches.';
+
+  @override
+  String searchMatches(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count matches',
+      one: '1 match',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get searchOfficesLabel => 'Search by country, city or currency';
+
+  @override
+  String get searchManagersLabel => 'Search by name, email, phone or office';
+
+  @override
+  String get searchTransactionsLabel =>
+      'Client ID, name, phone, office, currency or status';
+
+  @override
+  String get searchTransactionsHint => 'e.g. 00, Ali, Grozny, RUB, completed';
+
+  @override
+  String get searchOrChooseDatesHint =>
+      'Type in the search box or choose a date range to show transactions.';
 }

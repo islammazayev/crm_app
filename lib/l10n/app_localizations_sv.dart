@@ -961,4 +961,46 @@ class AppLocalizationsSv extends AppLocalizations {
   String customersShownLimited(int shown, int count) {
     return 'Visar de första $shown av $count träffar. Skriv mer för att begränsa.';
   }
+
+  @override
+  String typeToSearch(int total) {
+    String _temp0 = intl.Intl.pluralLogic(
+      total,
+      locale: localeName,
+      other: 'Skriv i sökrutan för att visa träffar ($total totalt).',
+      one: 'Skriv i sökrutan för att visa träffar (1 totalt).',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get noSearchMatches => 'Inga träffar.';
+
+  @override
+  String searchMatches(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count träffar',
+      one: '1 träff',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get searchOfficesLabel => 'Sök på land, stad eller valuta';
+
+  @override
+  String get searchManagersLabel => 'Sök på namn, e-post, telefon eller kontor';
+
+  @override
+  String get searchTransactionsLabel =>
+      'Klient-ID, namn, telefon, kontor, valuta eller status';
+
+  @override
+  String get searchTransactionsHint => 't.ex. 00, Ali, Grozny, RUB, genomförd';
+
+  @override
+  String get searchOrChooseDatesHint =>
+      'Skriv i sökrutan eller välj ett datumintervall för att visa transaktioner.';
 }

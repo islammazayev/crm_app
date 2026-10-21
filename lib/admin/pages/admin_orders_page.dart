@@ -13,7 +13,9 @@ import '../../l10n/status_text.dart';
 import '../../lists/order_history_list.dart';
 import '../../models/transaction_model.dart';
 import '../../utils/client_id.dart';
+import '../../utils/search_match.dart';
 import '../../widgets/order_report.dart';
+import '../../widgets/search_summary.dart';
 
 /// Admin: orderhistorik med filter på kontor och datum, rapport och export.
 class AdminOrdersPage extends StatefulWidget {
@@ -25,6 +27,15 @@ class AdminOrdersPage extends StatefulWidget {
 
 class _AdminOrdersPageState extends State<AdminOrdersPage> {
   DateTimeRange? _selectedRange;
+  final _searchController = TextEditingController();
+  String _query = '';
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
   String? _selectedOfficeId; // null = alla kontor
 
   CollectionReference get officesRef =>
@@ -207,6 +218,17 @@ class _AdminOrdersPageState extends State<AdminOrdersPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            TextField(
+              controller: _searchController,
+              onChanged: (v) => setState(() => _query = v),
+              decoration: InputDecoration(
+                labelText: l10n.searchTransactionsLabel,
+                hintText: l10n.searchTransactionsHint,
+                prefixIcon: const Icon(Icons.search),
+              ),
+            ),
+            const SizedBox(height: 12),
+
             // Office-filter
             StreamBuilder<QuerySnapshot>(
               stream: officesRef.snapshots(),
@@ -298,126 +320,172 @@ class _AdminOrdersPageState extends State<AdminOrdersPage> {
 
             const SizedBox(height: 8),
 
-            // Visa ingenting förrän datumintervall valts
-            if (_selectedRange == null)
+            // Visa ingenting förrän admin har sökt eller valt datumintervall
+            if (_selectedRange == null && isEmptySearch(_query))
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 32),
                 child: Center(
                   child: Text(
-                    l10n.chooseDateRangeHint,
+                    l10n.searchOrChooseDatesHint,
                     style: const TextStyle(color: Colors.grey),
                   ),
                 ),
               )
             else
-              // Transaktionslista med dubbelt filter
+              // Transaktionslista: kontor, datum och sökning
               StreamBuilder<QuerySnapshot>(
-                stream: transactionsRef
-                    .orderBy('createAt', descending: true)
-                    .snapshots(),
-                builder: (context, snapshot) {
-                  if (!snapshot.hasData) {
-                    return const Padding(
-                      padding: EdgeInsets.all(16),
-                      child: Center(child: CircularProgressIndicator()),
-                    );
-                  }
-                  final docs = snapshot.data!.docs;
+                stream: officesRef.snapshots(),
+                builder: (context, offSnap) => StreamBuilder<QuerySnapshot>(
+                  stream: transactionsRef
+                      .orderBy('createAt', descending: true)
+                      .snapshots(),
+                  builder: (context, snapshot) {
+                    if (!snapshot.hasData) {
+                      return const Padding(
+                        padding: EdgeInsets.all(16),
+                        child: Center(child: CircularProgressIndicator()),
+                      );
+                    }
+                    final docs = snapshot.data!.docs;
 
-                  // Filtrera på officeId
-                  var filtered = _selectedOfficeId == null
-                      ? List.of(docs)
-                      : docs
-                            .where(
-                              (d) =>
-                                  (d.data()
-                                      as Map<String, dynamic>)['officeId'] ==
-                                  _selectedOfficeId,
-                            )
-                            .toList();
+                    // Filtrera på officeId
+                    var filtered = _selectedOfficeId == null
+                        ? List.of(docs)
+                        : docs
+                              .where(
+                                (d) =>
+                                    (d.data()
+                                        as Map<String, dynamic>)['officeId'] ==
+                                    _selectedOfficeId,
+                              )
+                              .toList();
 
-                  // Filtrera på datum
-                  // Använder createAt (primärt), sedan completedAt, sedan date
-                  if (_selectedRange != null) {
-                    filtered = filtered.where((d) {
+                    // Filtrera på datum
+                    // Använder createAt (primärt), sedan completedAt, sedan date
+                    if (_selectedRange != null) {
+                      filtered = filtered.where((d) {
+                        final data = d.data() as Map<String, dynamic>;
+                        final date =
+                            (data['createAt'] as Timestamp? ??
+                                    data['completedAt'] as Timestamp? ??
+                                    data['date'] as Timestamp?)
+                                ?.toDate();
+                        if (date == null) return false;
+                        final rangeStart = DateTime(
+                          _selectedRange!.start.year,
+                          _selectedRange!.start.month,
+                          _selectedRange!.start.day,
+                        );
+                        final rangeEnd = DateTime(
+                          _selectedRange!.end.year,
+                          _selectedRange!.end.month,
+                          _selectedRange!.end.day,
+                          23,
+                          59,
+                          59,
+                        );
+                        return !date.isBefore(rangeStart) &&
+                            !date.isAfter(rangeEnd);
+                      }).toList();
+                    }
+
+                    // Filtrera på sökningen
+                    final allMatches = filtered.length;
+                    if (!isEmptySearch(_query)) {
+                      final officeLabels = {
+                        for (final o in offSnap.data?.docs ?? const [])
+                          o.id: () {
+                            final od = o.data() as Map<String, dynamic>;
+                            return '${od['country'] ?? ''} ${od['city'] ?? ''}';
+                          }(),
+                      };
+                      filtered = filtered.where((d) {
+                        final data = d.data() as Map<String, dynamic>;
+                        final phone = '${data['customerPhone'] ?? ''}';
+                        return matchesSearch(
+                          _query,
+                          ids: [
+                            formatClientId(data['clientId']),
+                            '${data['clientId'] ?? ''}',
+                          ],
+                          phones: [phone],
+                          texts: [
+                            '${data['customerName'] ?? data['sender'] ?? ''}',
+                            phone,
+                            officeLabels['${data['officeId']}'] ?? '',
+                            '${data['fromCurrency'] ?? data['currency'] ?? ''}',
+                            '${data['toCurrency'] ?? ''}',
+                            statusText(l10n, '${data['status'] ?? ''}'),
+                          ],
+                        );
+                      }).toList();
+                    }
+                    final shown = filtered.take(maxSearchResults).toList();
+
+                    // Bygg filtrerade TransactionModel. Läser det nuvarande schemat
+                    // (kundens förfrågningar) och faller tillbaka på äldre fält.
+                    final filteredTransactions = filtered.map((d) {
                       final data = d.data() as Map<String, dynamic>;
-                      final date =
-                          (data['createAt'] as Timestamp? ??
-                                  data['completedAt'] as Timestamp? ??
-                                  data['date'] as Timestamp?)
-                              ?.toDate();
-                      if (date == null) return false;
-                      final rangeStart = DateTime(
-                        _selectedRange!.start.year,
-                        _selectedRange!.start.month,
-                        _selectedRange!.start.day,
+                      final clientId = formatClientId(data['clientId']);
+                      final customerName = (data['customerName'] ?? '')
+                          .toString()
+                          .trim();
+                      final label = [
+                        if (clientId.isNotEmpty) l10n.clientShort(clientId),
+                        if (customerName.isNotEmpty) customerName,
+                      ].join(' · ');
+
+                      return TransactionModel(
+                        sender: customerName.isNotEmpty
+                            ? customerName
+                            : (data['sender'] ?? '').toString(),
+                        receiver: (data['receiver'] ?? '').toString(),
+                        currency:
+                            (data['fromCurrency'] ?? data['currency'] ?? '')
+                                .toString(),
+                        amount: _toDouble(data['amountFrom'] ?? data['amount']),
+                        fee: _toDouble(data['feeAmountFrom'] ?? data['fee']),
+                        country: (data['country'] ?? '').toString(),
+                        city: (data['city'] ?? '').toString(),
+                        date:
+                            (data['createAt'] as Timestamp? ??
+                                    data['completedAt'] as Timestamp? ??
+                                    data['date'] as Timestamp?)
+                                ?.toDate() ??
+                            DateTime.now(),
+                        status: (data['status'] ?? '').toString(),
+                        label: label,
+                        toCurrency: (data['toCurrency'] ?? '').toString(),
                       );
-                      final rangeEnd = DateTime(
-                        _selectedRange!.end.year,
-                        _selectedRange!.end.month,
-                        _selectedRange!.end.day,
-                        23,
-                        59,
-                        59,
-                      );
-                      return !date.isBefore(rangeStart) &&
-                          !date.isAfter(rangeEnd);
                     }).toList();
-                  }
 
-                  // Bygg filtrerade TransactionModel. Läser det nuvarande schemat
-                  // (kundens förfrågningar) och faller tillbaka på äldre fält.
-                  final filteredTransactions = filtered.map((d) {
-                    final data = d.data() as Map<String, dynamic>;
-                    final clientId = formatClientId(data['clientId']);
-                    final customerName = (data['customerName'] ?? '')
-                        .toString()
-                        .trim();
-                    final label = [
-                      if (clientId.isNotEmpty) l10n.clientShort(clientId),
-                      if (customerName.isNotEmpty) customerName,
-                    ].join(' · ');
-
-                    return TransactionModel(
-                      sender: customerName.isNotEmpty
-                          ? customerName
-                          : (data['sender'] ?? '').toString(),
-                      receiver: (data['receiver'] ?? '').toString(),
-                      currency: (data['fromCurrency'] ?? data['currency'] ?? '')
-                          .toString(),
-                      amount: _toDouble(data['amountFrom'] ?? data['amount']),
-                      fee: _toDouble(data['feeAmountFrom'] ?? data['fee']),
-                      country: (data['country'] ?? '').toString(),
-                      city: (data['city'] ?? '').toString(),
-                      date:
-                          (data['createAt'] as Timestamp? ??
-                                  data['completedAt'] as Timestamp? ??
-                                  data['date'] as Timestamp?)
-                              ?.toDate() ??
-                          DateTime.now(),
-                      status: (data['status'] ?? '').toString(),
-                      label: label,
-                      toCurrency: (data['toCurrency'] ?? '').toString(),
-                    );
-                  }).toList();
-
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      OrderReport(transactions: filteredTransactions),
-                      SizedBox(
-                        height: 300,
-                        child: OrderHistoryList(
-                          transactions: filteredTransactions,
-                          onDelete: (index) {
-                            final id = filtered[index].id;
-                            _deleteTransaction(id);
-                          },
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Rapporten räknar alla träffar, listan visar högst 50.
+                        OrderReport(transactions: filteredTransactions),
+                        SearchSummary(
+                          empty: false,
+                          total: allMatches,
+                          matches: filtered.length,
+                          shown: shown.length,
                         ),
-                      ),
-                    ],
-                  );
-                },
+                        SizedBox(
+                          height: 300,
+                          child: OrderHistoryList(
+                            transactions: filteredTransactions
+                                .take(shown.length)
+                                .toList(),
+                            onDelete: (index) {
+                              final id = shown[index].id;
+                              _deleteTransaction(id);
+                            },
+                          ),
+                        ),
+                      ],
+                    );
+                  },
+                ),
               ),
           ],
         ),
