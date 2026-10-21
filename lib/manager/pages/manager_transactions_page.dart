@@ -78,6 +78,9 @@ class ManagerTransactionsPage extends StatelessWidget {
                 case 'customer_accepted':
                   statusText = l10n.managerStatusAccepted;
                   break;
+                case 'customer_countered':
+                  statusText = l10n.managerStatusCountered;
+                  break;
                 case 'customer_rejected':
                   statusText = l10n.managerStatusRejected;
                   break;

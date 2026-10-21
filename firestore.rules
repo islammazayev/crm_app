@@ -234,7 +234,14 @@ service cloud.firestore {
           && (
             (
               request.resource.data.status == 'manager_proposed'
-              && resource.data.status in ['customer_requested', 'manager_proposed']
+              && resource.data.status in ['customer_requested', 'manager_proposed', 'customer_countered']
+            )
+            // Acceptera kundens motförslag: kundens avgift, samma växelkurs.
+            || (
+              request.resource.data.status == 'customer_accepted'
+              && resource.data.status == 'customer_countered'
+              && request.resource.data.feePercent == resource.data.counterFeePercent
+              && request.resource.data.rateFromTo == resource.data.rateFromTo
             )
             // Skicka betalningsuppgifter till kunden efter accept (status oförändrad).
             || (
@@ -268,6 +275,25 @@ service cloud.firestore {
           && request.resource.data.status in ['customer_accepted', 'customer_rejected']
           && request.resource.data.diff(resource.data).changedKeys()
                .hasOnly(['status', 'customerDecisionAt'])
+        )
+
+        // Kund: ett enda motförslag med lägre avgift (och ev. meddelande).
+        || (
+          isCustomer()
+          && resource.data.customerId == request.auth.uid
+          && resource.data.status == 'manager_proposed'
+          && resource.data.get('counterOfferUsed', false) != true
+          && request.resource.data.status == 'customer_countered'
+          && request.resource.data.counterOfferUsed == true
+          && request.resource.data.counterFeePercent is number
+          && request.resource.data.counterFeePercent >= 0
+          && request.resource.data.counterFeePercent < resource.data.feePercent
+          && request.resource.data.get('counterMessage', '') is string
+          && request.resource.data.get('counterMessage', '').size() <= 500
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+               'status', 'customerDecisionAt', 'counterOfferUsed',
+               'counterFeePercent', 'counterMessage'
+             ])
         );
 
       allow delete: if isAdmin();

@@ -1061,4 +1061,80 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get soonBadge => 'Soon';
+
+  @override
+  String get statusCountered => 'Counter-offer from customer';
+
+  @override
+  String get customerStatusCountered =>
+      'Counter-offer sent – waiting for manager';
+
+  @override
+  String get managerStatusCountered => 'The customer sent a counter-offer';
+
+  @override
+  String get counterOffer => 'Counter-offer';
+
+  @override
+  String get counterOfferAlreadyUsed =>
+      'You have already used your counter-offer for this transaction.';
+
+  @override
+  String yourCounterOffer(Object fee) {
+    return 'Your counter-offer: $fee% fee';
+  }
+
+  @override
+  String get waitingForManagerAnswer => 'Waiting for the manager\'s answer.';
+
+  @override
+  String counterOfferIntro(Object fee) {
+    return 'The manager proposes a $fee% fee. What fee do you propose?';
+  }
+
+  @override
+  String get counterFeeLabel => 'Your fee (%)';
+
+  @override
+  String youWouldReceive(Object amount, Object currency) {
+    return 'You would receive: $amount $currency';
+  }
+
+  @override
+  String get messageOptional => 'Message (optional)';
+
+  @override
+  String get counterOfferOnce =>
+      'You can only send one counter-offer per transaction.';
+
+  @override
+  String counterFeeMustBeLower(Object fee) {
+    return 'Enter a fee from 0 and lower than $fee%.';
+  }
+
+  @override
+  String get sendCounterOffer => 'Send counter-offer';
+
+  @override
+  String get counterOfferSent => 'Your counter-offer has been sent.';
+
+  @override
+  String customerCounterOffer(Object counter, Object fee) {
+    return 'The customer proposes a $counter% fee instead of $fee%.';
+  }
+
+  @override
+  String get counterOfferManagerHint =>
+      'Accept the customer\'s fee or send a new proposal. The customer cannot counter again.';
+
+  @override
+  String acceptCounterOffer(Object fee) {
+    return 'Accept $fee%';
+  }
+
+  @override
+  String get sendNewProposal => 'Send new proposal';
+
+  @override
+  String get counterOfferAccepted => 'The counter-offer was accepted.';
 }

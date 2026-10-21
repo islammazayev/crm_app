@@ -15,6 +15,8 @@ String customerStatusText(AppLocalizations l10n, String status) {
       return l10n.customerStatusProposed;
     case 'customer_accepted':
       return l10n.customerStatusAccepted;
+    case 'customer_countered':
+      return l10n.customerStatusCountered;
     case 'customer_rejected':
       return l10n.customerStatusRejected;
     case 'completed':

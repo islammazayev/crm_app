@@ -47,6 +47,7 @@ class _AdminOrdersPageState extends State<AdminOrdersPage> {
   static const _statuses = [
     'customer_requested',
     'manager_proposed',
+    'customer_countered',
     'customer_accepted',
     'customer_rejected',
     'completed',
