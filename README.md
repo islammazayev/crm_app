@@ -54,7 +54,9 @@ scripts/deploy_web.sh            # bygger och publicerar live
 scripts/deploy_web.sh preview    # tillfällig förhandsadress (7 dagar) att testa på först
 ```
 
-Skriptet bygger med `fx_key.json` och kör `firebase deploy --only hosting`. Reglerna
+Skriptet bygger med `fx_key.json` och kör `firebase deploy --only hosting`.
+Alla filer skickas med `Cache-Control: no-cache`: Flutter ger filerna samma namn i varje
+bygge (även den bantade ikonfonten), så webbläsaren måste fråga efter nya versioner. Reglerna
 deployas inte här, utan med `firebase deploy --only firestore`.
 
 ### Första gången efter uppdateringen

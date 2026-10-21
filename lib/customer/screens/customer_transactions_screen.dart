@@ -33,8 +33,7 @@ class CustomerTransactionsScreen extends StatelessWidget {
 
     final query = FirebaseFirestore.instance
         .collection('transactions')
-        .where('customerId', isEqualTo: currentUserId)
-        .orderBy('createAt', descending: true);
+        .where('customerId', isEqualTo: currentUserId);
 
     final l10n = context.l10n;
 
@@ -53,7 +52,19 @@ class CustomerTransactionsScreen extends StatelessWidget {
             return Center(child: Text(l10n.noTransactionsYet));
           }
 
-          final docs = snapshot.data!.docs;
+          // Sorteras här (senaste först) i stället för i frågan, så att
+          // Firestore inte kräver ett extra index för customerId + createAt.
+          final docs = List.of(snapshot.data!.docs)
+            ..sort((a, b) {
+              DateTime? at(QueryDocumentSnapshot d) =>
+                  ((d.data() as Map<String, dynamic>)['createAt'] as Timestamp?)
+                      ?.toDate();
+              final ta = at(a), tb = at(b);
+              if (ta == null && tb == null) return 0;
+              if (ta == null) return -1; // nyss skapad, tid ej satt än
+              if (tb == null) return 1;
+              return tb.compareTo(ta);
+            });
 
           return ListView.builder(
             itemCount: docs.length,

@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '../theme/app_theme.dart';
 
 /// Stort klickbart kort med ikon, rubrik, beskrivning och en siffra/etikett.
-/// Används på startsidorna för manager och admin.
+/// Används på startsidorna för kund, manager och admin.
 class ActionCard extends StatelessWidget {
   final IconData icon;
   final Color iconColor;
