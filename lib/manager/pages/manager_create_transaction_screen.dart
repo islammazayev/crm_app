@@ -5,6 +5,7 @@ import '../../l10n/app_localizations.dart';
 import '../../l10n/locale_controller.dart';
 import '../../l10n/rate_error_text.dart';
 import '../../services/exchange_rate_service.dart';
+import '../../services/transaction_number_service.dart';
 import 'manager_transactions_detail_screen.dart';
 
 /// Manager registrerar en kund som kommer in på kontoret och saknar konto.
@@ -101,7 +102,7 @@ class _ManagerCreateTransactionScreenState
       final amountToGross = amount * rate;
       final amountToNet = (amount - feeAmountFrom) * rate;
 
-      final ref = await FirebaseFirestore.instance.collection('transactions').add({
+      final ref = await TransactionNumberService.create({
         'customerId': '',
         'customerName': name,
         'customerPhone': _phoneCtrl.text.trim(),

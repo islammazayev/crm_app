@@ -45,6 +45,24 @@ service cloud.firestore {
         : 0;
     }
 
+    function metaTransactionsPath() {
+      return /databases/$(database)/documents/meta/transactions;
+    }
+
+    function lastTransactionNoBefore() {
+      return exists(metaTransactionsPath())
+        ? get(metaTransactionsPath()).data.get('lastTransactionNo', 0)
+        : 0;
+    }
+
+    // Ny transaktion får nästa löpnummer: räknaren i meta/transactions ökas
+    // med exakt 1 i samma skrivning och numret är räknarens nya värde.
+    function hasNextTransactionNo() {
+      return request.resource.data.transactionNo is int
+        && getAfter(metaTransactionsPath()).data.lastTransactionNo == lastTransactionNoBefore() + 1
+        && request.resource.data.transactionNo == getAfter(metaTransactionsPath()).data.lastTransactionNo;
+    }
+
     // ─── USERS ──────────────────────────────────────────────────────
     match /users/{userId} {
       allow read: if isSignedIn() && (isAdmin() || request.auth.uid == userId);
@@ -111,6 +129,18 @@ service cloud.firestore {
         && isCustomer()
         && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['lastClientId'])
         && request.resource.data.lastClientId == resource.data.get('lastClientId', 0) + 1;
+
+      // Transaktionsräknaren räknas upp med exakt 1 när kund eller manager
+      // skapar en transaktion (se hasNextTransactionNo).
+      allow create: if docId == 'transactions'
+        && (isCustomer() || isManager())
+        && request.resource.data.keys().hasOnly(['lastTransactionNo'])
+        && request.resource.data.lastTransactionNo == 1;
+
+      allow update: if docId == 'transactions'
+        && (isCustomer() || isManager())
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['lastTransactionNo'])
+        && request.resource.data.lastTransactionNo == resource.data.get('lastTransactionNo', 0) + 1;
     }
 
     // Kontrollerar att saldoändringen på kontoret motsvarar den transaktion som
@@ -177,8 +207,9 @@ service cloud.firestore {
              'customerId', 'clientId', 'customerName', 'customerPhone',
              'officeId', 'fromCurrency', 'toCurrency', 'amountFrom',
              'amountTo', 'feePercent', 'feeAmount', 'paymentMethod',
-             'status', 'createAt'
+             'status', 'createAt', 'transactionNo'
            ])
+        && hasNextTransactionNo()
         && request.resource.data.amountFrom is number
         && request.resource.data.amountFrom > 0
         && request.resource.data.officeId is string
@@ -204,8 +235,10 @@ service cloud.firestore {
              'customerId', 'customerName', 'customerPhone', 'officeId',
              'fromCurrency', 'toCurrency', 'amountFrom', 'feePercent',
              'feeAmountFrom', 'rateFromTo', 'amountToGross', 'amountToNet',
-             'feeAmountTo', 'status', 'createAt', 'createdByManager'
+             'feeAmountTo', 'status', 'createAt', 'createdByManager',
+             'transactionNo'
            ])
+        && hasNextTransactionNo()
         && request.resource.data.amountFrom is number
         && request.resource.data.amountFrom > 0
         && request.resource.data.amountToNet is number

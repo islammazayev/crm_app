@@ -269,8 +269,8 @@
   "searchMatches": "{count, plural, =1{1 match} other{{count} matches}}",
   "searchOfficesLabel": "Search by country, city or currency",
   "searchManagersLabel": "Search by name, email, phone or office",
-  "searchTransactionsLabel": "Client ID, name, phone, office, currency or status",
-  "searchTransactionsHint": "e.g. 00, Ali, Grozny, RUB, completed",
+  "searchTransactionsLabel": "No., client ID, name, phone, office, currency or status",
+  "searchTransactionsHint": "e.g. T-00012, 00, Ali, Grozny, RUB",
   "searchOrChooseDatesHint": "Type in the search box or choose a date range to show transactions.",
   "editManagerTitle": "Edit manager",
   "managerUpdated": "Manager updated.",
@@ -307,5 +307,7 @@
   "counterOfferManagerHint": "Accept the customer's fee or send a new proposal. The customer cannot counter again.",
   "acceptCounterOffer": "Accept {fee}%",
   "sendNewProposal": "Send new proposal",
-  "counterOfferAccepted": "The counter-offer was accepted."
+  "counterOfferAccepted": "The counter-offer was accepted.",
+  "transactionNoValue": "Transaction {no}",
+  "exportNo": "No."
 }

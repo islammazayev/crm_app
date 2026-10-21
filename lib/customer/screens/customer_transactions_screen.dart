@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 import '../../l10n/app_localizations.dart';
 import '../../l10n/locale_controller.dart';
+import '../../utils/transaction_no.dart';
 import '../screens/customer_transaction_detail_screen.dart';
 
 /// Kundvänlig text för transaktionens status.
@@ -45,7 +46,9 @@ class CustomerTransactionsScreen extends StatelessWidget {
         stream: query.snapshots(),
         builder: (context, snapshot) {
           if (snapshot.hasError) {
-            return Center(child: Text(l10n.errorWithDetails('${snapshot.error}')));
+            return Center(
+              child: Text(l10n.errorWithDetails('${snapshot.error}')),
+            );
           }
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
@@ -83,24 +86,29 @@ class CustomerTransactionsScreen extends StatelessWidget {
               final statusText = customerStatusText(l10n, status);
 
               return ListTile(
-                title: Text('$amountFrom $fromCurrency → $toCurrency'),
+                title: Text(
+                  [
+                    formatTransactionNo(data['transactionNo']),
+                    '$amountFrom $fromCurrency → $toCurrency',
+                  ].where((t) => t.isNotEmpty).join('  ·  '),
+                ),
                 subtitle: Text(
                   '${createdAt != null ? createdAt.toLocal().toString() : ''}\n$statusText',
                 ),
                 isThreeLine: true,
                 trailing: const Icon(Icons.chevron_right),
                 onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => CustomerTransactionDetailScreen(
-                          transactionId: doc.id,
-                        ),
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => CustomerTransactionDetailScreen(
+                        transactionId: doc.id,
                       ),
-                    );
-                  },
-                  // Här kan vi senare öppna kundens detaljsida
-                  // där kunden kan acceptera/avböja.
+                    ),
+                  );
+                },
+                // Här kan vi senare öppna kundens detaljsida
+                // där kunden kan acceptera/avböja.
               );
             },
           );
