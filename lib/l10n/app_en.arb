@@ -254,5 +254,12 @@
   "ordersCardSubtitle": "All transactions with filters, profit report and CSV/PDF export.",
   "existingManagers": "Existing managers",
   "noOfficeAssigned": "No office",
-  "officeValue": "Office: {office}"
+  "officeValue": "Office: {office}",
+  "searchCustomers": "Search customers",
+  "searchCustomersLabel": "Client ID, name, phone, country or city",
+  "searchCustomersHint": "e.g. 00, Ali, 0731, Grozny",
+  "clearSearch": "Clear search",
+  "customersShown": "Showing {shown} of {total} customers",
+  "noCustomersMatch": "No customers match the search.",
+  "placesValue": "Offices: {places}"
 }

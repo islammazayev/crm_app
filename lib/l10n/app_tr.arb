@@ -254,5 +254,12 @@
   "ordersCardSubtitle": "Filtreler, kâr raporu ve CSV/PDF dışa aktarma ile tüm işlemler.",
   "existingManagers": "Mevcut yöneticiler",
   "noOfficeAssigned": "Şube yok",
-  "officeValue": "Şube: {office}"
+  "officeValue": "Şube: {office}",
+  "searchCustomers": "Müşteri ara",
+  "searchCustomersLabel": "Müşteri No, ad, telefon, ülke veya şehir",
+  "searchCustomersHint": "örn. 00, Ali, 0731, Grozni",
+  "clearSearch": "Aramayı temizle",
+  "customersShown": "{total} müşteriden {shown} gösteriliyor",
+  "noCustomersMatch": "Aramayla eşleşen müşteri yok.",
+  "placesValue": "Şubeler: {places}"
 }

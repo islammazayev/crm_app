@@ -915,4 +915,29 @@ class AppLocalizationsTr extends AppLocalizations {
   String officeValue(Object office) {
     return 'Şube: $office';
   }
+
+  @override
+  String get searchCustomers => 'Müşteri ara';
+
+  @override
+  String get searchCustomersLabel => 'Müşteri No, ad, telefon, ülke veya şehir';
+
+  @override
+  String get searchCustomersHint => 'örn. 00, Ali, 0731, Grozni';
+
+  @override
+  String get clearSearch => 'Aramayı temizle';
+
+  @override
+  String customersShown(int shown, int total) {
+    return '$total müşteriden $shown gösteriliyor';
+  }
+
+  @override
+  String get noCustomersMatch => 'Aramayla eşleşen müşteri yok.';
+
+  @override
+  String placesValue(Object places) {
+    return 'Şubeler: $places';
+  }
 }

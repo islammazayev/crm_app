@@ -3,7 +3,8 @@ import 'package:flutter/material.dart';
 
 import '../../forms/customer_form.dart';
 import '../../l10n/locale_controller.dart';
-import '../../models/customer.dart';
+import '../../theme/app_theme.dart';
+import '../../utils/customer_search.dart';
 
 class AdminCustomersSection extends StatefulWidget {
   const AdminCustomersSection({super.key});
@@ -13,21 +14,19 @@ class AdminCustomersSection extends StatefulWidget {
 }
 
 class _AdminCustomersSectionState extends State<AdminCustomersSection> {
-  final TextEditingController _clientIdSearchController =
-      TextEditingController();
-
-  Customer? _clientIdSearchResult;
-  String? _foundDocId; // Firestore-dokument-ID för hittad kund
+  final TextEditingController _searchController = TextEditingController();
+  String _query = '';
 
   CollectionReference get customersRef =>
       FirebaseFirestore.instance.collection('customers');
 
-  final DocumentReference metaCustomersRef =
-      FirebaseFirestore.instance.collection('meta').doc('customers');
+  final DocumentReference metaCustomersRef = FirebaseFirestore.instance
+      .collection('meta')
+      .doc('customers');
 
   @override
   void dispose() {
-    _clientIdSearchController.dispose();
+    _searchController.dispose();
     super.dispose();
   }
 
@@ -40,8 +39,9 @@ class _AdminCustomersSectionState extends State<AdminCustomersSection> {
         lastId = (data['lastClientId'] ?? 0) as int;
       }
       final nextId = lastId + 1;
-      tx.set(metaCustomersRef, {'lastClientId': nextId},
-          SetOptions(merge: true));
+      tx.set(metaCustomersRef, {
+        'lastClientId': nextId,
+      }, SetOptions(merge: true));
       return nextId;
     });
   }
@@ -80,69 +80,8 @@ class _AdminCustomersSectionState extends State<AdminCustomersSection> {
     });
   }
 
-  Future<void> _searchByClientId() async {
-    final raw = _clientIdSearchController.text.trim();
-    if (raw.isEmpty) {
-      setState(() {
-        _clientIdSearchResult = null;
-        _foundDocId = null;
-      });
-      return;
-    }
-
-    QuerySnapshot q;
-    final idAsInt = int.tryParse(raw);
-    if (idAsInt != null) {
-      q = await customersRef
-          .where('clientId', isEqualTo: idAsInt)
-          .limit(1)
-          .get();
-      if (q.docs.isEmpty) {
-        q = await customersRef
-            .where('clientId', isEqualTo: raw)
-            .limit(1)
-            .get();
-      }
-    } else {
-      q = await customersRef
-          .where('clientId', isEqualTo: raw)
-          .limit(1)
-          .get();
-    }
-
-    if (q.docs.isEmpty) {
-      setState(() {
-        _clientIdSearchResult = null;
-        _foundDocId = null;
-      });
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(context.l10n.noCustomerWithClientId(raw))),
-        );
-      }
-      return;
-    }
-
-    final doc = q.docs.first;
-    final data = doc.data() as Map<String, dynamic>;
-    final rawId = data['clientId'];
-    final resolvedId =
-        rawId is int ? rawId : int.tryParse(rawId.toString()) ?? 0;
-
-    setState(() {
-      _foundDocId = doc.id;
-      _clientIdSearchResult = Customer(
-        clientId: resolvedId,
-        firstName: data['firstName'] ?? '',
-        lastName: data['lastName'] ?? '',
-        phone: data['phone'] ?? '',
-        email: data['email'] ?? '',
-      );
-    });
-  }
-
   // Öppna redigeringsdialog med förifyllda fält
-  Future<void> _openEditDialog(Customer c) async {
+  Future<void> _openEditDialog(CustomerSearchEntry c) async {
     final firstNameCtrl = TextEditingController(text: c.firstName);
     final lastNameCtrl = TextEditingController(text: c.lastName);
     final phoneCtrl = TextEditingController(text: c.phone);
@@ -152,7 +91,7 @@ class _AdminCustomersSectionState extends State<AdminCustomersSection> {
     await showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: Text(l10n.editCustomerTitle(c.clientId.toString().padLeft(3, '0'))),
+        title: Text(l10n.editCustomerTitle(c.formattedClientId)),
         content: SingleChildScrollView(
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -188,29 +127,18 @@ class _AdminCustomersSectionState extends State<AdminCustomersSection> {
           ),
           ElevatedButton(
             onPressed: () async {
-              if (_foundDocId == null) return;
-              await customersRef.doc(_foundDocId).update({
+              await customersRef.doc(c.docId).update({
                 'firstName': firstNameCtrl.text.trim(),
                 'lastName': lastNameCtrl.text.trim(),
                 'phone': phoneCtrl.text.trim(),
                 'email': emailCtrl.text.trim(),
                 'updatedAt': FieldValue.serverTimestamp(),
               });
-              // Uppdatera sökresultatkort direkt
-              setState(() {
-                _clientIdSearchResult = Customer(
-                  clientId: c.clientId,
-                  firstName: firstNameCtrl.text.trim(),
-                  lastName: lastNameCtrl.text.trim(),
-                  phone: phoneCtrl.text.trim(),
-                  email: emailCtrl.text.trim(),
-                );
-              });
               if (ctx.mounted) Navigator.pop(ctx);
               if (mounted) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text(l10n.customerUpdated)),
-                );
+                ScaffoldMessenger.of(
+                  context,
+                ).showSnackBar(SnackBar(content: Text(l10n.customerUpdated)));
               }
             },
             child: Text(l10n.save),
@@ -226,17 +154,14 @@ class _AdminCustomersSectionState extends State<AdminCustomersSection> {
   }
 
   // Bekräfta och ta bort kund
-  Future<void> _deleteCustomer(Customer c) async {
+  Future<void> _deleteCustomer(CustomerSearchEntry c) async {
     final l10n = context.l10n;
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
         title: Text(l10n.deleteCustomerTitle),
         content: Text(
-          l10n.deleteCustomerConfirm(
-            c.clientId.toString().padLeft(3, '0'),
-            '${c.firstName} ${c.lastName}',
-          ),
+          l10n.deleteCustomerConfirm(c.formattedClientId, c.fullName),
         ),
         actions: [
           TextButton(
@@ -252,119 +177,206 @@ class _AdminCustomersSectionState extends State<AdminCustomersSection> {
       ),
     );
 
-    if (confirmed == true && _foundDocId != null) {
-      await customersRef.doc(_foundDocId).delete();
-      setState(() {
-        _clientIdSearchResult = null;
-        _foundDocId = null;
-        _clientIdSearchController.clear();
-      });
+    if (confirmed == true) {
+      await customersRef.doc(c.docId).delete();
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.customerDeleted)),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(l10n.customerDeleted)));
       }
     }
+  }
+
+  /// Bygger söklistan. Land och stad hämtas från de kontor kunden har gjort
+  /// transaktioner via (kopplas på kundens userId, som transaktionen sparar
+  /// som customerId). Kunder som admin skapat utan konto saknar sådana.
+  List<CustomerSearchEntry> _entries(
+    List<QueryDocumentSnapshot> customerDocs,
+    List<QueryDocumentSnapshot> transactionDocs,
+    List<QueryDocumentSnapshot> officeDocs,
+  ) {
+    final officePlace = <String, String>{
+      for (final d in officeDocs)
+        d.id: () {
+          final o = d.data() as Map<String, dynamic>;
+          return '${o['country'] ?? ''} ${o['city'] ?? ''}'.trim();
+        }(),
+    };
+
+    final placesByUser = <String, Set<String>>{};
+    for (final d in transactionDocs) {
+      final t = d.data() as Map<String, dynamic>;
+      final userId = (t['customerId'] ?? '').toString();
+      final place = officePlace[(t['officeId'] ?? '').toString()];
+      if (userId.isEmpty || place == null || place.isEmpty) continue;
+      placesByUser.putIfAbsent(userId, () => <String>{}).add(place);
+    }
+
+    return customerDocs.map((d) {
+      final c = d.data() as Map<String, dynamic>;
+      final userId = (c['userId'] ?? d.id).toString();
+      return CustomerSearchEntry(
+        docId: d.id,
+        clientId: c['clientId'],
+        firstName: (c['firstName'] ?? '').toString(),
+        lastName: (c['lastName'] ?? '').toString(),
+        phone: (c['phone'] ?? '').toString(),
+        email: (c['email'] ?? '').toString(),
+        places: (placesByUser[userId] ?? const <String>{}).toList()..sort(),
+      );
+    }).toList();
   }
 
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
+    final db = FirebaseFirestore.instance;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         CustomerForm(
-          onSubmit: ({
-            int? clientId,
-            required String firstName,
-            required String lastName,
-            required String phone,
-            String email = '',
-          }) async {
-            await _addCustomer(
-              clientId: clientId,
-              firstName: firstName,
-              lastName: lastName,
-              phone: phone,
-              email: email,
+          onSubmit:
+              ({
+                int? clientId,
+                required String firstName,
+                required String lastName,
+                required String phone,
+                String email = '',
+              }) async {
+                await _addCustomer(
+                  clientId: clientId,
+                  firstName: firstName,
+                  lastName: lastName,
+                  phone: phone,
+                  email: email,
+                );
+              },
+        ),
+        const SizedBox(height: 24),
+        Text(
+          l10n.searchCustomers,
+          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+        ),
+        const SizedBox(height: 8),
+        TextField(
+          controller: _searchController,
+          onChanged: (v) => setState(() => _query = v),
+          decoration: InputDecoration(
+            labelText: l10n.searchCustomersLabel,
+            hintText: l10n.searchCustomersHint,
+            prefixIcon: const Icon(Icons.search),
+            suffixIcon: _query.isEmpty
+                ? null
+                : IconButton(
+                    tooltip: l10n.clearSearch,
+                    icon: const Icon(Icons.clear),
+                    onPressed: () => setState(() {
+                      _searchController.clear();
+                      _query = '';
+                    }),
+                  ),
+          ),
+        ),
+        const SizedBox(height: 12),
+        StreamBuilder<QuerySnapshot>(
+          stream: customersRef.snapshots(),
+          builder: (context, customerSnap) {
+            return StreamBuilder<QuerySnapshot>(
+              stream: db.collection('transactions').snapshots(),
+              builder: (context, txSnap) {
+                return StreamBuilder<QuerySnapshot>(
+                  stream: db.collection('offices').snapshots(),
+                  builder: (context, officeSnap) {
+                    final error =
+                        customerSnap.error ?? txSnap.error ?? officeSnap.error;
+                    if (error != null) {
+                      return Text(l10n.errorWithDetails('$error'));
+                    }
+                    if (!customerSnap.hasData) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
+                    final all = _entries(
+                      customerSnap.data!.docs,
+                      txSnap.data?.docs ?? const [],
+                      officeSnap.data?.docs ?? const [],
+                    );
+                    final results = searchCustomers(all, _query);
+
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          l10n.customersShown(results.length, all.length),
+                          style: const TextStyle(
+                            color: AppColors.textMuted,
+                            fontSize: 13,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        if (results.isEmpty)
+                          Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 16),
+                            child: Text(
+                              l10n.noCustomersMatch,
+                              style: const TextStyle(color: Colors.grey),
+                            ),
+                          ),
+                        for (final c in results) _resultCard(c),
+                      ],
+                    );
+                  },
+                );
+              },
             );
           },
         ),
-        const SizedBox(height: 16),
-        Row(
-          children: [
-            Expanded(
-              child: TextField(
-                controller: _clientIdSearchController,
-                keyboardType: TextInputType.number,
-                decoration: InputDecoration(
-                  labelText: l10n.searchClientId,
-                  hintText: l10n.clientIdHint,
-                ),
-              ),
+      ],
+    );
+  }
+
+  Widget _resultCard(CustomerSearchEntry c) {
+    final l10n = context.l10n;
+    final id = c.formattedClientId;
+    return Card(
+      margin: const EdgeInsets.only(bottom: 8),
+      child: ListTile(
+        leading: CircleAvatar(
+          backgroundColor: AppColors.primaryDim,
+          child: Text(
+            id.isEmpty ? '?' : id,
+            style: const TextStyle(
+              color: AppColors.primary,
+              fontSize: 12,
+              fontWeight: FontWeight.w700,
             ),
-            const SizedBox(width: 8),
-            ElevatedButton(
-              onPressed: _searchByClientId,
-              child: Text(l10n.search),
+          ),
+        ),
+        title: Text(c.fullName.isEmpty ? l10n.unknownClient : c.fullName),
+        subtitle: Text(
+          [
+            if (c.phone.isNotEmpty) l10n.phoneValue(c.phone),
+            if (c.email.isNotEmpty) l10n.emailValue(c.email),
+            if (c.places.isNotEmpty) l10n.placesValue(c.places.join(', ')),
+          ].join('\n'),
+        ),
+        isThreeLine: c.email.isNotEmpty || c.places.isNotEmpty,
+        trailing: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            IconButton(
+              tooltip: l10n.edit,
+              icon: const Icon(Icons.edit, color: Colors.blue),
+              onPressed: () => _openEditDialog(c),
+            ),
+            IconButton(
+              tooltip: l10n.delete,
+              icon: const Icon(Icons.delete, color: Colors.red),
+              onPressed: () => _deleteCustomer(c),
             ),
           ],
         ),
-
-        // Sökresultat-kort med ändra + ta bort
-        if (_clientIdSearchResult != null) ...[
-          const SizedBox(height: 12),
-          Card(
-            color: Colors.grey[900],
-            child: Padding(
-              padding: const EdgeInsets.all(14),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Text(
-                          l10n.customerNumber(
-                            _clientIdSearchResult!.clientId
-                                .toString()
-                                .padLeft(3, '0'),
-                          ),
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16,
-                          ),
-                        ),
-                      ),
-                      // Ändra-knapp
-                      IconButton(
-                        tooltip: l10n.edit,
-                        icon: const Icon(Icons.edit, color: Colors.blue),
-                        onPressed: () =>
-                            _openEditDialog(_clientIdSearchResult!),
-                      ),
-                      // Ta bort-knapp
-                      IconButton(
-                        tooltip: l10n.delete,
-                        icon: const Icon(Icons.delete, color: Colors.red),
-                        onPressed: () =>
-                            _deleteCustomer(_clientIdSearchResult!),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 6),
-                  Text(l10n.nameValue(
-                      '${_clientIdSearchResult!.firstName} ${_clientIdSearchResult!.lastName}')),
-                  Text(l10n.phoneValue(_clientIdSearchResult!.phone)),
-                  if (_clientIdSearchResult!.email.isNotEmpty)
-                    Text(l10n.emailValue(_clientIdSearchResult!.email)),
-                ],
-              ),
-            ),
-          ),
-        ],
-      ],
+      ),
     );
   }
 }

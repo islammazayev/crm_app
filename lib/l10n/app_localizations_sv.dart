@@ -919,4 +919,30 @@ class AppLocalizationsSv extends AppLocalizations {
   String officeValue(Object office) {
     return 'Kontor: $office';
   }
+
+  @override
+  String get searchCustomers => 'Sök kund';
+
+  @override
+  String get searchCustomersLabel =>
+      'Klient-ID, namn, telefon, land eller stad';
+
+  @override
+  String get searchCustomersHint => 't.ex. 00, Ali, 0731, Grozny';
+
+  @override
+  String get clearSearch => 'Rensa sökning';
+
+  @override
+  String customersShown(int shown, int total) {
+    return 'Visar $shown av $total kunder';
+  }
+
+  @override
+  String get noCustomersMatch => 'Inga kunder matchar sökningen.';
+
+  @override
+  String placesValue(Object places) {
+    return 'Kontor: $places';
+  }
 }

@@ -254,5 +254,12 @@
   "ordersCardSubtitle": "Все переводы с фильтрами, отчётом о прибыли и экспортом в CSV/PDF.",
   "existingManagers": "Текущие менеджеры",
   "noOfficeAssigned": "Нет офиса",
-  "officeValue": "Офис: {office}"
+  "officeValue": "Офис: {office}",
+  "searchCustomers": "Поиск клиента",
+  "searchCustomersLabel": "ID клиента, имя, телефон, страна или город",
+  "searchCustomersHint": "напр. 00, Али, 0731, Грозный",
+  "clearSearch": "Очистить поиск",
+  "customersShown": "Показано {shown} из {total}",
+  "noCustomersMatch": "Нет клиентов по этому запросу.",
+  "placesValue": "Офисы: {places}"
 }
