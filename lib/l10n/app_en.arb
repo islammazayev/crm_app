@@ -281,5 +281,11 @@
   "statusChangeNoBalance": "Changing the status does not change the office balance.",
   "transactionUpdated": "Transaction updated.",
   "deleteTransactionTitle": "Delete transaction?",
-  "deleteTransactionConfirm": "The transaction will be permanently deleted. The office balance is not changed."
+  "deleteTransactionConfirm": "The transaction will be permanently deleted. The office balance is not changed.",
+  "customerPanel": "What would you like to do?",
+  "sendMoney": "Send money",
+  "sendMoneySubtitle": "Choose currency and office and send a request.",
+  "myTransactionsSubtitle": "Follow your transactions and reply to offers.",
+  "offersWaiting": "{count, plural, =1{1 offer is waiting for your reply.} other{{count} offers are waiting for your reply.}}",
+  "soonBadge": "Soon"
 }

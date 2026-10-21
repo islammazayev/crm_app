@@ -281,5 +281,11 @@
   "statusChangeNoBalance": "Изменение статуса не меняет баланс офиса.",
   "transactionUpdated": "Перевод обновлён.",
   "deleteTransactionTitle": "Удалить перевод?",
-  "deleteTransactionConfirm": "Перевод будет удалён навсегда. Баланс офиса не изменится."
+  "deleteTransactionConfirm": "Перевод будет удалён навсегда. Баланс офиса не изменится.",
+  "customerPanel": "Что вы хотите сделать?",
+  "sendMoney": "Отправить деньги",
+  "sendMoneySubtitle": "Выберите валюту и офис и отправьте запрос.",
+  "myTransactionsSubtitle": "Следите за переводами и отвечайте на предложения.",
+  "offersWaiting": "{count, plural, one{{count} предложение ждёт вашего ответа.} few{{count} предложения ждут вашего ответа.} many{{count} предложений ждут вашего ответа.} other{{count} предложения ждут вашего ответа.}}",
+  "soonBadge": "Скоро"
 }

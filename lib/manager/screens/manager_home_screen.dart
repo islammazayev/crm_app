@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 import '../../l10n/locale_controller.dart';
+import '../../screens/auth_gate.dart';
 import '../../theme/app_theme.dart';
 import '../../widgets/action_card.dart';
 import '../../widgets/language_button.dart';
@@ -66,9 +67,7 @@ class _ManagerHomeScreenState extends State<ManagerHomeScreen> {
           IconButton(
             tooltip: l10n.logout,
             icon: const Icon(Icons.logout),
-            onPressed: () async {
-              await FirebaseAuth.instance.signOut();
-            },
+            onPressed: () => signOutToLogin(context),
           ),
         ],
       ),

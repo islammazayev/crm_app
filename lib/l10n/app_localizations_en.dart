@@ -1033,4 +1033,32 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get deleteTransactionConfirm =>
       'The transaction will be permanently deleted. The office balance is not changed.';
+
+  @override
+  String get customerPanel => 'What would you like to do?';
+
+  @override
+  String get sendMoney => 'Send money';
+
+  @override
+  String get sendMoneySubtitle =>
+      'Choose currency and office and send a request.';
+
+  @override
+  String get myTransactionsSubtitle =>
+      'Follow your transactions and reply to offers.';
+
+  @override
+  String offersWaiting(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count offers are waiting for your reply.',
+      one: '1 offer is waiting for your reply.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get soonBadge => 'Soon';
 }

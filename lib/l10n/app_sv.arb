@@ -746,5 +746,18 @@
   "statusChangeNoBalance": "Att ändra status påverkar inte kontorets saldo.",
   "transactionUpdated": "Transaktion uppdaterad.",
   "deleteTransactionTitle": "Radera transaktion?",
-  "deleteTransactionConfirm": "Transaktionen tas bort permanent. Kontorets saldo ändras inte."
+  "deleteTransactionConfirm": "Transaktionen tas bort permanent. Kontorets saldo ändras inte.",
+  "customerPanel": "Vad vill du göra?",
+  "sendMoney": "Skicka pengar",
+  "sendMoneySubtitle": "Välj valuta och kontor och skicka en förfrågan.",
+  "myTransactionsSubtitle": "Följ dina transaktioner och svara på förslag.",
+  "offersWaiting": "{count, plural, =1{1 förslag väntar på ditt svar.} other{{count} förslag väntar på ditt svar.}}",
+  "@offersWaiting": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "soonBadge": "Snart"
 }

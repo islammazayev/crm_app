@@ -281,5 +281,11 @@
   "statusChangeNoBalance": "Durumu değiştirmek şube bakiyesini değiştirmez.",
   "transactionUpdated": "İşlem güncellendi.",
   "deleteTransactionTitle": "İşlem silinsin mi?",
-  "deleteTransactionConfirm": "İşlem kalıcı olarak silinecek. Şube bakiyesi değişmez."
+  "deleteTransactionConfirm": "İşlem kalıcı olarak silinecek. Şube bakiyesi değişmez.",
+  "customerPanel": "Ne yapmak istersiniz?",
+  "sendMoney": "Para gönder",
+  "sendMoneySubtitle": "Döviz ve şube seçip talep gönderin.",
+  "myTransactionsSubtitle": "İşlemlerinizi takip edin ve tekliflere yanıt verin.",
+  "offersWaiting": "{count, plural, =1{1 teklif yanıtınızı bekliyor.} other{{count} teklif yanıtınızı bekliyor.}}",
+  "soonBadge": "Yakında"
 }

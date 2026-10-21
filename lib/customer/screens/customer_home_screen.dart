@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 import '../../l10n/app_localizations.dart';
 import '../../l10n/locale_controller.dart';
+import '../../screens/auth_gate.dart';
 import '../../widgets/customer_welcome_screen.dart';
 import '../../widgets/language_button.dart';
 import 'customer_register_screen.dart';
@@ -90,9 +91,7 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
             IconButton(
               tooltip: context.l10n.logout,
               icon: const Icon(Icons.logout),
-              onPressed: () async {
-                await FirebaseAuth.instance.signOut();
-              },
+              onPressed: () => signOutToLogin(context),
             ),
           ],
         ),
