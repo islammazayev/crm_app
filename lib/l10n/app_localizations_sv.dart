@@ -1003,4 +1003,38 @@ class AppLocalizationsSv extends AppLocalizations {
   @override
   String get searchOrChooseDatesHint =>
       'Skriv i sökrutan eller välj ett datumintervall för att visa transaktioner.';
+
+  @override
+  String get editManagerTitle => 'Ändra manager';
+
+  @override
+  String get managerUpdated => 'Manager uppdaterad.';
+
+  @override
+  String get deleteManagerTitle => 'Radera manager?';
+
+  @override
+  String deleteManagerConfirm(Object name) {
+    return '$name kommer inte längre åt appen. Inloggningskontot finns kvar och kan tas bort under Authentication i Firebase-konsolen.';
+  }
+
+  @override
+  String get managerDeleted => 'Manager raderad.';
+
+  @override
+  String get editTransactionTitle => 'Ändra transaktion';
+
+  @override
+  String get statusChangeNoBalance =>
+      'Att ändra status påverkar inte kontorets saldo.';
+
+  @override
+  String get transactionUpdated => 'Transaktion uppdaterad.';
+
+  @override
+  String get deleteTransactionTitle => 'Radera transaktion?';
+
+  @override
+  String get deleteTransactionConfirm =>
+      'Transaktionen tas bort permanent. Kontorets saldo ändras inte.';
 }

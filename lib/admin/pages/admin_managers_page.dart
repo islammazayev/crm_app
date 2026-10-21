@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 
 import '../../forms/create_manager_form.dart';
 import '../../l10n/locale_controller.dart';
+import '../../theme/app_theme.dart';
 import '../../utils/search_match.dart';
+import '../../widgets/confirm_delete.dart';
 import '../../widgets/search_summary.dart';
 
 /// Admin: skapa managers och se vilka som finns och vilket kontor de har.
@@ -22,6 +24,132 @@ class _AdminManagersPageState extends State<AdminManagersPage> {
   void dispose() {
     _searchController.dispose();
     super.dispose();
+  }
+
+  Future<void> _editManager(
+    QueryDocumentSnapshot doc,
+    List<QueryDocumentSnapshot> officeDocs,
+  ) async {
+    final l10n = context.l10n;
+    final d = doc.data() as Map<String, dynamic>;
+    final firstCtrl = TextEditingController(text: '${d['firstName'] ?? ''}');
+    final lastCtrl = TextEditingController(text: '${d['lastName'] ?? ''}');
+    final phoneCtrl = TextEditingController(text: '${d['phone'] ?? ''}');
+    String? officeId = d['officeId']?.toString();
+    if (officeId != null && !officeDocs.any((o) => o.id == officeId)) {
+      officeId = null;
+    }
+
+    final saved = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => StatefulBuilder(
+        builder: (ctx, setLocal) => AlertDialog(
+          title: Text(l10n.editManagerTitle),
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextField(
+                  controller: firstCtrl,
+                  decoration: InputDecoration(labelText: l10n.firstName),
+                ),
+                const SizedBox(height: 8),
+                TextField(
+                  controller: lastCtrl,
+                  decoration: InputDecoration(labelText: l10n.lastName),
+                ),
+                const SizedBox(height: 8),
+                TextField(
+                  controller: phoneCtrl,
+                  keyboardType: TextInputType.phone,
+                  decoration: InputDecoration(labelText: l10n.phone),
+                ),
+                const SizedBox(height: 8),
+                // E-post hör till inloggningskontot och kan inte ändras här.
+                TextField(
+                  controller: TextEditingController(
+                    text: '${d['email'] ?? ''}',
+                  ),
+                  enabled: false,
+                  decoration: InputDecoration(labelText: l10n.email),
+                ),
+                const SizedBox(height: 8),
+                DropdownButtonFormField<String?>(
+                  initialValue: officeId,
+                  decoration: InputDecoration(labelText: l10n.office),
+                  items: [
+                    DropdownMenuItem<String?>(
+                      value: null,
+                      child: Text(l10n.noOfficeAssigned),
+                    ),
+                    for (final o in officeDocs)
+                      DropdownMenuItem<String?>(
+                        value: o.id,
+                        child: Text(() {
+                          final od = o.data() as Map<String, dynamic>;
+                          return '${od['country'] ?? ''} – ${od['city'] ?? ''}';
+                        }()),
+                      ),
+                  ],
+                  onChanged: (v) => setLocal(() => officeId = v),
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx, false),
+              child: Text(l10n.cancel),
+            ),
+            ElevatedButton(
+              onPressed: () => Navigator.pop(ctx, true),
+              child: Text(l10n.save),
+            ),
+          ],
+        ),
+      ),
+    );
+
+    if (saved == true) {
+      try {
+        await doc.reference.update({
+          'firstName': firstCtrl.text.trim(),
+          'lastName': lastCtrl.text.trim(),
+          'phone': phoneCtrl.text.trim(),
+          'officeId': officeId ?? FieldValue.delete(),
+        });
+        _snack(l10n.managerUpdated);
+      } catch (e) {
+        _snack(l10n.errorWithDetails('$e'));
+      }
+    }
+    firstCtrl.dispose();
+    lastCtrl.dispose();
+    phoneCtrl.dispose();
+  }
+
+  /// Tar bort managerns profil (users/{uid}). Då har kontot ingen roll och
+  /// kommer inte åt något. Själva inloggningskontot kan bara tas bort i
+  /// Firebase-konsolen (Authentication), inte från appen.
+  Future<void> _deleteManager(QueryDocumentSnapshot doc, String name) async {
+    final l10n = context.l10n;
+    final ok = await confirmDelete(
+      context,
+      title: l10n.deleteManagerTitle,
+      message: l10n.deleteManagerConfirm(name),
+    );
+    if (!ok) return;
+    try {
+      await doc.reference.delete();
+      _snack(l10n.managerDeleted);
+    } catch (e) {
+      _snack(l10n.errorWithDetails('$e'));
+    }
+  }
+
+  void _snack(String text) {
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(text)));
   }
 
   @override
@@ -137,7 +265,10 @@ class _AdminManagersPageState extends State<AdminManagersPage> {
                               return Card(
                                 margin: const EdgeInsets.only(bottom: 10),
                                 child: ListTile(
-                                  leading: const Icon(Icons.badge_outlined),
+                                  leading: const Icon(
+                                    Icons.badge_outlined,
+                                    color: AppColors.warning,
+                                  ),
                                   title: Text(name.isEmpty ? email : name),
                                   subtitle: Text(
                                     [
@@ -149,6 +280,31 @@ class _AdminManagersPageState extends State<AdminManagersPage> {
                                     ].join('\n'),
                                   ),
                                   isThreeLine: true,
+                                  trailing: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      IconButton(
+                                        tooltip: l10n.edit,
+                                        icon: const Icon(
+                                          Icons.edit,
+                                          color: Colors.blue,
+                                        ),
+                                        onPressed: () =>
+                                            _editManager(doc, officeDocs),
+                                      ),
+                                      IconButton(
+                                        tooltip: l10n.deleteAction,
+                                        icon: const Icon(
+                                          Icons.delete,
+                                          color: Colors.red,
+                                        ),
+                                        onPressed: () => _deleteManager(
+                                          doc,
+                                          name.isEmpty ? email : name,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               );
                             },

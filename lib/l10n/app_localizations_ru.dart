@@ -1010,4 +1010,38 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String get searchOrChooseDatesHint =>
       'Введите запрос или выберите период, чтобы увидеть переводы.';
+
+  @override
+  String get editManagerTitle => 'Изменить менеджера';
+
+  @override
+  String get managerUpdated => 'Менеджер обновлён.';
+
+  @override
+  String get deleteManagerTitle => 'Удалить менеджера?';
+
+  @override
+  String deleteManagerConfirm(Object name) {
+    return '$name больше не будет иметь доступа к приложению. Учётная запись для входа останется, её можно удалить в разделе Authentication в консоли Firebase.';
+  }
+
+  @override
+  String get managerDeleted => 'Менеджер удалён.';
+
+  @override
+  String get editTransactionTitle => 'Изменить перевод';
+
+  @override
+  String get statusChangeNoBalance =>
+      'Изменение статуса не меняет баланс офиса.';
+
+  @override
+  String get transactionUpdated => 'Перевод обновлён.';
+
+  @override
+  String get deleteTransactionTitle => 'Удалить перевод?';
+
+  @override
+  String get deleteTransactionConfirm =>
+      'Перевод будет удалён навсегда. Баланс офиса не изменится.';
 }

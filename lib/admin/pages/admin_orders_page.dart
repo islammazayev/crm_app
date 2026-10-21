@@ -14,6 +14,7 @@ import '../../lists/order_history_list.dart';
 import '../../models/transaction_model.dart';
 import '../../utils/client_id.dart';
 import '../../utils/search_match.dart';
+import '../../widgets/confirm_delete.dart';
 import '../../widgets/order_report.dart';
 import '../../widgets/search_summary.dart';
 
@@ -42,6 +43,107 @@ class _AdminOrdersPageState extends State<AdminOrdersPage> {
       FirebaseFirestore.instance.collection('offices');
   CollectionReference get transactionsRef =>
       FirebaseFirestore.instance.collection('transactions');
+
+  static const _statuses = [
+    'customer_requested',
+    'manager_proposed',
+    'customer_accepted',
+    'customer_rejected',
+    'completed',
+  ];
+
+  /// Admin ändrar kundens namn, telefon och transaktionens status.
+  /// Saldon påverkas inte, eftersom bokföringen bara sker när managern
+  /// markerar en transaktion som genomförd.
+  Future<void> _editTransaction(QueryDocumentSnapshot doc) async {
+    final l10n = context.l10n;
+    final d = doc.data() as Map<String, dynamic>;
+    final nameCtrl = TextEditingController(text: '${d['customerName'] ?? ''}');
+    final phoneCtrl = TextEditingController(
+      text: '${d['customerPhone'] ?? ''}',
+    );
+    final oldStatus = '${d['status'] ?? ''}';
+    String status = oldStatus;
+
+    final saved = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => StatefulBuilder(
+        builder: (ctx, setLocal) => AlertDialog(
+          title: Text(l10n.editTransactionTitle),
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                TextField(
+                  controller: nameCtrl,
+                  decoration: InputDecoration(labelText: l10n.customerName),
+                ),
+                const SizedBox(height: 8),
+                TextField(
+                  controller: phoneCtrl,
+                  keyboardType: TextInputType.phone,
+                  decoration: InputDecoration(labelText: l10n.phone),
+                ),
+                const SizedBox(height: 8),
+                DropdownButtonFormField<String>(
+                  initialValue: _statuses.contains(status) ? status : null,
+                  decoration: InputDecoration(labelText: l10n.exportStatus),
+                  items: [
+                    for (final s in _statuses)
+                      DropdownMenuItem(
+                        value: s,
+                        child: Text(statusText(l10n, s)),
+                      ),
+                  ],
+                  onChanged: (v) => setLocal(() => status = v ?? status),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  l10n.statusChangeNoBalance,
+                  style: const TextStyle(color: Colors.grey, fontSize: 12),
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx, false),
+              child: Text(l10n.cancel),
+            ),
+            ElevatedButton(
+              onPressed: () => Navigator.pop(ctx, true),
+              child: Text(l10n.save),
+            ),
+          ],
+        ),
+      ),
+    );
+
+    if (saved == true) {
+      try {
+        await doc.reference.update({
+          'customerName': nameCtrl.text.trim(),
+          'customerPhone': phoneCtrl.text.trim(),
+          if (status != oldStatus) 'status': status,
+          'updatedByAdminAt': FieldValue.serverTimestamp(),
+        });
+        if (mounted) {
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(l10n.transactionUpdated)));
+        }
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(l10n.errorWithDetails('$e'))));
+        }
+      }
+    }
+    nameCtrl.dispose();
+    phoneCtrl.dispose();
+  }
 
   Future<void> _deleteTransaction(String id) async {
     await transactionsRef.doc(id).delete();
@@ -476,10 +578,17 @@ class _AdminOrdersPageState extends State<AdminOrdersPage> {
                             transactions: filteredTransactions
                                 .take(shown.length)
                                 .toList(),
-                            onDelete: (index) {
-                              final id = shown[index].id;
-                              _deleteTransaction(id);
+                            onDelete: (index) async {
+                              final ok = await confirmDelete(
+                                context,
+                                title: l10n.deleteTransactionTitle,
+                                message: l10n.deleteTransactionConfirm,
+                              );
+                              if (ok) {
+                                await _deleteTransaction(shown[index].id);
+                              }
                             },
+                            onEdit: (index) => _editTransaction(shown[index]),
                           ),
                         ),
                       ],

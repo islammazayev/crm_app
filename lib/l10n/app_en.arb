@@ -271,5 +271,15 @@
   "searchManagersLabel": "Search by name, email, phone or office",
   "searchTransactionsLabel": "Client ID, name, phone, office, currency or status",
   "searchTransactionsHint": "e.g. 00, Ali, Grozny, RUB, completed",
-  "searchOrChooseDatesHint": "Type in the search box or choose a date range to show transactions."
+  "searchOrChooseDatesHint": "Type in the search box or choose a date range to show transactions.",
+  "editManagerTitle": "Edit manager",
+  "managerUpdated": "Manager updated.",
+  "deleteManagerTitle": "Delete manager?",
+  "deleteManagerConfirm": "{name} will no longer have access to the app. The login account remains and can be removed under Authentication in the Firebase console.",
+  "managerDeleted": "Manager deleted.",
+  "editTransactionTitle": "Edit transaction",
+  "statusChangeNoBalance": "Changing the status does not change the office balance.",
+  "transactionUpdated": "Transaction updated.",
+  "deleteTransactionTitle": "Delete transaction?",
+  "deleteTransactionConfirm": "The transaction will be permanently deleted. The office balance is not changed."
 }

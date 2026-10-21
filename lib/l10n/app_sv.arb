@@ -729,5 +729,22 @@
   "searchManagersLabel": "Sök på namn, e-post, telefon eller kontor",
   "searchTransactionsLabel": "Klient-ID, namn, telefon, kontor, valuta eller status",
   "searchTransactionsHint": "t.ex. 00, Ali, Grozny, RUB, genomförd",
-  "searchOrChooseDatesHint": "Skriv i sökrutan eller välj ett datumintervall för att visa transaktioner."
+  "searchOrChooseDatesHint": "Skriv i sökrutan eller välj ett datumintervall för att visa transaktioner.",
+  "editManagerTitle": "Ändra manager",
+  "managerUpdated": "Manager uppdaterad.",
+  "deleteManagerTitle": "Radera manager?",
+  "deleteManagerConfirm": "{name} kommer inte längre åt appen. Inloggningskontot finns kvar och kan tas bort under Authentication i Firebase-konsolen.",
+  "@deleteManagerConfirm": {
+    "placeholders": {
+      "name": {
+        "type": "Object"
+      }
+    }
+  },
+  "managerDeleted": "Manager raderad.",
+  "editTransactionTitle": "Ändra transaktion",
+  "statusChangeNoBalance": "Att ändra status påverkar inte kontorets saldo.",
+  "transactionUpdated": "Transaktion uppdaterad.",
+  "deleteTransactionTitle": "Radera transaktion?",
+  "deleteTransactionConfirm": "Transaktionen tas bort permanent. Kontorets saldo ändras inte."
 }

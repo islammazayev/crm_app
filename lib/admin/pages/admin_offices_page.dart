@@ -8,6 +8,7 @@ import '../../models/office.dart';
 import '../../services/office_listing_service.dart';
 import '../../utils/balances.dart';
 import '../../utils/currencies.dart';
+import '../../widgets/confirm_delete.dart';
 import '../sections/admin_offices_section.dart' show EditOfficeDialog;
 
 /// Admin: skapa kontor och hantera befintliga (ändra, fyll på saldo, radera).
@@ -185,9 +186,14 @@ class _AdminOfficesPageState extends State<AdminOfficesPage> {
                           ),
                         );
                       },
-                      onDelete: (index) {
+                      onDelete: (index) async {
                         final id = docs[index].id;
-                        _deleteOffice(id);
+                        final ok = await confirmDelete(
+                          context,
+                          title: l10n.deleteOfficeQuestion,
+                          message: l10n.deleteOfficeConfirm,
+                        );
+                        if (ok) await _deleteOffice(id);
                       },
                       onTopUp: (index) async {
                         final officeDoc = docs[index];

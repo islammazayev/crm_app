@@ -1739,6 +1739,66 @@ abstract class AppLocalizations {
   /// In sv, this message translates to:
   /// **'Skriv i sökrutan eller välj ett datumintervall för att visa transaktioner.'**
   String get searchOrChooseDatesHint;
+
+  /// No description provided for @editManagerTitle.
+  ///
+  /// In sv, this message translates to:
+  /// **'Ändra manager'**
+  String get editManagerTitle;
+
+  /// No description provided for @managerUpdated.
+  ///
+  /// In sv, this message translates to:
+  /// **'Manager uppdaterad.'**
+  String get managerUpdated;
+
+  /// No description provided for @deleteManagerTitle.
+  ///
+  /// In sv, this message translates to:
+  /// **'Radera manager?'**
+  String get deleteManagerTitle;
+
+  /// No description provided for @deleteManagerConfirm.
+  ///
+  /// In sv, this message translates to:
+  /// **'{name} kommer inte längre åt appen. Inloggningskontot finns kvar och kan tas bort under Authentication i Firebase-konsolen.'**
+  String deleteManagerConfirm(Object name);
+
+  /// No description provided for @managerDeleted.
+  ///
+  /// In sv, this message translates to:
+  /// **'Manager raderad.'**
+  String get managerDeleted;
+
+  /// No description provided for @editTransactionTitle.
+  ///
+  /// In sv, this message translates to:
+  /// **'Ändra transaktion'**
+  String get editTransactionTitle;
+
+  /// No description provided for @statusChangeNoBalance.
+  ///
+  /// In sv, this message translates to:
+  /// **'Att ändra status påverkar inte kontorets saldo.'**
+  String get statusChangeNoBalance;
+
+  /// No description provided for @transactionUpdated.
+  ///
+  /// In sv, this message translates to:
+  /// **'Transaktion uppdaterad.'**
+  String get transactionUpdated;
+
+  /// No description provided for @deleteTransactionTitle.
+  ///
+  /// In sv, this message translates to:
+  /// **'Radera transaktion?'**
+  String get deleteTransactionTitle;
+
+  /// No description provided for @deleteTransactionConfirm.
+  ///
+  /// In sv, this message translates to:
+  /// **'Transaktionen tas bort permanent. Kontorets saldo ändras inte.'**
+  String get deleteTransactionConfirm;
 }
 
 class _AppLocalizationsDelegate

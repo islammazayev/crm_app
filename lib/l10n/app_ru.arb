@@ -271,5 +271,15 @@
   "searchManagersLabel": "Поиск по имени, почте, телефону или офису",
   "searchTransactionsLabel": "ID клиента, имя, телефон, офис, валюта или статус",
   "searchTransactionsHint": "напр. 00, Али, Грозный, RUB, выполнено",
-  "searchOrChooseDatesHint": "Введите запрос или выберите период, чтобы увидеть переводы."
+  "searchOrChooseDatesHint": "Введите запрос или выберите период, чтобы увидеть переводы.",
+  "editManagerTitle": "Изменить менеджера",
+  "managerUpdated": "Менеджер обновлён.",
+  "deleteManagerTitle": "Удалить менеджера?",
+  "deleteManagerConfirm": "{name} больше не будет иметь доступа к приложению. Учётная запись для входа останется, её можно удалить в разделе Authentication в консоли Firebase.",
+  "managerDeleted": "Менеджер удалён.",
+  "editTransactionTitle": "Изменить перевод",
+  "statusChangeNoBalance": "Изменение статуса не меняет баланс офиса.",
+  "transactionUpdated": "Перевод обновлён.",
+  "deleteTransactionTitle": "Удалить перевод?",
+  "deleteTransactionConfirm": "Перевод будет удалён навсегда. Баланс офиса не изменится."
 }

@@ -999,4 +999,38 @@ class AppLocalizationsTr extends AppLocalizations {
   @override
   String get searchOrChooseDatesHint =>
       'İşlemleri görmek için arama kutusuna yazın veya bir tarih aralığı seçin.';
+
+  @override
+  String get editManagerTitle => 'Yöneticiyi düzenle';
+
+  @override
+  String get managerUpdated => 'Yönetici güncellendi.';
+
+  @override
+  String get deleteManagerTitle => 'Yönetici silinsin mi?';
+
+  @override
+  String deleteManagerConfirm(Object name) {
+    return '$name artık uygulamaya erişemeyecek. Giriş hesabı kalır; Firebase konsolunda Authentication bölümünden silinebilir.';
+  }
+
+  @override
+  String get managerDeleted => 'Yönetici silindi.';
+
+  @override
+  String get editTransactionTitle => 'İşlemi düzenle';
+
+  @override
+  String get statusChangeNoBalance =>
+      'Durumu değiştirmek şube bakiyesini değiştirmez.';
+
+  @override
+  String get transactionUpdated => 'İşlem güncellendi.';
+
+  @override
+  String get deleteTransactionTitle => 'İşlem silinsin mi?';
+
+  @override
+  String get deleteTransactionConfirm =>
+      'İşlem kalıcı olarak silinecek. Şube bakiyesi değişmez.';
 }

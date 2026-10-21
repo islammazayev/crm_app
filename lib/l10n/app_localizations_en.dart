@@ -999,4 +999,38 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get searchOrChooseDatesHint =>
       'Type in the search box or choose a date range to show transactions.';
+
+  @override
+  String get editManagerTitle => 'Edit manager';
+
+  @override
+  String get managerUpdated => 'Manager updated.';
+
+  @override
+  String get deleteManagerTitle => 'Delete manager?';
+
+  @override
+  String deleteManagerConfirm(Object name) {
+    return '$name will no longer have access to the app. The login account remains and can be removed under Authentication in the Firebase console.';
+  }
+
+  @override
+  String get managerDeleted => 'Manager deleted.';
+
+  @override
+  String get editTransactionTitle => 'Edit transaction';
+
+  @override
+  String get statusChangeNoBalance =>
+      'Changing the status does not change the office balance.';
+
+  @override
+  String get transactionUpdated => 'Transaction updated.';
+
+  @override
+  String get deleteTransactionTitle => 'Delete transaction?';
+
+  @override
+  String get deleteTransactionConfirm =>
+      'The transaction will be permanently deleted. The office balance is not changed.';
 }
