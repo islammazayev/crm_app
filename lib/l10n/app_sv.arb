@@ -759,5 +759,73 @@
       }
     }
   },
-  "soonBadge": "Snart"
+  "soonBadge": "Snart",
+  "statusCountered": "Motförslag från kund",
+  "customerStatusCountered": "Motförslag skickat – väntar på manager",
+  "managerStatusCountered": "Kunden har skickat ett motförslag",
+  "counterOffer": "Motförslag",
+  "counterOfferAlreadyUsed": "Du har redan använt ditt motförslag för den här transaktionen.",
+  "yourCounterOffer": "Ditt motförslag: {fee}% avgift",
+  "@yourCounterOffer": {
+    "placeholders": {
+      "fee": {
+        "type": "Object"
+      }
+    }
+  },
+  "waitingForManagerAnswer": "Väntar på managerns svar.",
+  "counterOfferIntro": "Managern föreslår {fee}% i avgift. Vilken avgift föreslår du?",
+  "@counterOfferIntro": {
+    "placeholders": {
+      "fee": {
+        "type": "Object"
+      }
+    }
+  },
+  "counterFeeLabel": "Din avgift (%)",
+  "youWouldReceive": "Du skulle få ut: {amount} {currency}",
+  "@youWouldReceive": {
+    "placeholders": {
+      "amount": {
+        "type": "Object"
+      },
+      "currency": {
+        "type": "Object"
+      }
+    }
+  },
+  "messageOptional": "Meddelande (valfritt)",
+  "counterOfferOnce": "Du kan bara skicka ett motförslag per transaktion.",
+  "counterFeeMustBeLower": "Ange en avgift från 0 och lägre än {fee}%.",
+  "@counterFeeMustBeLower": {
+    "placeholders": {
+      "fee": {
+        "type": "Object"
+      }
+    }
+  },
+  "sendCounterOffer": "Skicka motförslag",
+  "counterOfferSent": "Motförslaget är skickat.",
+  "customerCounterOffer": "Kunden föreslår {counter}% i avgift i stället för {fee}%.",
+  "@customerCounterOffer": {
+    "placeholders": {
+      "counter": {
+        "type": "Object"
+      },
+      "fee": {
+        "type": "Object"
+      }
+    }
+  },
+  "counterOfferManagerHint": "Acceptera kundens avgift, eller skicka ett nytt förslag. Kunden kan inte lägga fler motförslag.",
+  "acceptCounterOffer": "Acceptera {fee}%",
+  "@acceptCounterOffer": {
+    "placeholders": {
+      "fee": {
+        "type": "Object"
+      }
+    }
+  },
+  "sendNewProposal": "Skicka nytt förslag",
+  "counterOfferAccepted": "Motförslaget är accepterat."
 }

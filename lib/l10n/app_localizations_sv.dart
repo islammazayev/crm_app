@@ -1065,4 +1065,80 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String get soonBadge => 'Snart';
+
+  @override
+  String get statusCountered => 'Motförslag från kund';
+
+  @override
+  String get customerStatusCountered =>
+      'Motförslag skickat – väntar på manager';
+
+  @override
+  String get managerStatusCountered => 'Kunden har skickat ett motförslag';
+
+  @override
+  String get counterOffer => 'Motförslag';
+
+  @override
+  String get counterOfferAlreadyUsed =>
+      'Du har redan använt ditt motförslag för den här transaktionen.';
+
+  @override
+  String yourCounterOffer(Object fee) {
+    return 'Ditt motförslag: $fee% avgift';
+  }
+
+  @override
+  String get waitingForManagerAnswer => 'Väntar på managerns svar.';
+
+  @override
+  String counterOfferIntro(Object fee) {
+    return 'Managern föreslår $fee% i avgift. Vilken avgift föreslår du?';
+  }
+
+  @override
+  String get counterFeeLabel => 'Din avgift (%)';
+
+  @override
+  String youWouldReceive(Object amount, Object currency) {
+    return 'Du skulle få ut: $amount $currency';
+  }
+
+  @override
+  String get messageOptional => 'Meddelande (valfritt)';
+
+  @override
+  String get counterOfferOnce =>
+      'Du kan bara skicka ett motförslag per transaktion.';
+
+  @override
+  String counterFeeMustBeLower(Object fee) {
+    return 'Ange en avgift från 0 och lägre än $fee%.';
+  }
+
+  @override
+  String get sendCounterOffer => 'Skicka motförslag';
+
+  @override
+  String get counterOfferSent => 'Motförslaget är skickat.';
+
+  @override
+  String customerCounterOffer(Object counter, Object fee) {
+    return 'Kunden föreslår $counter% i avgift i stället för $fee%.';
+  }
+
+  @override
+  String get counterOfferManagerHint =>
+      'Acceptera kundens avgift, eller skicka ett nytt förslag. Kunden kan inte lägga fler motförslag.';
+
+  @override
+  String acceptCounterOffer(Object fee) {
+    return 'Acceptera $fee%';
+  }
+
+  @override
+  String get sendNewProposal => 'Skicka nytt förslag';
+
+  @override
+  String get counterOfferAccepted => 'Motförslaget är accepterat.';
 }

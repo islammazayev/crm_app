@@ -30,6 +30,7 @@ class _ManagerTransactionDetailScreenState
   double? _feeAmountTo;
   bool _calculating = false;
   bool _autoCalcStarted = false;
+  bool _counterPrefilled = false;
 
   String? _selectedMethodId;
   Map<String, Map<String, dynamic>> _methodCache = {};
@@ -46,14 +47,15 @@ class _ManagerTransactionDetailScreenState
     required String fromCurrency,
     required String toCurrency,
   }) async {
-    final feePercent =
-        double.tryParse(_feeController.text.replaceAll(',', '.'));
+    final feePercent = double.tryParse(
+      _feeController.text.replaceAll(',', '.'),
+    );
     if (feePercent == null) return;
 
     setState(() => _calculating = true);
     try {
-      final rate = _rate ??
-          await ExchangeRateService.getRate(fromCurrency, toCurrency);
+      final rate =
+          _rate ?? await ExchangeRateService.getRate(fromCurrency, toCurrency);
 
       final feeAmountFrom = amountFrom * feePercent / 100;
       final amountFromNet = amountFrom - feeAmountFrom;
@@ -91,14 +93,50 @@ class _ManagerTransactionDetailScreenState
         .whereType<Map>()
         .map((e) => Map<String, dynamic>.from(e))
         .where((method) {
-          final supported =
-              (method['supportedFromCurrencies'] as List? ?? [])
-                  .map((e) => e.toString().toUpperCase())
-                  .toList();
+          final supported = (method['supportedFromCurrencies'] as List? ?? [])
+              .map((e) => e.toString().toUpperCase())
+              .toList();
 
           return supported.contains(fromCurrency.toUpperCase());
         })
         .toList();
+  }
+
+  /// Accepterar kundens motförslag: kundens avgift och samma växelkurs som
+  /// i förslaget. Transaktionen blir accepterad direkt (kunden har redan
+  /// sagt ja till den avgiften).
+  Future<void> _acceptCounter({
+    required DocumentReference txRef,
+    required double amountFrom,
+    required double rate,
+    required double counterFee,
+  }) async {
+    setState(() => _busy = true);
+    try {
+      final feeAmountFrom = amountFrom * counterFee / 100;
+      final amountToGross = amountFrom * rate;
+      final amountToNet = (amountFrom - feeAmountFrom) * rate;
+      await txRef.update({
+        'status': 'customer_accepted',
+        'feePercent': counterFee,
+        'feeAmountFrom': feeAmountFrom,
+        'rateFromTo': rate,
+        'amountToGross': amountToGross,
+        'amountToNet': amountToNet,
+        'feeAmountTo': amountToGross - amountToNet,
+      });
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(context.l10n.counterOfferAccepted)),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(context.l10n.errorWithDetails('$e'))),
+      );
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
   }
 
   /// Sparar vald betalningsmetod i transaktionen så att kunden ser uppgifterna.
@@ -114,13 +152,14 @@ class _ManagerTransactionDetailScreenState
         'paymentSentAt': FieldValue.serverTimestamp(),
       });
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(context.l10n.paymentDetailsSent)),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(context.l10n.paymentDetailsSent)));
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text(context.l10n.errorWithDetails('$e'))));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(context.l10n.errorWithDetails('$e'))),
+      );
     } finally {
       if (mounted) setState(() => _busy = false);
     }
@@ -142,8 +181,10 @@ class _ManagerTransactionDetailScreenState
       final db = FirebaseFirestore.instance;
       final officeRef = db.collection('offices').doc(officeId);
       final officeSnap = await officeRef.get();
-      final balances =
-          parseBalances(officeSnap.data()?['balances'], officeId: officeId);
+      final balances = parseBalances(
+        officeSnap.data()?['balances'],
+        officeId: officeId,
+      );
       final available = balances[toCurrency] ?? 0;
       if (available < amountToNet) {
         throw Exception(
@@ -170,8 +211,13 @@ class _ManagerTransactionDetailScreenState
       if (mounted) Navigator.pop(context);
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text(l10n.errorWithDetails(e.toString().replaceFirst('Exception: ', '')))));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            l10n.errorWithDetails(e.toString().replaceFirst('Exception: ', '')),
+          ),
+        ),
+      );
     } finally {
       if (mounted) setState(() => _busy = false);
     }
@@ -191,7 +237,9 @@ class _ManagerTransactionDetailScreenState
         stream: txRef.snapshots(),
         builder: (context, snapshot) {
           if (snapshot.hasError) {
-            return Center(child: Text(l10n.errorWithDetails('${snapshot.error}')));
+            return Center(
+              child: Text(l10n.errorWithDetails('${snapshot.error}')),
+            );
           }
           if (!snapshot.hasData || !snapshot.data!.exists) {
             return const Center(child: CircularProgressIndicator());
@@ -199,42 +247,59 @@ class _ManagerTransactionDetailScreenState
 
           final data = snapshot.data!.data() as Map<String, dynamic>;
 
-          final double amountFrom =
-              ((data['amountFrom'] ?? 0) as num).toDouble();
-          final String fromCurrency =
-              (data['fromCurrency'] ?? '').toString();
-          final String toCurrency =
-              (data['toCurrency'] ?? '').toString();
-          final String status =
-              (data['status'] ?? '').toString();
-          final String officeId =
-              (data['officeId'] ?? '').toString();
+          final double amountFrom = ((data['amountFrom'] ?? 0) as num)
+              .toDouble();
+          final String fromCurrency = (data['fromCurrency'] ?? '').toString();
+          final String toCurrency = (data['toCurrency'] ?? '').toString();
+          final String status = (data['status'] ?? '').toString();
+          final String officeId = (data['officeId'] ?? '').toString();
           final String? chosenPaymentMethodId =
               data['chosenPaymentMethodId'] as String?;
 
-          final String paymentLabel =
-              (data['paymentMethodLabel'] ?? '').toString();
+          final String paymentLabel = (data['paymentMethodLabel'] ?? '')
+              .toString();
           final bool paymentSent = paymentLabel.isNotEmpty;
 
           if (_selectedMethodId == null && chosenPaymentMethodId != null) {
             _selectedMethodId = chosenPaymentMethodId;
           }
 
-          final double savedRateFromTo =
-              ((data['rateFromTo'] ?? 0) as num).toDouble();
-          final double savedFeePercent =
-              ((data['feePercent'] ?? 0) as num).toDouble();
+          final double savedRateFromTo = ((data['rateFromTo'] ?? 0) as num)
+              .toDouble();
+          final double savedFeePercent = ((data['feePercent'] ?? 0) as num)
+              .toDouble();
           final double savedFeeAmountFrom =
               ((data['feeAmountFrom'] ?? 0) as num).toDouble();
           final double savedAmountToGross =
               ((data['amountToGross'] ?? 0) as num).toDouble();
-          final double savedAmountToNet =
-              ((data['amountToNet'] ?? 0) as num).toDouble();
-          final double savedFeeAmountTo =
-              ((data['feeAmountTo'] ?? 0) as num).toDouble();
+          final double savedAmountToNet = ((data['amountToNet'] ?? 0) as num)
+              .toDouble();
+          final double savedFeeAmountTo = ((data['feeAmountTo'] ?? 0) as num)
+              .toDouble();
 
-          final feePercentInput =
-              double.tryParse(_feeController.text.replaceAll(',', '.'));
+          final feePercentInput = double.tryParse(
+            _feeController.text.replaceAll(',', '.'),
+          );
+
+          // Kundens motförslag: fyll i kundens avgift och använd samma
+          // växelkurs som i förslaget, så att managern ser vad det innebär.
+          final countered = status == 'customer_countered';
+          final double counterFee = ((data['counterFeePercent'] ?? 0) as num)
+              .toDouble();
+          if (countered && !_counterPrefilled) {
+            _counterPrefilled = true;
+            _autoCalcStarted = true;
+            _feeController.text = counterFee.toString();
+            if (savedRateFromTo > 0) _rate = savedRateFromTo;
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (!mounted) return;
+              _recalculate(
+                amountFrom: amountFrom,
+                fromCurrency: fromCurrency,
+                toCurrency: toCurrency,
+              );
+            });
+          }
 
           // Räkna direkt med standardavgiften när sidan öppnas, så att knappen
           // "Föreslå villkor" inte är avstängd tills managern ändrar avgiften.
@@ -265,8 +330,38 @@ class _ManagerTransactionDetailScreenState
                 Text(l10n.orderStatusLine(statusText(l10n, status))),
                 const SizedBox(height: 16),
 
+                if (countered)
+                  Card(
+                    child: Padding(
+                      padding: const EdgeInsets.all(12),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            l10n.customerCounterOffer(
+                              savedFeePercent.toStringAsFixed(2),
+                              counterFee.toStringAsFixed(2),
+                            ),
+                            style: const TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                          if ('${data['counterMessage'] ?? ''}'.isNotEmpty) ...[
+                            const SizedBox(height: 4),
+                            Text('"${data['counterMessage']}"'),
+                          ],
+                          const SizedBox(height: 4),
+                          Text(
+                            l10n.counterOfferManagerHint,
+                            style: const TextStyle(color: Colors.grey),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                if (countered) const SizedBox(height: 12),
+
                 if (status == 'customer_requested' ||
-                    status == 'manager_proposed') ...[
+                    status == 'manager_proposed' ||
+                    countered) ...[
                   TextField(
                     controller: _feeController,
                     keyboardType: const TextInputType.numberWithOptions(
@@ -324,8 +419,7 @@ class _ManagerTransactionDetailScreenState
                     Text(l10n.calculating),
                 ],
 
-                if (status == 'customer_accepted' ||
-                    status == 'completed') ...[
+                if (status == 'customer_accepted' || status == 'completed') ...[
                   Text(
                     l10n.exchangeRateValue(
                       fromCurrency,
@@ -385,8 +479,7 @@ class _ManagerTransactionDetailScreenState
                         );
                       }
 
-                      final office =
-                          snap.data!.data() as Map<String, dynamic>;
+                      final office = snap.data!.data() as Map<String, dynamic>;
                       final List rawMethods =
                           office['paymentMethods'] as List? ?? [];
 
@@ -412,7 +505,9 @@ class _ManagerTransactionDetailScreenState
                           children: [
                             Text(
                               l10n.choosePaymentMethodForCustomer,
-                              style: const TextStyle(fontWeight: FontWeight.bold),
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                             const SizedBox(height: 8),
                             RadioGroup<String>(
@@ -425,19 +520,16 @@ class _ManagerTransactionDetailScreenState
                               child: Column(
                                 children: methods.map((method) {
                                   final id = (method['id'] ?? '').toString();
-                                  final label =
-                                      (method['label'] ?? '').toString();
-                                  final details =
-                                      (method['details'] ?? '').toString();
+                                  final label = (method['label'] ?? '')
+                                      .toString();
+                                  final details = (method['details'] ?? '')
+                                      .toString();
 
                                   return Card(
                                     child: RadioListTile<String>(
                                       value: id,
                                       title: Text(label),
-                                      subtitle: Text(
-                                        details,
-                                        softWrap: true,
-                                      ),
+                                      subtitle: Text(details, softWrap: true),
                                     ),
                                   );
                                 }).toList(),
@@ -451,8 +543,32 @@ class _ManagerTransactionDetailScreenState
 
                 if (status != 'customer_accepted') const Spacer(),
 
+                if (countered) ...[
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.green,
+                      ),
+                      onPressed: _busy || savedRateFromTo <= 0
+                          ? null
+                          : () => _acceptCounter(
+                              txRef: txRef,
+                              amountFrom: amountFrom,
+                              rate: savedRateFromTo,
+                              counterFee: counterFee,
+                            ),
+                      child: Text(
+                        l10n.acceptCounterOffer(counterFee.toStringAsFixed(2)),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                ],
+
                 if (status == 'customer_requested' ||
-                    status == 'manager_proposed')
+                    status == 'manager_proposed' ||
+                    countered)
                   SizedBox(
                     width: double.infinity,
                     child: ElevatedButton(
@@ -475,7 +591,9 @@ class _ManagerTransactionDetailScreenState
                                 Navigator.pop(context);
                               }
                             },
-                      child: Text(l10n.proposeTerms),
+                      child: Text(
+                        countered ? l10n.sendNewProposal : l10n.proposeTerms,
+                      ),
                     ),
                   ),
 
@@ -495,14 +613,19 @@ class _ManagerTransactionDetailScreenState
                         SizedBox(
                           width: double.infinity,
                           child: OutlinedButton(
-                            onPressed: (_busy ||
+                            onPressed:
+                                (_busy ||
                                     _selectedMethodId == null ||
-                                    !_methodCache.containsKey(_selectedMethodId))
+                                    !_methodCache.containsKey(
+                                      _selectedMethodId,
+                                    ))
                                 ? null
                                 : () => _sendPaymentDetails(txRef),
-                            child: Text(paymentSent
-                                ? l10n.resendPaymentDetails
-                                : l10n.sendPaymentDetailsToCustomer),
+                            child: Text(
+                              paymentSent
+                                  ? l10n.resendPaymentDetails
+                                  : l10n.sendPaymentDetailsToCustomer,
+                            ),
                           ),
                         ),
                         const SizedBox(height: 8),
@@ -515,13 +638,13 @@ class _ManagerTransactionDetailScreenState
                             onPressed: (_busy || !paymentSent)
                                 ? null
                                 : () => _complete(
-                                      txRef: txRef,
-                                      officeId: officeId,
-                                      fromCurrency: fromCurrency,
-                                      toCurrency: toCurrency,
-                                      amountFrom: amountFrom,
-                                      amountToNet: savedAmountToNet,
-                                    ),
+                                    txRef: txRef,
+                                    officeId: officeId,
+                                    fromCurrency: fromCurrency,
+                                    toCurrency: toCurrency,
+                                    amountFrom: amountFrom,
+                                    amountToNet: savedAmountToNet,
+                                  ),
                             child: Text(l10n.markAsCompleted),
                           ),
                         ),

@@ -1073,4 +1073,80 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get soonBadge => 'Скоро';
+
+  @override
+  String get statusCountered => 'Встречное предложение клиента';
+
+  @override
+  String get customerStatusCountered =>
+      'Встречное предложение отправлено – ждём менеджера';
+
+  @override
+  String get managerStatusCountered => 'Клиент отправил встречное предложение';
+
+  @override
+  String get counterOffer => 'Встречное предложение';
+
+  @override
+  String get counterOfferAlreadyUsed =>
+      'Вы уже использовали встречное предложение для этого перевода.';
+
+  @override
+  String yourCounterOffer(Object fee) {
+    return 'Ваше предложение: комиссия $fee%';
+  }
+
+  @override
+  String get waitingForManagerAnswer => 'Ждём ответа менеджера.';
+
+  @override
+  String counterOfferIntro(Object fee) {
+    return 'Менеджер предлагает комиссию $fee%. Какую комиссию предлагаете вы?';
+  }
+
+  @override
+  String get counterFeeLabel => 'Ваша комиссия (%)';
+
+  @override
+  String youWouldReceive(Object amount, Object currency) {
+    return 'Вы получите: $amount $currency';
+  }
+
+  @override
+  String get messageOptional => 'Сообщение (необязательно)';
+
+  @override
+  String get counterOfferOnce =>
+      'Встречное предложение можно отправить только один раз.';
+
+  @override
+  String counterFeeMustBeLower(Object fee) {
+    return 'Введите комиссию от 0 и меньше $fee%.';
+  }
+
+  @override
+  String get sendCounterOffer => 'Отправить предложение';
+
+  @override
+  String get counterOfferSent => 'Встречное предложение отправлено.';
+
+  @override
+  String customerCounterOffer(Object counter, Object fee) {
+    return 'Клиент предлагает комиссию $counter% вместо $fee%.';
+  }
+
+  @override
+  String get counterOfferManagerHint =>
+      'Примите комиссию клиента или отправьте новое предложение. Клиент больше не может предлагать.';
+
+  @override
+  String acceptCounterOffer(Object fee) {
+    return 'Принять $fee%';
+  }
+
+  @override
+  String get sendNewProposal => 'Отправить новое предложение';
+
+  @override
+  String get counterOfferAccepted => 'Встречное предложение принято.';
 }

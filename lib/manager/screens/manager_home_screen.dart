@@ -113,6 +113,7 @@ class _ManagerHomeScreenState extends State<ManagerHomeScreen> {
                   const newStatuses = ['customer_requested'];
                   const ongoingStatuses = [
                     'manager_proposed',
+                    'customer_countered',
                     'customer_accepted',
                   ];
                   const doneStatuses = ['completed', 'customer_rejected'];

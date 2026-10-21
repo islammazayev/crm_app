@@ -1060,4 +1060,80 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get soonBadge => 'Yakında';
+
+  @override
+  String get statusCountered => 'Müşteriden karşı teklif';
+
+  @override
+  String get customerStatusCountered =>
+      'Karşı teklif gönderildi – yönetici bekleniyor';
+
+  @override
+  String get managerStatusCountered => 'Müşteri karşı teklif gönderdi';
+
+  @override
+  String get counterOffer => 'Karşı teklif';
+
+  @override
+  String get counterOfferAlreadyUsed =>
+      'Bu işlem için karşı teklif hakkınızı zaten kullandınız.';
+
+  @override
+  String yourCounterOffer(Object fee) {
+    return 'Karşı teklifiniz: %$fee ücret';
+  }
+
+  @override
+  String get waitingForManagerAnswer => 'Yöneticinin yanıtı bekleniyor.';
+
+  @override
+  String counterOfferIntro(Object fee) {
+    return 'Yönetici %$fee ücret öneriyor. Siz hangi ücreti öneriyorsunuz?';
+  }
+
+  @override
+  String get counterFeeLabel => 'Önerdiğiniz ücret (%)';
+
+  @override
+  String youWouldReceive(Object amount, Object currency) {
+    return 'Alacağınız: $amount $currency';
+  }
+
+  @override
+  String get messageOptional => 'Mesaj (isteğe bağlı)';
+
+  @override
+  String get counterOfferOnce =>
+      'Her işlem için yalnızca bir karşı teklif gönderebilirsiniz.';
+
+  @override
+  String counterFeeMustBeLower(Object fee) {
+    return '0 veya daha yüksek ve %$fee değerinden düşük bir ücret girin.';
+  }
+
+  @override
+  String get sendCounterOffer => 'Karşı teklif gönder';
+
+  @override
+  String get counterOfferSent => 'Karşı teklifiniz gönderildi.';
+
+  @override
+  String customerCounterOffer(Object counter, Object fee) {
+    return 'Müşteri %$fee yerine %$counter ücret öneriyor.';
+  }
+
+  @override
+  String get counterOfferManagerHint =>
+      'Müşterinin ücretini kabul edin veya yeni bir teklif gönderin. Müşteri tekrar karşı teklif veremez.';
+
+  @override
+  String acceptCounterOffer(Object fee) {
+    return '%$fee kabul et';
+  }
+
+  @override
+  String get sendNewProposal => 'Yeni teklif gönder';
+
+  @override
+  String get counterOfferAccepted => 'Karşı teklif kabul edildi.';
 }

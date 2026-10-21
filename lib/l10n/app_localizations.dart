@@ -1835,6 +1835,126 @@ abstract class AppLocalizations {
   /// In sv, this message translates to:
   /// **'Snart'**
   String get soonBadge;
+
+  /// No description provided for @statusCountered.
+  ///
+  /// In sv, this message translates to:
+  /// **'Motförslag från kund'**
+  String get statusCountered;
+
+  /// No description provided for @customerStatusCountered.
+  ///
+  /// In sv, this message translates to:
+  /// **'Motförslag skickat – väntar på manager'**
+  String get customerStatusCountered;
+
+  /// No description provided for @managerStatusCountered.
+  ///
+  /// In sv, this message translates to:
+  /// **'Kunden har skickat ett motförslag'**
+  String get managerStatusCountered;
+
+  /// No description provided for @counterOffer.
+  ///
+  /// In sv, this message translates to:
+  /// **'Motförslag'**
+  String get counterOffer;
+
+  /// No description provided for @counterOfferAlreadyUsed.
+  ///
+  /// In sv, this message translates to:
+  /// **'Du har redan använt ditt motförslag för den här transaktionen.'**
+  String get counterOfferAlreadyUsed;
+
+  /// No description provided for @yourCounterOffer.
+  ///
+  /// In sv, this message translates to:
+  /// **'Ditt motförslag: {fee}% avgift'**
+  String yourCounterOffer(Object fee);
+
+  /// No description provided for @waitingForManagerAnswer.
+  ///
+  /// In sv, this message translates to:
+  /// **'Väntar på managerns svar.'**
+  String get waitingForManagerAnswer;
+
+  /// No description provided for @counterOfferIntro.
+  ///
+  /// In sv, this message translates to:
+  /// **'Managern föreslår {fee}% i avgift. Vilken avgift föreslår du?'**
+  String counterOfferIntro(Object fee);
+
+  /// No description provided for @counterFeeLabel.
+  ///
+  /// In sv, this message translates to:
+  /// **'Din avgift (%)'**
+  String get counterFeeLabel;
+
+  /// No description provided for @youWouldReceive.
+  ///
+  /// In sv, this message translates to:
+  /// **'Du skulle få ut: {amount} {currency}'**
+  String youWouldReceive(Object amount, Object currency);
+
+  /// No description provided for @messageOptional.
+  ///
+  /// In sv, this message translates to:
+  /// **'Meddelande (valfritt)'**
+  String get messageOptional;
+
+  /// No description provided for @counterOfferOnce.
+  ///
+  /// In sv, this message translates to:
+  /// **'Du kan bara skicka ett motförslag per transaktion.'**
+  String get counterOfferOnce;
+
+  /// No description provided for @counterFeeMustBeLower.
+  ///
+  /// In sv, this message translates to:
+  /// **'Ange en avgift från 0 och lägre än {fee}%.'**
+  String counterFeeMustBeLower(Object fee);
+
+  /// No description provided for @sendCounterOffer.
+  ///
+  /// In sv, this message translates to:
+  /// **'Skicka motförslag'**
+  String get sendCounterOffer;
+
+  /// No description provided for @counterOfferSent.
+  ///
+  /// In sv, this message translates to:
+  /// **'Motförslaget är skickat.'**
+  String get counterOfferSent;
+
+  /// No description provided for @customerCounterOffer.
+  ///
+  /// In sv, this message translates to:
+  /// **'Kunden föreslår {counter}% i avgift i stället för {fee}%.'**
+  String customerCounterOffer(Object counter, Object fee);
+
+  /// No description provided for @counterOfferManagerHint.
+  ///
+  /// In sv, this message translates to:
+  /// **'Acceptera kundens avgift, eller skicka ett nytt förslag. Kunden kan inte lägga fler motförslag.'**
+  String get counterOfferManagerHint;
+
+  /// No description provided for @acceptCounterOffer.
+  ///
+  /// In sv, this message translates to:
+  /// **'Acceptera {fee}%'**
+  String acceptCounterOffer(Object fee);
+
+  /// No description provided for @sendNewProposal.
+  ///
+  /// In sv, this message translates to:
+  /// **'Skicka nytt förslag'**
+  String get sendNewProposal;
+
+  /// No description provided for @counterOfferAccepted.
+  ///
+  /// In sv, this message translates to:
+  /// **'Motförslaget är accepterat.'**
+  String get counterOfferAccepted;
 }
 
 class _AppLocalizationsDelegate
