@@ -688,5 +688,24 @@
         "type": "Object"
       }
     }
+  },
+  "typeToSearchCustomers": "{total, plural, =1{Skriv i sökrutan för att visa kunder (1 kund totalt).} other{Skriv i sökrutan för att visa kunder ({total} kunder totalt).}}",
+  "@typeToSearchCustomers": {
+    "placeholders": {
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "customersShownLimited": "Visar de första {shown} av {count} träffar. Skriv mer för att begränsa.",
+  "@customersShownLimited": {
+    "placeholders": {
+      "shown": {
+        "type": "int"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
   }
 }

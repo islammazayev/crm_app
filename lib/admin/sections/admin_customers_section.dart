@@ -17,6 +17,9 @@ class _AdminCustomersSectionState extends State<AdminCustomersSection> {
   final TextEditingController _searchController = TextEditingController();
   String _query = '';
 
+  /// Fler träffar än så visas inte; admin får skriva mer för att begränsa.
+  static const _maxResults = 50;
+
   CollectionReference get customersRef =>
       FirebaseFirestore.instance.collection('customers');
 
@@ -301,17 +304,34 @@ class _AdminCustomersSectionState extends State<AdminCustomersSection> {
                       txSnap.data?.docs ?? const [],
                       officeSnap.data?.docs ?? const [],
                     );
+                    const muted = TextStyle(
+                      color: AppColors.textMuted,
+                      fontSize: 13,
+                    );
+
+                    // Ingen lista förrän admin skriver något, annars blir den
+                    // lång när det finns många kunder.
+                    if (_query.trim().isEmpty) {
+                      return Text(
+                        l10n.typeToSearchCustomers(all.length),
+                        style: muted,
+                      );
+                    }
+
                     final results = searchCustomers(all, _query);
+                    final shown = results.take(_maxResults).toList();
 
                     return Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          l10n.customersShown(results.length, all.length),
-                          style: const TextStyle(
-                            color: AppColors.textMuted,
-                            fontSize: 13,
-                          ),
+                          results.length > shown.length
+                              ? l10n.customersShownLimited(
+                                  shown.length,
+                                  results.length,
+                                )
+                              : l10n.customersShown(results.length, all.length),
+                          style: muted,
                         ),
                         const SizedBox(height: 8),
                         if (results.isEmpty)
@@ -322,7 +342,7 @@ class _AdminCustomersSectionState extends State<AdminCustomersSection> {
                               style: const TextStyle(color: Colors.grey),
                             ),
                           ),
-                        for (final c in results) _resultCard(c),
+                        for (final c in shown) _resultCard(c),
                       ],
                     );
                   },

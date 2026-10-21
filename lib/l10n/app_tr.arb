@@ -261,5 +261,7 @@
   "clearSearch": "Aramayı temizle",
   "customersShown": "{total} müşteriden {shown} gösteriliyor",
   "noCustomersMatch": "Aramayla eşleşen müşteri yok.",
-  "placesValue": "Şubeler: {places}"
+  "placesValue": "Şubeler: {places}",
+  "typeToSearchCustomers": "{total, plural, =1{Müşterileri görmek için arama kutusuna yazın (toplam 1 müşteri).} other{Müşterileri görmek için arama kutusuna yazın (toplam {total} müşteri).}}",
+  "customersShownLimited": "{count} eşleşmenin ilk {shown} tanesi gösteriliyor. Daraltmak için daha fazla yazın."
 }

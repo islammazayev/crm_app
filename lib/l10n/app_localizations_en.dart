@@ -940,4 +940,21 @@ class AppLocalizationsEn extends AppLocalizations {
   String placesValue(Object places) {
     return 'Offices: $places';
   }
+
+  @override
+  String typeToSearchCustomers(int total) {
+    String _temp0 = intl.Intl.pluralLogic(
+      total,
+      locale: localeName,
+      other:
+          'Type in the search box to show customers ($total customers in total).',
+      one: 'Type in the search box to show customers (1 customer in total).',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String customersShownLimited(int shown, int count) {
+    return 'Showing the first $shown of $count matches. Type more to narrow it down.';
+  }
 }

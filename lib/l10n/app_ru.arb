@@ -261,5 +261,7 @@
   "clearSearch": "Очистить поиск",
   "customersShown": "Показано {shown} из {total}",
   "noCustomersMatch": "Нет клиентов по этому запросу.",
-  "placesValue": "Офисы: {places}"
+  "placesValue": "Офисы: {places}",
+  "typeToSearchCustomers": "{total, plural, one{Начните вводить, чтобы увидеть клиентов (всего {total} клиент).} few{Начните вводить, чтобы увидеть клиентов (всего {total} клиента).} many{Начните вводить, чтобы увидеть клиентов (всего {total} клиентов).} other{Начните вводить, чтобы увидеть клиентов (всего {total} клиента).}}",
+  "customersShownLimited": "Показаны первые {shown} из {count} совпадений. Уточните запрос."
 }
