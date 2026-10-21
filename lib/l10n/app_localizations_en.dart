@@ -915,4 +915,29 @@ class AppLocalizationsEn extends AppLocalizations {
   String officeValue(Object office) {
     return 'Office: $office';
   }
+
+  @override
+  String get searchCustomers => 'Search customers';
+
+  @override
+  String get searchCustomersLabel => 'Client ID, name, phone, country or city';
+
+  @override
+  String get searchCustomersHint => 'e.g. 00, Ali, 0731, Grozny';
+
+  @override
+  String get clearSearch => 'Clear search';
+
+  @override
+  String customersShown(int shown, int total) {
+    return 'Showing $shown of $total customers';
+  }
+
+  @override
+  String get noCustomersMatch => 'No customers match the search.';
+
+  @override
+  String placesValue(Object places) {
+    return 'Offices: $places';
+  }
 }

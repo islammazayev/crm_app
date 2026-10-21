@@ -664,5 +664,29 @@
         "type": "Object"
       }
     }
+  },
+  "searchCustomers": "Sök kund",
+  "searchCustomersLabel": "Klient-ID, namn, telefon, land eller stad",
+  "searchCustomersHint": "t.ex. 00, Ali, 0731, Grozny",
+  "clearSearch": "Rensa sökning",
+  "customersShown": "Visar {shown} av {total} kunder",
+  "@customersShown": {
+    "placeholders": {
+      "shown": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "noCustomersMatch": "Inga kunder matchar sökningen.",
+  "placesValue": "Kontor: {places}",
+  "@placesValue": {
+    "placeholders": {
+      "places": {
+        "type": "Object"
+      }
+    }
   }
 }

@@ -1637,6 +1637,48 @@ abstract class AppLocalizations {
   /// In sv, this message translates to:
   /// **'Kontor: {office}'**
   String officeValue(Object office);
+
+  /// No description provided for @searchCustomers.
+  ///
+  /// In sv, this message translates to:
+  /// **'Sök kund'**
+  String get searchCustomers;
+
+  /// No description provided for @searchCustomersLabel.
+  ///
+  /// In sv, this message translates to:
+  /// **'Klient-ID, namn, telefon, land eller stad'**
+  String get searchCustomersLabel;
+
+  /// No description provided for @searchCustomersHint.
+  ///
+  /// In sv, this message translates to:
+  /// **'t.ex. 00, Ali, 0731, Grozny'**
+  String get searchCustomersHint;
+
+  /// No description provided for @clearSearch.
+  ///
+  /// In sv, this message translates to:
+  /// **'Rensa sökning'**
+  String get clearSearch;
+
+  /// No description provided for @customersShown.
+  ///
+  /// In sv, this message translates to:
+  /// **'Visar {shown} av {total} kunder'**
+  String customersShown(int shown, int total);
+
+  /// No description provided for @noCustomersMatch.
+  ///
+  /// In sv, this message translates to:
+  /// **'Inga kunder matchar sökningen.'**
+  String get noCustomersMatch;
+
+  /// No description provided for @placesValue.
+  ///
+  /// In sv, this message translates to:
+  /// **'Kontor: {places}'**
+  String placesValue(Object places);
 }
 
 class _AppLocalizationsDelegate

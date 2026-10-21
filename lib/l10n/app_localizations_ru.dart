@@ -920,4 +920,30 @@ class AppLocalizationsRu extends AppLocalizations {
   String officeValue(Object office) {
     return 'Офис: $office';
   }
+
+  @override
+  String get searchCustomers => 'Поиск клиента';
+
+  @override
+  String get searchCustomersLabel =>
+      'ID клиента, имя, телефон, страна или город';
+
+  @override
+  String get searchCustomersHint => 'напр. 00, Али, 0731, Грозный';
+
+  @override
+  String get clearSearch => 'Очистить поиск';
+
+  @override
+  String customersShown(int shown, int total) {
+    return 'Показано $shown из $total';
+  }
+
+  @override
+  String get noCustomersMatch => 'Нет клиентов по этому запросу.';
+
+  @override
+  String placesValue(Object places) {
+    return 'Офисы: $places';
+  }
 }
