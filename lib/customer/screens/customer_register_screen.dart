@@ -4,9 +4,8 @@ import 'package:flutter/material.dart';
 
 import '../../l10n/auth_error_text.dart';
 import '../../l10n/locale_controller.dart';
-import '../../utils/client_id.dart';
+import '../../screens/auth_gate.dart';
 import '../../widgets/language_button.dart';
-import '../../widgets/customer_welcome_screen.dart';
 
 class CustomerRegisterScreen extends StatefulWidget {
   const CustomerRegisterScreen({super.key});
@@ -73,7 +72,7 @@ class _CustomerRegisterScreenState extends State<CustomerRegisterScreen> {
       final metaRef = db.collection('meta').doc('customers');
       final customerRef = db.collection('customers').doc(uid);
 
-      final int clientId = await db.runTransaction<int>((tx) async {
+      await db.runTransaction<int>((tx) async {
         final snap = await tx.get(metaRef);
         final last = (snap.data()?['lastClientId'] as num?)?.toInt() ?? 0;
         final next = last + 1;
@@ -92,20 +91,11 @@ class _CustomerRegisterScreenState extends State<CustomerRegisterScreen> {
         return next;
       });
 
-      final fullName = '$firstName $lastName'.trim();
-
       if (!mounted) return;
 
-      Navigator.of(context).pushAndRemoveUntil(
-        MaterialPageRoute(
-          builder: (_) => CustomerWelcomeScreen(
-            clientId: formatClientId(clientId),
-            fullName: fullName,
-            phone: phone,
-          ),
-        ),
-        (route) => false,
-      );
+      // Börja om från startpunkten, som nu visar kundens startsida. Allt är
+      // sparat innan dess, så roll och kundpost finns när sidan laddas.
+      restartFromAuthGate(context);
     } on FirebaseAuthException catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(

@@ -1033,4 +1033,31 @@ class AppLocalizationsTr extends AppLocalizations {
   @override
   String get deleteTransactionConfirm =>
       'İşlem kalıcı olarak silinecek. Şube bakiyesi değişmez.';
+
+  @override
+  String get customerPanel => 'Ne yapmak istersiniz?';
+
+  @override
+  String get sendMoney => 'Para gönder';
+
+  @override
+  String get sendMoneySubtitle => 'Döviz ve şube seçip talep gönderin.';
+
+  @override
+  String get myTransactionsSubtitle =>
+      'İşlemlerinizi takip edin ve tekliflere yanıt verin.';
+
+  @override
+  String offersWaiting(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count teklif yanıtınızı bekliyor.',
+      one: '1 teklif yanıtınızı bekliyor.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get soonBadge => 'Yakında';
 }

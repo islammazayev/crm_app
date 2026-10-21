@@ -1,6 +1,6 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import '../l10n/locale_controller.dart';
+import 'auth_gate.dart';
 import '../services/user_role_service.dart';
 import '../admin/screens/admin_home_screen.dart';
 import '../manager/screens/manager_home_screen.dart';
@@ -33,7 +33,7 @@ class HomeScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 12),
                   TextButton(
-                    onPressed: () => FirebaseAuth.instance.signOut(),
+                    onPressed: () => signOutToLogin(context),
                     child: Text(context.l10n.logout),
                   ),
                 ],

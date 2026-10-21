@@ -1799,6 +1799,42 @@ abstract class AppLocalizations {
   /// In sv, this message translates to:
   /// **'Transaktionen tas bort permanent. Kontorets saldo ändras inte.'**
   String get deleteTransactionConfirm;
+
+  /// No description provided for @customerPanel.
+  ///
+  /// In sv, this message translates to:
+  /// **'Vad vill du göra?'**
+  String get customerPanel;
+
+  /// No description provided for @sendMoney.
+  ///
+  /// In sv, this message translates to:
+  /// **'Skicka pengar'**
+  String get sendMoney;
+
+  /// No description provided for @sendMoneySubtitle.
+  ///
+  /// In sv, this message translates to:
+  /// **'Välj valuta och kontor och skicka en förfrågan.'**
+  String get sendMoneySubtitle;
+
+  /// No description provided for @myTransactionsSubtitle.
+  ///
+  /// In sv, this message translates to:
+  /// **'Följ dina transaktioner och svara på förslag.'**
+  String get myTransactionsSubtitle;
+
+  /// No description provided for @offersWaiting.
+  ///
+  /// In sv, this message translates to:
+  /// **'{count, plural, =1{1 förslag väntar på ditt svar.} other{{count} förslag väntar på ditt svar.}}'**
+  String offersWaiting(int count);
+
+  /// No description provided for @soonBadge.
+  ///
+  /// In sv, this message translates to:
+  /// **'Snart'**
+  String get soonBadge;
 }
 
 class _AppLocalizationsDelegate

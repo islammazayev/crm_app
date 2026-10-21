@@ -1044,4 +1044,33 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String get deleteTransactionConfirm =>
       'Перевод будет удалён навсегда. Баланс офиса не изменится.';
+
+  @override
+  String get customerPanel => 'Что вы хотите сделать?';
+
+  @override
+  String get sendMoney => 'Отправить деньги';
+
+  @override
+  String get sendMoneySubtitle => 'Выберите валюту и офис и отправьте запрос.';
+
+  @override
+  String get myTransactionsSubtitle =>
+      'Следите за переводами и отвечайте на предложения.';
+
+  @override
+  String offersWaiting(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count предложения ждут вашего ответа.',
+      many: '$count предложений ждут вашего ответа.',
+      few: '$count предложения ждут вашего ответа.',
+      one: '$count предложение ждёт вашего ответа.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get soonBadge => 'Скоро';
 }

@@ -1037,4 +1037,32 @@ class AppLocalizationsSv extends AppLocalizations {
   @override
   String get deleteTransactionConfirm =>
       'Transaktionen tas bort permanent. Kontorets saldo ändras inte.';
+
+  @override
+  String get customerPanel => 'Vad vill du göra?';
+
+  @override
+  String get sendMoney => 'Skicka pengar';
+
+  @override
+  String get sendMoneySubtitle =>
+      'Välj valuta och kontor och skicka en förfrågan.';
+
+  @override
+  String get myTransactionsSubtitle =>
+      'Följ dina transaktioner och svara på förslag.';
+
+  @override
+  String offersWaiting(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count förslag väntar på ditt svar.',
+      one: '1 förslag väntar på ditt svar.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get soonBadge => 'Snart';
 }

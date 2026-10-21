@@ -1,8 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 import '../../l10n/locale_controller.dart';
+import '../../screens/auth_gate.dart';
 import '../../services/currency_migration_service.dart';
 import '../../services/customer_counter_service.dart';
 import '../../services/office_listing_service.dart';
@@ -68,9 +68,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
           IconButton(
             tooltip: l10n.logout,
             icon: const Icon(Icons.logout),
-            onPressed: () async {
-              await FirebaseAuth.instance.signOut();
-            },
+            onPressed: () => signOutToLogin(context),
           ),
         ],
       ),
