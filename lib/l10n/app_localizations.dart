@@ -2189,6 +2189,114 @@ abstract class AppLocalizations {
   /// In sv, this message translates to:
   /// **'Betala ut och markera som genomförd'**
   String get payOutAndComplete;
+
+  /// No description provided for @showQrAtOffice.
+  ///
+  /// In sv, this message translates to:
+  /// **'Visa QR-koden på kontoret'**
+  String get showQrAtOffice;
+
+  /// No description provided for @orUseCode.
+  ///
+  /// In sv, this message translates to:
+  /// **'Eller uppge koden'**
+  String get orUseCode;
+
+  /// No description provided for @scanCustomerQr.
+  ///
+  /// In sv, this message translates to:
+  /// **'Skanna kundens QR-kod'**
+  String get scanCustomerQr;
+
+  /// No description provided for @enterCodeInstead.
+  ///
+  /// In sv, this message translates to:
+  /// **'Skriv in koden i stället'**
+  String get enterCodeInstead;
+
+  /// No description provided for @payOutWithCode.
+  ///
+  /// In sv, this message translates to:
+  /// **'Betala ut med kod'**
+  String get payOutWithCode;
+
+  /// No description provided for @qrDoesNotMatch.
+  ///
+  /// In sv, this message translates to:
+  /// **'QR-koden stämmer inte för den här transaktionen.'**
+  String get qrDoesNotMatch;
+
+  /// No description provided for @qrVerified.
+  ///
+  /// In sv, this message translates to:
+  /// **'QR-koden stämmer'**
+  String get qrVerified;
+
+  /// No description provided for @payOutAmount.
+  ///
+  /// In sv, this message translates to:
+  /// **'Betala ut {amount} {currency}'**
+  String payOutAmount(Object amount, Object currency);
+
+  /// No description provided for @checkIdHint.
+  ///
+  /// In sv, this message translates to:
+  /// **'Kontrollera kundens legitimation innan du betalar ut.'**
+  String get checkIdHint;
+
+  /// No description provided for @qrOtherTransaction.
+  ///
+  /// In sv, this message translates to:
+  /// **'QR-koden hör till en annan transaktion.'**
+  String get qrOtherTransaction;
+
+  /// No description provided for @scanPickupQr.
+  ///
+  /// In sv, this message translates to:
+  /// **'Skanna uthämtning'**
+  String get scanPickupQr;
+
+  /// No description provided for @notAPickupQr.
+  ///
+  /// In sv, this message translates to:
+  /// **'Det här är inte en uthämtningskod från appen.'**
+  String get notAPickupQr;
+
+  /// No description provided for @cameraError.
+  ///
+  /// In sv, this message translates to:
+  /// **'Kameran kunde inte startas ({error}). Tillåt kameran i webbläsaren, eller skriv in koden i stället.'**
+  String cameraError(Object error);
+
+  /// No description provided for @pointCameraAtQr.
+  ///
+  /// In sv, this message translates to:
+  /// **'Rikta kameran mot QR-koden på kundens telefon.'**
+  String get pointCameraAtQr;
+
+  /// No description provided for @scanPickup.
+  ///
+  /// In sv, this message translates to:
+  /// **'Skanna uthämtning'**
+  String get scanPickup;
+
+  /// No description provided for @scanPickupSubtitle.
+  ///
+  /// In sv, this message translates to:
+  /// **'Skanna kundens QR-kod för att betala ut en bekräftad transaktion.'**
+  String get scanPickupSubtitle;
+
+  /// No description provided for @qrNotReadyForPayout.
+  ///
+  /// In sv, this message translates to:
+  /// **'Transaktionen finns inte eller är inte klar för utbetalning.'**
+  String get qrNotReadyForPayout;
+
+  /// No description provided for @qrOtherOffice.
+  ///
+  /// In sv, this message translates to:
+  /// **'QR-koden hör till ett annat kontor.'**
+  String get qrOtherOffice;
 }
 
 class _AppLocalizationsDelegate

@@ -1278,4 +1278,65 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get payOutAndComplete => 'Öde ve tamamlandı olarak işaretle';
+
+  @override
+  String get showQrAtOffice => 'QR kodunu şubede gösterin';
+
+  @override
+  String get orUseCode => 'Veya kodu söyleyin';
+
+  @override
+  String get scanCustomerQr => 'Müşterinin QR kodunu tara';
+
+  @override
+  String get enterCodeInstead => 'Kodu elle gir';
+
+  @override
+  String get payOutWithCode => 'Kodla öde';
+
+  @override
+  String get qrDoesNotMatch => 'QR kodu bu işlemle eşleşmiyor.';
+
+  @override
+  String get qrVerified => 'QR kodu doğrulandı';
+
+  @override
+  String payOutAmount(Object amount, Object currency) {
+    return '$amount $currency öde';
+  }
+
+  @override
+  String get checkIdHint => 'Ödemeden önce müşterinin kimliğini kontrol edin.';
+
+  @override
+  String get qrOtherTransaction => 'QR kodu başka bir işleme ait.';
+
+  @override
+  String get scanPickupQr => 'Teslimat tara';
+
+  @override
+  String get notAPickupQr => 'Bu, uygulamadan bir teslim alma kodu değil.';
+
+  @override
+  String cameraError(Object error) {
+    return 'Kamera başlatılamadı ($error). Tarayıcıda kameraya izin verin veya kodu elle girin.';
+  }
+
+  @override
+  String get pointCameraAtQr =>
+      'Kamerayı müşterinin telefonundaki QR koduna tutun.';
+
+  @override
+  String get scanPickup => 'Teslimat tara';
+
+  @override
+  String get scanPickupSubtitle =>
+      'Onaylanmış bir işlemi ödemek için müşterinin QR kodunu tarayın.';
+
+  @override
+  String get qrNotReadyForPayout =>
+      'İşlem bulunamadı veya ödemeye hazır değil.';
+
+  @override
+  String get qrOtherOffice => 'QR kodu başka bir şubeye ait.';
 }

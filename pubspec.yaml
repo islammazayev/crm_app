@@ -27,6 +27,8 @@ dependencies:
   url_launcher: ^6.3.3
   file_picker: ^11.0.3
   firebase_storage: ^13.0.0
+  qr_flutter: ^4.1.0
+  mobile_scanner: ^7.4.2
 
 dev_dependencies:
   flutter_test:

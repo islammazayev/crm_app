@@ -269,7 +269,7 @@ service cloud.firestore {
                'chosenPaymentMethodId', 'paymentMethodLabel',
                'paymentMethodDetails', 'paymentSentAt',
                'managerProposedAt', 'completedAt',
-               'pickupCode', 'paymentConfirmedAt',
+               'pickupCode', 'pickupToken', 'paymentConfirmedAt',
                'paymentIssueNote', 'paymentIssueAt', 'payoutCode'
              ])
           && (
@@ -302,10 +302,13 @@ service cloud.firestore {
               request.resource.data.status == 'payment_confirmed'
               && resource.data.status in ['customer_accepted', 'customer_paid']
               && request.resource.data.diff(resource.data).changedKeys().hasOnly([
-                   'status', 'pickupCode', 'paymentConfirmedAt'
+                   'status', 'pickupCode', 'pickupToken', 'paymentConfirmedAt'
                  ])
+              // ÅÅMMDD-XXXX-XXXX och en hemlig nyckel på 32 tecken för QR-koden.
               && request.resource.data.pickupCode is string
-              && request.resource.data.pickupCode.size() == 9
+              && request.resource.data.pickupCode.matches('[0-9]{6}-[0-9]{4}-[0-9]{4}')
+              && request.resource.data.pickupToken is string
+              && request.resource.data.pickupToken.size() == 32
             )
             // Betalningen har inte kommit: tillbaka till kunden med meddelande.
             || (

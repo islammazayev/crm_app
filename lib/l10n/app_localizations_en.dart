@@ -1280,4 +1280,66 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get payOutAndComplete => 'Pay out and mark as completed';
+
+  @override
+  String get showQrAtOffice => 'Show the QR code at the office';
+
+  @override
+  String get orUseCode => 'Or give the code';
+
+  @override
+  String get scanCustomerQr => 'Scan the customer\'s QR code';
+
+  @override
+  String get enterCodeInstead => 'Enter the code instead';
+
+  @override
+  String get payOutWithCode => 'Pay out with code';
+
+  @override
+  String get qrDoesNotMatch => 'The QR code does not match this transaction.';
+
+  @override
+  String get qrVerified => 'QR code verified';
+
+  @override
+  String payOutAmount(Object amount, Object currency) {
+    return 'Pay out $amount $currency';
+  }
+
+  @override
+  String get checkIdHint => 'Check the customer\'s ID before paying out.';
+
+  @override
+  String get qrOtherTransaction =>
+      'The QR code belongs to another transaction.';
+
+  @override
+  String get scanPickupQr => 'Scan pickup';
+
+  @override
+  String get notAPickupQr => 'This is not a pickup code from the app.';
+
+  @override
+  String cameraError(Object error) {
+    return 'The camera could not start ($error). Allow the camera in the browser, or enter the code instead.';
+  }
+
+  @override
+  String get pointCameraAtQr =>
+      'Point the camera at the QR code on the customer\'s phone.';
+
+  @override
+  String get scanPickup => 'Scan pickup';
+
+  @override
+  String get scanPickupSubtitle =>
+      'Scan the customer\'s QR code to pay out a confirmed transaction.';
+
+  @override
+  String get qrNotReadyForPayout =>
+      'The transaction does not exist or is not ready for payout.';
+
+  @override
+  String get qrOtherOffice => 'The QR code belongs to another office.';
 }

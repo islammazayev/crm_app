@@ -1282,4 +1282,67 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String get payOutAndComplete => 'Betala ut och markera som genomförd';
+
+  @override
+  String get showQrAtOffice => 'Visa QR-koden på kontoret';
+
+  @override
+  String get orUseCode => 'Eller uppge koden';
+
+  @override
+  String get scanCustomerQr => 'Skanna kundens QR-kod';
+
+  @override
+  String get enterCodeInstead => 'Skriv in koden i stället';
+
+  @override
+  String get payOutWithCode => 'Betala ut med kod';
+
+  @override
+  String get qrDoesNotMatch =>
+      'QR-koden stämmer inte för den här transaktionen.';
+
+  @override
+  String get qrVerified => 'QR-koden stämmer';
+
+  @override
+  String payOutAmount(Object amount, Object currency) {
+    return 'Betala ut $amount $currency';
+  }
+
+  @override
+  String get checkIdHint =>
+      'Kontrollera kundens legitimation innan du betalar ut.';
+
+  @override
+  String get qrOtherTransaction => 'QR-koden hör till en annan transaktion.';
+
+  @override
+  String get scanPickupQr => 'Skanna uthämtning';
+
+  @override
+  String get notAPickupQr => 'Det här är inte en uthämtningskod från appen.';
+
+  @override
+  String cameraError(Object error) {
+    return 'Kameran kunde inte startas ($error). Tillåt kameran i webbläsaren, eller skriv in koden i stället.';
+  }
+
+  @override
+  String get pointCameraAtQr =>
+      'Rikta kameran mot QR-koden på kundens telefon.';
+
+  @override
+  String get scanPickup => 'Skanna uthämtning';
+
+  @override
+  String get scanPickupSubtitle =>
+      'Skanna kundens QR-kod för att betala ut en bekräftad transaktion.';
+
+  @override
+  String get qrNotReadyForPayout =>
+      'Transaktionen finns inte eller är inte klar för utbetalning.';
+
+  @override
+  String get qrOtherOffice => 'QR-koden hör till ett annat kontor.';
 }
