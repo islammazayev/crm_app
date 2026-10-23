@@ -115,6 +115,8 @@ class _ManagerHomeScreenState extends State<ManagerHomeScreen> {
                     'manager_proposed',
                     'customer_countered',
                     'customer_accepted',
+                    'customer_paid',
+                    'payment_confirmed',
                   ];
                   const doneStatuses = ['completed', 'customer_rejected'];
                   final officeId = _officeId!;

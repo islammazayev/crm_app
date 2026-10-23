@@ -1145,4 +1145,139 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get exportNo => 'No.';
+
+  @override
+  String get statusPaid => 'Paid by customer';
+
+  @override
+  String get statusPaymentConfirmed => 'Payment confirmed';
+
+  @override
+  String get customerStatusPaid => 'Payment sent – the manager is checking';
+
+  @override
+  String get customerStatusPaymentConfirmed =>
+      'Ready for pickup – see your code';
+
+  @override
+  String get managerStatusPaid => 'The customer has paid – check the payment';
+
+  @override
+  String get managerStatusPaymentConfirmed =>
+      'Payment confirmed – waiting for pickup';
+
+  @override
+  String readyForPickup(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count transactions are ready for pickup.',
+      one: '1 transaction is ready for pickup.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get iHavePaid => 'I have paid';
+
+  @override
+  String get markPaidIntro =>
+      'Attach the receipt (image or PDF) so the manager can check the payment faster.';
+
+  @override
+  String get attachReceipt => 'Attach receipt';
+
+  @override
+  String get changeReceipt => 'Change receipt';
+
+  @override
+  String get receiptTooLarge => 'The file is too large (max 10 MB).';
+
+  @override
+  String get confirmPaid => 'Send';
+
+  @override
+  String get markedAsPaidSent =>
+      'Thank you! The manager is checking the payment.';
+
+  @override
+  String get markedAsPaid => 'You marked this as paid';
+
+  @override
+  String get managerCheckingPayment =>
+      'The manager is checking the payment and will confirm as soon as it has arrived.';
+
+  @override
+  String get showReceipt => 'Show receipt';
+
+  @override
+  String get paymentMissingTitle => 'The payment has not arrived';
+
+  @override
+  String get paymentConfirmedTitle => 'The payment is confirmed';
+
+  @override
+  String get yourPickupCode => 'Your pickup code';
+
+  @override
+  String pickupCodeInstructions(Object amount, Object currency) {
+    return 'Show the code at the office to collect $amount $currency. Only share it with the person collecting the money.';
+  }
+
+  @override
+  String get paidOutTitle => 'Paid out';
+
+  @override
+  String get paidOutBody => 'The money has been collected. Thank you!';
+
+  @override
+  String get wrongPickupCode =>
+      'Wrong code. Check the code the customer shows.';
+
+  @override
+  String get paymentConfirmedSent =>
+      'The payment is confirmed and the customer has received a code.';
+
+  @override
+  String get paymentMissing => 'Payment missing';
+
+  @override
+  String get paymentMissingDefault =>
+      'We have not received your payment yet. Please check the payment and try again.';
+
+  @override
+  String get messageToCustomer => 'Message to the customer';
+
+  @override
+  String get confirmPayment => 'Confirm payment';
+
+  @override
+  String get customerMarkedPaid => 'The customer has marked this as paid';
+
+  @override
+  String showReceiptNamed(Object name) {
+    return 'Show receipt $name';
+  }
+
+  @override
+  String get noReceiptAttached => 'No receipt attached.';
+
+  @override
+  String get paymentConfirmedManager => 'The payment is confirmed';
+
+  @override
+  String payoutInstructions(Object amount, Object currency) {
+    return 'Pay out $amount $currency when the customer shows the pickup code.';
+  }
+
+  @override
+  String giveCodeToWalkIn(Object code) {
+    return 'The customer has no account. Give the customer this code: $code';
+  }
+
+  @override
+  String get customerPickupCode => 'Customer\'s pickup code';
+
+  @override
+  String get payOutAndComplete => 'Pay out and mark as completed';
 }

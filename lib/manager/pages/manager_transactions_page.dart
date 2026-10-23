@@ -88,6 +88,12 @@ class ManagerTransactionsPage extends StatelessWidget {
                 case 'customer_rejected':
                   statusText = l10n.managerStatusRejected;
                   break;
+                case 'customer_paid':
+                  statusText = l10n.managerStatusPaid;
+                  break;
+                case 'payment_confirmed':
+                  statusText = l10n.managerStatusPaymentConfirmed;
+                  break;
                 case 'completed':
                   statusText = l10n.statusCompleted;
                   break;

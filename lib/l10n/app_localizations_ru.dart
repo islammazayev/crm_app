@@ -1157,4 +1157,138 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get exportNo => '№';
+
+  @override
+  String get statusPaid => 'Оплачено клиентом';
+
+  @override
+  String get statusPaymentConfirmed => 'Оплата подтверждена';
+
+  @override
+  String get customerStatusPaid => 'Оплата отправлена – менеджер проверяет';
+
+  @override
+  String get customerStatusPaymentConfirmed => 'Можно получить – см. код';
+
+  @override
+  String get managerStatusPaid => 'Клиент оплатил – проверьте оплату';
+
+  @override
+  String get managerStatusPaymentConfirmed =>
+      'Оплата подтверждена – ждём получения';
+
+  @override
+  String readyForPickup(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count перевода можно получить.',
+      many: '$count переводов можно получить.',
+      few: '$count перевода можно получить.',
+      one: '$count перевод можно получить.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get iHavePaid => 'Я оплатил';
+
+  @override
+  String get markPaidIntro =>
+      'Прикрепите чек (фото или PDF), чтобы менеджер быстрее проверил оплату.';
+
+  @override
+  String get attachReceipt => 'Прикрепить чек';
+
+  @override
+  String get changeReceipt => 'Заменить чек';
+
+  @override
+  String get receiptTooLarge => 'Файл слишком большой (максимум 10 МБ).';
+
+  @override
+  String get confirmPaid => 'Отправить';
+
+  @override
+  String get markedAsPaidSent => 'Спасибо! Менеджер проверяет оплату.';
+
+  @override
+  String get markedAsPaid => 'Вы отметили оплату';
+
+  @override
+  String get managerCheckingPayment =>
+      'Менеджер проверяет оплату и подтвердит, как только она поступит.';
+
+  @override
+  String get showReceipt => 'Показать чек';
+
+  @override
+  String get paymentMissingTitle => 'Оплата не поступила';
+
+  @override
+  String get paymentConfirmedTitle => 'Оплата подтверждена';
+
+  @override
+  String get yourPickupCode => 'Ваш код для получения';
+
+  @override
+  String pickupCodeInstructions(Object amount, Object currency) {
+    return 'Покажите код в офисе, чтобы получить $amount $currency. Сообщайте его только тому, кто будет получать деньги.';
+  }
+
+  @override
+  String get paidOutTitle => 'Выплачено';
+
+  @override
+  String get paidOutBody => 'Деньги получены. Спасибо!';
+
+  @override
+  String get wrongPickupCode =>
+      'Неверный код. Проверьте код, который показывает клиент.';
+
+  @override
+  String get paymentConfirmedSent => 'Оплата подтверждена, клиент получил код.';
+
+  @override
+  String get paymentMissing => 'Оплата не поступила';
+
+  @override
+  String get paymentMissingDefault =>
+      'Мы ещё не получили вашу оплату. Проверьте платёж и попробуйте снова.';
+
+  @override
+  String get messageToCustomer => 'Сообщение клиенту';
+
+  @override
+  String get confirmPayment => 'Подтвердить оплату';
+
+  @override
+  String get customerMarkedPaid => 'Клиент отметил оплату';
+
+  @override
+  String showReceiptNamed(Object name) {
+    return 'Показать чек $name';
+  }
+
+  @override
+  String get noReceiptAttached => 'Чек не прикреплён.';
+
+  @override
+  String get paymentConfirmedManager => 'Оплата подтверждена';
+
+  @override
+  String payoutInstructions(Object amount, Object currency) {
+    return 'Выплатите $amount $currency, когда клиент покажет код.';
+  }
+
+  @override
+  String giveCodeToWalkIn(Object code) {
+    return 'У клиента нет аккаунта. Передайте клиенту код: $code';
+  }
+
+  @override
+  String get customerPickupCode => 'Код клиента для получения';
+
+  @override
+  String get payOutAndComplete => 'Выплатить и отметить как выполненный';
 }

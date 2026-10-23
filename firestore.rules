@@ -158,7 +158,7 @@ service cloud.firestore {
       let oldB = resource.data.balances;
       let newB = request.resource.data.balances;
       return before.officeId == officeId
-        && before.status == 'customer_accepted'
+        && before.status == 'payment_confirmed'
         && after.status == 'completed'
         && newB.diff(oldB).affectedKeys().hasOnly([before.fromCurrency, before.toCurrency])
         && math.abs(newB.get(before.fromCurrency, 0) - (oldB.get(before.fromCurrency, 0) + before.amountFrom)) < 0.01
@@ -268,7 +268,9 @@ service cloud.firestore {
                'amountToGross', 'amountToNet', 'feeAmountTo',
                'chosenPaymentMethodId', 'paymentMethodLabel',
                'paymentMethodDetails', 'paymentSentAt',
-               'managerProposedAt', 'completedAt'
+               'managerProposedAt', 'completedAt',
+               'pickupCode', 'paymentConfirmedAt',
+               'paymentIssueNote', 'paymentIssueAt', 'payoutCode'
              ])
           && (
             (
@@ -293,13 +295,33 @@ service cloud.firestore {
             )
             // Genomförd bara i samma batch som kontorets saldo bokförs för
             // just den här transaktionen (se offices-regeln).
+            // Bekräfta att betalningen har kommit och skapa uthämtningskoden.
+            // Från customer_accepted gäller kunder utan konto (de kan inte
+            // själva markera betalt).
+            || (
+              request.resource.data.status == 'payment_confirmed'
+              && resource.data.status in ['customer_accepted', 'customer_paid']
+              && request.resource.data.diff(resource.data).changedKeys().hasOnly([
+                   'status', 'pickupCode', 'paymentConfirmedAt'
+                 ])
+              && request.resource.data.pickupCode is string
+              && request.resource.data.pickupCode.size() == 9
+            )
+            // Betalningen har inte kommit: tillbaka till kunden med meddelande.
+            || (
+              request.resource.data.status == 'customer_accepted'
+              && resource.data.status == 'customer_paid'
+              && request.resource.data.diff(resource.data).changedKeys().hasOnly([
+                   'status', 'paymentIssueNote', 'paymentIssueAt'
+                 ])
+            )
             || (
               request.resource.data.status == 'completed'
-              && resource.data.status == 'customer_accepted'
+              && resource.data.status == 'payment_confirmed'
               && request.resource.data.diff(resource.data).changedKeys().hasOnly([
-                   'status', 'chosenPaymentMethodId', 'paymentMethodLabel',
-                   'paymentMethodDetails', 'paymentSentAt', 'completedAt'
+                   'status', 'completedAt', 'payoutCode'
                  ])
+              && request.resource.data.payoutCode == resource.data.pickupCode
               && getAfter(/databases/$(database)/documents/offices/$(resource.data.officeId))
                    .data.get('lastBookedTransactionId', '') == docId
             )
@@ -314,6 +336,26 @@ service cloud.firestore {
           && request.resource.data.status in ['customer_accepted', 'customer_rejected']
           && request.resource.data.diff(resource.data).changedKeys()
                .hasOnly(['status', 'customerDecisionAt'])
+        )
+
+        // Kund: markera som betalt (med ev. kvitto och meddelande) när
+        // betalningsuppgifterna har skickats.
+        || (
+          isCustomer()
+          && resource.data.customerId == request.auth.uid
+          && resource.data.status == 'customer_accepted'
+          && resource.data.get('paymentMethodLabel', '') != ''
+          && request.resource.data.status == 'customer_paid'
+          && request.resource.data.get('paymentNote', '') is string
+          && request.resource.data.get('paymentNote', '').size() <= 500
+          && (
+            !('receiptPath' in request.resource.data)
+            || request.resource.data.receiptPath.matches('receipts/' + docId + '/.*')
+          )
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+               'status', 'customerPaidAt', 'paymentNote', 'receiptPath',
+               'receiptName', 'receiptContentType'
+             ])
         )
 
         // Kund: ett enda motförslag med lägre avgift (och ev. meddelande).

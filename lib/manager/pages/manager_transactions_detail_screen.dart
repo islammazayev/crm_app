@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import '../../l10n/locale_controller.dart';
 import '../../l10n/rate_error_text.dart';
 import '../../l10n/status_text.dart';
+import '../../services/receipt_service.dart';
+import '../../utils/pickup_code.dart';
 import '../../services/exchange_rate_service.dart';
 import '../../utils/transaction_no.dart';
 import '../../utils/balances.dart';
@@ -32,6 +34,7 @@ class _ManagerTransactionDetailScreenState
   bool _calculating = false;
   bool _autoCalcStarted = false;
   bool _counterPrefilled = false;
+  final _payoutCodeController = TextEditingController();
 
   String? _selectedMethodId;
   Map<String, Map<String, dynamic>> _methodCache = {};
@@ -40,6 +43,7 @@ class _ManagerTransactionDetailScreenState
   @override
   void dispose() {
     _feeController.dispose();
+    _payoutCodeController.dispose();
     super.dispose();
   }
 
@@ -140,6 +144,75 @@ class _ManagerTransactionDetailScreenState
     }
   }
 
+  /// Bekräftar att kundens betalning har kommit och skapar uthämtningskoden,
+  /// som kunden ser direkt i appen.
+  Future<void> _confirmPayment(DocumentReference txRef) async {
+    final l10n = context.l10n;
+    setState(() => _busy = true);
+    try {
+      await txRef.update({
+        'status': 'payment_confirmed',
+        'pickupCode': newPickupCode(),
+        'paymentConfirmedAt': FieldValue.serverTimestamp(),
+      });
+      if (!mounted) return;
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l10n.paymentConfirmedSent)));
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l10n.errorWithDetails('$e'))));
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
+  }
+
+  /// Betalningen har inte kommit: skickar tillbaka till kunden med ett
+  /// meddelande. Kunden kan markera som betalt igen.
+  Future<void> _reportPaymentMissing(DocumentReference txRef) async {
+    final l10n = context.l10n;
+    final noteCtrl = TextEditingController(text: l10n.paymentMissingDefault);
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(l10n.paymentMissing),
+        content: TextField(
+          controller: noteCtrl,
+          maxLines: 3,
+          maxLength: 500,
+          decoration: InputDecoration(labelText: l10n.messageToCustomer),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text(l10n.cancel),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: Text(l10n.send),
+          ),
+        ],
+      ),
+    );
+    final note = noteCtrl.text.trim();
+    noteCtrl.dispose();
+    if (ok != true) return;
+    try {
+      await txRef.update({
+        'status': 'customer_accepted',
+        'paymentIssueNote': note,
+        'paymentIssueAt': FieldValue.serverTimestamp(),
+      });
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l10n.errorWithDetails('$e'))));
+    }
+  }
+
   /// Sparar vald betalningsmetod i transaktionen så att kunden ser uppgifterna.
   Future<void> _sendPaymentDetails(DocumentReference txRef) async {
     final method = _methodCache[_selectedMethodId];
@@ -175,8 +248,16 @@ class _ManagerTransactionDetailScreenState
     required String toCurrency,
     required double amountFrom,
     required double amountToNet,
+    required String pickupCode,
   }) async {
     final l10n = context.l10n;
+    final entered = _payoutCodeController.text;
+    if (!pickupCodeMatches(entered, pickupCode)) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l10n.wrongPickupCode)));
+      return;
+    }
     setState(() => _busy = true);
     try {
       final db = FirebaseFirestore.instance;
@@ -201,6 +282,8 @@ class _ManagerTransactionDetailScreenState
       batch.update(txRef, {
         'status': 'completed',
         'completedAt': FieldValue.serverTimestamp(),
+        // Måste vara exakt kundens kod (kontrolleras i reglerna).
+        'payoutCode': pickupCode,
       });
       batch.update(officeRef, {
         'balances.$fromCurrency': FieldValue.increment(amountFrom),
@@ -432,7 +515,12 @@ class _ManagerTransactionDetailScreenState
                     Text(l10n.calculating),
                 ],
 
-                if (status == 'customer_accepted' || status == 'completed') ...[
+                if (const [
+                  'customer_accepted',
+                  'customer_paid',
+                  'payment_confirmed',
+                  'completed',
+                ].contains(status)) ...[
                   Text(
                     l10n.exchangeRateValue(
                       fromCurrency,
@@ -466,7 +554,12 @@ class _ManagerTransactionDetailScreenState
                   ),
                 ],
 
-                if (status == 'completed' && paymentSent) ...[
+                if (paymentSent &&
+                    const [
+                      'customer_paid',
+                      'payment_confirmed',
+                      'completed',
+                    ].contains(status)) ...[
                   const SizedBox(height: 8),
                   Text(l10n.paymentMethodValue(paymentLabel)),
                 ],
@@ -610,6 +703,128 @@ class _ManagerTransactionDetailScreenState
                     ),
                   ),
 
+                if (status == 'customer_paid') ...[
+                  Card(
+                    child: Padding(
+                      padding: const EdgeInsets.all(12),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            l10n.customerMarkedPaid,
+                            style: const TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                          if ('${data['paymentNote'] ?? ''}'.isNotEmpty) ...[
+                            const SizedBox(height: 4),
+                            Text('"${data['paymentNote']}"'),
+                          ],
+                          const SizedBox(height: 4),
+                          if ('${data['receiptPath'] ?? ''}'.isNotEmpty)
+                            TextButton.icon(
+                              icon: const Icon(Icons.receipt_long),
+                              label: Text(
+                                l10n.showReceiptNamed(
+                                  '${data['receiptName'] ?? ''}',
+                                ),
+                              ),
+                              onPressed: () =>
+                                  ReceiptService.open('${data['receiptPath']}'),
+                            )
+                          else
+                            Text(
+                              l10n.noReceiptAttached,
+                              style: const TextStyle(color: Colors.grey),
+                            ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.green,
+                      ),
+                      onPressed: _busy ? null : () => _confirmPayment(txRef),
+                      child: Text(l10n.confirmPayment),
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  SizedBox(
+                    width: double.infinity,
+                    child: OutlinedButton(
+                      onPressed: _busy
+                          ? null
+                          : () => _reportPaymentMissing(txRef),
+                      child: Text(l10n.paymentMissing),
+                    ),
+                  ),
+                ],
+
+                if (status == 'payment_confirmed') ...[
+                  Card(
+                    child: Padding(
+                      padding: const EdgeInsets.all(12),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            l10n.paymentConfirmedManager,
+                            style: const TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            l10n.payoutInstructions(
+                              savedAmountToNet.toStringAsFixed(2),
+                              toCurrency,
+                            ),
+                          ),
+                          if (data['createdByManager'] == true) ...[
+                            const SizedBox(height: 8),
+                            Text(
+                              l10n.giveCodeToWalkIn(
+                                '${data['pickupCode'] ?? ''}',
+                              ),
+                            ),
+                          ],
+                        ],
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  TextField(
+                    controller: _payoutCodeController,
+                    keyboardType: TextInputType.number,
+                    decoration: InputDecoration(
+                      labelText: l10n.customerPickupCode,
+                      hintText: '1234-5678',
+                      border: const OutlineInputBorder(),
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.green,
+                      ),
+                      onPressed: _busy
+                          ? null
+                          : () => _complete(
+                              txRef: txRef,
+                              officeId: officeId,
+                              fromCurrency: fromCurrency,
+                              toCurrency: toCurrency,
+                              amountFrom: amountFrom,
+                              amountToNet: savedAmountToNet,
+                              pickupCode: '${data['pickupCode'] ?? ''}',
+                            ),
+                      child: Text(l10n.payOutAndComplete),
+                    ),
+                  ),
+                ],
+
                 if (status == 'customer_accepted')
                   SafeArea(
                     top: false,
@@ -648,17 +863,12 @@ class _ManagerTransactionDetailScreenState
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.green,
                             ),
+                            // För kunder utan konto (eller om kunden inte
+                            // hunnit markera) kan managern bekräfta direkt.
                             onPressed: (_busy || !paymentSent)
                                 ? null
-                                : () => _complete(
-                                    txRef: txRef,
-                                    officeId: officeId,
-                                    fromCurrency: fromCurrency,
-                                    toCurrency: toCurrency,
-                                    amountFrom: amountFrom,
-                                    amountToNet: savedAmountToNet,
-                                  ),
-                            child: Text(l10n.markAsCompleted),
+                                : () => _confirmPayment(txRef),
+                            child: Text(l10n.confirmPayment),
                           ),
                         ),
                       ],

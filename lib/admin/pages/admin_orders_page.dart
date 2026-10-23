@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:file_saver/file_saver.dart';
 import 'package:flutter/foundation.dart';
@@ -5,7 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
-import 'package:to_csv/to_csv.dart' as export_csv;
 
 import '../../l10n/app_localizations.dart';
 import '../../l10n/locale_controller.dart';
@@ -13,6 +14,7 @@ import '../../l10n/status_text.dart';
 import '../../lists/order_history_list.dart';
 import '../../models/transaction_model.dart';
 import '../../utils/client_id.dart';
+import '../../utils/csv.dart';
 import '../../utils/search_match.dart';
 import '../../utils/transaction_no.dart';
 import '../../widgets/confirm_delete.dart';
@@ -50,6 +52,8 @@ class _AdminOrdersPageState extends State<AdminOrdersPage> {
     'manager_proposed',
     'customer_countered',
     'customer_accepted',
+    'customer_paid',
+    'payment_confirmed',
     'customer_rejected',
     'completed',
   ];
@@ -218,7 +222,25 @@ class _AdminOrdersPageState extends State<AdminOrdersPage> {
       return;
     }
 
-    export_csv.myCSV(_exportHeader(l10n), rows);
+    // UTF-8 med BOM så att Excel visar å, ä, ö, kyrilliska och turkiska rätt.
+    final csv = toCsv([_exportHeader(l10n), ...rows]);
+    final bytes = Uint8List.fromList([0xEF, 0xBB, 0xBF, ...utf8.encode(csv)]);
+    final name = 'orderrapport_${DateTime.now().toIso8601String().split('T').first}';
+    if (kIsWeb) {
+      await FileSaver.instance.saveFile(
+        name: name,
+        bytes: bytes,
+        fileExtension: 'csv',
+        mimeType: MimeType.csv,
+      );
+    } else {
+      await FileSaver.instance.saveAs(
+        name: name,
+        bytes: bytes,
+        fileExtension: 'csv',
+        mimeType: MimeType.csv,
+      );
+    }
   }
 
   Future<void> _exportToPDF() async {
