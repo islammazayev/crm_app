@@ -1,9 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:qr_flutter/qr_flutter.dart';
 
 import '../../l10n/locale_controller.dart';
 import '../../services/receipt_service.dart';
 import '../../theme/app_theme.dart';
+import '../../utils/pickup_code.dart';
 import '../../widgets/receipt_button.dart';
 import '../../utils/transaction_no.dart';
 import 'customer_transactions_screen.dart' show customerStatusText;
@@ -200,6 +202,12 @@ class CustomerTransactionDetailScreen extends StatelessWidget {
                         const SizedBox(height: 16),
                         _PickupCodeCard(
                           code: '${data['pickupCode'] ?? ''}',
+                          qrData: '${data['pickupToken'] ?? ''}'.isEmpty
+                              ? null
+                              : pickupQrPayload(
+                                  docRef.id,
+                                  '${data['pickupToken']}',
+                                ),
                           amount: _num(data['amountToNet']).toStringAsFixed(2),
                           currency: toCurrency,
                         ),
@@ -513,11 +521,13 @@ class _NoticeCard extends StatelessWidget {
 /// Uthämtningskoden, stort och tydligt, efter att betalningen bekräftats.
 class _PickupCodeCard extends StatelessWidget {
   final String code;
+  final String? qrData;
   final String amount;
   final String currency;
 
   const _PickupCodeCard({
     required this.code,
+    required this.qrData,
     required this.amount,
     required this.currency,
   });
@@ -539,9 +549,30 @@ class _PickupCodeCard extends StatelessWidget {
             l10n.paymentConfirmedTitle,
             style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
           ),
+          if (qrData != null) ...[
+            const SizedBox(height: 12),
+            Text(
+              l10n.showQrAtOffice,
+              style: const TextStyle(color: AppColors.textMuted),
+            ),
+            const SizedBox(height: 8),
+            // Vit bakgrund så att kameran läser koden även i mörkt läge.
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: QrImageView(
+                data: qrData!,
+                size: 220,
+                backgroundColor: Colors.white,
+              ),
+            ),
+          ],
           const SizedBox(height: 12),
           Text(
-            l10n.yourPickupCode,
+            qrData != null ? l10n.orUseCode : l10n.yourPickupCode,
             style: const TextStyle(color: AppColors.textMuted),
           ),
           const SizedBox(height: 4),
@@ -549,9 +580,9 @@ class _PickupCodeCard extends StatelessWidget {
             code,
             style: const TextStyle(
               color: AppColors.primary,
-              fontSize: 34,
+              fontSize: 26,
               fontWeight: FontWeight.w800,
-              letterSpacing: 4,
+              letterSpacing: 2,
             ),
           ),
           const SizedBox(height: 12),

@@ -1291,4 +1291,65 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get payOutAndComplete => 'Выплатить и отметить как выполненный';
+
+  @override
+  String get showQrAtOffice => 'Покажите QR-код в офисе';
+
+  @override
+  String get orUseCode => 'Или назовите код';
+
+  @override
+  String get scanCustomerQr => 'Сканировать QR-код клиента';
+
+  @override
+  String get enterCodeInstead => 'Ввести код вручную';
+
+  @override
+  String get payOutWithCode => 'Выплатить по коду';
+
+  @override
+  String get qrDoesNotMatch => 'QR-код не подходит к этому переводу.';
+
+  @override
+  String get qrVerified => 'QR-код подтверждён';
+
+  @override
+  String payOutAmount(Object amount, Object currency) {
+    return 'Выплатить $amount $currency';
+  }
+
+  @override
+  String get checkIdHint => 'Проверьте документ клиента перед выплатой.';
+
+  @override
+  String get qrOtherTransaction => 'QR-код относится к другому переводу.';
+
+  @override
+  String get scanPickupQr => 'Сканировать получение';
+
+  @override
+  String get notAPickupQr => 'Это не код получения из приложения.';
+
+  @override
+  String cameraError(Object error) {
+    return 'Не удалось запустить камеру ($error). Разрешите камеру в браузере или введите код вручную.';
+  }
+
+  @override
+  String get pointCameraAtQr =>
+      'Наведите камеру на QR-код на телефоне клиента.';
+
+  @override
+  String get scanPickup => 'Сканировать получение';
+
+  @override
+  String get scanPickupSubtitle =>
+      'Отсканируйте QR-код клиента, чтобы выплатить подтверждённый перевод.';
+
+  @override
+  String get qrNotReadyForPayout =>
+      'Перевод не найден или ещё не готов к выплате.';
+
+  @override
+  String get qrOtherOffice => 'QR-код относится к другому офису.';
 }

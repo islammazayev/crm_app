@@ -8,7 +8,9 @@ import '../../theme/app_theme.dart';
 import '../../widgets/action_card.dart';
 import '../../widgets/language_button.dart';
 import '../pages/manager_create_transaction_screen.dart';
+import '../pages/manager_transactions_detail_screen.dart';
 import '../pages/manager_transactions_page.dart';
+import '../pages/pickup_scanner_page.dart';
 
 class ManagerHomeScreen extends StatefulWidget {
   const ManagerHomeScreen({super.key});
@@ -43,13 +45,53 @@ class _ManagerHomeScreenState extends State<ManagerHomeScreen> {
       final data = listing.data();
       if (data == null) return;
 
-      final label = [data['country'], data['city']]
-          .map((e) => (e ?? '').toString())
-          .where((e) => e.isNotEmpty)
-          .join(' – ');
+      final label = [
+        data['country'],
+        data['city'],
+      ].map((e) => (e ?? '').toString()).where((e) => e.isNotEmpty).join(' – ');
       if (mounted) setState(() => _officeLabel = label);
     } catch (_) {
       // Rubriken är bara en bekvämlighet, fel här ska inte störa något.
+    }
+  }
+
+  /// Skannar kundens QR-kod och öppnar transaktionen, som själv kontrollerar
+  /// nyckeln och frågar om utbetalning. Transaktioner från andra kontor går
+  /// inte att läsa (reglerna) och stoppas här.
+  Future<void> _scanPickup(BuildContext context) async {
+    final l10n = context.l10n;
+    final result = await Navigator.push<({String transactionId, String token})>(
+      context,
+      MaterialPageRoute(builder: (_) => const PickupScannerPage()),
+    );
+    if (result == null || !context.mounted) return;
+    try {
+      final snap = await FirebaseFirestore.instance
+          .collection('transactions')
+          .doc(result.transactionId)
+          .get();
+      final status = snap.data()?['status'];
+      if (!context.mounted) return;
+      if (!snap.exists || status != 'payment_confirmed') {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(l10n.qrNotReadyForPayout)));
+        return;
+      }
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => ManagerTransactionDetailScreen(
+            transactionId: result.transactionId,
+            scannedToken: result.token,
+          ),
+        ),
+      );
+    } catch (_) {
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l10n.qrOtherOffice)));
     }
   }
 
@@ -59,9 +101,11 @@ class _ManagerHomeScreenState extends State<ManagerHomeScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(_officeLabel.isEmpty
-            ? l10n.managerAppBarTitle
-            : l10n.managerAppBarTitleWithOffice(_officeLabel)),
+        title: Text(
+          _officeLabel.isEmpty
+              ? l10n.managerAppBarTitle
+              : l10n.managerAppBarTitleWithOffice(_officeLabel),
+        ),
         actions: [
           const LanguageButton(),
           IconButton(
@@ -104,11 +148,13 @@ class _ManagerHomeScreenState extends State<ManagerHomeScreen> {
                     final status =
                         (d.data() as Map<String, dynamic>)['status']
                             ?.toString() ??
-                            '';
+                        '';
                     counts[status] = (counts[status] ?? 0) + 1;
                   }
                   int count(List<String> statuses) => statuses.fold(
-                      0, (total, st) => total + (counts[st] ?? 0));
+                    0,
+                    (total, st) => total + (counts[st] ?? 0),
+                  );
 
                   const newStatuses = ['customer_requested'];
                   const ongoingStatuses = [
@@ -146,6 +192,14 @@ class _ManagerHomeScreenState extends State<ManagerHomeScreen> {
                         childAspectRatio: isWide ? 2.5 : 2.1,
                         children: [
                           ActionCard(
+                            icon: Icons.qr_code_scanner,
+                            iconColor: AppColors.success,
+                            title: l10n.scanPickup,
+                            subtitle: l10n.scanPickupSubtitle,
+                            badge: 'QR',
+                            onTap: () => _scanPickup(context),
+                          ),
+                          ActionCard(
                             icon: Icons.add_circle_outline,
                             iconColor: AppColors.primary,
                             title: l10n.createNewTransaction,
@@ -157,8 +211,8 @@ class _ManagerHomeScreenState extends State<ManagerHomeScreen> {
                                 MaterialPageRoute(
                                   builder: (_) =>
                                       ManagerCreateTransactionScreen(
-                                    officeId: officeId,
-                                  ),
+                                        officeId: officeId,
+                                      ),
                                 ),
                               );
                             },
@@ -169,8 +223,8 @@ class _ManagerHomeScreenState extends State<ManagerHomeScreen> {
                             title: l10n.newCustomerTransactions,
                             subtitle: l10n.newCustomerTransactionsSubtitle,
                             badge: '${count(newStatuses)}',
-                            onTap: () => open(
-                                l10n.newCustomerTransactions, newStatuses),
+                            onTap: () =>
+                                open(l10n.newCustomerTransactions, newStatuses),
                           ),
                           ActionCard(
                             icon: Icons.sync_alt,
@@ -178,8 +232,8 @@ class _ManagerHomeScreenState extends State<ManagerHomeScreen> {
                             title: l10n.ongoingTransactions,
                             subtitle: l10n.ongoingTransactionsSubtitle,
                             badge: '${count(ongoingStatuses)}',
-                            onTap: () => open(
-                                l10n.ongoingTransactions, ongoingStatuses),
+                            onTap: () =>
+                                open(l10n.ongoingTransactions, ongoingStatuses),
                           ),
                           ActionCard(
                             icon: Icons.task_alt,

@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import '../../l10n/locale_controller.dart';
 import '../../l10n/rate_error_text.dart';
 import '../../l10n/status_text.dart';
+import '../../utils/client_id.dart';
 import '../../utils/pickup_code.dart';
+import 'pickup_scanner_page.dart';
 import '../../widgets/receipt_button.dart';
 import '../../services/exchange_rate_service.dart';
 import '../../utils/transaction_no.dart';
@@ -12,9 +14,14 @@ import '../../utils/balances.dart';
 class ManagerTransactionDetailScreen extends StatefulWidget {
   final String transactionId;
 
+  /// Nyckel från en skannad QR-kod. Om den stämmer frågar sidan direkt om
+  /// utbetalning (används när managern skannar från startsidan).
+  final String? scannedToken;
+
   const ManagerTransactionDetailScreen({
     super.key,
     required this.transactionId,
+    this.scannedToken,
   });
 
   @override
@@ -35,6 +42,8 @@ class _ManagerTransactionDetailScreenState
   bool _autoCalcStarted = false;
   bool _counterPrefilled = false;
   final _payoutCodeController = TextEditingController();
+  bool _manualCode = false;
+  bool _scannedTokenHandled = false;
 
   String? _selectedMethodId;
   Map<String, Map<String, dynamic>> _methodCache = {};
@@ -144,6 +153,80 @@ class _ManagerTransactionDetailScreenState
     }
   }
 
+  /// Kontrollerar en skannad nyckel mot transaktionen och frågar managern
+  /// om utbetalning, med kundens namn och belopp att jämföra med legitimation.
+  Future<void> _payOutAfterScan({
+    required String token,
+    required Map<String, dynamic> data,
+    required Future<void> Function() payOut,
+  }) async {
+    final l10n = context.l10n;
+    final expected = '${data['pickupToken'] ?? ''}';
+    if (!pickupTokenMatches(token, expected)) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l10n.qrDoesNotMatch)));
+      return;
+    }
+    final name = '${data['customerName'] ?? ''}'.trim();
+    final clientId = formatClientId(data['clientId']);
+    final amount = ((data['amountToNet'] ?? 0) as num).toStringAsFixed(2);
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        icon: const Icon(Icons.verified, color: Colors.green, size: 40),
+        title: Text(l10n.qrVerified),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            if (name.isNotEmpty) Text(l10n.nameValue(name)),
+            if (clientId.isNotEmpty) Text(l10n.clientIdValue(clientId)),
+            const SizedBox(height: 8),
+            Text(
+              l10n.payOutAmount(amount, '${data['toCurrency'] ?? ''}'),
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+            ),
+            const SizedBox(height: 12),
+            Text(l10n.checkIdHint, style: const TextStyle(color: Colors.grey)),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text(l10n.cancel),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
+            onPressed: () => Navigator.pop(ctx, true),
+            child: Text(l10n.payOutAndComplete),
+          ),
+        ],
+      ),
+    );
+    if (ok == true) await payOut();
+  }
+
+  /// Öppnar kameran. Fel QR (annan transaktion eller fel nyckel) stoppas.
+  Future<void> _scanAndPayOut({
+    required Map<String, dynamic> data,
+    required Future<void> Function() payOut,
+  }) async {
+    final l10n = context.l10n;
+    final result = await Navigator.push<({String transactionId, String token})>(
+      context,
+      MaterialPageRoute(builder: (_) => const PickupScannerPage()),
+    );
+    if (result == null || !mounted) return;
+    if (result.transactionId != widget.transactionId) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l10n.qrOtherTransaction)));
+      return;
+    }
+    await _payOutAfterScan(token: result.token, data: data, payOut: payOut);
+  }
+
   /// Bekräftar att kundens betalning har kommit och skapar uthämtningskoden,
   /// som kunden ser direkt i appen.
   Future<void> _confirmPayment(DocumentReference txRef) async {
@@ -153,6 +236,8 @@ class _ManagerTransactionDetailScreenState
       await txRef.update({
         'status': 'payment_confirmed',
         'pickupCode': newPickupCode(),
+        // Hemlig nyckel i kundens QR-kod (visas aldrig för managern).
+        'pickupToken': newPickupToken(),
         'paymentConfirmedAt': FieldValue.serverTimestamp(),
       });
       if (!mounted) return;
@@ -249,10 +334,11 @@ class _ManagerTransactionDetailScreenState
     required double amountFrom,
     required double amountToNet,
     required String pickupCode,
+    bool verifiedByScan = false,
   }) async {
     final l10n = context.l10n;
     final entered = _payoutCodeController.text;
-    if (!pickupCodeMatches(entered, pickupCode)) {
+    if (!verifiedByScan && !pickupCodeMatches(entered, pickupCode)) {
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text(l10n.wrongPickupCode)));
@@ -360,6 +446,17 @@ class _ManagerTransactionDetailScreenState
               .toDouble();
           final double savedFeeAmountTo = ((data['feeAmountTo'] ?? 0) as num)
               .toDouble();
+
+          Future<void> payOut({required bool verifiedByScan}) => _complete(
+            txRef: txRef,
+            officeId: officeId,
+            fromCurrency: fromCurrency,
+            toCurrency: toCurrency,
+            amountFrom: amountFrom,
+            amountToNet: savedAmountToNet,
+            pickupCode: '${data['pickupCode'] ?? ''}',
+            verifiedByScan: verifiedByScan,
+          );
 
           final feePercentInput = double.tryParse(
             _feeController.text.replaceAll(',', '.'),
@@ -759,6 +856,25 @@ class _ManagerTransactionDetailScreenState
                 ],
 
                 if (status == 'payment_confirmed') ...[
+                  Builder(
+                    builder: (context) {
+                      // Kom managern hit via skanning från startsidan frågar
+                      // vi direkt om utbetalning.
+                      final token = widget.scannedToken;
+                      if (token != null && !_scannedTokenHandled) {
+                        _scannedTokenHandled = true;
+                        WidgetsBinding.instance.addPostFrameCallback((_) {
+                          if (!mounted) return;
+                          _payOutAfterScan(
+                            token: token,
+                            data: data,
+                            payOut: () => payOut(verifiedByScan: true),
+                          );
+                        });
+                      }
+                      return const SizedBox.shrink();
+                    },
+                  ),
                   Card(
                     child: Padding(
                       padding: const EdgeInsets.all(12),
@@ -789,36 +905,52 @@ class _ManagerTransactionDetailScreenState
                     ),
                   ),
                   const SizedBox(height: 8),
-                  TextField(
-                    controller: _payoutCodeController,
-                    keyboardType: TextInputType.number,
-                    decoration: InputDecoration(
-                      labelText: l10n.customerPickupCode,
-                      hintText: '1234-5678',
-                      border: const OutlineInputBorder(),
-                    ),
-                  ),
-                  const SizedBox(height: 8),
+                  // Kunder med konto visar QR-koden; managern skannar den.
                   SizedBox(
                     width: double.infinity,
-                    child: ElevatedButton(
+                    child: ElevatedButton.icon(
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.green,
                       ),
+                      icon: const Icon(Icons.qr_code_scanner),
+                      label: Text(l10n.scanCustomerQr),
                       onPressed: _busy
                           ? null
-                          : () => _complete(
-                              txRef: txRef,
-                              officeId: officeId,
-                              fromCurrency: fromCurrency,
-                              toCurrency: toCurrency,
-                              amountFrom: amountFrom,
-                              amountToNet: savedAmountToNet,
-                              pickupCode: '${data['pickupCode'] ?? ''}',
+                          : () => _scanAndPayOut(
+                              data: data,
+                              payOut: () => payOut(verifiedByScan: true),
                             ),
-                      child: Text(l10n.payOutAndComplete),
                     ),
                   ),
+                  // Reserv: skriva in koden (t.ex. kund utan konto eller
+                  // om kameran inte fungerar).
+                  if (!_manualCode)
+                    TextButton(
+                      onPressed: () => setState(() => _manualCode = true),
+                      child: Text(l10n.enterCodeInstead),
+                    )
+                  else ...[
+                    const SizedBox(height: 8),
+                    TextField(
+                      controller: _payoutCodeController,
+                      keyboardType: TextInputType.number,
+                      decoration: InputDecoration(
+                        labelText: l10n.customerPickupCode,
+                        hintText: '261023-1234-5678',
+                        border: const OutlineInputBorder(),
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    SizedBox(
+                      width: double.infinity,
+                      child: OutlinedButton(
+                        onPressed: _busy
+                            ? null
+                            : () => payOut(verifiedByScan: false),
+                        child: Text(l10n.payOutWithCode),
+                      ),
+                    ),
+                  ],
                 ],
 
                 if (status == 'customer_accepted')

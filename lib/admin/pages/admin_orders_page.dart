@@ -225,7 +225,8 @@ class _AdminOrdersPageState extends State<AdminOrdersPage> {
     // UTF-8 med BOM så att Excel visar å, ä, ö, kyrilliska och turkiska rätt.
     final csv = toCsv([_exportHeader(l10n), ...rows]);
     final bytes = Uint8List.fromList([0xEF, 0xBB, 0xBF, ...utf8.encode(csv)]);
-    final name = 'orderrapport_${DateTime.now().toIso8601String().split('T').first}';
+    final name =
+        'orderrapport_${DateTime.now().toIso8601String().split('T').first}';
     if (kIsWeb) {
       await FileSaver.instance.saveFile(
         name: name,
@@ -536,6 +537,7 @@ class _AdminOrdersPageState extends State<AdminOrdersPage> {
                             formatClientId(data['clientId']),
                             '${data['clientId'] ?? ''}',
                             '${data['transactionNo'] ?? ''}',
+                            '${data['pickupCode'] ?? ''}'.replaceAll('-', ''),
                             formatTransactionNo(
                               data['transactionNo'],
                             ).replaceFirst('T-', ''),
@@ -543,6 +545,7 @@ class _AdminOrdersPageState extends State<AdminOrdersPage> {
                           phones: [phone],
                           texts: [
                             formatTransactionNo(data['transactionNo']),
+                            '${data['pickupCode'] ?? ''}',
                             '${data['customerName'] ?? data['sender'] ?? ''}',
                             phone,
                             officeLabels['${data['officeId']}'] ?? '',

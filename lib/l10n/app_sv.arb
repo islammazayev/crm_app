@@ -914,5 +914,40 @@
     }
   },
   "customerPickupCode": "Kundens uthämtningskod",
-  "payOutAndComplete": "Betala ut och markera som genomförd"
+  "payOutAndComplete": "Betala ut och markera som genomförd",
+  "showQrAtOffice": "Visa QR-koden på kontoret",
+  "orUseCode": "Eller uppge koden",
+  "scanCustomerQr": "Skanna kundens QR-kod",
+  "enterCodeInstead": "Skriv in koden i stället",
+  "payOutWithCode": "Betala ut med kod",
+  "qrDoesNotMatch": "QR-koden stämmer inte för den här transaktionen.",
+  "qrVerified": "QR-koden stämmer",
+  "payOutAmount": "Betala ut {amount} {currency}",
+  "@payOutAmount": {
+    "placeholders": {
+      "amount": {
+        "type": "Object"
+      },
+      "currency": {
+        "type": "Object"
+      }
+    }
+  },
+  "checkIdHint": "Kontrollera kundens legitimation innan du betalar ut.",
+  "qrOtherTransaction": "QR-koden hör till en annan transaktion.",
+  "scanPickupQr": "Skanna uthämtning",
+  "notAPickupQr": "Det här är inte en uthämtningskod från appen.",
+  "cameraError": "Kameran kunde inte startas ({error}). Tillåt kameran i webbläsaren, eller skriv in koden i stället.",
+  "@cameraError": {
+    "placeholders": {
+      "error": {
+        "type": "Object"
+      }
+    }
+  },
+  "pointCameraAtQr": "Rikta kameran mot QR-koden på kundens telefon.",
+  "scanPickup": "Skanna uthämtning",
+  "scanPickupSubtitle": "Skanna kundens QR-kod för att betala ut en bekräftad transaktion.",
+  "qrNotReadyForPayout": "Transaktionen finns inte eller är inte klar för utbetalning.",
+  "qrOtherOffice": "QR-koden hör till ett annat kontor."
 }
