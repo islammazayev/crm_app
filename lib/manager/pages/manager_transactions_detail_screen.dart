@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import '../../l10n/locale_controller.dart';
 import '../../l10n/rate_error_text.dart';
 import '../../l10n/status_text.dart';
-import '../../services/receipt_service.dart';
 import '../../utils/pickup_code.dart';
+import '../../widgets/receipt_button.dart';
 import '../../services/exchange_rate_service.dart';
 import '../../utils/transaction_no.dart';
 import '../../utils/balances.dart';
@@ -720,15 +720,11 @@ class _ManagerTransactionDetailScreenState
                           ],
                           const SizedBox(height: 4),
                           if ('${data['receiptPath'] ?? ''}'.isNotEmpty)
-                            TextButton.icon(
-                              icon: const Icon(Icons.receipt_long),
-                              label: Text(
-                                l10n.showReceiptNamed(
-                                  '${data['receiptName'] ?? ''}',
-                                ),
+                            ReceiptButton(
+                              path: '${data['receiptPath']}',
+                              label: l10n.showReceiptNamed(
+                                '${data['receiptName'] ?? ''}',
                               ),
-                              onPressed: () =>
-                                  ReceiptService.open('${data['receiptPath']}'),
                             )
                           else
                             Text(
