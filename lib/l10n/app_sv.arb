@@ -836,5 +836,83 @@
       }
     }
   },
-  "exportNo": "Nr"
+  "exportNo": "Nr",
+  "statusPaid": "Betald av kund",
+  "statusPaymentConfirmed": "Betalning bekräftad",
+  "customerStatusPaid": "Betalning skickad – managern kontrollerar",
+  "customerStatusPaymentConfirmed": "Klar att hämta ut – se din kod",
+  "managerStatusPaid": "Kunden har betalat – kontrollera betalningen",
+  "managerStatusPaymentConfirmed": "Betalning bekräftad – väntar på uthämtning",
+  "readyForPickup": "{count, plural, =1{1 transaktion är klar att hämta ut.} other{{count} transaktioner är klara att hämta ut.}}",
+  "@readyForPickup": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "iHavePaid": "Jag har betalat",
+  "markPaidIntro": "Bifoga gärna kvittot (bild eller PDF) så går det fortare för managern att kontrollera betalningen.",
+  "attachReceipt": "Bifoga kvitto",
+  "changeReceipt": "Byt kvitto",
+  "receiptTooLarge": "Filen är för stor (högst 10 MB).",
+  "confirmPaid": "Skicka",
+  "markedAsPaidSent": "Tack! Managern kontrollerar betalningen.",
+  "markedAsPaid": "Du har markerat som betalt",
+  "managerCheckingPayment": "Managern kontrollerar betalningen och bekräftar så snart den har kommit.",
+  "showReceipt": "Visa kvitto",
+  "paymentMissingTitle": "Betalningen har inte kommit",
+  "paymentConfirmedTitle": "Betalningen är bekräftad",
+  "yourPickupCode": "Din uthämtningskod",
+  "pickupCodeInstructions": "Visa koden på kontoret för att hämta ut {amount} {currency}. Dela den bara med den som ska hämta ut pengarna.",
+  "@pickupCodeInstructions": {
+    "placeholders": {
+      "amount": {
+        "type": "Object"
+      },
+      "currency": {
+        "type": "Object"
+      }
+    }
+  },
+  "paidOutTitle": "Utbetald",
+  "paidOutBody": "Pengarna är uthämtade. Tack!",
+  "wrongPickupCode": "Fel kod. Kontrollera koden som kunden visar.",
+  "paymentConfirmedSent": "Betalningen är bekräftad och kunden har fått sin kod.",
+  "paymentMissing": "Betalning saknas",
+  "paymentMissingDefault": "Vi har inte fått din betalning ännu. Kontrollera betalningen och försök igen.",
+  "messageToCustomer": "Meddelande till kunden",
+  "confirmPayment": "Bekräfta betalning",
+  "customerMarkedPaid": "Kunden har markerat som betalt",
+  "showReceiptNamed": "Visa kvitto {name}",
+  "@showReceiptNamed": {
+    "placeholders": {
+      "name": {
+        "type": "Object"
+      }
+    }
+  },
+  "noReceiptAttached": "Inget kvitto bifogat.",
+  "paymentConfirmedManager": "Betalningen är bekräftad",
+  "payoutInstructions": "Betala ut {amount} {currency} när kunden visar sin uthämtningskod.",
+  "@payoutInstructions": {
+    "placeholders": {
+      "amount": {
+        "type": "Object"
+      },
+      "currency": {
+        "type": "Object"
+      }
+    }
+  },
+  "giveCodeToWalkIn": "Kunden har inget konto. Ge kunden koden: {code}",
+  "@giveCodeToWalkIn": {
+    "placeholders": {
+      "code": {
+        "type": "Object"
+      }
+    }
+  },
+  "customerPickupCode": "Kundens uthämtningskod",
+  "payOutAndComplete": "Betala ut och markera som genomförd"
 }

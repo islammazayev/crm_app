@@ -30,9 +30,9 @@ class CustomerWelcomeScreen extends StatelessWidget {
   }
 
   void _comingSoon(BuildContext context, String section) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(context.l10n.comingSoon(section))),
-    );
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(context.l10n.comingSoon(section))));
   }
 
   @override
@@ -101,16 +101,20 @@ class CustomerWelcomeScreen extends StatelessWidget {
                           .snapshots(),
                       builder: (context, snapshot) {
                         final docs = snapshot.data?.docs ?? const [];
-                        final waiting = docs.where((d) {
+                        int countStatus(String status) => docs.where((d) {
                           final data = d.data() as Map<String, dynamic>;
-                          return data['status'] == 'manager_proposed';
+                          return data['status'] == status;
                         }).length;
+                        final waiting = countStatus('manager_proposed');
+                        final ready = countStatus('payment_confirmed');
                         return ActionCard(
                           icon: Icons.receipt_long_outlined,
                           iconColor: AppColors.info,
                           title: l10n.myTransactions,
                           subtitle: waiting > 0
                               ? l10n.offersWaiting(waiting)
+                              : ready > 0
+                              ? l10n.readyForPickup(ready)
                               : l10n.myTransactionsSubtitle,
                           badge: snapshot.hasData ? '${docs.length}' : '…',
                           onTap: () => _open(

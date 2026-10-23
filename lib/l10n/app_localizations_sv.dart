@@ -1149,4 +1149,137 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String get exportNo => 'Nr';
+
+  @override
+  String get statusPaid => 'Betald av kund';
+
+  @override
+  String get statusPaymentConfirmed => 'Betalning bekräftad';
+
+  @override
+  String get customerStatusPaid => 'Betalning skickad – managern kontrollerar';
+
+  @override
+  String get customerStatusPaymentConfirmed => 'Klar att hämta ut – se din kod';
+
+  @override
+  String get managerStatusPaid =>
+      'Kunden har betalat – kontrollera betalningen';
+
+  @override
+  String get managerStatusPaymentConfirmed =>
+      'Betalning bekräftad – väntar på uthämtning';
+
+  @override
+  String readyForPickup(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count transaktioner är klara att hämta ut.',
+      one: '1 transaktion är klar att hämta ut.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get iHavePaid => 'Jag har betalat';
+
+  @override
+  String get markPaidIntro =>
+      'Bifoga gärna kvittot (bild eller PDF) så går det fortare för managern att kontrollera betalningen.';
+
+  @override
+  String get attachReceipt => 'Bifoga kvitto';
+
+  @override
+  String get changeReceipt => 'Byt kvitto';
+
+  @override
+  String get receiptTooLarge => 'Filen är för stor (högst 10 MB).';
+
+  @override
+  String get confirmPaid => 'Skicka';
+
+  @override
+  String get markedAsPaidSent => 'Tack! Managern kontrollerar betalningen.';
+
+  @override
+  String get markedAsPaid => 'Du har markerat som betalt';
+
+  @override
+  String get managerCheckingPayment =>
+      'Managern kontrollerar betalningen och bekräftar så snart den har kommit.';
+
+  @override
+  String get showReceipt => 'Visa kvitto';
+
+  @override
+  String get paymentMissingTitle => 'Betalningen har inte kommit';
+
+  @override
+  String get paymentConfirmedTitle => 'Betalningen är bekräftad';
+
+  @override
+  String get yourPickupCode => 'Din uthämtningskod';
+
+  @override
+  String pickupCodeInstructions(Object amount, Object currency) {
+    return 'Visa koden på kontoret för att hämta ut $amount $currency. Dela den bara med den som ska hämta ut pengarna.';
+  }
+
+  @override
+  String get paidOutTitle => 'Utbetald';
+
+  @override
+  String get paidOutBody => 'Pengarna är uthämtade. Tack!';
+
+  @override
+  String get wrongPickupCode => 'Fel kod. Kontrollera koden som kunden visar.';
+
+  @override
+  String get paymentConfirmedSent =>
+      'Betalningen är bekräftad och kunden har fått sin kod.';
+
+  @override
+  String get paymentMissing => 'Betalning saknas';
+
+  @override
+  String get paymentMissingDefault =>
+      'Vi har inte fått din betalning ännu. Kontrollera betalningen och försök igen.';
+
+  @override
+  String get messageToCustomer => 'Meddelande till kunden';
+
+  @override
+  String get confirmPayment => 'Bekräfta betalning';
+
+  @override
+  String get customerMarkedPaid => 'Kunden har markerat som betalt';
+
+  @override
+  String showReceiptNamed(Object name) {
+    return 'Visa kvitto $name';
+  }
+
+  @override
+  String get noReceiptAttached => 'Inget kvitto bifogat.';
+
+  @override
+  String get paymentConfirmedManager => 'Betalningen är bekräftad';
+
+  @override
+  String payoutInstructions(Object amount, Object currency) {
+    return 'Betala ut $amount $currency när kunden visar sin uthämtningskod.';
+  }
+
+  @override
+  String giveCodeToWalkIn(Object code) {
+    return 'Kunden har inget konto. Ge kunden koden: $code';
+  }
+
+  @override
+  String get customerPickupCode => 'Kundens uthämtningskod';
+
+  @override
+  String get payOutAndComplete => 'Betala ut och markera som genomförd';
 }

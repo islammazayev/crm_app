@@ -1967,6 +1967,228 @@ abstract class AppLocalizations {
   /// In sv, this message translates to:
   /// **'Nr'**
   String get exportNo;
+
+  /// No description provided for @statusPaid.
+  ///
+  /// In sv, this message translates to:
+  /// **'Betald av kund'**
+  String get statusPaid;
+
+  /// No description provided for @statusPaymentConfirmed.
+  ///
+  /// In sv, this message translates to:
+  /// **'Betalning bekräftad'**
+  String get statusPaymentConfirmed;
+
+  /// No description provided for @customerStatusPaid.
+  ///
+  /// In sv, this message translates to:
+  /// **'Betalning skickad – managern kontrollerar'**
+  String get customerStatusPaid;
+
+  /// No description provided for @customerStatusPaymentConfirmed.
+  ///
+  /// In sv, this message translates to:
+  /// **'Klar att hämta ut – se din kod'**
+  String get customerStatusPaymentConfirmed;
+
+  /// No description provided for @managerStatusPaid.
+  ///
+  /// In sv, this message translates to:
+  /// **'Kunden har betalat – kontrollera betalningen'**
+  String get managerStatusPaid;
+
+  /// No description provided for @managerStatusPaymentConfirmed.
+  ///
+  /// In sv, this message translates to:
+  /// **'Betalning bekräftad – väntar på uthämtning'**
+  String get managerStatusPaymentConfirmed;
+
+  /// No description provided for @readyForPickup.
+  ///
+  /// In sv, this message translates to:
+  /// **'{count, plural, =1{1 transaktion är klar att hämta ut.} other{{count} transaktioner är klara att hämta ut.}}'**
+  String readyForPickup(int count);
+
+  /// No description provided for @iHavePaid.
+  ///
+  /// In sv, this message translates to:
+  /// **'Jag har betalat'**
+  String get iHavePaid;
+
+  /// No description provided for @markPaidIntro.
+  ///
+  /// In sv, this message translates to:
+  /// **'Bifoga gärna kvittot (bild eller PDF) så går det fortare för managern att kontrollera betalningen.'**
+  String get markPaidIntro;
+
+  /// No description provided for @attachReceipt.
+  ///
+  /// In sv, this message translates to:
+  /// **'Bifoga kvitto'**
+  String get attachReceipt;
+
+  /// No description provided for @changeReceipt.
+  ///
+  /// In sv, this message translates to:
+  /// **'Byt kvitto'**
+  String get changeReceipt;
+
+  /// No description provided for @receiptTooLarge.
+  ///
+  /// In sv, this message translates to:
+  /// **'Filen är för stor (högst 10 MB).'**
+  String get receiptTooLarge;
+
+  /// No description provided for @confirmPaid.
+  ///
+  /// In sv, this message translates to:
+  /// **'Skicka'**
+  String get confirmPaid;
+
+  /// No description provided for @markedAsPaidSent.
+  ///
+  /// In sv, this message translates to:
+  /// **'Tack! Managern kontrollerar betalningen.'**
+  String get markedAsPaidSent;
+
+  /// No description provided for @markedAsPaid.
+  ///
+  /// In sv, this message translates to:
+  /// **'Du har markerat som betalt'**
+  String get markedAsPaid;
+
+  /// No description provided for @managerCheckingPayment.
+  ///
+  /// In sv, this message translates to:
+  /// **'Managern kontrollerar betalningen och bekräftar så snart den har kommit.'**
+  String get managerCheckingPayment;
+
+  /// No description provided for @showReceipt.
+  ///
+  /// In sv, this message translates to:
+  /// **'Visa kvitto'**
+  String get showReceipt;
+
+  /// No description provided for @paymentMissingTitle.
+  ///
+  /// In sv, this message translates to:
+  /// **'Betalningen har inte kommit'**
+  String get paymentMissingTitle;
+
+  /// No description provided for @paymentConfirmedTitle.
+  ///
+  /// In sv, this message translates to:
+  /// **'Betalningen är bekräftad'**
+  String get paymentConfirmedTitle;
+
+  /// No description provided for @yourPickupCode.
+  ///
+  /// In sv, this message translates to:
+  /// **'Din uthämtningskod'**
+  String get yourPickupCode;
+
+  /// No description provided for @pickupCodeInstructions.
+  ///
+  /// In sv, this message translates to:
+  /// **'Visa koden på kontoret för att hämta ut {amount} {currency}. Dela den bara med den som ska hämta ut pengarna.'**
+  String pickupCodeInstructions(Object amount, Object currency);
+
+  /// No description provided for @paidOutTitle.
+  ///
+  /// In sv, this message translates to:
+  /// **'Utbetald'**
+  String get paidOutTitle;
+
+  /// No description provided for @paidOutBody.
+  ///
+  /// In sv, this message translates to:
+  /// **'Pengarna är uthämtade. Tack!'**
+  String get paidOutBody;
+
+  /// No description provided for @wrongPickupCode.
+  ///
+  /// In sv, this message translates to:
+  /// **'Fel kod. Kontrollera koden som kunden visar.'**
+  String get wrongPickupCode;
+
+  /// No description provided for @paymentConfirmedSent.
+  ///
+  /// In sv, this message translates to:
+  /// **'Betalningen är bekräftad och kunden har fått sin kod.'**
+  String get paymentConfirmedSent;
+
+  /// No description provided for @paymentMissing.
+  ///
+  /// In sv, this message translates to:
+  /// **'Betalning saknas'**
+  String get paymentMissing;
+
+  /// No description provided for @paymentMissingDefault.
+  ///
+  /// In sv, this message translates to:
+  /// **'Vi har inte fått din betalning ännu. Kontrollera betalningen och försök igen.'**
+  String get paymentMissingDefault;
+
+  /// No description provided for @messageToCustomer.
+  ///
+  /// In sv, this message translates to:
+  /// **'Meddelande till kunden'**
+  String get messageToCustomer;
+
+  /// No description provided for @confirmPayment.
+  ///
+  /// In sv, this message translates to:
+  /// **'Bekräfta betalning'**
+  String get confirmPayment;
+
+  /// No description provided for @customerMarkedPaid.
+  ///
+  /// In sv, this message translates to:
+  /// **'Kunden har markerat som betalt'**
+  String get customerMarkedPaid;
+
+  /// No description provided for @showReceiptNamed.
+  ///
+  /// In sv, this message translates to:
+  /// **'Visa kvitto {name}'**
+  String showReceiptNamed(Object name);
+
+  /// No description provided for @noReceiptAttached.
+  ///
+  /// In sv, this message translates to:
+  /// **'Inget kvitto bifogat.'**
+  String get noReceiptAttached;
+
+  /// No description provided for @paymentConfirmedManager.
+  ///
+  /// In sv, this message translates to:
+  /// **'Betalningen är bekräftad'**
+  String get paymentConfirmedManager;
+
+  /// No description provided for @payoutInstructions.
+  ///
+  /// In sv, this message translates to:
+  /// **'Betala ut {amount} {currency} när kunden visar sin uthämtningskod.'**
+  String payoutInstructions(Object amount, Object currency);
+
+  /// No description provided for @giveCodeToWalkIn.
+  ///
+  /// In sv, this message translates to:
+  /// **'Kunden har inget konto. Ge kunden koden: {code}'**
+  String giveCodeToWalkIn(Object code);
+
+  /// No description provided for @customerPickupCode.
+  ///
+  /// In sv, this message translates to:
+  /// **'Kundens uthämtningskod'**
+  String get customerPickupCode;
+
+  /// No description provided for @payOutAndComplete.
+  ///
+  /// In sv, this message translates to:
+  /// **'Betala ut och markera som genomförd'**
+  String get payOutAndComplete;
 }
 
 class _AppLocalizationsDelegate

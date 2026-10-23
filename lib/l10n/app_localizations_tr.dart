@@ -1144,4 +1144,138 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get exportNo => 'No';
+
+  @override
+  String get statusPaid => 'Müşteri ödedi';
+
+  @override
+  String get statusPaymentConfirmed => 'Ödeme onaylandı';
+
+  @override
+  String get customerStatusPaid => 'Ödeme gönderildi – yönetici kontrol ediyor';
+
+  @override
+  String get customerStatusPaymentConfirmed =>
+      'Teslim alınmaya hazır – kodunuza bakın';
+
+  @override
+  String get managerStatusPaid => 'Müşteri ödedi – ödemeyi kontrol edin';
+
+  @override
+  String get managerStatusPaymentConfirmed =>
+      'Ödeme onaylandı – teslim bekleniyor';
+
+  @override
+  String readyForPickup(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count işlem teslim alınmaya hazır.',
+      one: '1 işlem teslim alınmaya hazır.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get iHavePaid => 'Ödedim';
+
+  @override
+  String get markPaidIntro =>
+      'Yöneticinin ödemeyi daha hızlı kontrol edebilmesi için dekontu (fotoğraf veya PDF) ekleyin.';
+
+  @override
+  String get attachReceipt => 'Dekont ekle';
+
+  @override
+  String get changeReceipt => 'Dekontu değiştir';
+
+  @override
+  String get receiptTooLarge => 'Dosya çok büyük (en fazla 10 MB).';
+
+  @override
+  String get confirmPaid => 'Gönder';
+
+  @override
+  String get markedAsPaidSent =>
+      'Teşekkürler! Yönetici ödemeyi kontrol ediyor.';
+
+  @override
+  String get markedAsPaid => 'Ödendi olarak işaretlediniz';
+
+  @override
+  String get managerCheckingPayment =>
+      'Yönetici ödemeyi kontrol ediyor ve ulaşır ulaşmaz onaylayacak.';
+
+  @override
+  String get showReceipt => 'Dekontu göster';
+
+  @override
+  String get paymentMissingTitle => 'Ödeme ulaşmadı';
+
+  @override
+  String get paymentConfirmedTitle => 'Ödeme onaylandı';
+
+  @override
+  String get yourPickupCode => 'Teslim alma kodunuz';
+
+  @override
+  String pickupCodeInstructions(Object amount, Object currency) {
+    return '$amount $currency teslim almak için kodu şubede gösterin. Kodu yalnızca parayı alacak kişiyle paylaşın.';
+  }
+
+  @override
+  String get paidOutTitle => 'Ödendi';
+
+  @override
+  String get paidOutBody => 'Para teslim alındı. Teşekkürler!';
+
+  @override
+  String get wrongPickupCode =>
+      'Yanlış kod. Müşterinin gösterdiği kodu kontrol edin.';
+
+  @override
+  String get paymentConfirmedSent => 'Ödeme onaylandı ve müşteri kodunu aldı.';
+
+  @override
+  String get paymentMissing => 'Ödeme yok';
+
+  @override
+  String get paymentMissingDefault =>
+      'Ödemenizi henüz almadık. Lütfen ödemeyi kontrol edip tekrar deneyin.';
+
+  @override
+  String get messageToCustomer => 'Müşteriye mesaj';
+
+  @override
+  String get confirmPayment => 'Ödemeyi onayla';
+
+  @override
+  String get customerMarkedPaid => 'Müşteri ödendi olarak işaretledi';
+
+  @override
+  String showReceiptNamed(Object name) {
+    return 'Dekontu göster $name';
+  }
+
+  @override
+  String get noReceiptAttached => 'Dekont eklenmedi.';
+
+  @override
+  String get paymentConfirmedManager => 'Ödeme onaylandı';
+
+  @override
+  String payoutInstructions(Object amount, Object currency) {
+    return 'Müşteri teslim alma kodunu gösterdiğinde $amount $currency ödeyin.';
+  }
+
+  @override
+  String giveCodeToWalkIn(Object code) {
+    return 'Müşterinin hesabı yok. Müşteriye bu kodu verin: $code';
+  }
+
+  @override
+  String get customerPickupCode => 'Müşterinin teslim alma kodu';
+
+  @override
+  String get payOutAndComplete => 'Öde ve tamamlandı olarak işaretle';
 }

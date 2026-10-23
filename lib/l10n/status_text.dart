@@ -13,6 +13,10 @@ String statusText(AppLocalizations l10n, String status) {
       return l10n.statusCountered;
     case 'customer_rejected':
       return l10n.statusRejected;
+    case 'customer_paid':
+      return l10n.statusPaid;
+    case 'payment_confirmed':
+      return l10n.statusPaymentConfirmed;
     case 'completed':
       return l10n.statusCompleted;
     default:

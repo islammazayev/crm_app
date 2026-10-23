@@ -1,0 +1,35 @@
+rules_version = '2';
+
+// Kvitton som kunden bifogar när hen markerar en transaktion som betald.
+// Sökväg: receipts/{transaktions-ID}/{filnamn}
+service firebase.storage {
+  match /b/{bucket}/o {
+    function userDoc() {
+      return firestore.get(/databases/(default)/documents/users/$(request.auth.uid)).data;
+    }
+
+    function tx(txId) {
+      return firestore.get(/databases/(default)/documents/transactions/$(txId)).data;
+    }
+
+    match /receipts/{txId}/{fileName} {
+      // Kunden själv, kontorets manager och admin får se kvittot.
+      allow read: if request.auth != null
+        && (
+          userDoc().role == 'admin'
+          || tx(txId).customerId == request.auth.uid
+          || (userDoc().role == 'manager'
+              && userDoc().get('officeId', null) == tx(txId).officeId)
+        );
+
+      // Bara kunden, bara när transaktionen väntar på betalning, högst 10 MB
+      // och bara bild eller PDF.
+      allow create: if request.auth != null
+        && tx(txId).customerId == request.auth.uid
+        && tx(txId).status == 'customer_accepted'
+        && request.resource.size < 10 * 1024 * 1024
+        && (request.resource.contentType.matches('image/.*')
+            || request.resource.contentType == 'application/pdf');
+    }
+  }
+}
