@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import '../../l10n/locale_controller.dart';
 import '../../services/receipt_service.dart';
 import '../../theme/app_theme.dart';
+import '../../widgets/receipt_button.dart';
 import '../../utils/transaction_no.dart';
 import 'customer_transactions_screen.dart' show customerStatusText;
 
@@ -188,12 +189,9 @@ class CustomerTransactionDetailScreen extends StatelessWidget {
                           ].join('\n'),
                           action: '${data['receiptPath'] ?? ''}'.isEmpty
                               ? null
-                              : TextButton.icon(
-                                  icon: const Icon(Icons.receipt_long),
-                                  label: Text(l10n.showReceipt),
-                                  onPressed: () => ReceiptService.open(
-                                    '${data['receiptPath']}',
-                                  ),
+                              : ReceiptButton(
+                                  path: '${data['receiptPath']}',
+                                  label: l10n.showReceipt,
                                 ),
                         ),
                       ],

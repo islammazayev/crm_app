@@ -2,7 +2,6 @@ import 'dart:typed_data';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 /// En vald kvittofil (bild eller PDF) innan den laddas upp.
 class PickedReceipt {
@@ -60,9 +59,7 @@ class ReceiptService {
     return path;
   }
 
-  /// Öppnar kvittot i en ny flik (webb) eller i telefonens visare.
-  static Future<void> open(String path) async {
-    final url = await FirebaseStorage.instance.ref(path).getDownloadURL();
-    await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
-  }
+  /// Länk till kvittot (med åtkomsttoken). Hämtas i förväg av ReceiptButton.
+  static Future<String> downloadUrl(String path) =>
+      FirebaseStorage.instance.ref(path).getDownloadURL();
 }
