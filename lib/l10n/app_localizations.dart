@@ -2297,6 +2297,372 @@ abstract class AppLocalizations {
   /// In sv, this message translates to:
   /// **'QR-koden hör till ett annat kontor.'**
   String get qrOtherOffice;
+
+  /// No description provided for @transferPending.
+  ///
+  /// In sv, this message translates to:
+  /// **'Väntar på mottagaren'**
+  String get transferPending;
+
+  /// No description provided for @transferAccepted.
+  ///
+  /// In sv, this message translates to:
+  /// **'Mottagen'**
+  String get transferAccepted;
+
+  /// No description provided for @transferRejected.
+  ///
+  /// In sv, this message translates to:
+  /// **'Nekad'**
+  String get transferRejected;
+
+  /// No description provided for @transferCancelled.
+  ///
+  /// In sv, this message translates to:
+  /// **'Avbruten'**
+  String get transferCancelled;
+
+  /// No description provided for @noIncomingTransfers.
+  ///
+  /// In sv, this message translates to:
+  /// **'Inga inkommande överföringar väntar.'**
+  String get noIncomingTransfers;
+
+  /// No description provided for @noTransfersYet.
+  ///
+  /// In sv, this message translates to:
+  /// **'Inga överföringar ännu.'**
+  String get noTransfersYet;
+
+  /// No description provided for @transferFrom.
+  ///
+  /// In sv, this message translates to:
+  /// **'Från {name}'**
+  String transferFrom(Object name);
+
+  /// No description provided for @transferTo.
+  ///
+  /// In sv, this message translates to:
+  /// **'Till {name}'**
+  String transferTo(Object name);
+
+  /// No description provided for @transferAcceptedDone.
+  ///
+  /// In sv, this message translates to:
+  /// **'Mottaget. Beloppet är lagt till ditt saldo.'**
+  String get transferAcceptedDone;
+
+  /// No description provided for @receivedButton.
+  ///
+  /// In sv, this message translates to:
+  /// **'Mottaget'**
+  String get receivedButton;
+
+  /// No description provided for @rejectTransferTitle.
+  ///
+  /// In sv, this message translates to:
+  /// **'Neka överföringen?'**
+  String get rejectTransferTitle;
+
+  /// No description provided for @rejectTransferConfirm.
+  ///
+  /// In sv, this message translates to:
+  /// **'{amount} {currency} går tillbaka till {name}.'**
+  String rejectTransferConfirm(Object amount, Object currency, Object name);
+
+  /// No description provided for @transferRejectedDone.
+  ///
+  /// In sv, this message translates to:
+  /// **'Överföringen är nekad och pengarna har gått tillbaka.'**
+  String get transferRejectedDone;
+
+  /// No description provided for @cancelTransferTitle.
+  ///
+  /// In sv, this message translates to:
+  /// **'Avbryta överföringen?'**
+  String get cancelTransferTitle;
+
+  /// No description provided for @cancelTransferConfirm.
+  ///
+  /// In sv, this message translates to:
+  /// **'{amount} {currency} till {name} avbryts och läggs tillbaka på ditt saldo.'**
+  String cancelTransferConfirm(Object amount, Object currency, Object name);
+
+  /// No description provided for @transferCancelledDone.
+  ///
+  /// In sv, this message translates to:
+  /// **'Överföringen är avbruten och pengarna är tillbaka på ditt saldo.'**
+  String get transferCancelledDone;
+
+  /// No description provided for @cancelTransfer.
+  ///
+  /// In sv, this message translates to:
+  /// **'Avbryt överföring'**
+  String get cancelTransfer;
+
+  /// No description provided for @cashBalance.
+  ///
+  /// In sv, this message translates to:
+  /// **'Kassa'**
+  String get cashBalance;
+
+  /// No description provided for @noBalanceYet.
+  ///
+  /// In sv, this message translates to:
+  /// **'Inget saldo ännu. Admin fyller på saldot.'**
+  String get noBalanceYet;
+
+  /// No description provided for @cashierAppBarTitle.
+  ///
+  /// In sv, this message translates to:
+  /// **'CRM – Kassör'**
+  String get cashierAppBarTitle;
+
+  /// No description provided for @cashierNotSetUp.
+  ///
+  /// In sv, this message translates to:
+  /// **'Ditt kassörskonto är inte klart. Kontakta admin.'**
+  String get cashierNotSetUp;
+
+  /// No description provided for @cashierSendSubtitle.
+  ///
+  /// In sv, this message translates to:
+  /// **'Skicka pengar till en annan kassör.'**
+  String get cashierSendSubtitle;
+
+  /// No description provided for @incomingTransfers.
+  ///
+  /// In sv, this message translates to:
+  /// **'Inkommande'**
+  String get incomingTransfers;
+
+  /// No description provided for @incomingWaiting.
+  ///
+  /// In sv, this message translates to:
+  /// **'{count, plural, =1{1 överföring väntar på att du tar emot den.} other{{count} överföringar väntar på att du tar emot dem.}}'**
+  String incomingWaiting(int count);
+
+  /// No description provided for @incomingSubtitle.
+  ///
+  /// In sv, this message translates to:
+  /// **'Överföringar som skickats till dig.'**
+  String get incomingSubtitle;
+
+  /// No description provided for @myTransfers.
+  ///
+  /// In sv, this message translates to:
+  /// **'Mina överföringar'**
+  String get myTransfers;
+
+  /// No description provided for @myTransfersSubtitle.
+  ///
+  /// In sv, this message translates to:
+  /// **'Alla skickade och mottagna överföringar.'**
+  String get myTransfersSubtitle;
+
+  /// No description provided for @notEnoughBalance.
+  ///
+  /// In sv, this message translates to:
+  /// **'Du har bara {available} {currency}.'**
+  String notEnoughBalance(Object available, Object currency);
+
+  /// No description provided for @confirmTransferTitle.
+  ///
+  /// In sv, this message translates to:
+  /// **'Skicka pengar?'**
+  String get confirmTransferTitle;
+
+  /// No description provided for @confirmTransferBody.
+  ///
+  /// In sv, this message translates to:
+  /// **'{amount} {currency} till {name}. Beloppet reserveras från ditt saldo tills mottagaren tar emot.'**
+  String confirmTransferBody(Object amount, Object currency, Object name);
+
+  /// No description provided for @transferSent.
+  ///
+  /// In sv, this message translates to:
+  /// **'Skickat till {name}. Väntar på att mottagaren tar emot.'**
+  String transferSent(Object name);
+
+  /// No description provided for @noBalanceToSend.
+  ///
+  /// In sv, this message translates to:
+  /// **'Du har inget saldo att skicka.'**
+  String get noBalanceToSend;
+
+  /// No description provided for @noOtherCashiers.
+  ///
+  /// In sv, this message translates to:
+  /// **'Det finns inga andra kassörer att skicka till.'**
+  String get noOtherCashiers;
+
+  /// No description provided for @recipientCashier.
+  ///
+  /// In sv, this message translates to:
+  /// **'Mottagare (kassör)'**
+  String get recipientCashier;
+
+  /// No description provided for @availableBalance.
+  ///
+  /// In sv, this message translates to:
+  /// **'Tillgängligt: {amount} {currency}'**
+  String availableBalance(Object amount, Object currency);
+
+  /// No description provided for @transferReservedHint.
+  ///
+  /// In sv, this message translates to:
+  /// **'Beloppet dras från ditt saldo direkt och läggs till mottagarens när hen tar emot. Nekar hen, eller avbryter du, går pengarna tillbaka.'**
+  String get transferReservedHint;
+
+  /// No description provided for @transfersTitle.
+  ///
+  /// In sv, this message translates to:
+  /// **'Överföringar'**
+  String get transfersTitle;
+
+  /// No description provided for @editCashierTitle.
+  ///
+  /// In sv, this message translates to:
+  /// **'Ändra kassör'**
+  String get editCashierTitle;
+
+  /// No description provided for @cashierUpdated.
+  ///
+  /// In sv, this message translates to:
+  /// **'Kassören är uppdaterad.'**
+  String get cashierUpdated;
+
+  /// No description provided for @adjustBalance.
+  ///
+  /// In sv, this message translates to:
+  /// **'Justera saldo'**
+  String get adjustBalance;
+
+  /// No description provided for @adjustBalanceHint.
+  ///
+  /// In sv, this message translates to:
+  /// **'Positivt belopp fyller på, negativt drar av.'**
+  String get adjustBalanceHint;
+
+  /// No description provided for @balanceWouldBeNegative.
+  ///
+  /// In sv, this message translates to:
+  /// **'Saldot kan inte bli negativt.'**
+  String get balanceWouldBeNegative;
+
+  /// No description provided for @balanceUpdated.
+  ///
+  /// In sv, this message translates to:
+  /// **'Saldot är uppdaterat.'**
+  String get balanceUpdated;
+
+  /// No description provided for @deleteCashierTitle.
+  ///
+  /// In sv, this message translates to:
+  /// **'Radera kassör?'**
+  String get deleteCashierTitle;
+
+  /// No description provided for @deleteCashierConfirm.
+  ///
+  /// In sv, this message translates to:
+  /// **'{name} kommer inte längre åt appen och saldot tas bort. Inloggningskontot finns kvar och kan tas bort under Authentication i Firebase-konsolen.'**
+  String deleteCashierConfirm(Object name);
+
+  /// No description provided for @cashierDeleted.
+  ///
+  /// In sv, this message translates to:
+  /// **'Kassören är raderad.'**
+  String get cashierDeleted;
+
+  /// No description provided for @cashiers.
+  ///
+  /// In sv, this message translates to:
+  /// **'Kassörer'**
+  String get cashiers;
+
+  /// No description provided for @existingCashiers.
+  ///
+  /// In sv, this message translates to:
+  /// **'Befintliga kassörer'**
+  String get existingCashiers;
+
+  /// No description provided for @searchCashiersLabel.
+  ///
+  /// In sv, this message translates to:
+  /// **'Sök på namn, kontor eller manager'**
+  String get searchCashiersLabel;
+
+  /// No description provided for @officeOptional.
+  ///
+  /// In sv, this message translates to:
+  /// **'Kontor (valfritt)'**
+  String get officeOptional;
+
+  /// No description provided for @managerOptional.
+  ///
+  /// In sv, this message translates to:
+  /// **'Manager (valfritt)'**
+  String get managerOptional;
+
+  /// No description provided for @noManagerAssigned.
+  ///
+  /// In sv, this message translates to:
+  /// **'Ingen manager'**
+  String get noManagerAssigned;
+
+  /// No description provided for @cashierCreated.
+  ///
+  /// In sv, this message translates to:
+  /// **'Kassören är skapad.'**
+  String get cashierCreated;
+
+  /// No description provided for @couldNotCreateCashier.
+  ///
+  /// In sv, this message translates to:
+  /// **'Kunde inte skapa kassör: {error}'**
+  String couldNotCreateCashier(Object error);
+
+  /// No description provided for @requiredField.
+  ///
+  /// In sv, this message translates to:
+  /// **'Obligatoriskt'**
+  String get requiredField;
+
+  /// No description provided for @createNewCashier.
+  ///
+  /// In sv, this message translates to:
+  /// **'Skapa ny kassör'**
+  String get createNewCashier;
+
+  /// No description provided for @createCashier.
+  ///
+  /// In sv, this message translates to:
+  /// **'Skapa kassör'**
+  String get createCashier;
+
+  /// No description provided for @cashiersCardSubtitle.
+  ///
+  /// In sv, this message translates to:
+  /// **'Skapa kassörer, koppla dem till kontor och manager och fyll på saldon.'**
+  String get cashiersCardSubtitle;
+
+  /// No description provided for @myCashiers.
+  ///
+  /// In sv, this message translates to:
+  /// **'Mina kassörer'**
+  String get myCashiers;
+
+  /// No description provided for @myCashiersSubtitle.
+  ///
+  /// In sv, this message translates to:
+  /// **'Kassörer kopplade till dig eller ditt kontor, med saldon och överföringar.'**
+  String get myCashiersSubtitle;
+
+  /// No description provided for @noCashiersLinked.
+  ///
+  /// In sv, this message translates to:
+  /// **'Inga kassörer är kopplade till dig eller ditt kontor.'**
+  String get noCashiersLinked;
 }
 
 class _AppLocalizationsDelegate

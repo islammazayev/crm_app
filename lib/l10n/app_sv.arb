@@ -949,5 +949,167 @@
   "scanPickup": "Skanna uthämtning",
   "scanPickupSubtitle": "Skanna kundens QR-kod för att betala ut en bekräftad transaktion.",
   "qrNotReadyForPayout": "Transaktionen finns inte eller är inte klar för utbetalning.",
-  "qrOtherOffice": "QR-koden hör till ett annat kontor."
+  "qrOtherOffice": "QR-koden hör till ett annat kontor.",
+  "transferPending": "Väntar på mottagaren",
+  "transferAccepted": "Mottagen",
+  "transferRejected": "Nekad",
+  "transferCancelled": "Avbruten",
+  "noIncomingTransfers": "Inga inkommande överföringar väntar.",
+  "noTransfersYet": "Inga överföringar ännu.",
+  "transferFrom": "Från {name}",
+  "@transferFrom": {
+    "placeholders": {
+      "name": {
+        "type": "Object"
+      }
+    }
+  },
+  "transferTo": "Till {name}",
+  "@transferTo": {
+    "placeholders": {
+      "name": {
+        "type": "Object"
+      }
+    }
+  },
+  "transferAcceptedDone": "Mottaget. Beloppet är lagt till ditt saldo.",
+  "receivedButton": "Mottaget",
+  "rejectTransferTitle": "Neka överföringen?",
+  "rejectTransferConfirm": "{amount} {currency} går tillbaka till {name}.",
+  "@rejectTransferConfirm": {
+    "placeholders": {
+      "amount": {
+        "type": "Object"
+      },
+      "currency": {
+        "type": "Object"
+      },
+      "name": {
+        "type": "Object"
+      }
+    }
+  },
+  "transferRejectedDone": "Överföringen är nekad och pengarna har gått tillbaka.",
+  "cancelTransferTitle": "Avbryta överföringen?",
+  "cancelTransferConfirm": "{amount} {currency} till {name} avbryts och läggs tillbaka på ditt saldo.",
+  "@cancelTransferConfirm": {
+    "placeholders": {
+      "amount": {
+        "type": "Object"
+      },
+      "currency": {
+        "type": "Object"
+      },
+      "name": {
+        "type": "Object"
+      }
+    }
+  },
+  "transferCancelledDone": "Överföringen är avbruten och pengarna är tillbaka på ditt saldo.",
+  "cancelTransfer": "Avbryt överföring",
+  "cashBalance": "Kassa",
+  "noBalanceYet": "Inget saldo ännu. Admin fyller på saldot.",
+  "cashierAppBarTitle": "CRM – Kassör",
+  "cashierNotSetUp": "Ditt kassörskonto är inte klart. Kontakta admin.",
+  "cashierSendSubtitle": "Skicka pengar till en annan kassör.",
+  "incomingTransfers": "Inkommande",
+  "incomingWaiting": "{count, plural, =1{1 överföring väntar på att du tar emot den.} other{{count} överföringar väntar på att du tar emot dem.}}",
+  "@incomingWaiting": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "incomingSubtitle": "Överföringar som skickats till dig.",
+  "myTransfers": "Mina överföringar",
+  "myTransfersSubtitle": "Alla skickade och mottagna överföringar.",
+  "notEnoughBalance": "Du har bara {available} {currency}.",
+  "@notEnoughBalance": {
+    "placeholders": {
+      "available": {
+        "type": "Object"
+      },
+      "currency": {
+        "type": "Object"
+      }
+    }
+  },
+  "confirmTransferTitle": "Skicka pengar?",
+  "confirmTransferBody": "{amount} {currency} till {name}. Beloppet reserveras från ditt saldo tills mottagaren tar emot.",
+  "@confirmTransferBody": {
+    "placeholders": {
+      "amount": {
+        "type": "Object"
+      },
+      "currency": {
+        "type": "Object"
+      },
+      "name": {
+        "type": "Object"
+      }
+    }
+  },
+  "transferSent": "Skickat till {name}. Väntar på att mottagaren tar emot.",
+  "@transferSent": {
+    "placeholders": {
+      "name": {
+        "type": "Object"
+      }
+    }
+  },
+  "noBalanceToSend": "Du har inget saldo att skicka.",
+  "noOtherCashiers": "Det finns inga andra kassörer att skicka till.",
+  "recipientCashier": "Mottagare (kassör)",
+  "availableBalance": "Tillgängligt: {amount} {currency}",
+  "@availableBalance": {
+    "placeholders": {
+      "amount": {
+        "type": "Object"
+      },
+      "currency": {
+        "type": "Object"
+      }
+    }
+  },
+  "transferReservedHint": "Beloppet dras från ditt saldo direkt och läggs till mottagarens när hen tar emot. Nekar hen, eller avbryter du, går pengarna tillbaka.",
+  "transfersTitle": "Överföringar",
+  "editCashierTitle": "Ändra kassör",
+  "cashierUpdated": "Kassören är uppdaterad.",
+  "adjustBalance": "Justera saldo",
+  "adjustBalanceHint": "Positivt belopp fyller på, negativt drar av.",
+  "balanceWouldBeNegative": "Saldot kan inte bli negativt.",
+  "balanceUpdated": "Saldot är uppdaterat.",
+  "deleteCashierTitle": "Radera kassör?",
+  "deleteCashierConfirm": "{name} kommer inte längre åt appen och saldot tas bort. Inloggningskontot finns kvar och kan tas bort under Authentication i Firebase-konsolen.",
+  "@deleteCashierConfirm": {
+    "placeholders": {
+      "name": {
+        "type": "Object"
+      }
+    }
+  },
+  "cashierDeleted": "Kassören är raderad.",
+  "cashiers": "Kassörer",
+  "existingCashiers": "Befintliga kassörer",
+  "searchCashiersLabel": "Sök på namn, kontor eller manager",
+  "officeOptional": "Kontor (valfritt)",
+  "managerOptional": "Manager (valfritt)",
+  "noManagerAssigned": "Ingen manager",
+  "cashierCreated": "Kassören är skapad.",
+  "couldNotCreateCashier": "Kunde inte skapa kassör: {error}",
+  "@couldNotCreateCashier": {
+    "placeholders": {
+      "error": {
+        "type": "Object"
+      }
+    }
+  },
+  "requiredField": "Obligatoriskt",
+  "createNewCashier": "Skapa ny kassör",
+  "createCashier": "Skapa kassör",
+  "cashiersCardSubtitle": "Skapa kassörer, koppla dem till kontor och manager och fyll på saldon.",
+  "myCashiers": "Mina kassörer",
+  "myCashiersSubtitle": "Kassörer kopplade till dig eller ditt kontor, med saldon och överföringar.",
+  "noCashiersLinked": "Inga kassörer är kopplade till dig eller ditt kontor."
 }

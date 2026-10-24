@@ -1345,4 +1345,225 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String get qrOtherOffice => 'QR-koden hör till ett annat kontor.';
+
+  @override
+  String get transferPending => 'Väntar på mottagaren';
+
+  @override
+  String get transferAccepted => 'Mottagen';
+
+  @override
+  String get transferRejected => 'Nekad';
+
+  @override
+  String get transferCancelled => 'Avbruten';
+
+  @override
+  String get noIncomingTransfers => 'Inga inkommande överföringar väntar.';
+
+  @override
+  String get noTransfersYet => 'Inga överföringar ännu.';
+
+  @override
+  String transferFrom(Object name) {
+    return 'Från $name';
+  }
+
+  @override
+  String transferTo(Object name) {
+    return 'Till $name';
+  }
+
+  @override
+  String get transferAcceptedDone =>
+      'Mottaget. Beloppet är lagt till ditt saldo.';
+
+  @override
+  String get receivedButton => 'Mottaget';
+
+  @override
+  String get rejectTransferTitle => 'Neka överföringen?';
+
+  @override
+  String rejectTransferConfirm(Object amount, Object currency, Object name) {
+    return '$amount $currency går tillbaka till $name.';
+  }
+
+  @override
+  String get transferRejectedDone =>
+      'Överföringen är nekad och pengarna har gått tillbaka.';
+
+  @override
+  String get cancelTransferTitle => 'Avbryta överföringen?';
+
+  @override
+  String cancelTransferConfirm(Object amount, Object currency, Object name) {
+    return '$amount $currency till $name avbryts och läggs tillbaka på ditt saldo.';
+  }
+
+  @override
+  String get transferCancelledDone =>
+      'Överföringen är avbruten och pengarna är tillbaka på ditt saldo.';
+
+  @override
+  String get cancelTransfer => 'Avbryt överföring';
+
+  @override
+  String get cashBalance => 'Kassa';
+
+  @override
+  String get noBalanceYet => 'Inget saldo ännu. Admin fyller på saldot.';
+
+  @override
+  String get cashierAppBarTitle => 'CRM – Kassör';
+
+  @override
+  String get cashierNotSetUp =>
+      'Ditt kassörskonto är inte klart. Kontakta admin.';
+
+  @override
+  String get cashierSendSubtitle => 'Skicka pengar till en annan kassör.';
+
+  @override
+  String get incomingTransfers => 'Inkommande';
+
+  @override
+  String incomingWaiting(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count överföringar väntar på att du tar emot dem.',
+      one: '1 överföring väntar på att du tar emot den.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get incomingSubtitle => 'Överföringar som skickats till dig.';
+
+  @override
+  String get myTransfers => 'Mina överföringar';
+
+  @override
+  String get myTransfersSubtitle => 'Alla skickade och mottagna överföringar.';
+
+  @override
+  String notEnoughBalance(Object available, Object currency) {
+    return 'Du har bara $available $currency.';
+  }
+
+  @override
+  String get confirmTransferTitle => 'Skicka pengar?';
+
+  @override
+  String confirmTransferBody(Object amount, Object currency, Object name) {
+    return '$amount $currency till $name. Beloppet reserveras från ditt saldo tills mottagaren tar emot.';
+  }
+
+  @override
+  String transferSent(Object name) {
+    return 'Skickat till $name. Väntar på att mottagaren tar emot.';
+  }
+
+  @override
+  String get noBalanceToSend => 'Du har inget saldo att skicka.';
+
+  @override
+  String get noOtherCashiers =>
+      'Det finns inga andra kassörer att skicka till.';
+
+  @override
+  String get recipientCashier => 'Mottagare (kassör)';
+
+  @override
+  String availableBalance(Object amount, Object currency) {
+    return 'Tillgängligt: $amount $currency';
+  }
+
+  @override
+  String get transferReservedHint =>
+      'Beloppet dras från ditt saldo direkt och läggs till mottagarens när hen tar emot. Nekar hen, eller avbryter du, går pengarna tillbaka.';
+
+  @override
+  String get transfersTitle => 'Överföringar';
+
+  @override
+  String get editCashierTitle => 'Ändra kassör';
+
+  @override
+  String get cashierUpdated => 'Kassören är uppdaterad.';
+
+  @override
+  String get adjustBalance => 'Justera saldo';
+
+  @override
+  String get adjustBalanceHint =>
+      'Positivt belopp fyller på, negativt drar av.';
+
+  @override
+  String get balanceWouldBeNegative => 'Saldot kan inte bli negativt.';
+
+  @override
+  String get balanceUpdated => 'Saldot är uppdaterat.';
+
+  @override
+  String get deleteCashierTitle => 'Radera kassör?';
+
+  @override
+  String deleteCashierConfirm(Object name) {
+    return '$name kommer inte längre åt appen och saldot tas bort. Inloggningskontot finns kvar och kan tas bort under Authentication i Firebase-konsolen.';
+  }
+
+  @override
+  String get cashierDeleted => 'Kassören är raderad.';
+
+  @override
+  String get cashiers => 'Kassörer';
+
+  @override
+  String get existingCashiers => 'Befintliga kassörer';
+
+  @override
+  String get searchCashiersLabel => 'Sök på namn, kontor eller manager';
+
+  @override
+  String get officeOptional => 'Kontor (valfritt)';
+
+  @override
+  String get managerOptional => 'Manager (valfritt)';
+
+  @override
+  String get noManagerAssigned => 'Ingen manager';
+
+  @override
+  String get cashierCreated => 'Kassören är skapad.';
+
+  @override
+  String couldNotCreateCashier(Object error) {
+    return 'Kunde inte skapa kassör: $error';
+  }
+
+  @override
+  String get requiredField => 'Obligatoriskt';
+
+  @override
+  String get createNewCashier => 'Skapa ny kassör';
+
+  @override
+  String get createCashier => 'Skapa kassör';
+
+  @override
+  String get cashiersCardSubtitle =>
+      'Skapa kassörer, koppla dem till kontor och manager och fyll på saldon.';
+
+  @override
+  String get myCashiers => 'Mina kassörer';
+
+  @override
+  String get myCashiersSubtitle =>
+      'Kassörer kopplade till dig eller ditt kontor, med saldon och överföringar.';
+
+  @override
+  String get noCashiersLinked =>
+      'Inga kassörer är kopplade till dig eller ditt kontor.';
 }
