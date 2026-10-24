@@ -85,32 +85,53 @@ class AppTheme {
       ),
 
       // ── InputDecoration ──────────────────────────────────────────
+      // Luftiga fält med tydlig ram; etiketten blir grön när fältet har fokus.
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
         fillColor: AppColors.surface2,
         contentPadding:
-            const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+            const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(14),
           borderSide: const BorderSide(color: AppColors.surfaceBorder),
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(14),
           borderSide: const BorderSide(color: AppColors.surfaceBorder),
         ),
+        disabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(14),
+          borderSide: BorderSide(
+            color: AppColors.surfaceBorder.withValues(alpha: 0.5),
+          ),
+        ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: AppColors.primary, width: 1.5),
+          borderRadius: BorderRadius.circular(14),
+          borderSide: const BorderSide(color: AppColors.primary, width: 1.6),
         ),
         errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(14),
           borderSide: const BorderSide(color: AppColors.error),
         ),
+        focusedErrorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(14),
+          borderSide: const BorderSide(color: AppColors.error, width: 1.6),
+        ),
         labelStyle: const TextStyle(color: AppColors.textMuted, fontSize: 14),
+        floatingLabelStyle: const TextStyle(
+          color: AppColors.primary,
+          fontSize: 13,
+          fontWeight: FontWeight.w600,
+        ),
         hintStyle: const TextStyle(color: AppColors.textFaint, fontSize: 14),
+        helperStyle: const TextStyle(color: AppColors.textMuted, fontSize: 12),
+        errorStyle: const TextStyle(color: AppColors.error, fontSize: 12),
         prefixIconColor: AppColors.textMuted,
         suffixIconColor: AppColors.textMuted,
       ),
+
+      // Rullgardinsmenyer (DropdownButtonFormField) får samma färg som fälten.
+      canvasColor: AppColors.surface2,
 
       // ── ElevatedButton ───────────────────────────────────────────
       elevatedButtonTheme: ElevatedButtonThemeData(
@@ -118,12 +139,13 @@ class AppTheme {
           backgroundColor: AppColors.primary,
           foregroundColor: const Color(0xFF003300),
           elevation: 0,
+          minimumSize: const Size(0, 48),
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(14),
           ),
           textStyle: const TextStyle(
-            fontSize: 14,
+            fontSize: 15,
             fontWeight: FontWeight.w600,
             letterSpacing: 0.3,
           ),
@@ -135,9 +157,10 @@ class AppTheme {
         style: OutlinedButton.styleFrom(
           foregroundColor: AppColors.primary,
           side: const BorderSide(color: AppColors.primary, width: 1.5),
+          minimumSize: const Size(0, 48),
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(14),
           ),
           textStyle: const TextStyle(
             fontSize: 14,

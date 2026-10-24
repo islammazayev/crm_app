@@ -125,7 +125,7 @@ class _CreateManagerFormState extends State<CreateManagerForm> {
             l10n.createNewManager,
             style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 14),
           Row(
             children: [
               Expanded(
@@ -147,7 +147,7 @@ class _CreateManagerFormState extends State<CreateManagerForm> {
               ),
             ],
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 14),
           TextFormField(
             controller: _emailController,
             decoration: InputDecoration(labelText: l10n.email),
@@ -155,13 +155,13 @@ class _CreateManagerFormState extends State<CreateManagerForm> {
             validator: (v) =>
                 (v == null || v.trim().isEmpty) ? l10n.enterEmail : null,
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 14),
           TextFormField(
             controller: _phoneController,
             decoration: InputDecoration(labelText: l10n.phone),
             keyboardType: TextInputType.phone,
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 14),
           TextFormField(
             controller: _passwordController,
             decoration: InputDecoration(labelText: l10n.password),
@@ -169,7 +169,7 @@ class _CreateManagerFormState extends State<CreateManagerForm> {
             validator: (v) =>
                 (v == null || v.length < 6) ? l10n.passwordMinLength : null,
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 14),
           DropdownButtonFormField<String>(
             key: ValueKey(_selectedOfficeId),
             initialValue: _selectedOfficeId,

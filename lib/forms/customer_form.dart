@@ -83,7 +83,7 @@ class _CustomerFormState extends State<CustomerForm> {
             l10n.createUpdateCustomer,
             style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 14),
           TextFormField(
             controller: _clientIdController,
             decoration: InputDecoration(
@@ -92,7 +92,7 @@ class _CustomerFormState extends State<CustomerForm> {
             ),
             keyboardType: TextInputType.number,
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 14),
           Row(
             children: [
               Expanded(
@@ -116,13 +116,13 @@ class _CustomerFormState extends State<CustomerForm> {
               ),
             ],
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 14),
           TextFormField(
             controller: _phoneController,
             decoration: InputDecoration(labelText: l10n.phone),
             keyboardType: TextInputType.phone,
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 14),
           TextFormField(
             controller: _emailController,
             decoration: InputDecoration(labelText: l10n.email),

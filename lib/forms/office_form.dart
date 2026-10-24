@@ -119,7 +119,7 @@ class _OfficeFormState extends State<OfficeForm> {
             validator: (v) =>
                 (v == null || v.trim().isEmpty) ? l10n.enterCountry : null,
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 14),
           TextFormField(
             controller: _cityController,
             decoration: InputDecoration(labelText: l10n.city),
@@ -236,7 +236,7 @@ class _PaymentMethodRow extends StatelessWidget {
                 ),
               ],
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 14),
             TextField(
               controller: entry.labelController,
               decoration: InputDecoration(
@@ -245,7 +245,7 @@ class _PaymentMethodRow extends StatelessWidget {
                 border: const OutlineInputBorder(),
               ),
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 14),
             TextField(
               controller: entry.detailsController,
               maxLines: 3,

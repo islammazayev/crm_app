@@ -103,18 +103,18 @@ class _AdminCustomersSectionState extends State<AdminCustomersSection> {
                 controller: firstNameCtrl,
                 decoration: InputDecoration(labelText: l10n.firstName),
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: 14),
               TextField(
                 controller: lastNameCtrl,
                 decoration: InputDecoration(labelText: l10n.lastName),
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: 14),
               TextField(
                 controller: phoneCtrl,
                 decoration: InputDecoration(labelText: l10n.phone),
                 keyboardType: TextInputType.phone,
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: 14),
               TextField(
                 controller: emailCtrl,
                 decoration: InputDecoration(labelText: l10n.email),
@@ -261,7 +261,7 @@ class _AdminCustomersSectionState extends State<AdminCustomersSection> {
           l10n.searchCustomers,
           style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: 14),
         TextField(
           controller: _searchController,
           onChanged: (v) => setState(() => _query = v),

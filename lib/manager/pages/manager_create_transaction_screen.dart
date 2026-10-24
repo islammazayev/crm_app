@@ -158,7 +158,7 @@ class _ManagerCreateTransactionScreenState
                         border: const OutlineInputBorder(),
                       ),
                     ),
-                    const SizedBox(height: 12),
+                    const SizedBox(height: 14),
                     TextField(
                       controller: _phoneCtrl,
                       keyboardType: TextInputType.phone,
@@ -167,7 +167,7 @@ class _ManagerCreateTransactionScreenState
                         border: const OutlineInputBorder(),
                       ),
                     ),
-                    const SizedBox(height: 12),
+                    const SizedBox(height: 14),
                     DropdownButtonFormField<String>(
                       initialValue: _from,
                       decoration: InputDecoration(
@@ -180,7 +180,7 @@ class _ManagerCreateTransactionScreenState
                           .toList(),
                       onChanged: (v) => setState(() => _from = v),
                     ),
-                    const SizedBox(height: 12),
+                    const SizedBox(height: 14),
                     DropdownButtonFormField<String>(
                       initialValue: _to,
                       decoration: InputDecoration(
@@ -194,7 +194,7 @@ class _ManagerCreateTransactionScreenState
                           .toList(),
                       onChanged: (v) => setState(() => _to = v),
                     ),
-                    const SizedBox(height: 12),
+                    const SizedBox(height: 14),
                     TextField(
                       controller: _amountCtrl,
                       keyboardType: const TextInputType.numberWithOptions(
@@ -204,7 +204,7 @@ class _ManagerCreateTransactionScreenState
                         border: const OutlineInputBorder(),
                       ),
                     ),
-                    const SizedBox(height: 12),
+                    const SizedBox(height: 14),
                     TextField(
                       controller: _feeCtrl,
                       keyboardType: const TextInputType.numberWithOptions(

@@ -53,12 +53,12 @@ class _AdminManagersPageState extends State<AdminManagersPage> {
                   controller: firstCtrl,
                   decoration: InputDecoration(labelText: l10n.firstName),
                 ),
-                const SizedBox(height: 8),
+                const SizedBox(height: 14),
                 TextField(
                   controller: lastCtrl,
                   decoration: InputDecoration(labelText: l10n.lastName),
                 ),
-                const SizedBox(height: 8),
+                const SizedBox(height: 14),
                 TextField(
                   controller: phoneCtrl,
                   keyboardType: TextInputType.phone,
@@ -73,7 +73,7 @@ class _AdminManagersPageState extends State<AdminManagersPage> {
                   enabled: false,
                   decoration: InputDecoration(labelText: l10n.email),
                 ),
-                const SizedBox(height: 8),
+                const SizedBox(height: 14),
                 DropdownButtonFormField<String?>(
                   initialValue: officeId,
                   decoration: InputDecoration(labelText: l10n.office),
@@ -188,7 +188,7 @@ class _AdminManagersPageState extends State<AdminManagersPage> {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                const SizedBox(height: 8),
+                const SizedBox(height: 14),
                 TextField(
                   controller: _searchController,
                   onChanged: (v) => setState(() => _query = v),
