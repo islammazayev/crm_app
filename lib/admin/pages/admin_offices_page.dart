@@ -238,7 +238,7 @@ class _AdminOfficesPageState extends State<AdminOfficesPage> {
                                       labelText: l10n.currency,
                                     ),
                                   ),
-                                  const SizedBox(height: 8),
+                                  const SizedBox(height: 14),
                                   TextField(
                                     controller: controller,
                                     keyboardType:

@@ -930,7 +930,7 @@ class _ManagerTransactionDetailScreenState
                       child: Text(l10n.enterCodeInstead),
                     )
                   else ...[
-                    const SizedBox(height: 8),
+                    const SizedBox(height: 14),
                     TextField(
                       controller: _payoutCodeController,
                       keyboardType: TextInputType.number,

@@ -382,7 +382,7 @@ Future<void> _showCounterOfferDialog(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(l10n.counterOfferIntro(currentFee.toStringAsFixed(2))),
-                const SizedBox(height: 12),
+                const SizedBox(height: 14),
                 TextField(
                   controller: feeCtrl,
                   autofocus: true,
@@ -401,7 +401,7 @@ Future<void> _showCounterOfferDialog(
                     l10n.youWouldReceive(net.toStringAsFixed(2), toCurrency),
                   ),
                 ],
-                const SizedBox(height: 12),
+                const SizedBox(height: 14),
                 TextField(
                   controller: msgCtrl,
                   maxLength: 500,
@@ -648,7 +648,7 @@ Future<void> _showMarkPaidDialog(
                     style: const TextStyle(color: AppColors.textMuted),
                   ),
                 ),
-              const SizedBox(height: 12),
+              const SizedBox(height: 14),
               TextField(
                 controller: noteCtrl,
                 maxLength: 500,

@@ -58,6 +58,17 @@ class MyApp extends StatelessWidget {
         ],
         supportedLocales: AppLocalizations.supportedLocales,
         localeListResolutionCallback: LocaleController.resolve,
+        // På stora skärmar ligger appen centrerad med en maxbredd, så att
+        // formulär och listor inte sträcks ut över hela skärmen.
+        builder: (context, child) => ColoredBox(
+          color: AppColors.bg,
+          child: Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 1000),
+              child: child,
+            ),
+          ),
+        ),
         home: const AuthGate(),
       ),
     );

@@ -85,13 +85,13 @@ class _AdminOrdersPageState extends State<AdminOrdersPage> {
                   controller: nameCtrl,
                   decoration: InputDecoration(labelText: l10n.customerName),
                 ),
-                const SizedBox(height: 8),
+                const SizedBox(height: 14),
                 TextField(
                   controller: phoneCtrl,
                   keyboardType: TextInputType.phone,
                   decoration: InputDecoration(labelText: l10n.phone),
                 ),
-                const SizedBox(height: 8),
+                const SizedBox(height: 14),
                 DropdownButtonFormField<String>(
                   initialValue: _statuses.contains(status) ? status : null,
                   decoration: InputDecoration(labelText: l10n.exportStatus),

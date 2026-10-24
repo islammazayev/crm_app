@@ -168,15 +168,17 @@ class _AdminCashiersPageState extends State<AdminCashiersPage> {
                   controller: firstCtrl,
                   decoration: InputDecoration(labelText: l10n.firstName),
                 ),
+                const SizedBox(height: 14),
                 TextField(
                   controller: lastCtrl,
                   decoration: InputDecoration(labelText: l10n.lastName),
                 ),
+                const SizedBox(height: 14),
                 TextField(
                   controller: phoneCtrl,
                   decoration: InputDecoration(labelText: l10n.phone),
                 ),
-                const SizedBox(height: 8),
+                const SizedBox(height: 14),
                 _LinkDropdowns(
                   links: links,
                   officeId: officeId,
@@ -249,6 +251,7 @@ class _AdminCashiersPageState extends State<AdminCashiersPage> {
                 ],
                 onChanged: (v) => setLocal(() => currency = v ?? currency),
               ),
+              const SizedBox(height: 14),
               TextField(
                 controller: amountCtrl,
                 keyboardType: const TextInputType.numberWithOptions(
@@ -349,7 +352,7 @@ class _AdminCashiersPageState extends State<AdminCashiersPage> {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                const SizedBox(height: 8),
+                const SizedBox(height: 14),
                 TextField(
                   controller: _searchController,
                   onChanged: (v) => setState(() => _query = v),
@@ -543,7 +546,7 @@ class _LinkDropdowns extends StatelessWidget {
           ],
           onChanged: onOffice,
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: 14),
         DropdownButtonFormField<String?>(
           initialValue: managerId,
           isExpanded: true,
@@ -684,7 +687,7 @@ class _CreateCashierFormState extends State<_CreateCashierForm> {
             l10n.createNewCashier,
             style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 14),
           Row(
             children: [
               Expanded(
@@ -704,17 +707,20 @@ class _CreateCashierFormState extends State<_CreateCashierForm> {
               ),
             ],
           ),
+          const SizedBox(height: 14),
           TextFormField(
             controller: _email,
             keyboardType: TextInputType.emailAddress,
             decoration: InputDecoration(labelText: l10n.email),
             validator: required,
           ),
+          const SizedBox(height: 14),
           TextFormField(
             controller: _phone,
             keyboardType: TextInputType.phone,
             decoration: InputDecoration(labelText: l10n.phone),
           ),
+          const SizedBox(height: 14),
           TextFormField(
             controller: _password,
             obscureText: true,
@@ -722,7 +728,7 @@ class _CreateCashierFormState extends State<_CreateCashierForm> {
             validator: (v) =>
                 (v == null || v.length < 6) ? l10n.passwordMinLength : null,
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 14),
           _LinkDropdowns(
             links: widget.links,
             officeId: _officeId,

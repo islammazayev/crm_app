@@ -155,7 +155,7 @@ class _EditOfficeDialogState extends State<EditOfficeDialog> {
                 border: const OutlineInputBorder(),
               ),
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 14),
             TextField(
               controller: _cityCtrl,
               decoration: InputDecoration(
@@ -225,7 +225,7 @@ class _EditOfficeDialogState extends State<EditOfficeDialog> {
                           ),
                         ],
                       ),
-                      const SizedBox(height: 8),
+                      const SizedBox(height: 14),
                       TextField(
                         controller: m.idController,
                         decoration: InputDecoration(
@@ -233,7 +233,7 @@ class _EditOfficeDialogState extends State<EditOfficeDialog> {
                           border: const OutlineInputBorder(),
                         ),
                       ),
-                      const SizedBox(height: 10),
+                      const SizedBox(height: 14),
                       TextField(
                         controller: m.labelController,
                         decoration: InputDecoration(
@@ -241,7 +241,7 @@ class _EditOfficeDialogState extends State<EditOfficeDialog> {
                           border: const OutlineInputBorder(),
                         ),
                       ),
-                      const SizedBox(height: 10),
+                      const SizedBox(height: 14),
                       TextField(
                         controller: m.detailsController,
                         minLines: 3,
@@ -490,7 +490,7 @@ class _AdminOfficesSectionState extends State<AdminOfficesSection> {
                 ),
               ],
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 14),
             TextFormField(
               controller: m.idController,
               decoration: InputDecoration(
@@ -498,7 +498,7 @@ class _AdminOfficesSectionState extends State<AdminOfficesSection> {
                 border: const OutlineInputBorder(),
               ),
             ),
-            const SizedBox(height: 10),
+            const SizedBox(height: 14),
             TextFormField(
               controller: m.labelController,
               decoration: InputDecoration(
@@ -506,7 +506,7 @@ class _AdminOfficesSectionState extends State<AdminOfficesSection> {
                 border: const OutlineInputBorder(),
               ),
             ),
-            const SizedBox(height: 10),
+            const SizedBox(height: 14),
             TextFormField(
               controller: m.detailsController,
               minLines: 3,
@@ -573,7 +573,7 @@ class _AdminOfficesSectionState extends State<AdminOfficesSection> {
                   validator: (v) =>
                       (v == null || v.trim().isEmpty) ? l10n.enterCountry : null,
                 ),
-                const SizedBox(height: 12),
+                const SizedBox(height: 14),
                 TextFormField(
                   controller: _cityController,
                   decoration: InputDecoration(
@@ -719,7 +719,7 @@ class _AdminOfficesSectionState extends State<AdminOfficesSection> {
             l10n.searchManageOffices,
             style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 14),
           TextField(
             controller: _searchController,
             decoration: InputDecoration(

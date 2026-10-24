@@ -98,9 +98,9 @@ class _CustomerRegisterScreenState extends State<CustomerRegisterScreen> {
       restartFromAuthGate(context);
     } on FirebaseAuthException catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(authErrorText(context.l10n, e))),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(authErrorText(context.l10n, e))));
     } catch (e) {
       // Något gick fel efter att kontot skapats: ta bort det halvfärdiga
       // kontot så att personen kan försöka igen med samma e-postadress.
@@ -126,7 +126,7 @@ class _CustomerRegisterScreenState extends State<CustomerRegisterScreen> {
         title: Text(l10n.registerTitle),
         actions: const [LanguageButton()],
       ),
-      body: Padding(
+      body: SingleChildScrollView(
         padding: const EdgeInsets.all(24),
         child: Form(
           key: _formKey,
@@ -138,22 +138,26 @@ class _CustomerRegisterScreenState extends State<CustomerRegisterScreen> {
                 validator: (v) =>
                     v == null || v.trim().isEmpty ? l10n.enterFirstName : null,
               ),
+              const SizedBox(height: 14),
               TextFormField(
                 controller: _lastNameCtrl,
                 decoration: InputDecoration(labelText: l10n.lastName),
                 validator: (v) =>
                     v == null || v.trim().isEmpty ? l10n.enterLastName : null,
               ),
+              const SizedBox(height: 14),
               TextFormField(
                 controller: _emailCtrl,
                 decoration: InputDecoration(labelText: l10n.email),
                 validator: (v) =>
                     v == null || !v.contains('@') ? l10n.enterValidEmail : null,
               ),
+              const SizedBox(height: 14),
               TextFormField(
                 controller: _phoneCtrl,
                 decoration: InputDecoration(labelText: l10n.phone),
               ),
+              const SizedBox(height: 14),
               TextFormField(
                 controller: _passwordCtrl,
                 decoration: InputDecoration(labelText: l10n.password),
@@ -162,15 +166,18 @@ class _CustomerRegisterScreenState extends State<CustomerRegisterScreen> {
                     v == null || v.length < 6 ? l10n.passwordMinLength : null,
               ),
               const SizedBox(height: 16),
-              ElevatedButton(
-                onPressed: _loading ? null : _registerCustomer,
-                child: _loading
-                    ? const SizedBox(
-                        width: 20,
-                        height: 20,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      )
-                    : Text(l10n.register),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: _loading ? null : _registerCustomer,
+                  child: _loading
+                      ? const SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        )
+                      : Text(l10n.register),
+                ),
               ),
             ],
           ),
