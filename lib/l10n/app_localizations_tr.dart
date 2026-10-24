@@ -1339,4 +1339,221 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get qrOtherOffice => 'QR kodu başka bir şubeye ait.';
+
+  @override
+  String get transferPending => 'Alıcı bekleniyor';
+
+  @override
+  String get transferAccepted => 'Alındı';
+
+  @override
+  String get transferRejected => 'Reddedildi';
+
+  @override
+  String get transferCancelled => 'İptal edildi';
+
+  @override
+  String get noIncomingTransfers => 'Bekleyen gelen transfer yok.';
+
+  @override
+  String get noTransfersYet => 'Henüz transfer yok.';
+
+  @override
+  String transferFrom(Object name) {
+    return 'Gönderen: $name';
+  }
+
+  @override
+  String transferTo(Object name) {
+    return 'Alıcı: $name';
+  }
+
+  @override
+  String get transferAcceptedDone => 'Alındı. Tutar bakiyenize eklendi.';
+
+  @override
+  String get receivedButton => 'Alındı';
+
+  @override
+  String get rejectTransferTitle => 'Transfer reddedilsin mi?';
+
+  @override
+  String rejectTransferConfirm(Object amount, Object currency, Object name) {
+    return '$amount $currency $name kişisine geri gönderilecek.';
+  }
+
+  @override
+  String get transferRejectedDone =>
+      'Transfer reddedildi ve para geri gönderildi.';
+
+  @override
+  String get cancelTransferTitle => 'Transfer iptal edilsin mi?';
+
+  @override
+  String cancelTransferConfirm(Object amount, Object currency, Object name) {
+    return '$name kişisine $amount $currency iptal edilecek ve bakiyenize geri eklenecek.';
+  }
+
+  @override
+  String get transferCancelledDone =>
+      'Transfer iptal edildi, para bakiyenize geri döndü.';
+
+  @override
+  String get cancelTransfer => 'Transferi iptal et';
+
+  @override
+  String get cashBalance => 'Kasa';
+
+  @override
+  String get noBalanceYet => 'Henüz bakiye yok. Bakiyeyi yönetici yükler.';
+
+  @override
+  String get cashierAppBarTitle => 'CRM – Kasiyer';
+
+  @override
+  String get cashierNotSetUp =>
+      'Kasiyer hesabınız hazır değil. Yöneticiyle iletişime geçin.';
+
+  @override
+  String get cashierSendSubtitle => 'Başka bir kasiyere para gönderin.';
+
+  @override
+  String get incomingTransfers => 'Gelenler';
+
+  @override
+  String incomingWaiting(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count transfer almanızı bekliyor.',
+      one: '1 transfer almanızı bekliyor.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get incomingSubtitle => 'Size gönderilen transferler.';
+
+  @override
+  String get myTransfers => 'Transferlerim';
+
+  @override
+  String get myTransfersSubtitle => 'Gönderilen ve alınan tüm transferler.';
+
+  @override
+  String notEnoughBalance(Object available, Object currency) {
+    return 'Yalnızca $available $currency bakiyeniz var.';
+  }
+
+  @override
+  String get confirmTransferTitle => 'Para gönderilsin mi?';
+
+  @override
+  String confirmTransferBody(Object amount, Object currency, Object name) {
+    return '$name kişisine $amount $currency. Tutar, alıcı kabul edene kadar bakiyenizden ayrılır.';
+  }
+
+  @override
+  String transferSent(Object name) {
+    return '$name kişisine gönderildi. Alıcının kabul etmesi bekleniyor.';
+  }
+
+  @override
+  String get noBalanceToSend => 'Gönderecek bakiyeniz yok.';
+
+  @override
+  String get noOtherCashiers => 'Gönderilecek başka kasiyer yok.';
+
+  @override
+  String get recipientCashier => 'Alıcı (kasiyer)';
+
+  @override
+  String availableBalance(Object amount, Object currency) {
+    return 'Kullanılabilir: $amount $currency';
+  }
+
+  @override
+  String get transferReservedHint =>
+      'Tutar hemen bakiyenizden düşülür ve alıcı kabul ettiğinde onun bakiyesine eklenir. Reddederse veya siz iptal ederseniz para geri döner.';
+
+  @override
+  String get transfersTitle => 'Transferler';
+
+  @override
+  String get editCashierTitle => 'Kasiyeri düzenle';
+
+  @override
+  String get cashierUpdated => 'Kasiyer güncellendi.';
+
+  @override
+  String get adjustBalance => 'Bakiyeyi düzenle';
+
+  @override
+  String get adjustBalanceHint => 'Pozitif tutar ekler, negatif tutar düşer.';
+
+  @override
+  String get balanceWouldBeNegative => 'Bakiye sıfırın altına düşemez.';
+
+  @override
+  String get balanceUpdated => 'Bakiye güncellendi.';
+
+  @override
+  String get deleteCashierTitle => 'Kasiyer silinsin mi?';
+
+  @override
+  String deleteCashierConfirm(Object name) {
+    return '$name uygulamaya erişemeyecek ve bakiye silinecek. Giriş hesabı kalır; Firebase konsolunda Authentication bölümünden silinebilir.';
+  }
+
+  @override
+  String get cashierDeleted => 'Kasiyer silindi.';
+
+  @override
+  String get cashiers => 'Kasiyerler';
+
+  @override
+  String get existingCashiers => 'Mevcut kasiyerler';
+
+  @override
+  String get searchCashiersLabel => 'Ad, şube veya yöneticiye göre ara';
+
+  @override
+  String get officeOptional => 'Şube (isteğe bağlı)';
+
+  @override
+  String get managerOptional => 'Yönetici (isteğe bağlı)';
+
+  @override
+  String get noManagerAssigned => 'Yönetici yok';
+
+  @override
+  String get cashierCreated => 'Kasiyer oluşturuldu.';
+
+  @override
+  String couldNotCreateCashier(Object error) {
+    return 'Kasiyer oluşturulamadı: $error';
+  }
+
+  @override
+  String get requiredField => 'Zorunlu';
+
+  @override
+  String get createNewCashier => 'Yeni kasiyer oluştur';
+
+  @override
+  String get createCashier => 'Kasiyer oluştur';
+
+  @override
+  String get cashiersCardSubtitle =>
+      'Kasiyer oluşturun, şubelere ve yöneticilere bağlayın, bakiye yükleyin.';
+
+  @override
+  String get myCashiers => 'Kasiyerlerim';
+
+  @override
+  String get myCashiersSubtitle =>
+      'Size veya şubenize bağlı kasiyerler, bakiyeleri ve transferleriyle.';
+
+  @override
+  String get noCashiersLinked => 'Size veya şubenize bağlı kasiyer yok.';
 }

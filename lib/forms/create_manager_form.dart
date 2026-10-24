@@ -1,9 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
 import '../l10n/auth_error_text.dart';
+import '../services/account_creator.dart';
 import '../l10n/locale_controller.dart';
 
 class CreateManagerForm extends StatefulWidget {
@@ -62,44 +62,21 @@ class _CreateManagerFormState extends State<CreateManagerForm> {
 
     setState(() => _creating = true);
 
-    FirebaseApp? secondaryApp;
-
     try {
-      final email = _emailController.text.trim();
-      final password = _passwordController.text.trim();
-
-      secondaryApp = await Firebase.initializeApp(
-        name: 'manager-creator-${DateTime.now().millisecondsSinceEpoch}',
-        options: Firebase.app().options,
-      );
-      final secondaryAuth = FirebaseAuth.instanceFor(app: secondaryApp);
-
-      final cred = await secondaryAuth.createUserWithEmailAndPassword(
-        email: email,
-        password: password,
-      );
-      final newUser = cred.user!;
-
-      try {
-        await FirebaseFirestore.instance
-            .collection('users')
-            .doc(newUser.uid)
-            .set({
-          'email': email,
+      await createAccountAsAdmin(
+        email: _emailController.text.trim(),
+        password: _passwordController.text.trim(),
+        writeProfile: (uid) =>
+            FirebaseFirestore.instance.collection('users').doc(uid).set({
+          'email': _emailController.text.trim(),
           'role': 'manager',
           'officeId': _selectedOfficeId,
           'firstName': _firstNameController.text.trim(),
           'lastName': _lastNameController.text.trim(),
           'phone': _phoneController.text.trim(),
           'createAt': FieldValue.serverTimestamp(),
-        });
-      } catch (e) {
-        // Ta bort auth-kontot igen så att e-postadressen inte blir blockerad.
-        await newUser.delete();
-        rethrow;
-      }
-
-      await secondaryAuth.signOut();
+        }),
+      );
 
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
@@ -127,9 +104,6 @@ class _CreateManagerFormState extends State<CreateManagerForm> {
         SnackBar(content: Text(context.l10n.unexpectedError('$e'))),
       );
     } finally {
-      try {
-        await secondaryApp?.delete();
-      } catch (_) {}
       if (mounted) setState(() => _creating = false);
     }
   }

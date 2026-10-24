@@ -4,6 +4,7 @@ import 'auth_gate.dart';
 import '../services/user_role_service.dart';
 import '../admin/screens/admin_home_screen.dart';
 import '../manager/screens/manager_home_screen.dart';
+import '../cashier/screens/cashier_home_screen.dart';
 import '../customer/screens/customer_home_screen.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -47,6 +48,8 @@ class HomeScreen extends StatelessWidget {
           return const AdminHomeScreen();
         } else if (role == UserRole.manager) {
           return const ManagerHomeScreen();
+        } else if (role == UserRole.cashier) {
+          return const CashierHomeScreen();
         } else {
           return const CustomerHomeScreen();
         }

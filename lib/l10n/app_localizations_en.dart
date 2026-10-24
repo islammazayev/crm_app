@@ -1342,4 +1342,224 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get qrOtherOffice => 'The QR code belongs to another office.';
+
+  @override
+  String get transferPending => 'Waiting for recipient';
+
+  @override
+  String get transferAccepted => 'Received';
+
+  @override
+  String get transferRejected => 'Declined';
+
+  @override
+  String get transferCancelled => 'Cancelled';
+
+  @override
+  String get noIncomingTransfers => 'No incoming transfers are waiting.';
+
+  @override
+  String get noTransfersYet => 'No transfers yet.';
+
+  @override
+  String transferFrom(Object name) {
+    return 'From $name';
+  }
+
+  @override
+  String transferTo(Object name) {
+    return 'To $name';
+  }
+
+  @override
+  String get transferAcceptedDone =>
+      'Received. The amount has been added to your balance.';
+
+  @override
+  String get receivedButton => 'Received';
+
+  @override
+  String get rejectTransferTitle => 'Decline the transfer?';
+
+  @override
+  String rejectTransferConfirm(Object amount, Object currency, Object name) {
+    return '$amount $currency will go back to $name.';
+  }
+
+  @override
+  String get transferRejectedDone =>
+      'The transfer was declined and the money has gone back.';
+
+  @override
+  String get cancelTransferTitle => 'Cancel the transfer?';
+
+  @override
+  String cancelTransferConfirm(Object amount, Object currency, Object name) {
+    return '$amount $currency to $name will be cancelled and added back to your balance.';
+  }
+
+  @override
+  String get transferCancelledDone =>
+      'The transfer was cancelled and the money is back in your balance.';
+
+  @override
+  String get cancelTransfer => 'Cancel transfer';
+
+  @override
+  String get cashBalance => 'Cash';
+
+  @override
+  String get noBalanceYet => 'No balance yet. An admin tops up the balance.';
+
+  @override
+  String get cashierAppBarTitle => 'CRM – Cashier';
+
+  @override
+  String get cashierNotSetUp =>
+      'Your cashier account is not set up. Contact an admin.';
+
+  @override
+  String get cashierSendSubtitle => 'Send money to another cashier.';
+
+  @override
+  String get incomingTransfers => 'Incoming';
+
+  @override
+  String incomingWaiting(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count transfers are waiting for you to receive them.',
+      one: '1 transfer is waiting for you to receive it.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get incomingSubtitle => 'Transfers sent to you.';
+
+  @override
+  String get myTransfers => 'My transfers';
+
+  @override
+  String get myTransfersSubtitle => 'All sent and received transfers.';
+
+  @override
+  String notEnoughBalance(Object available, Object currency) {
+    return 'You only have $available $currency.';
+  }
+
+  @override
+  String get confirmTransferTitle => 'Send money?';
+
+  @override
+  String confirmTransferBody(Object amount, Object currency, Object name) {
+    return '$amount $currency to $name. The amount is reserved from your balance until the recipient receives it.';
+  }
+
+  @override
+  String transferSent(Object name) {
+    return 'Sent to $name. Waiting for the recipient to receive it.';
+  }
+
+  @override
+  String get noBalanceToSend => 'You have no balance to send.';
+
+  @override
+  String get noOtherCashiers => 'There are no other cashiers to send to.';
+
+  @override
+  String get recipientCashier => 'Recipient (cashier)';
+
+  @override
+  String availableBalance(Object amount, Object currency) {
+    return 'Available: $amount $currency';
+  }
+
+  @override
+  String get transferReservedHint =>
+      'The amount leaves your balance immediately and is added to the recipient\'s when they receive it. If they decline, or you cancel, the money comes back.';
+
+  @override
+  String get transfersTitle => 'Transfers';
+
+  @override
+  String get editCashierTitle => 'Edit cashier';
+
+  @override
+  String get cashierUpdated => 'The cashier was updated.';
+
+  @override
+  String get adjustBalance => 'Adjust balance';
+
+  @override
+  String get adjustBalanceHint =>
+      'A positive amount tops up, a negative one deducts.';
+
+  @override
+  String get balanceWouldBeNegative => 'The balance cannot go below zero.';
+
+  @override
+  String get balanceUpdated => 'The balance was updated.';
+
+  @override
+  String get deleteCashierTitle => 'Delete cashier?';
+
+  @override
+  String deleteCashierConfirm(Object name) {
+    return '$name will lose access to the app and the balance is removed. The login account remains and can be removed under Authentication in the Firebase console.';
+  }
+
+  @override
+  String get cashierDeleted => 'The cashier was deleted.';
+
+  @override
+  String get cashiers => 'Cashiers';
+
+  @override
+  String get existingCashiers => 'Existing cashiers';
+
+  @override
+  String get searchCashiersLabel => 'Search by name, office or manager';
+
+  @override
+  String get officeOptional => 'Office (optional)';
+
+  @override
+  String get managerOptional => 'Manager (optional)';
+
+  @override
+  String get noManagerAssigned => 'No manager';
+
+  @override
+  String get cashierCreated => 'The cashier was created.';
+
+  @override
+  String couldNotCreateCashier(Object error) {
+    return 'Could not create cashier: $error';
+  }
+
+  @override
+  String get requiredField => 'Required';
+
+  @override
+  String get createNewCashier => 'Create new cashier';
+
+  @override
+  String get createCashier => 'Create cashier';
+
+  @override
+  String get cashiersCardSubtitle =>
+      'Create cashiers, link them to offices and managers, and top up balances.';
+
+  @override
+  String get myCashiers => 'My cashiers';
+
+  @override
+  String get myCashiersSubtitle =>
+      'Cashiers linked to you or your office, with balances and transfers.';
+
+  @override
+  String get noCashiersLinked =>
+      'No cashiers are linked to you or your office.';
 }

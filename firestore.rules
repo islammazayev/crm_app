@@ -31,6 +31,10 @@ service cloud.firestore {
       return role() == 'customer';
     }
 
+    function isCashier() {
+      return role() == 'cashier';
+    }
+
     function myOfficeId() {
       return hasProfile() ? get(userPath()).data.get('officeId', null) : null;
     }
@@ -186,6 +190,153 @@ service cloud.firestore {
              .hasOnly(['balances', 'lastBookedTransactionId'])
         && request.resource.data.lastBookedTransactionId is string
         && bookingMatchesTransaction(officeId);
+    }
+
+    // ─── KASSÖRER ───────────────────────────────────────────────────
+    // cashiers/{uid}: privat (saldon, koppling till kontor/manager).
+    // cashierDirectory/{uid}: namn och koppling, för listan över mottagare.
+    // cashierTransfers/{id}: överföringar mellan kassörer.
+    //
+    // Saldot flyttas alltid i samma batch som överföringen ändrar status:
+    //   skicka   (ny, pending)      avsändaren  -belopp (reserveras)
+    //   avbryt   (pending→cancelled) avsändaren +belopp
+    //   ta emot  (pending→accepted)  mottagaren +belopp
+    //   neka     (pending→rejected)  avsändaren +belopp (skrivs av mottagaren)
+    // Kassörens post pekar på överföringen med lastTransferId, så reglerna
+    // kan kontrollera att saldoändringen motsvarar just den överföringen.
+
+    function cashierPath(uid) {
+      return /databases/$(database)/documents/cashiers/$(uid);
+    }
+
+    function cashierDirPath(uid) {
+      return /databases/$(database)/documents/cashierDirectory/$(uid);
+    }
+
+    function cashierTransferPath(id) {
+      return /databases/$(database)/documents/cashierTransfers/$(id);
+    }
+
+    // Saldot i valutan ändras med exakt delta, inget annat ändras och
+    // saldot blir aldrig negativt.
+    function balanceChangedBy(currency, delta) {
+      let oldB = resource.data.get('balances', {});
+      let newB = request.resource.data.get('balances', {});
+      return newB.diff(oldB).affectedKeys().hasOnly([currency])
+        && math.abs(newB.get(currency, 0) - (oldB.get(currency, 0) + delta)) < 0.000001
+        && newB.get(currency, 0) >= 0;
+    }
+
+    function cashierBalanceMatchesTransfer(cid) {
+      let tPath = cashierTransferPath(request.resource.data.lastTransferId);
+      let after = getAfter(tPath).data;
+      return
+        // Skicka: överföringen skapas nu, avsändaren reserverar beloppet.
+        (cid == request.auth.uid
+          && !exists(tPath)
+          && after.fromId == cid
+          && after.status == 'pending'
+          && balanceChangedBy(after.currency, -after.amount))
+        // Avbryta, ta emot eller neka: från pending i samma batch.
+        || (exists(tPath)
+          && get(tPath).data.status == 'pending'
+          && (
+            (cid == request.auth.uid
+              && get(tPath).data.fromId == cid
+              && after.status == 'cancelled'
+              && balanceChangedBy(get(tPath).data.currency, get(tPath).data.amount))
+            || (cid == request.auth.uid
+              && get(tPath).data.toId == cid
+              && after.status == 'accepted'
+              && balanceChangedBy(get(tPath).data.currency, get(tPath).data.amount))
+            || (get(tPath).data.toId == request.auth.uid
+              && get(tPath).data.fromId == cid
+              && after.status == 'rejected'
+              && balanceChangedBy(get(tPath).data.currency, get(tPath).data.amount))
+          ));
+    }
+
+    function managesCashier(data) {
+      return isManager()
+        && (data.get('managerId', null) == request.auth.uid
+            || (myOfficeId() != null && data.get('officeId', null) == myOfficeId()));
+    }
+
+    match /cashiers/{cid} {
+      allow read: if isAdmin()
+        || request.auth.uid == cid
+        || managesCashier(resource.data);
+      allow write: if isAdmin();
+
+      // Kassörer flyttar saldo bara via en överföring (se ovan).
+      allow update: if isCashier()
+        && request.resource.data.diff(resource.data).affectedKeys()
+             .hasOnly(['balances', 'lastTransferId'])
+        && request.resource.data.lastTransferId is string
+        && cashierBalanceMatchesTransfer(cid);
+    }
+
+    match /cashierDirectory/{cid} {
+      allow read: if isAdmin() || isCashier() || isManager();
+      allow write: if isAdmin();
+    }
+
+    match /cashierTransfers/{tid} {
+      allow read: if isAdmin()
+        || resource.data.fromId == request.auth.uid
+        || resource.data.toId == request.auth.uid
+        || (isManager()
+            && (resource.data.get('fromManagerId', null) == request.auth.uid
+                || resource.data.get('toManagerId', null) == request.auth.uid
+                || (myOfficeId() != null
+                    && (resource.data.get('fromOfficeId', null) == myOfficeId()
+                        || resource.data.get('toOfficeId', null) == myOfficeId()))));
+
+      allow write: if isAdmin();
+
+      // Skicka till en annan kassör. Koppling till kontor/manager kopieras
+      // från katalogen (för managerns vy) och måste stämma med den.
+      allow create: if isCashier()
+        && request.resource.data.fromId == request.auth.uid
+        && request.resource.data.toId != request.auth.uid
+        && exists(cashierDirPath(request.resource.data.toId))
+        && request.resource.data.status == 'pending'
+        && request.resource.data.amount is number
+        && request.resource.data.amount > 0
+        && request.resource.data.currency is string
+        && request.resource.data.createdAt == request.time
+        && request.resource.data.get('note', '') is string
+        && request.resource.data.get('note', '').size() <= 500
+        && request.resource.data.keys().hasOnly([
+             'fromId', 'fromName', 'toId', 'toName', 'currency', 'amount',
+             'note', 'status', 'createdAt', 'fromOfficeId', 'fromManagerId',
+             'toOfficeId', 'toManagerId'
+           ])
+        && request.resource.data.get('fromOfficeId', null)
+             == get(cashierDirPath(request.auth.uid)).data.get('officeId', null)
+        && request.resource.data.get('fromManagerId', null)
+             == get(cashierDirPath(request.auth.uid)).data.get('managerId', null)
+        && request.resource.data.get('toOfficeId', null)
+             == get(cashierDirPath(request.resource.data.toId)).data.get('officeId', null)
+        && request.resource.data.get('toManagerId', null)
+             == get(cashierDirPath(request.resource.data.toId)).data.get('managerId', null)
+        && getAfter(cashierPath(request.auth.uid)).data.lastTransferId == tid;
+
+      allow update: if isCashier()
+        && resource.data.status == 'pending'
+        && request.resource.data.diff(resource.data).affectedKeys()
+             .hasOnly(['status', 'decidedAt'])
+        && (
+          (resource.data.toId == request.auth.uid
+            && request.resource.data.status == 'accepted'
+            && getAfter(cashierPath(request.auth.uid)).data.lastTransferId == tid)
+          || (resource.data.toId == request.auth.uid
+            && request.resource.data.status == 'rejected'
+            && getAfter(cashierPath(resource.data.fromId)).data.lastTransferId == tid)
+          || (resource.data.fromId == request.auth.uid
+            && request.resource.data.status == 'cancelled'
+            && getAfter(cashierPath(request.auth.uid)).data.lastTransferId == tid)
+        );
     }
 
     // ─── OFFICE LISTINGS (publik, ofarlig kopia för kunder) ─────────

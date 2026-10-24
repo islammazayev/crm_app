@@ -1352,4 +1352,224 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get qrOtherOffice => 'QR-код относится к другому офису.';
+
+  @override
+  String get transferPending => 'Ждёт получателя';
+
+  @override
+  String get transferAccepted => 'Получено';
+
+  @override
+  String get transferRejected => 'Отклонено';
+
+  @override
+  String get transferCancelled => 'Отменено';
+
+  @override
+  String get noIncomingTransfers => 'Нет входящих переводов.';
+
+  @override
+  String get noTransfersYet => 'Переводов пока нет.';
+
+  @override
+  String transferFrom(Object name) {
+    return 'От $name';
+  }
+
+  @override
+  String transferTo(Object name) {
+    return 'Кому: $name';
+  }
+
+  @override
+  String get transferAcceptedDone =>
+      'Получено. Сумма добавлена к вашему балансу.';
+
+  @override
+  String get receivedButton => 'Получено';
+
+  @override
+  String get rejectTransferTitle => 'Отклонить перевод?';
+
+  @override
+  String rejectTransferConfirm(Object amount, Object currency, Object name) {
+    return '$amount $currency вернутся к $name.';
+  }
+
+  @override
+  String get transferRejectedDone => 'Перевод отклонён, деньги возвращены.';
+
+  @override
+  String get cancelTransferTitle => 'Отменить перевод?';
+
+  @override
+  String cancelTransferConfirm(Object amount, Object currency, Object name) {
+    return '$amount $currency для $name будут отменены и вернутся на ваш баланс.';
+  }
+
+  @override
+  String get transferCancelledDone =>
+      'Перевод отменён, деньги вернулись на ваш баланс.';
+
+  @override
+  String get cancelTransfer => 'Отменить перевод';
+
+  @override
+  String get cashBalance => 'Касса';
+
+  @override
+  String get noBalanceYet => 'Баланса пока нет. Его пополняет администратор.';
+
+  @override
+  String get cashierAppBarTitle => 'CRM – Кассир';
+
+  @override
+  String get cashierNotSetUp =>
+      'Ваш аккаунт кассира не настроен. Обратитесь к администратору.';
+
+  @override
+  String get cashierSendSubtitle => 'Отправить деньги другому кассиру.';
+
+  @override
+  String get incomingTransfers => 'Входящие';
+
+  @override
+  String incomingWaiting(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count перевода ждут получения.',
+      many: '$count переводов ждут получения.',
+      few: '$count перевода ждут получения.',
+      one: '$count перевод ждёт получения.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get incomingSubtitle => 'Переводы, отправленные вам.';
+
+  @override
+  String get myTransfers => 'Мои переводы';
+
+  @override
+  String get myTransfersSubtitle => 'Все отправленные и полученные переводы.';
+
+  @override
+  String notEnoughBalance(Object available, Object currency) {
+    return 'У вас только $available $currency.';
+  }
+
+  @override
+  String get confirmTransferTitle => 'Отправить деньги?';
+
+  @override
+  String confirmTransferBody(Object amount, Object currency, Object name) {
+    return '$amount $currency для $name. Сумма резервируется с вашего баланса, пока получатель её не примет.';
+  }
+
+  @override
+  String transferSent(Object name) {
+    return 'Отправлено $name. Ждём, пока получатель примет.';
+  }
+
+  @override
+  String get noBalanceToSend => 'У вас нет баланса для отправки.';
+
+  @override
+  String get noOtherCashiers => 'Нет других кассиров для отправки.';
+
+  @override
+  String get recipientCashier => 'Получатель (кассир)';
+
+  @override
+  String availableBalance(Object amount, Object currency) {
+    return 'Доступно: $amount $currency';
+  }
+
+  @override
+  String get transferReservedHint =>
+      'Сумма сразу списывается с вашего баланса и добавляется получателю, когда он её примет. Если он отклонит или вы отмените, деньги вернутся.';
+
+  @override
+  String get transfersTitle => 'Переводы';
+
+  @override
+  String get editCashierTitle => 'Изменить кассира';
+
+  @override
+  String get cashierUpdated => 'Кассир обновлён.';
+
+  @override
+  String get adjustBalance => 'Изменить баланс';
+
+  @override
+  String get adjustBalanceHint =>
+      'Положительная сумма пополняет, отрицательная списывает.';
+
+  @override
+  String get balanceWouldBeNegative => 'Баланс не может быть отрицательным.';
+
+  @override
+  String get balanceUpdated => 'Баланс обновлён.';
+
+  @override
+  String get deleteCashierTitle => 'Удалить кассира?';
+
+  @override
+  String deleteCashierConfirm(Object name) {
+    return '$name потеряет доступ к приложению, баланс будет удалён. Учётная запись для входа останется, её можно удалить в разделе Authentication в консоли Firebase.';
+  }
+
+  @override
+  String get cashierDeleted => 'Кассир удалён.';
+
+  @override
+  String get cashiers => 'Кассиры';
+
+  @override
+  String get existingCashiers => 'Текущие кассиры';
+
+  @override
+  String get searchCashiersLabel => 'Поиск по имени, офису или менеджеру';
+
+  @override
+  String get officeOptional => 'Офис (необязательно)';
+
+  @override
+  String get managerOptional => 'Менеджер (необязательно)';
+
+  @override
+  String get noManagerAssigned => 'Без менеджера';
+
+  @override
+  String get cashierCreated => 'Кассир создан.';
+
+  @override
+  String couldNotCreateCashier(Object error) {
+    return 'Не удалось создать кассира: $error';
+  }
+
+  @override
+  String get requiredField => 'Обязательно';
+
+  @override
+  String get createNewCashier => 'Новый кассир';
+
+  @override
+  String get createCashier => 'Создать кассира';
+
+  @override
+  String get cashiersCardSubtitle =>
+      'Создавайте кассиров, привязывайте их к офисам и менеджерам, пополняйте балансы.';
+
+  @override
+  String get myCashiers => 'Мои кассиры';
+
+  @override
+  String get myCashiersSubtitle =>
+      'Кассиры, привязанные к вам или вашему офису, с балансами и переводами.';
+
+  @override
+  String get noCashiersLinked => 'К вам или вашему офису не привязаны кассиры.';
 }

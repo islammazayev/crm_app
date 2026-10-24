@@ -10,6 +10,7 @@ import '../../services/transaction_number_service.dart';
 import '../../theme/app_theme.dart';
 import '../../widgets/action_card.dart';
 import '../../widgets/language_button.dart';
+import '../pages/admin_cashiers_page.dart';
 import '../pages/admin_customers_page.dart';
 import '../pages/admin_managers_page.dart';
 import '../pages/admin_offices_page.dart';
@@ -130,6 +131,14 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                       title: l10n.managers,
                       subtitle: l10n.managersCardSubtitle,
                       onTap: () => _open(const AdminManagersPage()),
+                    ),
+                    _CountCard(
+                      query: db.collection('cashiers'),
+                      icon: Icons.point_of_sale,
+                      iconColor: AppColors.primary,
+                      title: l10n.cashiers,
+                      subtitle: l10n.cashiersCardSubtitle,
+                      onTap: () => _open(const AdminCashiersPage()),
                     ),
                     _CountCard(
                       query: db.collection('transactions'),

@@ -7,6 +7,7 @@ import '../../screens/auth_gate.dart';
 import '../../theme/app_theme.dart';
 import '../../widgets/action_card.dart';
 import '../../widgets/language_button.dart';
+import '../pages/manager_cashiers_page.dart';
 import '../pages/manager_create_transaction_screen.dart';
 import '../pages/manager_transactions_detail_screen.dart';
 import '../pages/manager_transactions_page.dart';
@@ -191,6 +192,37 @@ class _ManagerHomeScreenState extends State<ManagerHomeScreen> {
                         mainAxisSpacing: 16,
                         childAspectRatio: isWide ? 2.5 : 2.1,
                         children: [
+                          StreamBuilder<
+                            List<QueryDocumentSnapshot<Map<String, dynamic>>>
+                          >(
+                            stream: ManagerCashiersPage.cashiers(
+                              FirebaseAuth.instance.currentUser?.uid ?? '',
+                              officeId,
+                            ),
+                            builder: (context, cashSnap) => ActionCard(
+                              icon: Icons.point_of_sale,
+                              iconColor: AppColors.primary,
+                              title: l10n.myCashiers,
+                              subtitle: l10n.myCashiersSubtitle,
+                              badge: cashSnap.hasData
+                                  ? '${cashSnap.data!.length}'
+                                  : '…',
+                              onTap: () => Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => ManagerCashiersPage(
+                                    managerId:
+                                        FirebaseAuth
+                                            .instance
+                                            .currentUser
+                                            ?.uid ??
+                                        '',
+                                    officeId: officeId,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
                           ActionCard(
                             icon: Icons.qr_code_scanner,
                             iconColor: AppColors.success,
