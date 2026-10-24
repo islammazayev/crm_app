@@ -49,3 +49,6 @@ fx_key.json
 
 # Firebase CLI:s cache vid deploy
 .firebase/
+
+# Testberoenden för Firestore-reglerna
+rules_test/node_modules/

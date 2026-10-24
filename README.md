@@ -98,3 +98,15 @@ Appen finns på ryska, engelska, svenska och turkiska.
   först, översätt dem i de andra filerna och kör `flutter gen-l10n` (görs också automatiskt vid bygge).
 - I koden hämtas texter med `context.l10n.nyckel` (se `lib/l10n/locale_controller.dart`).
 - Nytt språk: lägg till `app_<kod>.arb` och koden i `LocaleController.languages`.
+
+## Testa Firestore-reglerna
+
+Reglerna för kassörernas saldon och överföringar testas mot Firebase-emulatorn
+(en lokal databas, ingen riktig data påverkas). Kräver Java (`brew install --cask temurin`).
+
+```bash
+npm --prefix rules_test install   # första gången
+npm --prefix rules_test test
+```
+
+Kör testerna efter varje ändring i `firestore.rules`.
