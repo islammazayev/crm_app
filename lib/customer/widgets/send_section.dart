@@ -22,7 +22,8 @@ class _OfficeListing {
   });
 
   factory _OfficeListing.fromDoc(
-      QueryDocumentSnapshot<Map<String, dynamic>> doc) {
+    QueryDocumentSnapshot<Map<String, dynamic>> doc,
+  ) {
     final data = doc.data();
     return _OfficeListing(
       id: doc.id,
@@ -69,8 +70,9 @@ class _SendSectionState extends State<SendSection> {
 
   Future<void> _loadOffices() async {
     try {
-      final snap =
-          await FirebaseFirestore.instance.collection('officeListings').get();
+      final snap = await FirebaseFirestore.instance
+          .collection('officeListings')
+          .get();
 
       if (!mounted) return;
       setState(() {
@@ -127,8 +129,9 @@ class _SendSectionState extends State<SendSection> {
   }
 
   void _snack(String message) {
-    ScaffoldMessenger.of(context)
-        .showSnackBar(SnackBar(content: Text(message)));
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(message)));
   }
 
   Future<void> _send() async {
@@ -136,8 +139,9 @@ class _SendSectionState extends State<SendSection> {
     final from = _selectedFromCurrency;
     final officeId = _selectedOfficeId;
     final to = _selectedToCurrency;
-    final amount =
-        double.tryParse(_amountCtrl.text.trim().replaceAll(',', '.'));
+    final amount = double.tryParse(
+      _amountCtrl.text.trim().replaceAll(',', '.'),
+    );
 
     if (from == null ||
         officeId == null ||
@@ -166,8 +170,7 @@ class _SendSectionState extends State<SendSection> {
 
       final customer = customerSnap.docs.first.data();
       final customerName =
-          '${customer['firstName'] ?? ''} ${customer['lastName'] ?? ''}'
-              .trim();
+          '${customer['firstName'] ?? ''} ${customer['lastName'] ?? ''}'.trim();
 
       await TransactionNumberService.create({
         'customerId': user.uid,
@@ -262,8 +265,10 @@ class _SendSectionState extends State<SendSection> {
                   : l10n.officesHandlingCurrency(_selectedFromCurrency!),
             ),
             items: officeChoices
-                .map((o) =>
-                    DropdownMenuItem(value: o.id, child: Text(o.label(l10n))))
+                .map(
+                  (o) =>
+                      DropdownMenuItem(value: o.id, child: Text(o.label(l10n))),
+                )
                 .toList(),
             onChanged: _selectedFromCurrency == null
                 ? null
@@ -295,8 +300,7 @@ class _SendSectionState extends State<SendSection> {
           // 4. Belopp
           TextFormField(
             controller: _amountCtrl,
-            keyboardType:
-                const TextInputType.numberWithOptions(decimal: true),
+            keyboardType: const TextInputType.numberWithOptions(decimal: true),
             decoration: InputDecoration(labelText: l10n.amountToSend),
           ),
 

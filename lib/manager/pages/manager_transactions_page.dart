@@ -46,9 +46,12 @@ class ManagerTransactionsPage extends StatelessWidget {
           }
 
           // Filtreras i appen så att inga fler index behövs.
+          // Arkiverade (av admin) visas inte.
           final docs = snapshot.data!.docs.where((d) {
+            final data = d.data() as Map<String, dynamic>;
+            if (data['archived'] == true) return false;
             if (statuses == null) return true;
-            final status = (d.data() as Map<String, dynamic>)['status'];
+            final status = data['status'];
             return statuses!.contains(status);
           }).toList();
           if (docs.isEmpty) {

@@ -1566,4 +1566,31 @@ class AppLocalizationsSv extends AppLocalizations {
   @override
   String get noCashiersLinked =>
       'Inga kassörer är kopplade till dig eller ditt kontor.';
+
+  @override
+  String get archivedBadge => 'Arkiverad';
+
+  @override
+  String get restoreAction => 'Återställ';
+
+  @override
+  String get archiveAction => 'Arkivera';
+
+  @override
+  String showArchived(Object count) {
+    return 'Visa arkiverade ($count)';
+  }
+
+  @override
+  String get archiveTransactionTitle => 'Arkivera transaktionen?';
+
+  @override
+  String get archiveTransactionConfirm =>
+      'Transaktionen är genomförd och kan inte raderas. Den döljs i listan men räknas fortfarande i vinsten och exporten. Du kan visa och återställa den med \"Visa arkiverade\".';
+
+  @override
+  String get transactionArchived => 'Transaktionen är arkiverad.';
+
+  @override
+  String get transactionRestored => 'Transaktionen är återställd.';
 }

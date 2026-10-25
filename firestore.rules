@@ -406,7 +406,11 @@ service cloud.firestore {
         && request.resource.data.toCurrency in
              get(/databases/$(database)/documents/officeListings/$(request.resource.data.officeId)).data.currencies;
 
-      allow update: if isAdmin()
+      // Admin får ändra allt utom att flytta en genomförd transaktion från
+      // genomförd (den är bokförd och ska räknas i vinsten).
+      allow update: if (isAdmin()
+          && (resource.data.status != 'completed'
+              || request.resource.data.status == 'completed'))
 
         // Manager: föreslå villkor, eller markera genomförd efter kundens accept.
         || (
@@ -531,7 +535,9 @@ service cloud.firestore {
              ])
         );
 
-      allow delete: if isAdmin();
+      // Genomförda transaktioner är bokförda affärer och raderas aldrig;
+      // appen arkiverar dem i stället (archived: true).
+      allow delete: if isAdmin() && resource.data.status != 'completed';
     }
   }
 }

@@ -146,6 +146,10 @@ class _ManagerHomeScreenState extends State<ManagerHomeScreen> {
                 builder: (context, snapshot) {
                   final counts = <String, int>{};
                   for (final d in snapshot.data?.docs ?? const []) {
+                    if ((d.data() as Map<String, dynamic>)['archived'] ==
+                        true) {
+                      continue;
+                    }
                     final status =
                         (d.data() as Map<String, dynamic>)['status']
                             ?.toString() ??

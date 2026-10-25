@@ -91,7 +91,13 @@ class CustomerWelcomeScreen extends StatelessWidget {
                       .where('customerId', isEqualTo: uid)
                       .snapshots(),
                   builder: (context, snapshot) {
-                    final docs = snapshot.data?.docs ?? const [];
+                    final docs = (snapshot.data?.docs ?? const [])
+                        .where(
+                          (d) =>
+                              (d.data() as Map<String, dynamic>)['archived'] !=
+                              true,
+                        )
+                        .toList();
                     int countStatus(String status) => docs.where((d) {
                       final data = d.data() as Map<String, dynamic>;
                       return data['status'] == status;

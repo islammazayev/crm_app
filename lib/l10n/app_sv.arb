@@ -1111,5 +1111,20 @@
   "cashiersCardSubtitle": "Skapa kassörer, koppla dem till kontor och manager och fyll på saldon.",
   "myCashiers": "Mina kassörer",
   "myCashiersSubtitle": "Kassörer kopplade till dig eller ditt kontor, med saldon och överföringar.",
-  "noCashiersLinked": "Inga kassörer är kopplade till dig eller ditt kontor."
+  "noCashiersLinked": "Inga kassörer är kopplade till dig eller ditt kontor.",
+  "archivedBadge": "Arkiverad",
+  "restoreAction": "Återställ",
+  "archiveAction": "Arkivera",
+  "showArchived": "Visa arkiverade ({count})",
+  "@showArchived": {
+    "placeholders": {
+      "count": {
+        "type": "Object"
+      }
+    }
+  },
+  "archiveTransactionTitle": "Arkivera transaktionen?",
+  "archiveTransactionConfirm": "Transaktionen är genomförd och kan inte raderas. Den döljs i listan men räknas fortfarande i vinsten och exporten. Du kan visa och återställa den med \"Visa arkiverade\".",
+  "transactionArchived": "Transaktionen är arkiverad.",
+  "transactionRestored": "Transaktionen är återställd."
 }

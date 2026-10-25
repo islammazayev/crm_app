@@ -425,5 +425,13 @@
   "cashiersCardSubtitle": "Kasiyer oluşturun, şubelere ve yöneticilere bağlayın, bakiye yükleyin.",
   "myCashiers": "Kasiyerlerim",
   "myCashiersSubtitle": "Size veya şubenize bağlı kasiyerler, bakiyeleri ve transferleriyle.",
-  "noCashiersLinked": "Size veya şubenize bağlı kasiyer yok."
+  "noCashiersLinked": "Size veya şubenize bağlı kasiyer yok.",
+  "archivedBadge": "Arşivlendi",
+  "restoreAction": "Geri yükle",
+  "archiveAction": "Arşivle",
+  "showArchived": "Arşivlenenleri göster ({count})",
+  "archiveTransactionTitle": "İşlem arşivlensin mi?",
+  "archiveTransactionConfirm": "İşlem tamamlandı ve silinemez. Listeden gizlenir ancak kâr ve dışa aktarmada sayılmaya devam eder. \"Arşivlenenleri göster\" ile görüp geri yükleyebilirsiniz.",
+  "transactionArchived": "İşlem arşivlendi.",
+  "transactionRestored": "İşlem geri yüklendi."
 }

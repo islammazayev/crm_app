@@ -2663,6 +2663,54 @@ abstract class AppLocalizations {
   /// In sv, this message translates to:
   /// **'Inga kassörer är kopplade till dig eller ditt kontor.'**
   String get noCashiersLinked;
+
+  /// No description provided for @archivedBadge.
+  ///
+  /// In sv, this message translates to:
+  /// **'Arkiverad'**
+  String get archivedBadge;
+
+  /// No description provided for @restoreAction.
+  ///
+  /// In sv, this message translates to:
+  /// **'Återställ'**
+  String get restoreAction;
+
+  /// No description provided for @archiveAction.
+  ///
+  /// In sv, this message translates to:
+  /// **'Arkivera'**
+  String get archiveAction;
+
+  /// No description provided for @showArchived.
+  ///
+  /// In sv, this message translates to:
+  /// **'Visa arkiverade ({count})'**
+  String showArchived(Object count);
+
+  /// No description provided for @archiveTransactionTitle.
+  ///
+  /// In sv, this message translates to:
+  /// **'Arkivera transaktionen?'**
+  String get archiveTransactionTitle;
+
+  /// No description provided for @archiveTransactionConfirm.
+  ///
+  /// In sv, this message translates to:
+  /// **'Transaktionen är genomförd och kan inte raderas. Den döljs i listan men räknas fortfarande i vinsten och exporten. Du kan visa och återställa den med \"Visa arkiverade\".'**
+  String get archiveTransactionConfirm;
+
+  /// No description provided for @transactionArchived.
+  ///
+  /// In sv, this message translates to:
+  /// **'Transaktionen är arkiverad.'**
+  String get transactionArchived;
+
+  /// No description provided for @transactionRestored.
+  ///
+  /// In sv, this message translates to:
+  /// **'Transaktionen är återställd.'**
+  String get transactionRestored;
 }
 
 class _AppLocalizationsDelegate

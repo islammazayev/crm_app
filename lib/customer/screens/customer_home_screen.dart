@@ -9,7 +9,6 @@ import '../../widgets/customer_welcome_screen.dart';
 import '../../widgets/language_button.dart';
 import 'customer_register_screen.dart';
 
-
 class CustomerHomeScreen extends StatefulWidget {
   const CustomerHomeScreen({super.key});
 
@@ -19,6 +18,7 @@ class CustomerHomeScreen extends StatefulWidget {
 
 class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
   bool _loading = true;
+
   /// Felet översätts först när det visas (språket kan bytas under tiden).
   String Function(AppLocalizations l10n)? _error;
   String? _clientId;
@@ -64,7 +64,6 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
           _phone = phone;
           _loading = false;
         });
-
       }
     } catch (e) {
       setState(() {
@@ -77,9 +76,7 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
   @override
   Widget build(BuildContext context) {
     if (_loading) {
-      return const Scaffold(
-        body: Center(child: CircularProgressIndicator()),
-      );
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
 
     if (_error != null) {
@@ -99,13 +96,13 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
       );
     }
 
-if (_clientId != null && _fullName != null && _phone != null) {
-  return CustomerWelcomeScreen(
-    clientId: _clientId!,
-    fullName: _fullName!,
-    phone: _phone!,
-  );
-}
+    if (_clientId != null && _fullName != null && _phone != null) {
+      return CustomerWelcomeScreen(
+        clientId: _clientId!,
+        fullName: _fullName!,
+        phone: _phone!,
+      );
+    }
 
     // Skulle bara hända om du manuellt skapat user utan customer
     return const CustomerRegisterScreen();

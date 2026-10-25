@@ -425,5 +425,13 @@
   "cashiersCardSubtitle": "Create cashiers, link them to offices and managers, and top up balances.",
   "myCashiers": "My cashiers",
   "myCashiersSubtitle": "Cashiers linked to you or your office, with balances and transfers.",
-  "noCashiersLinked": "No cashiers are linked to you or your office."
+  "noCashiersLinked": "No cashiers are linked to you or your office.",
+  "archivedBadge": "Archived",
+  "restoreAction": "Restore",
+  "archiveAction": "Archive",
+  "showArchived": "Show archived ({count})",
+  "archiveTransactionTitle": "Archive the transaction?",
+  "archiveTransactionConfirm": "The transaction is completed and cannot be deleted. It is hidden from the list but still counts in profit and export. You can show and restore it with \"Show archived\".",
+  "transactionArchived": "The transaction was archived.",
+  "transactionRestored": "The transaction was restored."
 }
