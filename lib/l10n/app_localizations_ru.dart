@@ -1572,4 +1572,31 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get noCashiersLinked => 'К вам или вашему офису не привязаны кассиры.';
+
+  @override
+  String get archivedBadge => 'В архиве';
+
+  @override
+  String get restoreAction => 'Восстановить';
+
+  @override
+  String get archiveAction => 'В архив';
+
+  @override
+  String showArchived(Object count) {
+    return 'Показать архив ($count)';
+  }
+
+  @override
+  String get archiveTransactionTitle => 'Отправить перевод в архив?';
+
+  @override
+  String get archiveTransactionConfirm =>
+      'Перевод выполнен и не может быть удалён. Он скрывается из списка, но по-прежнему учитывается в прибыли и экспорте. Его можно показать и восстановить через «Показать архив».';
+
+  @override
+  String get transactionArchived => 'Перевод отправлен в архив.';
+
+  @override
+  String get transactionRestored => 'Перевод восстановлен.';
 }

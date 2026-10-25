@@ -63,17 +63,29 @@ class CustomerTransactionsScreen extends StatelessWidget {
 
           // Sorteras här (senaste först) i stället för i frågan, så att
           // Firestore inte kräver ett extra index för customerId + createAt.
-          final docs = List.of(snapshot.data!.docs)
-            ..sort((a, b) {
-              DateTime? at(QueryDocumentSnapshot d) =>
-                  ((d.data() as Map<String, dynamic>)['createAt'] as Timestamp?)
-                      ?.toDate();
-              final ta = at(a), tb = at(b);
-              if (ta == null && tb == null) return 0;
-              if (ta == null) return -1; // nyss skapad, tid ej satt än
-              if (tb == null) return 1;
-              return tb.compareTo(ta);
-            });
+          // Arkiverade (av admin) visas inte.
+          final docs =
+              snapshot.data!.docs
+                  .where(
+                    (d) =>
+                        (d.data() as Map<String, dynamic>)['archived'] != true,
+                  )
+                  .toList()
+                ..sort((a, b) {
+                  DateTime? at(QueryDocumentSnapshot d) =>
+                      ((d.data() as Map<String, dynamic>)['createAt']
+                              as Timestamp?)
+                          ?.toDate();
+                  final ta = at(a), tb = at(b);
+                  if (ta == null && tb == null) return 0;
+                  if (ta == null) return -1; // nyss skapad, tid ej satt än
+                  if (tb == null) return 1;
+                  return tb.compareTo(ta);
+                });
+
+          if (docs.isEmpty) {
+            return Center(child: Text(l10n.noTransactionsYet));
+          }
 
           return ListView.builder(
             itemCount: docs.length,

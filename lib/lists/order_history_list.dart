@@ -7,11 +7,13 @@ class OrderHistoryList extends StatelessWidget {
   final List<TransactionModel> transactions;
   final void Function(int index) onDelete;
   final void Function(int index)? onEdit;
+  final void Function(int index)? onRestore;
   const OrderHistoryList({
     super.key,
     required this.transactions,
     required this.onDelete,
     this.onEdit,
+    this.onRestore,
   });
 
   @override
@@ -37,7 +39,18 @@ class OrderHistoryList extends StatelessWidget {
             ? "${l10n.orderStatusLine(statusText(l10n, t.status))}\n"
             : "";
         return ListTile(
-          title: Text(title),
+          title: Row(
+            children: [
+              Flexible(child: Text(title)),
+              if (t.archived) ...[
+                const SizedBox(width: 8),
+                Chip(
+                  label: Text(l10n.archivedBadge),
+                  visualDensity: VisualDensity.compact,
+                ),
+              ],
+            ],
+          ),
           subtitle: Text(
             "${l10n.orderDetails(currency, t.amount, t.fee)}\n"
             "$statusLine"
@@ -53,11 +66,26 @@ class OrderHistoryList extends StatelessWidget {
                   icon: const Icon(Icons.edit, color: Colors.blue),
                   onPressed: () => onEdit!(index),
                 ),
-              IconButton(
-                tooltip: l10n.deleteAction,
-                icon: const Icon(Icons.delete, color: Colors.red),
-                onPressed: () => onDelete(index),
-              ),
+              if (t.archived && onRestore != null)
+                IconButton(
+                  tooltip: l10n.restoreAction,
+                  icon: const Icon(Icons.unarchive_outlined),
+                  onPressed: () => onRestore!(index),
+                )
+              else
+                IconButton(
+                  // Genomförda arkiveras, övriga raderas (se admin).
+                  tooltip: t.isCompleted && t.status.isNotEmpty
+                      ? l10n.archiveAction
+                      : l10n.deleteAction,
+                  icon: Icon(
+                    t.isCompleted && t.status.isNotEmpty
+                        ? Icons.archive_outlined
+                        : Icons.delete,
+                    color: Colors.red,
+                  ),
+                  onPressed: () => onDelete(index),
+                ),
             ],
           ),
         );

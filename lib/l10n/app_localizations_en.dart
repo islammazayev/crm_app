@@ -1562,4 +1562,31 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get noCashiersLinked =>
       'No cashiers are linked to you or your office.';
+
+  @override
+  String get archivedBadge => 'Archived';
+
+  @override
+  String get restoreAction => 'Restore';
+
+  @override
+  String get archiveAction => 'Archive';
+
+  @override
+  String showArchived(Object count) {
+    return 'Show archived ($count)';
+  }
+
+  @override
+  String get archiveTransactionTitle => 'Archive the transaction?';
+
+  @override
+  String get archiveTransactionConfirm =>
+      'The transaction is completed and cannot be deleted. It is hidden from the list but still counts in profit and export. You can show and restore it with \"Show archived\".';
+
+  @override
+  String get transactionArchived => 'The transaction was archived.';
+
+  @override
+  String get transactionRestored => 'The transaction was restored.';
 }

@@ -1556,4 +1556,31 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get noCashiersLinked => 'Size veya şubenize bağlı kasiyer yok.';
+
+  @override
+  String get archivedBadge => 'Arşivlendi';
+
+  @override
+  String get restoreAction => 'Geri yükle';
+
+  @override
+  String get archiveAction => 'Arşivle';
+
+  @override
+  String showArchived(Object count) {
+    return 'Arşivlenenleri göster ($count)';
+  }
+
+  @override
+  String get archiveTransactionTitle => 'İşlem arşivlensin mi?';
+
+  @override
+  String get archiveTransactionConfirm =>
+      'İşlem tamamlandı ve silinemez. Listeden gizlenir ancak kâr ve dışa aktarmada sayılmaya devam eder. \"Arşivlenenleri göster\" ile görüp geri yükleyebilirsiniz.';
+
+  @override
+  String get transactionArchived => 'İşlem arşivlendi.';
+
+  @override
+  String get transactionRestored => 'İşlem geri yüklendi.';
 }

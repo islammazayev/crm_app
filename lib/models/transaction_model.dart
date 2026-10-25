@@ -14,6 +14,9 @@ class TransactionModel {
   final String label; // t.ex. "Klient 003 · Anna Svensson"
   final String toCurrency;
 
+  /// Arkiverad av admin: döljs i listan men räknas i vinst och export.
+  final bool archived;
+
   TransactionModel({
     required this.sender,
     required this.receiver,
@@ -26,6 +29,7 @@ class TransactionModel {
     this.status = '',
     this.label = '',
     this.toCurrency = '',
+    this.archived = false,
   });
 
   /// Bara genomförda ordrar ger vinst. Äldre poster (utan status) räknas som

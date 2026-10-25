@@ -102,7 +102,11 @@ class _AdminOrdersPageState extends State<AdminOrdersPage> {
                         child: Text(statusText(l10n, s)),
                       ),
                   ],
-                  onChanged: (v) => setLocal(() => status = v ?? status),
+                  // En genomförd transaktion är bokförd och ska räknas i
+                  // vinsten; dess status går inte att ändra (se reglerna).
+                  onChanged: oldStatus == 'completed'
+                      ? null
+                      : (v) => setLocal(() => status = v ?? status),
                 ),
                 const SizedBox(height: 8),
                 Text(
@@ -149,6 +153,66 @@ class _AdminOrdersPageState extends State<AdminOrdersPage> {
     }
     nameCtrl.dispose();
     phoneCtrl.dispose();
+  }
+
+  bool _showArchived = false;
+
+  static bool _isArchived(QueryDocumentSnapshot d) =>
+      (d.data() as Map<String, dynamic>)['archived'] == true;
+
+  /// Genomförda transaktioner är bokförda affärer: de arkiveras (döljs men
+  /// räknas i vinst och export) och kan inte raderas (se reglerna).
+  /// Övriga, t.ex. testförfrågningar, raderas.
+  Future<void> _deleteOrArchive(QueryDocumentSnapshot doc) async {
+    final l10n = context.l10n;
+    final completed =
+        (doc.data() as Map<String, dynamic>)['status'] == 'completed';
+    if (completed) {
+      final ok = await showDialog<bool>(
+        context: context,
+        builder: (ctx) => AlertDialog(
+          title: Text(l10n.archiveTransactionTitle),
+          content: Text(l10n.archiveTransactionConfirm),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx, false),
+              child: Text(l10n.cancel),
+            ),
+            ElevatedButton(
+              onPressed: () => Navigator.pop(ctx, true),
+              child: Text(l10n.archiveAction),
+            ),
+          ],
+        ),
+      );
+      if (ok != true) return;
+      await doc.reference.update({
+        'archived': true,
+        'archivedAt': FieldValue.serverTimestamp(),
+      });
+      if (!mounted) return;
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l10n.transactionArchived)));
+      return;
+    }
+    final ok = await confirmDelete(
+      context,
+      title: l10n.deleteTransactionTitle,
+      message: l10n.deleteTransactionConfirm,
+    );
+    if (ok) await _deleteTransaction(doc.id);
+  }
+
+  Future<void> _restore(QueryDocumentSnapshot doc) async {
+    await doc.reference.update({
+      'archived': FieldValue.delete(),
+      'archivedAt': FieldValue.delete(),
+    });
+    if (!mounted) return;
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(context.l10n.transactionRestored)));
   }
 
   Future<void> _deleteTransaction(String id) async {
@@ -198,7 +262,10 @@ class _AdminOrdersPageState extends State<AdminOrdersPage> {
       return <String>[
         formatTransactionNo(data['transactionNo']),
         dateOf(data)?.toIso8601String() ?? '',
-        statusText(l10n, (data['status'] ?? '').toString()),
+        [
+          statusText(l10n, (data['status'] ?? '').toString()),
+          if (data['archived'] == true) l10n.archivedBadge,
+        ].join(' · '),
         (data['clientId'] ?? '').toString(),
         (data['officeId'] ?? '').toString(),
         (data['fromCurrency'] ?? data['currency'] ?? '').toString(),
@@ -556,11 +623,16 @@ class _AdminOrdersPageState extends State<AdminOrdersPage> {
                         );
                       }).toList();
                     }
-                    final shown = filtered.take(maxSearchResults).toList();
+                    // Arkiverade döljs i listan (om de inte ska visas), men
+                    // räknas alltid i rapporten nedan.
+                    final visible = _showArchived
+                        ? filtered
+                        : filtered.where((d) => !_isArchived(d)).toList();
+                    final shown = visible.take(maxSearchResults).toList();
 
-                    // Bygg filtrerade TransactionModel. Läser det nuvarande schemat
+                    // Bygg TransactionModel. Läser det nuvarande schemat
                     // (kundens förfrågningar) och faller tillbaka på äldre fält.
-                    final filteredTransactions = filtered.map((d) {
+                    TransactionModel toModel(QueryDocumentSnapshot d) {
                       final data = d.data() as Map<String, dynamic>;
                       final clientId = formatClientId(data['clientId']);
                       final customerName = (data['customerName'] ?? '')
@@ -594,35 +666,46 @@ class _AdminOrdersPageState extends State<AdminOrdersPage> {
                         status: (data['status'] ?? '').toString(),
                         label: label,
                         toCurrency: (data['toCurrency'] ?? '').toString(),
+                        archived: _isArchived(d),
                       );
-                    }).toList();
+                    }
+
+                    final archivedCount = filtered
+                        .where((d) => _isArchived(d))
+                        .length;
 
                     return Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        // Rapporten räknar alla träffar, listan visar högst 50.
-                        OrderReport(transactions: filteredTransactions),
-                        SearchSummary(
-                          empty: false,
-                          total: allMatches,
-                          matches: filtered.length,
-                          shown: shown.length,
+                        // Rapporten räknar alla träffar (även arkiverade),
+                        // listan visar högst 50.
+                        OrderReport(
+                          transactions: filtered.map(toModel).toList(),
+                        ),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: SearchSummary(
+                                empty: false,
+                                total: allMatches,
+                                matches: visible.length,
+                                shown: shown.length,
+                              ),
+                            ),
+                            if (archivedCount > 0)
+                              FilterChip(
+                                label: Text(l10n.showArchived(archivedCount)),
+                                selected: _showArchived,
+                                onSelected: (v) =>
+                                    setState(() => _showArchived = v),
+                              ),
+                          ],
                         ),
                         // Ingen fast höjd: listan växer och sidan scrollar.
                         OrderHistoryList(
-                          transactions: filteredTransactions
-                              .take(shown.length)
-                              .toList(),
-                          onDelete: (index) async {
-                            final ok = await confirmDelete(
-                              context,
-                              title: l10n.deleteTransactionTitle,
-                              message: l10n.deleteTransactionConfirm,
-                            );
-                            if (ok) {
-                              await _deleteTransaction(shown[index].id);
-                            }
-                          },
+                          transactions: shown.map(toModel).toList(),
+                          onDelete: (index) => _deleteOrArchive(shown[index]),
+                          onRestore: (index) => _restore(shown[index]),
                           onEdit: (index) => _editTransaction(shown[index]),
                         ),
                       ],

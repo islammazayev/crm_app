@@ -147,80 +147,80 @@ class _ManagerCreateTransactionScreenState
       body: _loading
           ? const Center(child: CircularProgressIndicator())
           : _error != null
-              ? Center(child: Text(_error!(l10n)))
-              : ListView(
-                  padding: const EdgeInsets.all(16),
-                  children: [
-                    TextField(
-                      controller: _nameCtrl,
-                      decoration: InputDecoration(
-                        labelText: l10n.customerName,
-                        border: const OutlineInputBorder(),
-                      ),
-                    ),
-                    const SizedBox(height: 14),
-                    TextField(
-                      controller: _phoneCtrl,
-                      keyboardType: TextInputType.phone,
-                      decoration: InputDecoration(
-                        labelText: l10n.phoneOptional,
-                        border: const OutlineInputBorder(),
-                      ),
-                    ),
-                    const SizedBox(height: 14),
-                    DropdownButtonFormField<String>(
-                      initialValue: _from,
-                      decoration: InputDecoration(
-                        labelText: l10n.customerGivesCurrency,
-                        border: const OutlineInputBorder(),
-                      ),
-                      items: _currencies
-                          .map((c) =>
-                              DropdownMenuItem(value: c, child: Text(c)))
-                          .toList(),
-                      onChanged: (v) => setState(() => _from = v),
-                    ),
-                    const SizedBox(height: 14),
-                    DropdownButtonFormField<String>(
-                      initialValue: _to,
-                      decoration: InputDecoration(
-                        labelText: l10n.customerGetsCurrency,
-                        border: const OutlineInputBorder(),
-                      ),
-                      items: _currencies
-                          .where((c) => c != _from)
-                          .map((c) =>
-                              DropdownMenuItem(value: c, child: Text(c)))
-                          .toList(),
-                      onChanged: (v) => setState(() => _to = v),
-                    ),
-                    const SizedBox(height: 14),
-                    TextField(
-                      controller: _amountCtrl,
-                      keyboardType: const TextInputType.numberWithOptions(
-                          decimal: true),
-                      decoration: InputDecoration(
-                        labelText: l10n.amountCustomerGives,
-                        border: const OutlineInputBorder(),
-                      ),
-                    ),
-                    const SizedBox(height: 14),
-                    TextField(
-                      controller: _feeCtrl,
-                      keyboardType: const TextInputType.numberWithOptions(
-                          decimal: true),
-                      decoration: InputDecoration(
-                        labelText: l10n.feePercentLabel,
-                        border: const OutlineInputBorder(),
-                      ),
-                    ),
-                    const SizedBox(height: 20),
-                    ElevatedButton(
-                      onPressed: _saving ? null : _create,
-                      child: Text(_saving ? l10n.creating : l10n.createTransaction),
-                    ),
-                  ],
+          ? Center(child: Text(_error!(l10n)))
+          : ListView(
+              padding: const EdgeInsets.all(16),
+              children: [
+                TextField(
+                  controller: _nameCtrl,
+                  decoration: InputDecoration(
+                    labelText: l10n.customerName,
+                    border: const OutlineInputBorder(),
+                  ),
                 ),
+                const SizedBox(height: 14),
+                TextField(
+                  controller: _phoneCtrl,
+                  keyboardType: TextInputType.phone,
+                  decoration: InputDecoration(
+                    labelText: l10n.phoneOptional,
+                    border: const OutlineInputBorder(),
+                  ),
+                ),
+                const SizedBox(height: 14),
+                DropdownButtonFormField<String>(
+                  initialValue: _from,
+                  decoration: InputDecoration(
+                    labelText: l10n.customerGivesCurrency,
+                    border: const OutlineInputBorder(),
+                  ),
+                  items: _currencies
+                      .map((c) => DropdownMenuItem(value: c, child: Text(c)))
+                      .toList(),
+                  onChanged: (v) => setState(() => _from = v),
+                ),
+                const SizedBox(height: 14),
+                DropdownButtonFormField<String>(
+                  initialValue: _to,
+                  decoration: InputDecoration(
+                    labelText: l10n.customerGetsCurrency,
+                    border: const OutlineInputBorder(),
+                  ),
+                  items: _currencies
+                      .where((c) => c != _from)
+                      .map((c) => DropdownMenuItem(value: c, child: Text(c)))
+                      .toList(),
+                  onChanged: (v) => setState(() => _to = v),
+                ),
+                const SizedBox(height: 14),
+                TextField(
+                  controller: _amountCtrl,
+                  keyboardType: const TextInputType.numberWithOptions(
+                    decimal: true,
+                  ),
+                  decoration: InputDecoration(
+                    labelText: l10n.amountCustomerGives,
+                    border: const OutlineInputBorder(),
+                  ),
+                ),
+                const SizedBox(height: 14),
+                TextField(
+                  controller: _feeCtrl,
+                  keyboardType: const TextInputType.numberWithOptions(
+                    decimal: true,
+                  ),
+                  decoration: InputDecoration(
+                    labelText: l10n.feePercentLabel,
+                    border: const OutlineInputBorder(),
+                  ),
+                ),
+                const SizedBox(height: 20),
+                ElevatedButton(
+                  onPressed: _saving ? null : _create,
+                  child: Text(_saving ? l10n.creating : l10n.createTransaction),
+                ),
+              ],
+            ),
     );
   }
 }

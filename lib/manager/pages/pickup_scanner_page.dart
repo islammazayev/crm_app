@@ -39,9 +39,9 @@ class _PickupScannerPageState extends State<PickupScannerPage> {
     // En annan QR-kod: säg till en gång, fortsätt sedan leta.
     if (!_warned && capture.barcodes.isNotEmpty) {
       _warned = true;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(context.l10n.notAPickupQr)),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(context.l10n.notAPickupQr)));
     }
   }
 
