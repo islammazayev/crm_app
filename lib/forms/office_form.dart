@@ -9,10 +9,12 @@ class OfficeForm extends StatefulWidget {
     required String city,
     required List<String> currencies,
     required List<OfficePaymentMethod> paymentMethods,
-  })
-  onSubmit;
+  }) onSubmit;
 
-  const OfficeForm({super.key, required this.onSubmit});
+  const OfficeForm({
+    super.key,
+    required this.onSubmit,
+  });
 
   @override
   State<OfficeForm> createState() => _OfficeFormState();
@@ -74,14 +76,12 @@ class _OfficeFormState extends State<OfficeForm> {
 
       if (label.isEmpty) continue; // hoppa över tomma rader
 
-      paymentMethods.add(
-        OfficePaymentMethod(
-          id: 'method_${DateTime.now().millisecondsSinceEpoch}_$i',
-          label: label,
-          details: details,
-          supportedFromCurrencies: supported,
-        ),
-      );
+      paymentMethods.add(OfficePaymentMethod(
+        id: 'method_${DateTime.now().millisecondsSinceEpoch}_$i',
+        label: label,
+        details: details,
+        supportedFromCurrencies: supported,
+      ));
     }
 
     await widget.onSubmit(
@@ -127,10 +127,8 @@ class _OfficeFormState extends State<OfficeForm> {
                 (v == null || v.trim().isEmpty) ? l10n.enterCity : null,
           ),
           const SizedBox(height: 8),
-          Text(
-            l10n.currencies,
-            style: const TextStyle(fontSize: 12, color: Colors.grey),
-          ),
+          Text(l10n.currencies,
+              style: const TextStyle(fontSize: 12, color: Colors.grey)),
           const SizedBox(height: 4),
           Wrap(
             spacing: 8,
@@ -139,9 +137,7 @@ class _OfficeFormState extends State<OfficeForm> {
                 label: Text(c),
                 selected: _selectedCurrencies.contains(c),
                 onSelected: (v) => setState(() {
-                  v
-                      ? _selectedCurrencies.add(c)
-                      : _selectedCurrencies.remove(c);
+                  v ? _selectedCurrencies.add(c) : _selectedCurrencies.remove(c);
                 }),
               );
             }).toList(),
@@ -153,10 +149,7 @@ class _OfficeFormState extends State<OfficeForm> {
             children: [
               Text(
                 l10n.paymentMethods,
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
               const SizedBox(width: 12),
               TextButton.icon(
@@ -184,7 +177,10 @@ class _OfficeFormState extends State<OfficeForm> {
             ),
 
           const SizedBox(height: 16),
-          ElevatedButton(onPressed: _submit, child: Text(l10n.createOffice)),
+          ElevatedButton(
+            onPressed: _submit,
+            child: Text(l10n.createOffice),
+          ),
         ],
       ),
     );
@@ -260,10 +256,8 @@ class _PaymentMethodRow extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 8),
-            Text(
-              l10n.supportsCurrencies,
-              style: const TextStyle(fontSize: 12, color: Colors.grey),
-            ),
+            Text(l10n.supportsCurrencies,
+                style: const TextStyle(fontSize: 12, color: Colors.grey)),
             StatefulBuilder(
               builder: (context, setLocal) => Wrap(
                 spacing: 8,

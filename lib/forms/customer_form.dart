@@ -9,8 +9,7 @@ class CustomerForm extends StatefulWidget {
     required String lastName,
     required String phone,
     String email,
-  })
-  onSubmit;
+  }) onSubmit;
 
   const CustomerForm({super.key, required this.onSubmit});
 
@@ -65,9 +64,9 @@ class _CustomerFormState extends State<CustomerForm> {
     _emailController.clear();
 
     if (mounted) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(context.l10n.customerSaved)));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(context.l10n.customerSaved)),
+      );
     }
   }
 
@@ -100,9 +99,8 @@ class _CustomerFormState extends State<CustomerForm> {
                 child: TextFormField(
                   controller: _firstNameController,
                   decoration: InputDecoration(labelText: l10n.firstName),
-                  validator: (v) => (v == null || v.trim().isEmpty)
-                      ? l10n.enterFirstName
-                      : null,
+                  validator: (v) =>
+                      (v == null || v.trim().isEmpty) ? l10n.enterFirstName : null,
                 ),
               ),
               const SizedBox(width: 8),
@@ -110,9 +108,10 @@ class _CustomerFormState extends State<CustomerForm> {
                 child: TextFormField(
                   controller: _lastNameController,
                   decoration: InputDecoration(labelText: l10n.lastName),
-                  validator: (v) => (v == null || v.trim().isEmpty)
-                      ? l10n.enterLastName
-                      : null,
+                  validator: (v) =>
+                      (v == null || v.trim().isEmpty)
+                          ? l10n.enterLastName
+                          : null,
                 ),
               ),
             ],
@@ -130,7 +129,10 @@ class _CustomerFormState extends State<CustomerForm> {
             keyboardType: TextInputType.emailAddress,
           ),
           const SizedBox(height: 12),
-          ElevatedButton(onPressed: _submit, child: Text(l10n.saveCustomer)),
+          ElevatedButton(
+            onPressed: _submit,
+            child: Text(l10n.saveCustomer),
+          ),
         ],
       ),
     );

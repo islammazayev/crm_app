@@ -14,7 +14,7 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  final _emailCtrl = TextEditingController();
+  final _emailCtrl    = TextEditingController();
   final _passwordCtrl = TextEditingController();
   bool _obscure = true;
   bool _loading = false;
@@ -23,14 +23,10 @@ class _LoginScreenState extends State<LoginScreen> {
   String Function(AppLocalizations l10n)? _message;
 
   Future<void> _login() async {
-    setState(() {
-      _error = null;
-      _message = null;
-      _loading = true;
-    });
+    setState(() { _error = null; _message = null; _loading = true; });
     try {
       await FirebaseAuth.instance.signInWithEmailAndPassword(
-        email: _emailCtrl.text.trim(),
+        email:    _emailCtrl.text.trim(),
         password: _passwordCtrl.text.trim(),
       );
     } catch (e) {
@@ -41,10 +37,7 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Future<void> _resetPassword() async {
-    setState(() {
-      _error = null;
-      _message = null;
-    });
+    setState(() { _error = null; _message = null; });
     try {
       await FirebaseAuth.instance.sendPasswordResetEmail(
         email: _emailCtrl.text.trim(),
@@ -73,6 +66,7 @@ class _LoginScreenState extends State<LoginScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
+
                 // ── LOGO / TITEL ────────────────────────────────
                 Center(
                   child: Column(
@@ -84,9 +78,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           color: AppColors.primaryDim,
                           borderRadius: BorderRadius.circular(20),
                           border: Border.all(
-                            color: AppColors.primary.withValues(alpha: 0.4),
-                            width: 1,
-                          ),
+                              color: AppColors.primary.withValues(alpha: 0.4), width: 1),
                         ),
                         child: const Icon(
                           Icons.currency_exchange,
@@ -188,11 +180,9 @@ class _LoginScreenState extends State<LoginScreen> {
                           labelText: l10n.password,
                           prefixIcon: const Icon(Icons.lock_outline),
                           suffixIcon: IconButton(
-                            icon: Icon(
-                              _obscure
-                                  ? Icons.visibility_outlined
-                                  : Icons.visibility_off_outlined,
-                            ),
+                            icon: Icon(_obscure
+                                ? Icons.visibility_outlined
+                                : Icons.visibility_off_outlined),
                             onPressed: () =>
                                 setState(() => _obscure = !_obscure),
                           ),
@@ -200,60 +190,53 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
 
                       // Felmeddelande
-                      if (_error != null) ...[
-                        const SizedBox(height: 12),
-                        Container(
-                          padding: const EdgeInsets.all(12),
-                          decoration: BoxDecoration(
-                            color: AppColors.error.withValues(alpha: 0.1),
-                            borderRadius: BorderRadius.circular(10),
-                            border: Border.all(
-                              color: AppColors.error.withValues(alpha: 0.3),
+                      if (_error != null) ...
+                        [
+                          const SizedBox(height: 12),
+                          Container(
+                            padding: const EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                              color: AppColors.error.withValues(alpha: 0.1),
+                              borderRadius: BorderRadius.circular(10),
+                              border: Border.all(
+                                  color: AppColors.error.withValues(alpha: 0.3)),
                             ),
-                          ),
-                          child: Row(
-                            children: [
-                              const Icon(
-                                Icons.error_outline,
-                                color: AppColors.error,
-                                size: 16,
-                              ),
-                              const SizedBox(width: 8),
-                              Expanded(
-                                child: Text(
-                                  _error!(l10n),
-                                  style: const TextStyle(
-                                    color: AppColors.error,
-                                    fontSize: 12,
+                            child: Row(
+                              children: [
+                                const Icon(Icons.error_outline,
+                                    color: AppColors.error, size: 16),
+                                const SizedBox(width: 8),
+                                Expanded(
+                                  child: Text(
+                                    _error!(l10n),
+                                    style: const TextStyle(
+                                        color: AppColors.error, fontSize: 12),
                                   ),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
 
                       // Bekräftelsemeddelande
-                      if (_message != null) ...[
-                        const SizedBox(height: 12),
-                        Container(
-                          padding: const EdgeInsets.all(12),
-                          decoration: BoxDecoration(
-                            color: AppColors.primary.withValues(alpha: 0.1),
-                            borderRadius: BorderRadius.circular(10),
-                            border: Border.all(
-                              color: AppColors.primary.withValues(alpha: 0.3),
+                      if (_message != null) ...
+                        [
+                          const SizedBox(height: 12),
+                          Container(
+                            padding: const EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                              color: AppColors.primary.withValues(alpha: 0.1),
+                              borderRadius: BorderRadius.circular(10),
+                              border: Border.all(
+                                  color: AppColors.primary.withValues(alpha: 0.3)),
+                            ),
+                            child: Text(
+                              _message!(l10n),
+                              style: const TextStyle(
+                                  color: AppColors.primary, fontSize: 12),
                             ),
                           ),
-                          child: Text(
-                            _message!(l10n),
-                            style: const TextStyle(
-                              color: AppColors.primary,
-                              fontSize: 12,
-                            ),
-                          ),
-                        ),
-                      ],
+                        ],
 
                       const SizedBox(height: 24),
 
@@ -288,15 +271,12 @@ class _LoginScreenState extends State<LoginScreen> {
                       onPressed: _resetPassword,
                       child: Text(l10n.forgotPassword),
                     ),
-                    const Text(
-                      '·',
-                      style: TextStyle(color: AppColors.textFaint),
-                    ),
+                    const Text('·',
+                        style: TextStyle(color: AppColors.textFaint)),
                     TextButton(
                       onPressed: () => Navigator.of(context).push(
                         MaterialPageRoute(
-                          builder: (_) => const CustomerRegisterScreen(),
-                        ),
+                            builder: (_) => const CustomerRegisterScreen()),
                       ),
                       child: Text(l10n.registerAccount),
                     ),
