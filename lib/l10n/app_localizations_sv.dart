@@ -1869,4 +1869,175 @@ class AppLocalizationsSv extends AppLocalizations {
   String sellSummary(Object amount, Object from, Object to) {
     return 'Sälj $amount $from för $to';
   }
+
+  @override
+  String get partners => 'Kompanjoner';
+
+  @override
+  String get partnersCardSubtitle => 'Växla valuta med dina kompanjoner.';
+
+  @override
+  String get partnersAdminCardSubtitle =>
+      'Skapa kompanjoner och koppla dem till kontor eller manager.';
+
+  @override
+  String get editPartnerTitle => 'Ändra kompanjon';
+
+  @override
+  String get partnerUpdated => 'Kompanjonen är uppdaterad.';
+
+  @override
+  String get deletePartnerTitle => 'Ta bort kompanjonen?';
+
+  @override
+  String deletePartnerConfirm(Object name) {
+    return '$name kommer inte längre åt appen och saldot tas bort. Inloggningskontot finns kvar och kan tas bort under Authentication i Firebase-konsolen.';
+  }
+
+  @override
+  String get partnerDeleted => 'Kompanjonen är borttagen.';
+
+  @override
+  String get existingPartners => 'Kompanjoner';
+
+  @override
+  String get searchPartnersLabel => 'Sök kompanjon (namn, kontor, manager)';
+
+  @override
+  String get createNewPartner => 'Skapa ny kompanjon';
+
+  @override
+  String get createPartner => 'Skapa kompanjon';
+
+  @override
+  String get partnerCreated => 'Kompanjonen är skapad.';
+
+  @override
+  String couldNotCreatePartner(Object error) {
+    return 'Kunde inte skapa kompanjon: $error';
+  }
+
+  @override
+  String get partnerAppBarTitle => 'CRM – Kompanjon';
+
+  @override
+  String get partnerNotSetUp =>
+      'Ditt kompanjonskonto är inte kopplat till något kontor än. Kontakta admin.';
+
+  @override
+  String get newExchange => 'Nytt växlingsförslag';
+
+  @override
+  String get exchangesTitle => 'Växlingar';
+
+  @override
+  String get partnerBalancesTitle => 'Kompanjonernas saldo';
+
+  @override
+  String get noPartnersLinked =>
+      'Inga kompanjoner är kopplade till dig eller ditt kontor.';
+
+  @override
+  String get exchangeProposed => 'Förslag';
+
+  @override
+  String get exchangeAccepted => 'Accepterad';
+
+  @override
+  String get exchangeRejected => 'Avböjd';
+
+  @override
+  String get exchangeCancelled => 'Avbruten';
+
+  @override
+  String get exchangeCompleted => 'Genomförd';
+
+  @override
+  String get noExchangesYet => 'Inga växlingar än.';
+
+  @override
+  String exchangeOfficeGives(Object amount) {
+    return 'Kontoret ger: $amount';
+  }
+
+  @override
+  String exchangePartnerGives(Object amount) {
+    return 'Kompanjonen ger: $amount';
+  }
+
+  @override
+  String exchangeYouGive(Object amount) {
+    return 'Du ger: $amount';
+  }
+
+  @override
+  String exchangeYouGet(Object amount) {
+    return 'Du får: $amount';
+  }
+
+  @override
+  String exchangeRateLine(Object from, Object rate, Object to) {
+    return 'Kurs: 1 $from = $rate $to';
+  }
+
+  @override
+  String get exchangeOfficeSentDone => '✓ Kontoret har skickat';
+
+  @override
+  String get exchangeOfficeSentWaiting => '… Kontoret har inte skickat än';
+
+  @override
+  String get exchangePartnerSentDone => '✓ Kompanjonen har skickat';
+
+  @override
+  String get exchangePartnerSentWaiting => '… Kompanjonen har inte skickat än';
+
+  @override
+  String get counterProposal => 'Motförslag';
+
+  @override
+  String get waitingForAnswer => 'Väntar på svar';
+
+  @override
+  String markExchangeSent(Object amount) {
+    return 'Jag har skickat $amount';
+  }
+
+  @override
+  String get confirmExchangeSent =>
+      'Bekräfta att du har skickat pengarna. Den andra sidan ser det och kan bekräfta när de har kommit.';
+
+  @override
+  String markExchangeReceived(Object amount) {
+    return 'Jag har tagit emot $amount';
+  }
+
+  @override
+  String get confirmExchangeReceived =>
+      'Bekräfta att pengarna har kommit. När båda har bekräftat blir växlingen genomförd och saldona uppdateras.';
+
+  @override
+  String get waitingForOtherReceived =>
+      'Väntar på att den andra sidan bekräftar att pengarna har kommit.';
+
+  @override
+  String get youGiveLabel => 'Belopp du ger';
+
+  @override
+  String get youGetLabel => 'Belopp du får';
+
+  @override
+  String get currencyYouGive => 'Valuta du ger';
+
+  @override
+  String get currencyYouGet => 'Valuta du får';
+
+  @override
+  String get exchangeProposalSent => 'Förslaget är skickat.';
+
+  @override
+  String get choosePartner => 'Kompanjon';
+
+  @override
+  String get sendProposal => 'Skicka förslag';
 }

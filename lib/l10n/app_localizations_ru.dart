@@ -1873,4 +1873,175 @@ class AppLocalizationsRu extends AppLocalizations {
   String sellSummary(Object amount, Object from, Object to) {
     return 'Продажа $amount $from за $to';
   }
+
+  @override
+  String get partners => 'Компаньоны';
+
+  @override
+  String get partnersCardSubtitle => 'Обмен валюты с вашими компаньонами.';
+
+  @override
+  String get partnersAdminCardSubtitle =>
+      'Создавайте компаньонов и привязывайте их к офису или менеджеру.';
+
+  @override
+  String get editPartnerTitle => 'Изменить компаньона';
+
+  @override
+  String get partnerUpdated => 'Компаньон обновлён.';
+
+  @override
+  String get deletePartnerTitle => 'Удалить компаньона?';
+
+  @override
+  String deletePartnerConfirm(Object name) {
+    return '$name больше не сможет войти в приложение, а баланс будет удалён. Учётная запись для входа останется, её можно удалить в разделе Authentication в консоли Firebase.';
+  }
+
+  @override
+  String get partnerDeleted => 'Компаньон удалён.';
+
+  @override
+  String get existingPartners => 'Компаньоны';
+
+  @override
+  String get searchPartnersLabel => 'Поиск компаньона (имя, офис, менеджер)';
+
+  @override
+  String get createNewPartner => 'Создать компаньона';
+
+  @override
+  String get createPartner => 'Создать компаньона';
+
+  @override
+  String get partnerCreated => 'Компаньон создан.';
+
+  @override
+  String couldNotCreatePartner(Object error) {
+    return 'Не удалось создать компаньона: $error';
+  }
+
+  @override
+  String get partnerAppBarTitle => 'CRM – Компаньон';
+
+  @override
+  String get partnerNotSetUp =>
+      'Ваш аккаунт компаньона ещё не привязан к офису. Обратитесь к администратору.';
+
+  @override
+  String get newExchange => 'Новое предложение обмена';
+
+  @override
+  String get exchangesTitle => 'Обмены';
+
+  @override
+  String get partnerBalancesTitle => 'Балансы компаньонов';
+
+  @override
+  String get noPartnersLinked =>
+      'К вам или вашему офису не привязаны компаньоны.';
+
+  @override
+  String get exchangeProposed => 'Предложение';
+
+  @override
+  String get exchangeAccepted => 'Принято';
+
+  @override
+  String get exchangeRejected => 'Отклонено';
+
+  @override
+  String get exchangeCancelled => 'Отменено';
+
+  @override
+  String get exchangeCompleted => 'Выполнено';
+
+  @override
+  String get noExchangesYet => 'Обменов пока нет.';
+
+  @override
+  String exchangeOfficeGives(Object amount) {
+    return 'Офис отдаёт: $amount';
+  }
+
+  @override
+  String exchangePartnerGives(Object amount) {
+    return 'Компаньон отдаёт: $amount';
+  }
+
+  @override
+  String exchangeYouGive(Object amount) {
+    return 'Вы отдаёте: $amount';
+  }
+
+  @override
+  String exchangeYouGet(Object amount) {
+    return 'Вы получаете: $amount';
+  }
+
+  @override
+  String exchangeRateLine(Object from, Object rate, Object to) {
+    return 'Курс: 1 $from = $rate $to';
+  }
+
+  @override
+  String get exchangeOfficeSentDone => '✓ Офис отправил';
+
+  @override
+  String get exchangeOfficeSentWaiting => '… Офис ещё не отправил';
+
+  @override
+  String get exchangePartnerSentDone => '✓ Компаньон отправил';
+
+  @override
+  String get exchangePartnerSentWaiting => '… Компаньон ещё не отправил';
+
+  @override
+  String get counterProposal => 'Встречное предложение';
+
+  @override
+  String get waitingForAnswer => 'Ожидает ответа';
+
+  @override
+  String markExchangeSent(Object amount) {
+    return 'Я отправил $amount';
+  }
+
+  @override
+  String get confirmExchangeSent =>
+      'Подтвердите, что вы отправили деньги. Другая сторона увидит это и подтвердит получение.';
+
+  @override
+  String markExchangeReceived(Object amount) {
+    return 'Я получил $amount';
+  }
+
+  @override
+  String get confirmExchangeReceived =>
+      'Подтвердите, что деньги пришли. Когда обе стороны подтвердят, обмен будет выполнен, а балансы обновлены.';
+
+  @override
+  String get waitingForOtherReceived =>
+      'Ожидаем, пока другая сторона подтвердит получение денег.';
+
+  @override
+  String get youGiveLabel => 'Сумма, которую вы отдаёте';
+
+  @override
+  String get youGetLabel => 'Сумма, которую вы получаете';
+
+  @override
+  String get currencyYouGive => 'Валюта, которую вы отдаёте';
+
+  @override
+  String get currencyYouGet => 'Валюта, которую вы получаете';
+
+  @override
+  String get exchangeProposalSent => 'Предложение отправлено.';
+
+  @override
+  String get choosePartner => 'Компаньон';
+
+  @override
+  String get sendProposal => 'Отправить предложение';
 }

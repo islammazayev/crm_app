@@ -35,6 +35,10 @@ service cloud.firestore {
       return role() == 'cashier';
     }
 
+    function isPartner() {
+      return role() == 'partner';
+    }
+
     function myOfficeId() {
       return hasProfile() ? get(userPath()).data.get('officeId', null) : null;
     }
@@ -251,6 +255,16 @@ service cloud.firestore {
              .hasOnly(['balances', 'lastBookedTransactionId'])
         && request.resource.data.lastBookedTransactionId is string
         && bookingMatchesTransaction(officeId);
+
+      // Växling med en kompanjon: kontorets saldo bokförs i samma batch som
+      // växlingen blir genomförd, av den som bekräftar sist (manager eller
+      // kompanjon). Se partnerExchanges.
+      allow update: if (isPartner()
+          || (isManager() && myOfficeId() != null && myOfficeId() == officeId))
+        && request.resource.data.diff(resource.data).changedKeys()
+             .hasOnly(['balances', 'lastPartnerExchangeId'])
+        && request.resource.data.lastPartnerExchangeId is string
+        && officeBookingMatchesExchange(officeId);
     }
 
     // ─── KASSÖRER ───────────────────────────────────────────────────
@@ -335,6 +349,189 @@ service cloud.firestore {
              .hasOnly(['balances', 'lastTransferId'])
         && request.resource.data.lastTransferId is string
         && cashierBalanceMatchesTransfer(cid);
+    }
+
+    // ─── KOMPANJONER ────────────────────────────────────────────────
+    // partners/{uid}: privat (saldon, koppling till kontor/manager). Admin
+    // sparar också exchangeOfficeId: kontoret vars saldo växlingarna går mot
+    // (det kopplade kontoret, annars den kopplade managerns kontor).
+    //
+    // partnerExchanges/{id}: växling mellan ett kontor och en kompanjon,
+    // utan avgift. Sidan "office" ger officeGivesAmount i
+    // officeGivesCurrency och får partnerGivesAmount i partnerGivesCurrency.
+    //   proposed  den ena sidan föreslår; den andra accepterar, avböjer eller
+    //             ändrar beloppen (motförslag); den som föreslog kan avbryta
+    //   accepted  var sida markerar "skickat" och sedan "mottaget" när den
+    //             andras pengar har kommit
+    //   completed när båda har tagit emot; saldona för kontoret och
+    //             kompanjonen bokförs i samma batch
+    function partnerPath(uid) {
+      return /databases/$(database)/documents/partners/$(uid);
+    }
+
+    function exchangePath(id) {
+      return /databases/$(database)/documents/partnerExchanges/$(id);
+    }
+
+    function managesPartner(data) {
+      return isManager()
+        && (data.get('managerId', null) == request.auth.uid
+            || (myOfficeId() != null && data.get('officeId', null) == myOfficeId()));
+    }
+
+    // Vilken sida den inloggade är i växlingen: 'office', 'partner' eller ''.
+    function exchangeSide(ex) {
+      let me = hasProfile() ? get(userPath()).data : {};
+      return me.get('role', '') == 'manager'
+          && me.get('officeId', null) != null
+          && ex.officeId == me.get('officeId', null)
+        ? 'office'
+        : me.get('role', '') == 'partner' && ex.partnerId == request.auth.uid
+        ? 'partner'
+        : '';
+    }
+
+    // Ändringar av en växling. side är den inloggades sida (se ovan) och
+    // räknas ut en gång, så att reglerna håller sig inom Firestores gräns.
+    function exchangeUpdateAllowed(old, new, side, eid) {
+      let other = side == 'office' ? 'partner' : 'office';
+      let changed = new.diff(old).affectedKeys();
+      return side != ''
+        && new.partnerId == old.partnerId
+        && new.officeId == old.officeId
+        && (
+          // Förslag: den andra sidan accepterar, avböjer eller ändrar
+          // beloppen; den som föreslog kan avbryta.
+          (old.status == 'proposed'
+            && (
+              (side != old.proposedBy
+                && new.status == 'proposed'
+                && new.proposedBy == side
+                && hasValidExchangeTerms(new)
+                && changed.hasOnly(['officeGivesAmount', 'partnerGivesAmount',
+                                    'proposedBy', 'note', 'updatedAt']))
+              || (side != old.proposedBy
+                && new.status in ['accepted', 'rejected']
+                && changed.hasOnly(['status', 'decidedAt']))
+              || (side == old.proposedBy
+                && new.status == 'cancelled'
+                && changed.hasOnly(['status', 'decidedAt']))
+            ))
+          // Accepterad: markera att de egna pengarna är skickade.
+          || (old.status == 'accepted'
+            && new.status == 'accepted'
+            && new.get(side + 'Sent', false) == true
+            && changed.hasOnly([side + 'Sent', side + 'SentAt']))
+          // Accepterad: markera att den andra sidans pengar har kommit. Den
+          // som bekräftar sist gör växlingen genomförd och bokför båda
+          // saldona i samma batch.
+          || (old.status == 'accepted'
+            && old.get(other + 'Sent', false) == true
+            && new.get(side + 'Received', false) == true
+            && (
+              (old.get(other + 'Received', false) != true
+                && new.status == 'accepted'
+                && changed.hasOnly([side + 'Received', side + 'ReceivedAt']))
+              || (old.get(other + 'Received', false) == true
+                && new.status == 'completed'
+                && changed.hasOnly([side + 'Received', side + 'ReceivedAt',
+                                    'status', 'completedAt'])
+                && getAfter(/databases/$(database)/documents/offices/$(old.officeId))
+                     .data.get('lastPartnerExchangeId', '') == eid
+                && getAfter(partnerPath(old.partnerId))
+                     .data.get('lastExchangeId', '') == eid)
+            ))
+        );
+    }
+
+    function hasValidExchangeTerms(d) {
+      return d.officeGivesCurrency is string
+        && d.partnerGivesCurrency is string
+        && d.officeGivesCurrency != d.partnerGivesCurrency
+        && d.officeGivesAmount is number && d.officeGivesAmount > 0
+        && d.partnerGivesAmount is number && d.partnerGivesAmount > 0
+        && d.get('note', '') is string && d.get('note', '').size() <= 500;
+    }
+
+    // Kontoret ger officeGives och får partnerGives; saldot får inte bli < 0.
+    function officeBookingMatchesExchange(officeId) {
+      let path = exchangePath(request.resource.data.lastPartnerExchangeId);
+      let ex = get(path).data;
+      let oldB = resource.data.get('balances', {});
+      let newB = request.resource.data.get('balances', {});
+      return ex.officeId == officeId
+        && ex.status == 'accepted'
+        && getAfter(path).data.status == 'completed'
+        && (!isPartner() || ex.partnerId == request.auth.uid)
+        && newB.diff(oldB).affectedKeys().hasOnly([ex.officeGivesCurrency, ex.partnerGivesCurrency])
+        && math.abs(newB.get(ex.officeGivesCurrency, 0) - (oldB.get(ex.officeGivesCurrency, 0) - ex.officeGivesAmount)) < 0.01
+        && math.abs(newB.get(ex.partnerGivesCurrency, 0) - (oldB.get(ex.partnerGivesCurrency, 0) + ex.partnerGivesAmount)) < 0.01
+        && newB.get(ex.officeGivesCurrency, 0) >= 0;
+    }
+
+    // Kompanjonen får officeGives och ger partnerGives.
+    function partnerBookingMatchesExchange(pid) {
+      let path = exchangePath(request.resource.data.lastExchangeId);
+      let ex = get(path).data;
+      let oldB = resource.data.get('balances', {});
+      let newB = request.resource.data.get('balances', {});
+      return ex.partnerId == pid
+        && ex.status == 'accepted'
+        && getAfter(path).data.status == 'completed'
+        && (!isManager() || ex.officeId == myOfficeId())
+        && newB.diff(oldB).affectedKeys().hasOnly([ex.officeGivesCurrency, ex.partnerGivesCurrency])
+        && math.abs(newB.get(ex.officeGivesCurrency, 0) - (oldB.get(ex.officeGivesCurrency, 0) + ex.officeGivesAmount)) < 0.01
+        && math.abs(newB.get(ex.partnerGivesCurrency, 0) - (oldB.get(ex.partnerGivesCurrency, 0) - ex.partnerGivesAmount)) < 0.01;
+    }
+
+    match /partners/{pid} {
+      allow read: if isAdmin()
+        || request.auth.uid == pid
+        || managesPartner(resource.data);
+      allow write: if isAdmin();
+
+      // Saldot ändras bara när en växling blir genomförd (se ovan).
+      allow update: if (request.auth.uid == pid || isManager())
+        && request.resource.data.diff(resource.data).changedKeys()
+             .hasOnly(['balances', 'lastExchangeId'])
+        && request.resource.data.lastExchangeId is string
+        && partnerBookingMatchesExchange(pid);
+    }
+
+    match /partnerExchanges/{eid} {
+      allow read: if isAdmin()
+        || (isPartner() && resource.data.partnerId == request.auth.uid)
+        || (isManager() && myOfficeId() != null && resource.data.officeId == myOfficeId());
+
+      allow delete: if isAdmin();
+
+      allow create: if request.resource.data.status == 'proposed'
+        && request.resource.data.createdAt == request.time
+        && request.resource.data.keys().hasOnly([
+             'officeId', 'officeLabel', 'managerId', 'partnerId', 'partnerName',
+             'officeGivesCurrency', 'officeGivesAmount', 'partnerGivesCurrency',
+             'partnerGivesAmount', 'note', 'status', 'proposedBy', 'createdAt'
+           ])
+        && hasValidExchangeTerms(request.resource.data)
+        && exists(partnerPath(request.resource.data.partnerId))
+        && (
+          // Managern föreslår till en kompanjon som är kopplad till hen.
+          (isManager()
+            && request.resource.data.proposedBy == 'office'
+            && myOfficeId() != null
+            && request.resource.data.officeId == myOfficeId()
+            && request.resource.data.managerId == request.auth.uid
+            && managesPartner(get(partnerPath(request.resource.data.partnerId)).data))
+          // Kompanjonen föreslår till kontoret hen är kopplad till.
+          || (isPartner()
+            && request.resource.data.proposedBy == 'partner'
+            && request.resource.data.partnerId == request.auth.uid
+            && request.resource.data.officeId
+                 == get(partnerPath(request.auth.uid)).data.get('exchangeOfficeId', ''))
+        );
+
+      allow update: if exchangeUpdateAllowed(
+        resource.data, request.resource.data, exchangeSide(resource.data), eid);
     }
 
     match /cashierDirectory/{cid} {
