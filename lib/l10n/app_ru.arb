@@ -501,5 +501,12 @@
   "officeBalanceTitle": "Баланс офиса",
   "cashierBalancesTitle": "Балансы кассиров",
   "balancesCardSubtitle": "Баланс офиса и кассиров, отдельно.",
-  "noBalance": "Нет баланса."
+  "noBalance": "Нет баланса.",
+  "sellCardSubtitle": "Продайте валюту и получите деньги наличными или на банк.",
+  "currencyToSell": "Валюта, которую вы продаёте",
+  "currencyToReceive": "Валюта, которую вы хотите получить",
+  "amountToSell": "Сколько вы хотите продать?",
+  "sendSellRequest": "Отправить заявку на продажу",
+  "sellRequestSent": "Заявка на продажу отправлена в офис.",
+  "sellSummary": "Продажа {amount} {from} за {to}"
 }

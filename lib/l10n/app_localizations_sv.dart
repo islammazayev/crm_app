@@ -1845,4 +1845,28 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String get noBalance => 'Inget saldo.';
+
+  @override
+  String get sellCardSubtitle =>
+      'Sälj valuta och få pengarna kontant eller till din bank.';
+
+  @override
+  String get currencyToSell => 'Valuta du vill sälja';
+
+  @override
+  String get currencyToReceive => 'Valuta du vill få';
+
+  @override
+  String get amountToSell => 'Hur mycket vill du sälja?';
+
+  @override
+  String get sendSellRequest => 'Skicka säljförfrågan';
+
+  @override
+  String get sellRequestSent => 'Säljförfrågan är skickad till kontoret.';
+
+  @override
+  String sellSummary(Object amount, Object from, Object to) {
+    return 'Sälj $amount $from för $to';
+  }
 }

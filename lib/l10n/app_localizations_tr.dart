@@ -1834,4 +1834,28 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get noBalance => 'Bakiye yok.';
+
+  @override
+  String get sellCardSubtitle =>
+      'Döviz satın, parayı nakit veya bankanıza alın.';
+
+  @override
+  String get currencyToSell => 'Satmak istediğiniz döviz';
+
+  @override
+  String get currencyToReceive => 'Almak istediğiniz döviz';
+
+  @override
+  String get amountToSell => 'Ne kadar satmak istiyorsunuz?';
+
+  @override
+  String get sendSellRequest => 'Satış talebi gönder';
+
+  @override
+  String get sellRequestSent => 'Satış talebi ofise gönderildi.';
+
+  @override
+  String sellSummary(Object amount, Object from, Object to) {
+    return '$to karşılığında $amount $from satış';
+  }
 }

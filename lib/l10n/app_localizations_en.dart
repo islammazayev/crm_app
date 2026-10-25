@@ -1841,4 +1841,28 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get noBalance => 'No balance.';
+
+  @override
+  String get sellCardSubtitle =>
+      'Sell currency and get the money in cash or to your bank.';
+
+  @override
+  String get currencyToSell => 'Currency you want to sell';
+
+  @override
+  String get currencyToReceive => 'Currency you want to receive';
+
+  @override
+  String get amountToSell => 'How much do you want to sell?';
+
+  @override
+  String get sendSellRequest => 'Send sell request';
+
+  @override
+  String get sellRequestSent => 'The sell request was sent to the office.';
+
+  @override
+  String sellSummary(Object amount, Object from, Object to) {
+    return 'Sell $amount $from for $to';
+  }
 }

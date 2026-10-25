@@ -618,7 +618,12 @@ class _ManagerTransactionDetailScreenState
                             ),
                           ),
                         ],
-                      ] else
+                      ] else if (isSellTransaction(data))
+                        Text(
+                          transactionSummary(l10n, data),
+                          style: const TextStyle(fontWeight: FontWeight.w600),
+                        )
+                      else
                         Text(l10n.customerSends(amountFrom, fromCurrency)),
                       const SizedBox(height: 8),
                       Text(l10n.toCurrencyValue(toCurrency)),

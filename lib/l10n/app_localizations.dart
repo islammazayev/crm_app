@@ -3119,6 +3119,48 @@ abstract class AppLocalizations {
   /// In sv, this message translates to:
   /// **'Inget saldo.'**
   String get noBalance;
+
+  /// No description provided for @sellCardSubtitle.
+  ///
+  /// In sv, this message translates to:
+  /// **'Sälj valuta och få pengarna kontant eller till din bank.'**
+  String get sellCardSubtitle;
+
+  /// No description provided for @currencyToSell.
+  ///
+  /// In sv, this message translates to:
+  /// **'Valuta du vill sälja'**
+  String get currencyToSell;
+
+  /// No description provided for @currencyToReceive.
+  ///
+  /// In sv, this message translates to:
+  /// **'Valuta du vill få'**
+  String get currencyToReceive;
+
+  /// No description provided for @amountToSell.
+  ///
+  /// In sv, this message translates to:
+  /// **'Hur mycket vill du sälja?'**
+  String get amountToSell;
+
+  /// No description provided for @sendSellRequest.
+  ///
+  /// In sv, this message translates to:
+  /// **'Skicka säljförfrågan'**
+  String get sendSellRequest;
+
+  /// No description provided for @sellRequestSent.
+  ///
+  /// In sv, this message translates to:
+  /// **'Säljförfrågan är skickad till kontoret.'**
+  String get sellRequestSent;
+
+  /// No description provided for @sellSummary.
+  ///
+  /// In sv, this message translates to:
+  /// **'Sälj {amount} {from} för {to}'**
+  String sellSummary(Object amount, Object from, Object to);
 }
 
 class _AppLocalizationsDelegate

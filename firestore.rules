@@ -112,11 +112,17 @@ service cloud.firestore {
       return data.get('kind', '') == 'buy';
     }
 
+    // En försäljning (kind == 'sell') anger hur mycket kunden säljer
+    // (amountFrom) och hur hen vill få pengarna, kontant eller till banken.
     function hasValidAmounts(d) {
       return isBuy(d)
         ? d.buyAmount is number && d.buyAmount > 0
           && d.deliveryMethod in ['cash', 'bank']
           && d.get('amountFrom', null) == null
+        : d.get('kind', '') == 'sell'
+        ? d.amountFrom is number && d.amountFrom > 0
+          && d.deliveryMethod in ['cash', 'bank']
+          && !d.keys().hasAny(['buyAmount'])
         : d.amountFrom is number && d.amountFrom > 0
           && !d.keys().hasAny(['kind', 'buyAmount', 'deliveryMethod']);
     }

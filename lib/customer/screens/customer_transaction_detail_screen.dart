@@ -105,7 +105,12 @@ class CustomerTransactionDetailScreen extends StatelessWidget {
                                 )
                               : l10n.buyPriceComing,
                         ),
-                      ] else
+                      ] else if (isSellTransaction(data))
+                        Text(
+                          transactionSummary(l10n, data),
+                          style: const TextStyle(fontWeight: FontWeight.w600),
+                        )
+                      else
                         Text(l10n.youSend(amountFrom, fromCurrency)),
                       const SizedBox(height: 8),
                       Text(

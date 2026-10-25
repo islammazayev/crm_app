@@ -11,18 +11,31 @@ import 'office_listing.dart';
 /// Hur kunden vill få valutan hen köper.
 enum DeliveryMethod { cash, bank }
 
-/// Köp-flödet: kunden väljer valutan hen vill köpa, vilken valuta hen
-/// betalar med, kontant eller bank, kontor och hur mycket hen vill köpa.
-/// Vad det kostar räknar managern ut i sitt förslag.
-class BuySection extends StatefulWidget {
-  const BuySection({super.key});
+/// Köpa eller sälja valuta.
+enum TradeKind { buy, sell }
+
+/// Köp- och säljflödet. Kunden väljer först valutan hen köper (eller
+/// säljer), sedan valutan hen betalar med (eller vill få), kontant eller
+/// bank, kontor och belopp.
+///
+/// Köp: beloppet är det kunden vill få; vad det kostar räknar managern ut.
+/// Sälj: beloppet är det kunden säljer; managern räknar ut vad hen får.
+class TradeSection extends StatefulWidget {
+  final TradeKind kind;
+
+  const TradeSection({super.key, required this.kind});
 
   @override
-  State<BuySection> createState() => _BuySectionState();
+  State<TradeSection> createState() => _TradeSectionState();
 }
 
-class _BuySectionState extends State<BuySection> {
+class _TradeSectionState extends State<TradeSection> {
+  bool get _isBuy => widget.kind == TradeKind.buy;
+
+  /// Valutan som väljs först: den kunden köper eller säljer.
   String? _buyCurrency;
+
+  /// Valutan som väljs sedan: den kunden betalar med eller vill få.
   String? _payCurrency;
   DeliveryMethod _delivery = DeliveryMethod.cash;
   String? _officeId;
@@ -67,8 +80,8 @@ class _BuySectionState extends State<BuySection> {
     return set.toList()..sort();
   }
 
-  /// Valutor att betala med: de som något kontor hanterar tillsammans med
-  /// valutan kunden köper.
+  /// Valutor att betala med (eller få): de som något kontor hanterar
+  /// tillsammans med valutan som valdes först.
   List<String> get _payCurrencies {
     final buy = _buyCurrency;
     if (buy == null) return [];
@@ -131,13 +144,19 @@ class _BuySectionState extends State<BuySection> {
                 .trim(),
         'customerPhone': (customer['phone'] ?? '').toString(),
         'officeId': _officeId,
-        'kind': 'buy',
+        'kind': widget.kind.name,
         'deliveryMethod': _delivery.name,
         // Kunden betalar med fromCurrency och får toCurrency.
-        'fromCurrency': _payCurrency,
-        'toCurrency': _buyCurrency,
-        'buyAmount': amount,
-        'amountFrom': null,
+        if (_isBuy) ...{
+          'fromCurrency': _payCurrency,
+          'toCurrency': _buyCurrency,
+          'buyAmount': amount,
+          'amountFrom': null,
+        } else ...{
+          'fromCurrency': _buyCurrency,
+          'toCurrency': _payCurrency,
+          'amountFrom': amount,
+        },
         'amountTo': null,
         'feePercent': null,
         'feeAmount': null,
@@ -148,7 +167,7 @@ class _BuySectionState extends State<BuySection> {
       });
 
       if (!mounted) return;
-      _snack(l10n.buyRequestSent);
+      _snack(_isBuy ? l10n.buyRequestSent : l10n.sellRequestSent);
       _amountCtrl.clear();
       setState(() {
         _buyCurrency = null;
@@ -184,11 +203,13 @@ class _BuySectionState extends State<BuySection> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // 1. Valutan kunden vill köpa
+          // 1. Valutan kunden vill köpa (eller sälja)
           DropdownButtonFormField<String>(
             key: ValueKey('buy-$_buyCurrency'),
             initialValue: _buyCurrency,
-            decoration: InputDecoration(labelText: l10n.currencyToBuy),
+            decoration: InputDecoration(
+              labelText: _isBuy ? l10n.currencyToBuy : l10n.currencyToSell,
+            ),
             items: _allCurrencies
                 .map((c) => DropdownMenuItem(value: c, child: Text(c)))
                 .toList(),
@@ -200,11 +221,15 @@ class _BuySectionState extends State<BuySection> {
           ),
           const SizedBox(height: 16),
 
-          // 2. Valutan kunden betalar med
+          // 2. Valutan kunden betalar med (eller vill få)
           DropdownButtonFormField<String>(
             key: ValueKey('pay-$_buyCurrency-$_payCurrency'),
             initialValue: _payCurrency,
-            decoration: InputDecoration(labelText: l10n.currencyToPayWith),
+            decoration: InputDecoration(
+              labelText: _isBuy
+                  ? l10n.currencyToPayWith
+                  : l10n.currencyToReceive,
+            ),
             items: _payCurrencies
                 .map((c) => DropdownMenuItem(value: c, child: Text(c)))
                 .toList(),
@@ -271,12 +296,12 @@ class _BuySectionState extends State<BuySection> {
           ),
           const SizedBox(height: 16),
 
-          // 5. Hur mycket kunden vill köpa
+          // 5. Hur mycket kunden vill köpa (eller sälja)
           TextFormField(
             controller: _amountCtrl,
             keyboardType: const TextInputType.numberWithOptions(decimal: true),
             decoration: InputDecoration(
-              labelText: l10n.amountToBuy,
+              labelText: _isBuy ? l10n.amountToBuy : l10n.amountToSell,
               suffixText: _buyCurrency,
             ),
           ),
@@ -292,7 +317,7 @@ class _BuySectionState extends State<BuySection> {
                       height: 20,
                       child: CircularProgressIndicator(strokeWidth: 2),
                     )
-                  : Text(l10n.sendBuyRequest),
+                  : Text(_isBuy ? l10n.sendBuyRequest : l10n.sendSellRequest),
             ),
           ),
         ],

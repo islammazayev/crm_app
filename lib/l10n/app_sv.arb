@@ -1356,5 +1356,25 @@
   "officeBalanceTitle": "Kontorets saldo",
   "cashierBalancesTitle": "Kassörernas saldo",
   "balancesCardSubtitle": "Kontorets och kassörernas saldo, var för sig.",
-  "noBalance": "Inget saldo."
+  "noBalance": "Inget saldo.",
+  "sellCardSubtitle": "Sälj valuta och få pengarna kontant eller till din bank.",
+  "currencyToSell": "Valuta du vill sälja",
+  "currencyToReceive": "Valuta du vill få",
+  "amountToSell": "Hur mycket vill du sälja?",
+  "sendSellRequest": "Skicka säljförfrågan",
+  "sellRequestSent": "Säljförfrågan är skickad till kontoret.",
+  "sellSummary": "Sälj {amount} {from} för {to}",
+  "@sellSummary": {
+    "placeholders": {
+      "amount": {
+        "type": "Object"
+      },
+      "from": {
+        "type": "Object"
+      },
+      "to": {
+        "type": "Object"
+      }
+    }
+  }
 }
