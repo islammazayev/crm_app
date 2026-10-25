@@ -2,9 +2,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
-import '../customer/pages/customer_buy_page.dart';
+import '../customer/pages/customer_trade_page.dart';
 import '../customer/pages/customer_send_page.dart';
 import '../customer/screens/customer_transactions_screen.dart';
+import '../customer/widgets/trade_section.dart';
 import '../l10n/locale_controller.dart';
 import '../screens/auth_gate.dart';
 import '../theme/app_theme.dart';
@@ -128,10 +129,23 @@ class CustomerWelcomeScreen extends StatelessWidget {
                   title: l10n.tabBuy,
                   subtitle: l10n.buyCardSubtitle,
                   badge: '+',
-                  onTap: () => _open(context, const CustomerBuyPage()),
+                  onTap: () => _open(
+                    context,
+                    const CustomerTradePage(kind: TradeKind.buy),
+                  ),
+                ),
+                ActionCard(
+                  icon: Icons.sell_outlined,
+                  iconColor: AppColors.info,
+                  title: l10n.tabSell,
+                  subtitle: l10n.sellCardSubtitle,
+                  badge: '+',
+                  onTap: () => _open(
+                    context,
+                    const CustomerTradePage(kind: TradeKind.sell),
+                  ),
                 ),
                 for (final (icon, title) in [
-                  (Icons.sell_outlined, l10n.tabSell),
                   (Icons.currency_exchange, l10n.tabExchange),
                 ])
                   ActionCard(

@@ -644,7 +644,7 @@ class _AdminOrdersPageState extends State<AdminOrdersPage> {
                         if (no.isNotEmpty) no,
                         if (clientId.isNotEmpty) l10n.clientShort(clientId),
                         if (customerName.isNotEmpty) customerName,
-                        if (isBuyTransaction(data))
+                        if (isBuyTransaction(data) || isSellTransaction(data))
                           transactionSummary(l10n, data),
                       ].join(' · ');
 

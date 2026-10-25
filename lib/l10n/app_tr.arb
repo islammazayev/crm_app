@@ -501,5 +501,12 @@
   "officeBalanceTitle": "Ofis bakiyesi",
   "cashierBalancesTitle": "Kasiyer bakiyeleri",
   "balancesCardSubtitle": "Ofisin ve kasiyerlerin bakiyeleri, ayrı ayrı.",
-  "noBalance": "Bakiye yok."
+  "noBalance": "Bakiye yok.",
+  "sellCardSubtitle": "Döviz satın, parayı nakit veya bankanıza alın.",
+  "currencyToSell": "Satmak istediğiniz döviz",
+  "currencyToReceive": "Almak istediğiniz döviz",
+  "amountToSell": "Ne kadar satmak istiyorsunuz?",
+  "sendSellRequest": "Satış talebi gönder",
+  "sellRequestSent": "Satış talebi ofise gönderildi.",
+  "sellSummary": "{to} karşılığında {amount} {from} satış"
 }

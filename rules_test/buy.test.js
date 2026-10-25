@@ -79,6 +79,37 @@ describe('kundens köpförfrågan', () => {
   });
 });
 
+describe('kundens säljförfrågan', () => {
+  test('sälj med belopp och kontant eller bank', async () => {
+    await assertSucceeds(setDoc(doc(as('C'), 'transactions', 's1'),
+      request({ kind: 'sell', amountFrom: 100, deliveryMethod: 'cash' })));
+    await assertSucceeds(setDoc(doc(as('C'), 'transactions', 's2'),
+      request({ kind: 'sell', amountFrom: 100, deliveryMethod: 'bank' })));
+  });
+
+  test('sälj utan belopp, utan sätt eller med köpbelopp nekas', async () => {
+    await assertFails(setDoc(doc(as('C'), 'transactions', 's1'),
+      request({ kind: 'sell', amountFrom: null, deliveryMethod: 'cash' })));
+    await assertFails(setDoc(doc(as('C'), 'transactions', 's2'),
+      request({ kind: 'sell', amountFrom: 100 })));
+    await assertFails(setDoc(doc(as('C'), 'transactions', 's3'),
+      request({ kind: 'sell', amountFrom: 100, deliveryMethod: 'cash', buyAmount: 5 })));
+  });
+
+  test('beloppet i en försäljning kan inte ändras av managern', async () => {
+    await env.withSecurityRulesDisabled(async (ctx) => {
+      await setDoc(doc(ctx.firestore(), 'transactions', 'sell'), {
+        status: 'customer_requested', officeId: 'O1', customerId: 'C',
+        kind: 'sell', deliveryMethod: 'bank', amountFrom: 100,
+      });
+    });
+    await assertFails(updateDoc(doc(as('M'), 'transactions', 'sell'),
+      { status: 'manager_proposed', feePercent: 5, rateFromTo: 10, amountFrom: 200, amountToNet: 1900 }));
+    await assertSucceeds(updateDoc(doc(as('M'), 'transactions', 'sell'),
+      { status: 'manager_proposed', feePercent: 5, rateFromTo: 10, amountToNet: 950 }));
+  });
+});
+
 describe('managerns förslag på köp', () => {
   const propose = (amountFrom, amountToNet) => ({
     status: 'manager_proposed', feePercent: 5, rateFromTo: 0.09, amountFrom, amountToNet,

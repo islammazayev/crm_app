@@ -1849,4 +1849,28 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get noBalance => 'Нет баланса.';
+
+  @override
+  String get sellCardSubtitle =>
+      'Продайте валюту и получите деньги наличными или на банк.';
+
+  @override
+  String get currencyToSell => 'Валюта, которую вы продаёте';
+
+  @override
+  String get currencyToReceive => 'Валюта, которую вы хотите получить';
+
+  @override
+  String get amountToSell => 'Сколько вы хотите продать?';
+
+  @override
+  String get sendSellRequest => 'Отправить заявку на продажу';
+
+  @override
+  String get sellRequestSent => 'Заявка на продажу отправлена в офис.';
+
+  @override
+  String sellSummary(Object amount, Object from, Object to) {
+    return 'Продажа $amount $from за $to';
+  }
 }

@@ -501,5 +501,12 @@
   "officeBalanceTitle": "Office balance",
   "cashierBalancesTitle": "Cashier balances",
   "balancesCardSubtitle": "The office's and the cashiers' balances, separately.",
-  "noBalance": "No balance."
+  "noBalance": "No balance.",
+  "sellCardSubtitle": "Sell currency and get the money in cash or to your bank.",
+  "currencyToSell": "Currency you want to sell",
+  "currencyToReceive": "Currency you want to receive",
+  "amountToSell": "How much do you want to sell?",
+  "sendSellRequest": "Send sell request",
+  "sellRequestSent": "The sell request was sent to the office.",
+  "sellSummary": "Sell {amount} {from} for {to}"
 }
