@@ -260,7 +260,7 @@ class _ManagerHomeScreenState extends State<ManagerHomeScreen> {
                           ),
                         ),
                       ),
-                      // Växlingar med kompanjoner; siffran visar öppna.
+                      // Växlingar med partner; siffran visar öppna.
                       StreamBuilder<
                         List<QueryDocumentSnapshot<Map<String, dynamic>>>
                       >(

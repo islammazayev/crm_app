@@ -1875,23 +1875,23 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
-  String get partners => 'Компаньоны';
+  String get partners => 'Партнёры';
 
   @override
-  String get partnersCardSubtitle => 'Обмен валюты с вашими компаньонами.';
+  String get partnersCardSubtitle => 'Обмен валюты с вашими партнёрами.';
 
   @override
   String get partnersAdminCardSubtitle =>
-      'Создавайте компаньонов и привязывайте их к офису или менеджеру.';
+      'Создавайте партнёров и привязывайте их к офису или менеджеру.';
 
   @override
-  String get editPartnerTitle => 'Изменить компаньона';
+  String get editPartnerTitle => 'Изменить партнёра';
 
   @override
-  String get partnerUpdated => 'Компаньон обновлён.';
+  String get partnerUpdated => 'Партнёр обновлён.';
 
   @override
-  String get deletePartnerTitle => 'Удалить компаньона?';
+  String get deletePartnerTitle => 'Удалить партнёра?';
 
   @override
   String deletePartnerConfirm(Object name) {
@@ -1899,34 +1899,34 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
-  String get partnerDeleted => 'Компаньон удалён.';
+  String get partnerDeleted => 'Партнёр удалён.';
 
   @override
-  String get existingPartners => 'Компаньоны';
+  String get existingPartners => 'Партнёры';
 
   @override
-  String get searchPartnersLabel => 'Поиск компаньона (имя, офис, менеджер)';
+  String get searchPartnersLabel => 'Поиск партнёра (имя, офис, менеджер)';
 
   @override
-  String get createNewPartner => 'Создать компаньона';
+  String get createNewPartner => 'Создать партнёра';
 
   @override
-  String get createPartner => 'Создать компаньона';
+  String get createPartner => 'Создать партнёра';
 
   @override
-  String get partnerCreated => 'Компаньон создан.';
+  String get partnerCreated => 'Партнёр создан.';
 
   @override
   String couldNotCreatePartner(Object error) {
-    return 'Не удалось создать компаньона: $error';
+    return 'Не удалось создать партнёра: $error';
   }
 
   @override
-  String get partnerAppBarTitle => 'CRM – Компаньон';
+  String get partnerAppBarTitle => 'CRM – Партнёр';
 
   @override
   String get partnerNotSetUp =>
-      'Ваш аккаунт компаньона ещё не привязан к офису. Обратитесь к администратору.';
+      'Ваш аккаунт партнёра ещё не привязан к офису. Обратитесь к администратору.';
 
   @override
   String get newExchange => 'Новое предложение обмена';
@@ -1935,11 +1935,11 @@ class AppLocalizationsRu extends AppLocalizations {
   String get exchangesTitle => 'Обмены';
 
   @override
-  String get partnerBalancesTitle => 'Балансы компаньонов';
+  String get partnerBalancesTitle => 'Балансы партнёров';
 
   @override
   String get noPartnersLinked =>
-      'К вам или вашему офису не привязаны компаньоны.';
+      'К вам или вашему офису не привязаны партнёры.';
 
   @override
   String get exchangeProposed => 'Предложение';
@@ -1966,7 +1966,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String exchangePartnerGives(Object amount) {
-    return 'Компаньон отдаёт: $amount';
+    return 'Партнёр отдаёт: $amount';
   }
 
   @override
@@ -1991,10 +1991,10 @@ class AppLocalizationsRu extends AppLocalizations {
   String get exchangeOfficeSentWaiting => '… Офис ещё не отправил';
 
   @override
-  String get exchangePartnerSentDone => '✓ Компаньон отправил';
+  String get exchangePartnerSentDone => '✓ Партнёр отправил';
 
   @override
-  String get exchangePartnerSentWaiting => '… Компаньон ещё не отправил';
+  String get exchangePartnerSentWaiting => '… Партнёр ещё не отправил';
 
   @override
   String get counterProposal => 'Встречное предложение';
@@ -2040,7 +2040,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get exchangeProposalSent => 'Предложение отправлено.';
 
   @override
-  String get choosePartner => 'Компаньон';
+  String get choosePartner => 'Партнёр';
 
   @override
   String get sendProposal => 'Отправить предложение';

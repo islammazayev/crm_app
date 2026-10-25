@@ -20,10 +20,10 @@ import '../../widgets/confirm_delete.dart';
 import '../../widgets/partner_exchanges.dart';
 import '../../widgets/search_summary.dart';
 
-/// Kassörer och kompanjoner skapas, kopplas och får saldo på samma sätt.
+/// Kassörer och partner skapas, kopplas och får saldo på samma sätt.
 enum StaffType { cashier, partner }
 
-/// Texterna som skiljer sig mellan kassörer och kompanjoner.
+/// Texterna som skiljer sig mellan kassörer och partner.
 class _StaffTexts {
   final String title;
   final String editTitle;
@@ -85,7 +85,7 @@ class _StaffTexts {
         );
 }
 
-/// Kontor och managers att koppla kassörer och kompanjoner till.
+/// Kontor och managers att koppla kassörer och partner till.
 class _Links {
   final Map<String, String> offices; // id → "Land – Stad"
   final Map<String, String> managers; // uid → namn
@@ -93,7 +93,7 @@ class _Links {
   const _Links(this.offices, this.managers, this.managerOffices);
 }
 
-/// Admin: skapa kassörer (eller kompanjoner), koppla dem till kontor
+/// Admin: skapa kassörer (eller partner), koppla dem till kontor
 /// och/eller manager, fyll på saldo, ta bort och se deras överföringar
 /// (eller växlingar).
 class AdminCashiersPage extends StatefulWidget {
@@ -557,7 +557,7 @@ class _AdminCashiersPageState extends State<AdminCashiersPage> {
   }
 }
 
-/// Admin: alla växlingar för en kompanjon (bara läsa).
+/// Admin: alla växlingar för en partner (bara läsa).
 class _PartnerExchangesPage extends StatelessWidget {
   final String partnerId;
   final String name;

@@ -401,7 +401,7 @@ Future<ExchangeTerms?> showExchangeCounterDialog(
 }
 
 /// Nytt förslag: valuta och belopp man ger och får. Kursen visas medan man
-/// skriver. [partnerChoices] visas för managern (vilken kompanjon).
+/// skriver. [partnerChoices] visas för managern (vilken partner).
 class NewExchangePage extends StatefulWidget {
   final ExchangeSide side;
   final Map<String, String> partnerChoices;

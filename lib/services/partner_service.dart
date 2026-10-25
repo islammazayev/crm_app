@@ -7,7 +7,7 @@ enum ExchangeSide { office, partner }
 
 /// Villkoren i en växling sett från kontoret: kontoret ger
 /// [officeGivesAmount] [officeGivesCurrency] och får [partnerGivesAmount]
-/// [partnerGivesCurrency] av kompanjonen. Ingen avgift.
+/// [partnerGivesCurrency] av partnern. Ingen avgift.
 class ExchangeTerms {
   final String officeGivesCurrency;
   final double officeGivesAmount;
@@ -40,7 +40,7 @@ class ExchangeTerms {
       officeGivesAmount == 0 ? 0 : partnerGivesAmount / officeGivesAmount;
 }
 
-/// Växlingar mellan kontor och kompanjoner (se firestore.rules).
+/// Växlingar mellan kontor och partner (se firestore.rules).
 class PartnerService {
   PartnerService._();
 
@@ -53,7 +53,7 @@ class PartnerService {
   static DocumentReference<Map<String, dynamic>> partner(String uid) =>
       partners.doc(uid);
 
-  /// Kompanjoner kopplade till managern eller managerns kontor (en fråga
+  /// Partner kopplade till managern eller managerns kontor (en fråga
   /// per villkor, så att reglerna kan godkänna dem).
   static Stream<List<QueryDocumentSnapshot<Map<String, dynamic>>>> partnersFor(
     String managerId,

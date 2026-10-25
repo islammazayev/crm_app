@@ -3165,37 +3165,37 @@ abstract class AppLocalizations {
   /// No description provided for @partners.
   ///
   /// In sv, this message translates to:
-  /// **'Kompanjoner'**
+  /// **'Partner'**
   String get partners;
 
   /// No description provided for @partnersCardSubtitle.
   ///
   /// In sv, this message translates to:
-  /// **'Växla valuta med dina kompanjoner.'**
+  /// **'Växla valuta med dina partner.'**
   String get partnersCardSubtitle;
 
   /// No description provided for @partnersAdminCardSubtitle.
   ///
   /// In sv, this message translates to:
-  /// **'Skapa kompanjoner och koppla dem till kontor eller manager.'**
+  /// **'Skapa partner och koppla dem till kontor eller manager.'**
   String get partnersAdminCardSubtitle;
 
   /// No description provided for @editPartnerTitle.
   ///
   /// In sv, this message translates to:
-  /// **'Ändra kompanjon'**
+  /// **'Ändra partner'**
   String get editPartnerTitle;
 
   /// No description provided for @partnerUpdated.
   ///
   /// In sv, this message translates to:
-  /// **'Kompanjonen är uppdaterad.'**
+  /// **'Partnern är uppdaterad.'**
   String get partnerUpdated;
 
   /// No description provided for @deletePartnerTitle.
   ///
   /// In sv, this message translates to:
-  /// **'Ta bort kompanjonen?'**
+  /// **'Ta bort partnern?'**
   String get deletePartnerTitle;
 
   /// No description provided for @deletePartnerConfirm.
@@ -3207,55 +3207,55 @@ abstract class AppLocalizations {
   /// No description provided for @partnerDeleted.
   ///
   /// In sv, this message translates to:
-  /// **'Kompanjonen är borttagen.'**
+  /// **'Partnern är borttagen.'**
   String get partnerDeleted;
 
   /// No description provided for @existingPartners.
   ///
   /// In sv, this message translates to:
-  /// **'Kompanjoner'**
+  /// **'Partner'**
   String get existingPartners;
 
   /// No description provided for @searchPartnersLabel.
   ///
   /// In sv, this message translates to:
-  /// **'Sök kompanjon (namn, kontor, manager)'**
+  /// **'Sök partner (namn, kontor, manager)'**
   String get searchPartnersLabel;
 
   /// No description provided for @createNewPartner.
   ///
   /// In sv, this message translates to:
-  /// **'Skapa ny kompanjon'**
+  /// **'Skapa ny partner'**
   String get createNewPartner;
 
   /// No description provided for @createPartner.
   ///
   /// In sv, this message translates to:
-  /// **'Skapa kompanjon'**
+  /// **'Skapa partner'**
   String get createPartner;
 
   /// No description provided for @partnerCreated.
   ///
   /// In sv, this message translates to:
-  /// **'Kompanjonen är skapad.'**
+  /// **'Partnern är skapad.'**
   String get partnerCreated;
 
   /// No description provided for @couldNotCreatePartner.
   ///
   /// In sv, this message translates to:
-  /// **'Kunde inte skapa kompanjon: {error}'**
+  /// **'Kunde inte skapa partner: {error}'**
   String couldNotCreatePartner(Object error);
 
   /// No description provided for @partnerAppBarTitle.
   ///
   /// In sv, this message translates to:
-  /// **'CRM – Kompanjon'**
+  /// **'CRM – Partner'**
   String get partnerAppBarTitle;
 
   /// No description provided for @partnerNotSetUp.
   ///
   /// In sv, this message translates to:
-  /// **'Ditt kompanjonskonto är inte kopplat till något kontor än. Kontakta admin.'**
+  /// **'Ditt partnerkonto är inte kopplat till något kontor än. Kontakta admin.'**
   String get partnerNotSetUp;
 
   /// No description provided for @newExchange.
@@ -3273,13 +3273,13 @@ abstract class AppLocalizations {
   /// No description provided for @partnerBalancesTitle.
   ///
   /// In sv, this message translates to:
-  /// **'Kompanjonernas saldo'**
+  /// **'Partnernas saldo'**
   String get partnerBalancesTitle;
 
   /// No description provided for @noPartnersLinked.
   ///
   /// In sv, this message translates to:
-  /// **'Inga kompanjoner är kopplade till dig eller ditt kontor.'**
+  /// **'Inga partner är kopplade till dig eller ditt kontor.'**
   String get noPartnersLinked;
 
   /// No description provided for @exchangeProposed.
@@ -3327,7 +3327,7 @@ abstract class AppLocalizations {
   /// No description provided for @exchangePartnerGives.
   ///
   /// In sv, this message translates to:
-  /// **'Kompanjonen ger: {amount}'**
+  /// **'Partnern ger: {amount}'**
   String exchangePartnerGives(Object amount);
 
   /// No description provided for @exchangeYouGive.
@@ -3363,13 +3363,13 @@ abstract class AppLocalizations {
   /// No description provided for @exchangePartnerSentDone.
   ///
   /// In sv, this message translates to:
-  /// **'✓ Kompanjonen har skickat'**
+  /// **'✓ Partnern har skickat'**
   String get exchangePartnerSentDone;
 
   /// No description provided for @exchangePartnerSentWaiting.
   ///
   /// In sv, this message translates to:
-  /// **'… Kompanjonen har inte skickat än'**
+  /// **'… Partnern har inte skickat än'**
   String get exchangePartnerSentWaiting;
 
   /// No description provided for @counterProposal.
@@ -3447,7 +3447,7 @@ abstract class AppLocalizations {
   /// No description provided for @choosePartner.
   ///
   /// In sv, this message translates to:
-  /// **'Kompanjon'**
+  /// **'Partner'**
   String get choosePartner;
 
   /// No description provided for @sendProposal.

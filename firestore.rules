@@ -256,9 +256,9 @@ service cloud.firestore {
         && request.resource.data.lastBookedTransactionId is string
         && bookingMatchesTransaction(officeId);
 
-      // Växling med en kompanjon: kontorets saldo bokförs i samma batch som
+      // Växling med en partner: kontorets saldo bokförs i samma batch som
       // växlingen blir genomförd, av den som bekräftar sist (manager eller
-      // kompanjon). Se partnerExchanges.
+      // partner). Se partnerExchanges.
       allow update: if (isPartner()
           || (isManager() && myOfficeId() != null && myOfficeId() == officeId))
         && request.resource.data.diff(resource.data).changedKeys()
@@ -351,12 +351,12 @@ service cloud.firestore {
         && cashierBalanceMatchesTransfer(cid);
     }
 
-    // ─── KOMPANJONER ────────────────────────────────────────────────
+    // ─── PARTNER ────────────────────────────────────────────────
     // partners/{uid}: privat (saldon, koppling till kontor/manager). Admin
     // sparar också exchangeOfficeId: kontoret vars saldo växlingarna går mot
     // (det kopplade kontoret, annars den kopplade managerns kontor).
     //
-    // partnerExchanges/{id}: växling mellan ett kontor och en kompanjon,
+    // partnerExchanges/{id}: växling mellan ett kontor och en partner,
     // utan avgift. Sidan "office" ger officeGivesAmount i
     // officeGivesCurrency och får partnerGivesAmount i partnerGivesCurrency.
     //   proposed  den ena sidan föreslår; den andra accepterar, avböjer eller
@@ -364,7 +364,7 @@ service cloud.firestore {
     //   accepted  var sida markerar "skickat" och sedan "mottaget" när den
     //             andras pengar har kommit
     //   completed när båda har tagit emot; saldona för kontoret och
-    //             kompanjonen bokförs i samma batch
+    //             partnern bokförs i samma batch
     function partnerPath(uid) {
       return /databases/$(database)/documents/partners/$(uid);
     }
@@ -469,7 +469,7 @@ service cloud.firestore {
         && newB.get(ex.officeGivesCurrency, 0) >= 0;
     }
 
-    // Kompanjonen får officeGives och ger partnerGives.
+    // Partnern får officeGives och ger partnerGives.
     function partnerBookingMatchesExchange(pid) {
       let path = exchangePath(request.resource.data.lastExchangeId);
       let ex = get(path).data;
@@ -515,14 +515,14 @@ service cloud.firestore {
         && hasValidExchangeTerms(request.resource.data)
         && exists(partnerPath(request.resource.data.partnerId))
         && (
-          // Managern föreslår till en kompanjon som är kopplad till hen.
+          // Managern föreslår till en partner som är kopplad till hen.
           (isManager()
             && request.resource.data.proposedBy == 'office'
             && myOfficeId() != null
             && request.resource.data.officeId == myOfficeId()
             && request.resource.data.managerId == request.auth.uid
             && managesPartner(get(partnerPath(request.resource.data.partnerId)).data))
-          // Kompanjonen föreslår till kontoret hen är kopplad till.
+          // Partnern föreslår till kontoret hen är kopplad till.
           || (isPartner()
             && request.resource.data.proposedBy == 'partner'
             && request.resource.data.partnerId == request.auth.uid

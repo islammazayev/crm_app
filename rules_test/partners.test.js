@@ -1,4 +1,4 @@
-// Tester av kompanjoner: växling mellan ett kontor och en kompanjon.
+// Tester av partner: växling mellan ett kontor och en partner.
 import { readFileSync } from 'node:fs';
 import { after, before, beforeEach, describe, test } from 'node:test';
 import {
@@ -23,7 +23,7 @@ after(async () => {
   await env?.cleanup();
 });
 
-// Kontoret ger 1000 SEK och får 90 EUR av kompanjonen.
+// Kontoret ger 1000 SEK och får 90 EUR av partnern.
 const terms = {
   officeGivesCurrency: 'SEK', officeGivesAmount: 1000,
   partnerGivesCurrency: 'EUR', partnerGivesAmount: 90,
@@ -62,17 +62,17 @@ const proposal = (extra) => ({
 });
 
 describe('förslag', () => {
-  test('managern föreslår till sin kompanjon', async () => {
+  test('managern föreslår till sin partner', async () => {
     await assertSucceeds(setDoc(doc(as('M'), 'partnerExchanges', 'e1'),
       proposal({ officeId: 'O1', managerId: 'M', partnerId: 'P', proposedBy: 'office' })));
   });
 
-  test('managern kan inte föreslå till en annans kompanjon', async () => {
+  test('managern kan inte föreslå till en annans partner', async () => {
     await assertFails(setDoc(doc(as('M'), 'partnerExchanges', 'e1'),
       proposal({ officeId: 'O1', managerId: 'M', partnerId: 'P2', proposedBy: 'office' })));
   });
 
-  test('kompanjonen föreslår bara till sitt eget kontor', async () => {
+  test('partnern föreslår bara till sitt eget kontor', async () => {
     await assertSucceeds(setDoc(doc(as('P'), 'partnerExchanges', 'e1'),
       proposal({ officeId: 'O1', managerId: '', partnerId: 'P', proposedBy: 'partner' })));
     await assertFails(setDoc(doc(as('P'), 'partnerExchanges', 'e2'),
@@ -109,7 +109,7 @@ describe('svar på förslag', () => {
     await assertSucceeds(updateDoc(ref('M'), { status: 'cancelled' }));
   });
 
-  test('andra kontor och kompanjoner kommer inte åt växlingen', async () => {
+  test('andra kontor och partner kommer inte åt växlingen', async () => {
     await assertFails(updateDoc(ref('M2'), { status: 'accepted' }));
     await assertFails(updateDoc(ref('P2'), { status: 'accepted' }));
   });
@@ -137,7 +137,7 @@ describe('skickat och mottaget', () => {
     await assertSucceeds(updateDoc(doc(as('P'), 'partnerExchanges', 'done'), { partnerReceived: true }));
   });
 
-  // Den sista bekräftelsen bokför kontorets och kompanjonens saldo.
+  // Den sista bekräftelsen bokför kontorets och partnerns saldo.
   const finish = (uid, overrides = {}) => {
     const db = as(uid);
     const batch = writeBatch(db);
@@ -167,7 +167,7 @@ describe('skickat och mottaget', () => {
     await assertSucceeds(finish('M'));
   });
 
-  test('kompanjonen bekräftar sist och bokför båda saldona', async () => {
+  test('partnern bekräftar sist och bokför båda saldona', async () => {
     await otherReceived('officeReceived');
     await assertSucceeds(finish('P'));
   });

@@ -7,7 +7,7 @@ import '../../utils/balances.dart';
 import '../../widgets/partner_exchanges.dart';
 import 'manager_balances_page.dart' show BalanceCard;
 
-/// Managerns kompanjoner: deras saldon, nytt växlingsförslag och alla
+/// Managerns partner: deras saldon, nytt växlingsförslag och alla
 /// växlingar för kontoret.
 class ManagerPartnersPage extends StatelessWidget {
   final String managerId;

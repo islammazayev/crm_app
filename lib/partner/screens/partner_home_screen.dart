@@ -11,7 +11,7 @@ import '../../utils/balances.dart';
 import '../../widgets/language_button.dart';
 import '../../widgets/partner_exchanges.dart';
 
-/// Kompanjonens startsida: saldo, nytt växlingsförslag till kontoret och
+/// Partnerns startsida: saldo, nytt växlingsförslag till kontoret och
 /// alla växlingar. Ingen avgift och ingen vinst, bara växling.
 class PartnerHomeScreen extends StatelessWidget {
   const PartnerHomeScreen({super.key});

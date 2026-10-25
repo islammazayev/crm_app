@@ -1377,12 +1377,12 @@
       }
     }
   },
-  "partners": "Kompanjoner",
-  "partnersCardSubtitle": "Växla valuta med dina kompanjoner.",
-  "partnersAdminCardSubtitle": "Skapa kompanjoner och koppla dem till kontor eller manager.",
-  "editPartnerTitle": "Ändra kompanjon",
-  "partnerUpdated": "Kompanjonen är uppdaterad.",
-  "deletePartnerTitle": "Ta bort kompanjonen?",
+  "partners": "Partner",
+  "partnersCardSubtitle": "Växla valuta med dina partner.",
+  "partnersAdminCardSubtitle": "Skapa partner och koppla dem till kontor eller manager.",
+  "editPartnerTitle": "Ändra partner",
+  "partnerUpdated": "Partnern är uppdaterad.",
+  "deletePartnerTitle": "Ta bort partnern?",
   "deletePartnerConfirm": "{name} kommer inte längre åt appen och saldot tas bort. Inloggningskontot finns kvar och kan tas bort under Authentication i Firebase-konsolen.",
   "@deletePartnerConfirm": {
     "placeholders": {
@@ -1391,13 +1391,13 @@
       }
     }
   },
-  "partnerDeleted": "Kompanjonen är borttagen.",
-  "existingPartners": "Kompanjoner",
-  "searchPartnersLabel": "Sök kompanjon (namn, kontor, manager)",
-  "createNewPartner": "Skapa ny kompanjon",
-  "createPartner": "Skapa kompanjon",
-  "partnerCreated": "Kompanjonen är skapad.",
-  "couldNotCreatePartner": "Kunde inte skapa kompanjon: {error}",
+  "partnerDeleted": "Partnern är borttagen.",
+  "existingPartners": "Partner",
+  "searchPartnersLabel": "Sök partner (namn, kontor, manager)",
+  "createNewPartner": "Skapa ny partner",
+  "createPartner": "Skapa partner",
+  "partnerCreated": "Partnern är skapad.",
+  "couldNotCreatePartner": "Kunde inte skapa partner: {error}",
   "@couldNotCreatePartner": {
     "placeholders": {
       "error": {
@@ -1405,12 +1405,12 @@
       }
     }
   },
-  "partnerAppBarTitle": "CRM – Kompanjon",
-  "partnerNotSetUp": "Ditt kompanjonskonto är inte kopplat till något kontor än. Kontakta admin.",
+  "partnerAppBarTitle": "CRM – Partner",
+  "partnerNotSetUp": "Ditt partnerkonto är inte kopplat till något kontor än. Kontakta admin.",
   "newExchange": "Nytt växlingsförslag",
   "exchangesTitle": "Växlingar",
-  "partnerBalancesTitle": "Kompanjonernas saldo",
-  "noPartnersLinked": "Inga kompanjoner är kopplade till dig eller ditt kontor.",
+  "partnerBalancesTitle": "Partnernas saldo",
+  "noPartnersLinked": "Inga partner är kopplade till dig eller ditt kontor.",
   "exchangeProposed": "Förslag",
   "exchangeAccepted": "Accepterad",
   "exchangeRejected": "Avböjd",
@@ -1425,7 +1425,7 @@
       }
     }
   },
-  "exchangePartnerGives": "Kompanjonen ger: {amount}",
+  "exchangePartnerGives": "Partnern ger: {amount}",
   "@exchangePartnerGives": {
     "placeholders": {
       "amount": {
@@ -1465,8 +1465,8 @@
   },
   "exchangeOfficeSentDone": "✓ Kontoret har skickat",
   "exchangeOfficeSentWaiting": "… Kontoret har inte skickat än",
-  "exchangePartnerSentDone": "✓ Kompanjonen har skickat",
-  "exchangePartnerSentWaiting": "… Kompanjonen har inte skickat än",
+  "exchangePartnerSentDone": "✓ Partnern har skickat",
+  "exchangePartnerSentWaiting": "… Partnern har inte skickat än",
   "counterProposal": "Motförslag",
   "waitingForAnswer": "Väntar på svar",
   "markExchangeSent": "Jag har skickat {amount}",
@@ -1493,6 +1493,6 @@
   "currencyYouGive": "Valuta du ger",
   "currencyYouGet": "Valuta du får",
   "exchangeProposalSent": "Förslaget är skickat.",
-  "choosePartner": "Kompanjon",
+  "choosePartner": "Partner",
   "sendProposal": "Skicka förslag"
 }

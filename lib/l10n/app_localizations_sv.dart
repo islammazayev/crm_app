@@ -1871,23 +1871,23 @@ class AppLocalizationsSv extends AppLocalizations {
   }
 
   @override
-  String get partners => 'Kompanjoner';
+  String get partners => 'Partner';
 
   @override
-  String get partnersCardSubtitle => 'Växla valuta med dina kompanjoner.';
+  String get partnersCardSubtitle => 'Växla valuta med dina partner.';
 
   @override
   String get partnersAdminCardSubtitle =>
-      'Skapa kompanjoner och koppla dem till kontor eller manager.';
+      'Skapa partner och koppla dem till kontor eller manager.';
 
   @override
-  String get editPartnerTitle => 'Ändra kompanjon';
+  String get editPartnerTitle => 'Ändra partner';
 
   @override
-  String get partnerUpdated => 'Kompanjonen är uppdaterad.';
+  String get partnerUpdated => 'Partnern är uppdaterad.';
 
   @override
-  String get deletePartnerTitle => 'Ta bort kompanjonen?';
+  String get deletePartnerTitle => 'Ta bort partnern?';
 
   @override
   String deletePartnerConfirm(Object name) {
@@ -1895,34 +1895,34 @@ class AppLocalizationsSv extends AppLocalizations {
   }
 
   @override
-  String get partnerDeleted => 'Kompanjonen är borttagen.';
+  String get partnerDeleted => 'Partnern är borttagen.';
 
   @override
-  String get existingPartners => 'Kompanjoner';
+  String get existingPartners => 'Partner';
 
   @override
-  String get searchPartnersLabel => 'Sök kompanjon (namn, kontor, manager)';
+  String get searchPartnersLabel => 'Sök partner (namn, kontor, manager)';
 
   @override
-  String get createNewPartner => 'Skapa ny kompanjon';
+  String get createNewPartner => 'Skapa ny partner';
 
   @override
-  String get createPartner => 'Skapa kompanjon';
+  String get createPartner => 'Skapa partner';
 
   @override
-  String get partnerCreated => 'Kompanjonen är skapad.';
+  String get partnerCreated => 'Partnern är skapad.';
 
   @override
   String couldNotCreatePartner(Object error) {
-    return 'Kunde inte skapa kompanjon: $error';
+    return 'Kunde inte skapa partner: $error';
   }
 
   @override
-  String get partnerAppBarTitle => 'CRM – Kompanjon';
+  String get partnerAppBarTitle => 'CRM – Partner';
 
   @override
   String get partnerNotSetUp =>
-      'Ditt kompanjonskonto är inte kopplat till något kontor än. Kontakta admin.';
+      'Ditt partnerkonto är inte kopplat till något kontor än. Kontakta admin.';
 
   @override
   String get newExchange => 'Nytt växlingsförslag';
@@ -1931,11 +1931,11 @@ class AppLocalizationsSv extends AppLocalizations {
   String get exchangesTitle => 'Växlingar';
 
   @override
-  String get partnerBalancesTitle => 'Kompanjonernas saldo';
+  String get partnerBalancesTitle => 'Partnernas saldo';
 
   @override
   String get noPartnersLinked =>
-      'Inga kompanjoner är kopplade till dig eller ditt kontor.';
+      'Inga partner är kopplade till dig eller ditt kontor.';
 
   @override
   String get exchangeProposed => 'Förslag';
@@ -1962,7 +1962,7 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String exchangePartnerGives(Object amount) {
-    return 'Kompanjonen ger: $amount';
+    return 'Partnern ger: $amount';
   }
 
   @override
@@ -1987,10 +1987,10 @@ class AppLocalizationsSv extends AppLocalizations {
   String get exchangeOfficeSentWaiting => '… Kontoret har inte skickat än';
 
   @override
-  String get exchangePartnerSentDone => '✓ Kompanjonen har skickat';
+  String get exchangePartnerSentDone => '✓ Partnern har skickat';
 
   @override
-  String get exchangePartnerSentWaiting => '… Kompanjonen har inte skickat än';
+  String get exchangePartnerSentWaiting => '… Partnern har inte skickat än';
 
   @override
   String get counterProposal => 'Motförslag';
@@ -2036,7 +2036,7 @@ class AppLocalizationsSv extends AppLocalizations {
   String get exchangeProposalSent => 'Förslaget är skickat.';
 
   @override
-  String get choosePartner => 'Kompanjon';
+  String get choosePartner => 'Partner';
 
   @override
   String get sendProposal => 'Skicka förslag';
