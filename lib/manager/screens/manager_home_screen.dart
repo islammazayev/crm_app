@@ -181,104 +181,89 @@ class _ManagerHomeScreenState extends State<ManagerHomeScreen> {
                     );
                   }
 
-                  return LayoutBuilder(
-                    builder: (context, constraints) {
-                      final isWide = constraints.maxWidth >= 760;
-                      return GridView.count(
-                        crossAxisCount: isWide ? 2 : 1,
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        crossAxisSpacing: 16,
-                        mainAxisSpacing: 16,
-                        childAspectRatio: isWide ? 2.5 : 2.1,
-                        children: [
-                          StreamBuilder<
-                            List<QueryDocumentSnapshot<Map<String, dynamic>>>
-                          >(
-                            stream: ManagerCashiersPage.cashiers(
-                              FirebaseAuth.instance.currentUser?.uid ?? '',
-                              officeId,
-                            ),
-                            builder: (context, cashSnap) => ActionCard(
-                              icon: Icons.point_of_sale,
-                              iconColor: AppColors.primary,
-                              title: l10n.myCashiers,
-                              subtitle: l10n.myCashiersSubtitle,
-                              badge: cashSnap.hasData
-                                  ? '${cashSnap.data!.length}'
-                                  : '…',
-                              onTap: () => Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (_) => ManagerCashiersPage(
-                                    managerId:
-                                        FirebaseAuth
-                                            .instance
-                                            .currentUser
-                                            ?.uid ??
-                                        '',
-                                    officeId: officeId,
-                                  ),
-                                ),
+                  return ActionCardGrid(
+                    children: [
+                      StreamBuilder<
+                        List<QueryDocumentSnapshot<Map<String, dynamic>>>
+                      >(
+                        stream: ManagerCashiersPage.cashiers(
+                          FirebaseAuth.instance.currentUser?.uid ?? '',
+                          officeId,
+                        ),
+                        builder: (context, cashSnap) => ActionCard(
+                          icon: Icons.point_of_sale,
+                          iconColor: AppColors.primary,
+                          title: l10n.myCashiers,
+                          subtitle: l10n.myCashiersSubtitle,
+                          badge: cashSnap.hasData
+                              ? '${cashSnap.data!.length}'
+                              : '…',
+                          onTap: () => Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => ManagerCashiersPage(
+                                managerId:
+                                    FirebaseAuth.instance.currentUser?.uid ??
+                                    '',
+                                officeId: officeId,
                               ),
                             ),
                           ),
-                          ActionCard(
-                            icon: Icons.qr_code_scanner,
-                            iconColor: AppColors.success,
-                            title: l10n.scanPickup,
-                            subtitle: l10n.scanPickupSubtitle,
-                            badge: 'QR',
-                            onTap: () => _scanPickup(context),
-                          ),
-                          ActionCard(
-                            icon: Icons.add_circle_outline,
-                            iconColor: AppColors.primary,
-                            title: l10n.createNewTransaction,
-                            subtitle: l10n.createTransactionCardSubtitle,
-                            badge: '+',
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (_) =>
-                                      ManagerCreateTransactionScreen(
-                                        officeId: officeId,
-                                      ),
-                                ),
-                              );
-                            },
-                          ),
-                          ActionCard(
-                            icon: Icons.mark_email_unread_outlined,
-                            iconColor: AppColors.warning,
-                            title: l10n.newCustomerTransactions,
-                            subtitle: l10n.newCustomerTransactionsSubtitle,
-                            badge: '${count(newStatuses)}',
-                            onTap: () =>
-                                open(l10n.newCustomerTransactions, newStatuses),
-                          ),
-                          ActionCard(
-                            icon: Icons.sync_alt,
-                            iconColor: AppColors.info,
-                            title: l10n.ongoingTransactions,
-                            subtitle: l10n.ongoingTransactionsSubtitle,
-                            badge: '${count(ongoingStatuses)}',
-                            onTap: () =>
-                                open(l10n.ongoingTransactions, ongoingStatuses),
-                          ),
-                          ActionCard(
-                            icon: Icons.task_alt,
-                            iconColor: AppColors.success,
-                            title: l10n.finishedTransactions,
-                            subtitle: l10n.finishedTransactionsSubtitle,
-                            badge: '${count(doneStatuses)}',
-                            onTap: () =>
-                                open(l10n.finishedTransactions, doneStatuses),
-                          ),
-                        ],
-                      );
-                    },
+                        ),
+                      ),
+                      ActionCard(
+                        icon: Icons.qr_code_scanner,
+                        iconColor: AppColors.success,
+                        title: l10n.scanPickup,
+                        subtitle: l10n.scanPickupSubtitle,
+                        badge: 'QR',
+                        onTap: () => _scanPickup(context),
+                      ),
+                      ActionCard(
+                        icon: Icons.add_circle_outline,
+                        iconColor: AppColors.primary,
+                        title: l10n.createNewTransaction,
+                        subtitle: l10n.createTransactionCardSubtitle,
+                        badge: '+',
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => ManagerCreateTransactionScreen(
+                                officeId: officeId,
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                      ActionCard(
+                        icon: Icons.mark_email_unread_outlined,
+                        iconColor: AppColors.warning,
+                        title: l10n.newCustomerTransactions,
+                        subtitle: l10n.newCustomerTransactionsSubtitle,
+                        badge: '${count(newStatuses)}',
+                        onTap: () =>
+                            open(l10n.newCustomerTransactions, newStatuses),
+                      ),
+                      ActionCard(
+                        icon: Icons.sync_alt,
+                        iconColor: AppColors.info,
+                        title: l10n.ongoingTransactions,
+                        subtitle: l10n.ongoingTransactionsSubtitle,
+                        badge: '${count(ongoingStatuses)}',
+                        onTap: () =>
+                            open(l10n.ongoingTransactions, ongoingStatuses),
+                      ),
+                      ActionCard(
+                        icon: Icons.task_alt,
+                        iconColor: AppColors.success,
+                        title: l10n.finishedTransactions,
+                        subtitle: l10n.finishedTransactionsSubtitle,
+                        badge: '${count(doneStatuses)}',
+                        onTap: () =>
+                            open(l10n.finishedTransactions, doneStatuses),
+                      ),
+                    ],
                   );
                 },
               ),

@@ -608,24 +608,22 @@ class _AdminOrdersPageState extends State<AdminOrdersPage> {
                           matches: filtered.length,
                           shown: shown.length,
                         ),
-                        SizedBox(
-                          height: 300,
-                          child: OrderHistoryList(
-                            transactions: filteredTransactions
-                                .take(shown.length)
-                                .toList(),
-                            onDelete: (index) async {
-                              final ok = await confirmDelete(
-                                context,
-                                title: l10n.deleteTransactionTitle,
-                                message: l10n.deleteTransactionConfirm,
-                              );
-                              if (ok) {
-                                await _deleteTransaction(shown[index].id);
-                              }
-                            },
-                            onEdit: (index) => _editTransaction(shown[index]),
-                          ),
+                        // Ingen fast höjd: listan växer och sidan scrollar.
+                        OrderHistoryList(
+                          transactions: filteredTransactions
+                              .take(shown.length)
+                              .toList(),
+                          onDelete: (index) async {
+                            final ok = await confirmDelete(
+                              context,
+                              title: l10n.deleteTransactionTitle,
+                              message: l10n.deleteTransactionConfirm,
+                            );
+                            if (ok) {
+                              await _deleteTransaction(shown[index].id);
+                            }
+                          },
+                          onEdit: (index) => _editTransaction(shown[index]),
                         ),
                       ],
                     );

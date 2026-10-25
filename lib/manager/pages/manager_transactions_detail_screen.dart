@@ -499,488 +499,364 @@ class _ManagerTransactionDetailScreenState
             });
           }
 
-          return Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                if (formatTransactionNo(data['transactionNo']).isNotEmpty) ...[
-                  Text(
-                    l10n.transactionNoValue(
-                      formatTransactionNo(data['transactionNo']),
-                    ),
-                    style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                ],
-                Text(l10n.customerSends(amountFrom, fromCurrency)),
-                const SizedBox(height: 8),
-                Text(l10n.toCurrencyValue(toCurrency)),
-                const SizedBox(height: 8),
-                Text(l10n.orderStatusLine(statusText(l10n, status))),
-                const SizedBox(height: 16),
-
-                if (countered)
-                  Card(
-                    child: Padding(
-                      padding: const EdgeInsets.all(12),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            l10n.customerCounterOffer(
-                              savedFeePercent.toStringAsFixed(2),
-                              counterFee.toStringAsFixed(2),
-                            ),
-                            style: const TextStyle(fontWeight: FontWeight.bold),
+          // Sidan scrollar när innehållet inte får plats, och Spacer trycker
+          // ändå ner knapparna när det finns plats över.
+          return LayoutBuilder(
+            builder: (context, box) => SingleChildScrollView(
+              padding: const EdgeInsets.all(16),
+              child: ConstrainedBox(
+                constraints: BoxConstraints(minHeight: box.maxHeight - 32),
+                child: IntrinsicHeight(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      if (formatTransactionNo(
+                        data['transactionNo'],
+                      ).isNotEmpty) ...[
+                        Text(
+                          l10n.transactionNoValue(
+                            formatTransactionNo(data['transactionNo']),
                           ),
-                          if ('${data['counterMessage'] ?? ''}'.isNotEmpty) ...[
-                            const SizedBox(height: 4),
-                            Text('"${data['counterMessage']}"'),
-                          ],
-                          const SizedBox(height: 4),
-                          Text(
-                            l10n.counterOfferManagerHint,
-                            style: const TextStyle(color: Colors.grey),
+                          style: const TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
                           ),
-                        ],
-                      ),
-                    ),
-                  ),
-                if (countered) const SizedBox(height: 12),
-
-                if (status == 'customer_requested' ||
-                    status == 'manager_proposed' ||
-                    countered) ...[
-                  TextField(
-                    controller: _feeController,
-                    keyboardType: const TextInputType.numberWithOptions(
-                      decimal: true,
-                    ),
-                    decoration: InputDecoration(
-                      labelText: l10n.feePercentLabel,
-                      border: const OutlineInputBorder(),
-                    ),
-                    onChanged: (_) {
-                      _recalculate(
-                        amountFrom: amountFrom,
-                        fromCurrency: fromCurrency,
-                        toCurrency: toCurrency,
-                      );
-                    },
-                  ),
-                  const SizedBox(height: 16),
-                  if (_rate != null && feePercentInput != null) ...[
-                    Text(
-                      l10n.exchangeRateValue(
-                        fromCurrency,
-                        _rate!.toStringAsFixed(6),
-                        toCurrency,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    if (_amountToGross != null)
-                      Text(
-                        l10n.grossReceived(
-                          _amountToGross!.toStringAsFixed(2),
-                          toCurrency,
                         ),
-                      ),
-                    const SizedBox(height: 8),
-                    if (_feeAmountFrom != null && _feeAmountTo != null)
-                      Text(
-                        l10n.feeValue(
-                          feePercentInput.toStringAsFixed(2),
-                          _feeAmountFrom!.toStringAsFixed(2),
-                          fromCurrency,
-                          _feeAmountTo!.toStringAsFixed(2),
-                          toCurrency,
-                        ),
-                      ),
-                    const SizedBox(height: 8),
-                    if (_amountToNet != null)
-                      Text(
-                        l10n.customerReceives(
-                          _amountToNet!.toStringAsFixed(2),
-                          toCurrency,
-                        ),
-                      ),
-                  ] else if (_calculating)
-                    Text(l10n.calculating),
-                ],
+                        const SizedBox(height: 8),
+                      ],
+                      Text(l10n.customerSends(amountFrom, fromCurrency)),
+                      const SizedBox(height: 8),
+                      Text(l10n.toCurrencyValue(toCurrency)),
+                      const SizedBox(height: 8),
+                      Text(l10n.orderStatusLine(statusText(l10n, status))),
+                      const SizedBox(height: 16),
 
-                if (const [
-                  'customer_accepted',
-                  'customer_paid',
-                  'payment_confirmed',
-                  'completed',
-                ].contains(status)) ...[
-                  Text(
-                    l10n.exchangeRateValue(
-                      fromCurrency,
-                      savedRateFromTo.toStringAsFixed(6),
-                      toCurrency,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    l10n.grossReceived(
-                      savedAmountToGross.toStringAsFixed(2),
-                      toCurrency,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    l10n.feeValue(
-                      savedFeePercent.toStringAsFixed(2),
-                      savedFeeAmountFrom.toStringAsFixed(2),
-                      fromCurrency,
-                      savedFeeAmountTo.toStringAsFixed(2),
-                      toCurrency,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    l10n.customerReceives(
-                      savedAmountToNet.toStringAsFixed(2),
-                      toCurrency,
-                    ),
-                  ),
-                ],
-
-                if (paymentSent &&
-                    const [
-                      'customer_paid',
-                      'payment_confirmed',
-                      'completed',
-                    ].contains(status)) ...[
-                  const SizedBox(height: 8),
-                  Text(l10n.paymentMethodValue(paymentLabel)),
-                ],
-
-                if (status == 'customer_accepted' && officeId.isNotEmpty)
-                  FutureBuilder<DocumentSnapshot>(
-                    future: FirebaseFirestore.instance
-                        .collection('offices')
-                        .doc(officeId)
-                        .get(),
-                    builder: (context, snap) {
-                      if (snap.connectionState == ConnectionState.waiting) {
-                        return const Padding(
-                          padding: EdgeInsets.only(top: 16),
-                          child: CircularProgressIndicator(),
-                        );
-                      }
-
-                      if (!snap.hasData || !snap.data!.exists) {
-                        return Padding(
-                          padding: const EdgeInsets.only(top: 16),
-                          child: Text(l10n.officeNotFound),
-                        );
-                      }
-
-                      final office = snap.data!.data() as Map<String, dynamic>;
-                      final List rawMethods =
-                          office['paymentMethods'] as List? ?? [];
-
-                      final methods = _filterPaymentMethods(
-                        rawMethods: rawMethods,
-                        fromCurrency: fromCurrency,
-                      );
-
-                      _methodCache = {
-                        for (final m in methods) (m['id'] ?? '').toString(): m,
-                      };
-
-                      if (methods.isEmpty) {
-                        return Padding(
-                          padding: const EdgeInsets.only(top: 16),
-                          child: Text(l10n.noPaymentMethodsForCurrency),
-                        );
-                      }
-
-                      return Expanded(
-                        child: ListView(
-                          padding: const EdgeInsets.only(top: 16),
-                          children: [
-                            Text(
-                              l10n.choosePaymentMethodForCustomer,
-                              style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                              ),
+                      if (countered)
+                        Card(
+                          child: Padding(
+                            padding: const EdgeInsets.all(12),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  l10n.customerCounterOffer(
+                                    savedFeePercent.toStringAsFixed(2),
+                                    counterFee.toStringAsFixed(2),
+                                  ),
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                if ('${data['counterMessage'] ?? ''}'
+                                    .isNotEmpty) ...[
+                                  const SizedBox(height: 4),
+                                  Text('"${data['counterMessage']}"'),
+                                ],
+                                const SizedBox(height: 4),
+                                Text(
+                                  l10n.counterOfferManagerHint,
+                                  style: const TextStyle(color: Colors.grey),
+                                ),
+                              ],
                             ),
-                            const SizedBox(height: 8),
-                            RadioGroup<String>(
-                              groupValue: _selectedMethodId,
-                              onChanged: (value) {
-                                setState(() {
-                                  _selectedMethodId = value;
-                                });
-                              },
-                              child: Column(
-                                children: methods.map((method) {
-                                  final id = (method['id'] ?? '').toString();
-                                  final label = (method['label'] ?? '')
-                                      .toString();
-                                  final details = (method['details'] ?? '')
-                                      .toString();
-
-                                  return Card(
-                                    child: RadioListTile<String>(
-                                      value: id,
-                                      title: Text(label),
-                                      subtitle: Text(details, softWrap: true),
-                                    ),
-                                  );
-                                }).toList(),
-                              ),
-                            ),
-                          ],
+                          ),
                         ),
-                      );
-                    },
-                  ),
+                      if (countered) const SizedBox(height: 12),
 
-                if (status != 'customer_accepted') const Spacer(),
-
-                if (countered) ...[
-                  SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.green,
-                      ),
-                      onPressed: _busy || savedRateFromTo <= 0
-                          ? null
-                          : () => _acceptCounter(
-                              txRef: txRef,
+                      if (status == 'customer_requested' ||
+                          status == 'manager_proposed' ||
+                          countered) ...[
+                        TextField(
+                          controller: _feeController,
+                          keyboardType: const TextInputType.numberWithOptions(
+                            decimal: true,
+                          ),
+                          decoration: InputDecoration(
+                            labelText: l10n.feePercentLabel,
+                            border: const OutlineInputBorder(),
+                          ),
+                          onChanged: (_) {
+                            _recalculate(
                               amountFrom: amountFrom,
-                              rate: savedRateFromTo,
-                              counterFee: counterFee,
-                            ),
-                      child: Text(
-                        l10n.acceptCounterOffer(counterFee.toStringAsFixed(2)),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                ],
-
-                if (status == 'customer_requested' ||
-                    status == 'manager_proposed' ||
-                    countered)
-                  SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      onPressed: (_rate == null || feePercentInput == null)
-                          ? null
-                          : () async {
-                              await txRef.update({
-                                'status': 'manager_proposed',
-                                'feePercent': feePercentInput,
-                                'feeAmountFrom': _feeAmountFrom,
-                                'rateFromTo': _rate,
-                                'amountToGross': _amountToGross,
-                                'amountToNet': _amountToNet,
-                                'feeAmountTo': _feeAmountTo,
-                                'managerProposedAt':
-                                    FieldValue.serverTimestamp(),
-                              });
-
-                              if (context.mounted) {
-                                Navigator.pop(context);
-                              }
-                            },
-                      child: Text(
-                        countered ? l10n.sendNewProposal : l10n.proposeTerms,
-                      ),
-                    ),
-                  ),
-
-                if (status == 'customer_paid') ...[
-                  Card(
-                    child: Padding(
-                      padding: const EdgeInsets.all(12),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
+                              fromCurrency: fromCurrency,
+                              toCurrency: toCurrency,
+                            );
+                          },
+                        ),
+                        const SizedBox(height: 16),
+                        if (_rate != null && feePercentInput != null) ...[
                           Text(
-                            l10n.customerMarkedPaid,
-                            style: const TextStyle(fontWeight: FontWeight.bold),
-                          ),
-                          if ('${data['paymentNote'] ?? ''}'.isNotEmpty) ...[
-                            const SizedBox(height: 4),
-                            Text('"${data['paymentNote']}"'),
-                          ],
-                          const SizedBox(height: 4),
-                          if ('${data['receiptPath'] ?? ''}'.isNotEmpty)
-                            ReceiptButton(
-                              path: '${data['receiptPath']}',
-                              label: l10n.showReceiptNamed(
-                                '${data['receiptName'] ?? ''}',
-                              ),
-                            )
-                          else
-                            Text(
-                              l10n.noReceiptAttached,
-                              style: const TextStyle(color: Colors.grey),
-                            ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.green,
-                      ),
-                      onPressed: _busy ? null : () => _confirmPayment(txRef),
-                      child: Text(l10n.confirmPayment),
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  SizedBox(
-                    width: double.infinity,
-                    child: OutlinedButton(
-                      onPressed: _busy
-                          ? null
-                          : () => _reportPaymentMissing(txRef),
-                      child: Text(l10n.paymentMissing),
-                    ),
-                  ),
-                ],
-
-                if (status == 'payment_confirmed') ...[
-                  Builder(
-                    builder: (context) {
-                      // Kom managern hit via skanning från startsidan frågar
-                      // vi direkt om utbetalning.
-                      final token = widget.scannedToken;
-                      if (token != null && !_scannedTokenHandled) {
-                        _scannedTokenHandled = true;
-                        WidgetsBinding.instance.addPostFrameCallback((_) {
-                          if (!mounted) return;
-                          _payOutAfterScan(
-                            token: token,
-                            data: data,
-                            payOut: () => payOut(verifiedByScan: true),
-                          );
-                        });
-                      }
-                      return const SizedBox.shrink();
-                    },
-                  ),
-                  Card(
-                    child: Padding(
-                      padding: const EdgeInsets.all(12),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            l10n.paymentConfirmedManager,
-                            style: const TextStyle(fontWeight: FontWeight.bold),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            l10n.payoutInstructions(
-                              savedAmountToNet.toStringAsFixed(2),
+                            l10n.exchangeRateValue(
+                              fromCurrency,
+                              _rate!.toStringAsFixed(6),
                               toCurrency,
                             ),
                           ),
-                          if (data['createdByManager'] == true) ...[
-                            const SizedBox(height: 8),
+                          const SizedBox(height: 8),
+                          if (_amountToGross != null)
                             Text(
-                              l10n.giveCodeToWalkIn(
-                                '${data['pickupCode'] ?? ''}',
+                              l10n.grossReceived(
+                                _amountToGross!.toStringAsFixed(2),
+                                toCurrency,
                               ),
                             ),
-                          ],
-                        ],
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  // Kunder med konto visar QR-koden; managern skannar den.
-                  SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton.icon(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.green,
-                      ),
-                      icon: const Icon(Icons.qr_code_scanner),
-                      label: Text(l10n.scanCustomerQr),
-                      onPressed: _busy
-                          ? null
-                          : () => _scanAndPayOut(
-                              data: data,
-                              payOut: () => payOut(verifiedByScan: true),
+                          const SizedBox(height: 8),
+                          if (_feeAmountFrom != null && _feeAmountTo != null)
+                            Text(
+                              l10n.feeValue(
+                                feePercentInput.toStringAsFixed(2),
+                                _feeAmountFrom!.toStringAsFixed(2),
+                                fromCurrency,
+                                _feeAmountTo!.toStringAsFixed(2),
+                                toCurrency,
+                              ),
                             ),
-                    ),
-                  ),
-                  // Reserv: skriva in koden (t.ex. kund utan konto eller
-                  // om kameran inte fungerar).
-                  if (!_manualCode)
-                    TextButton(
-                      onPressed: () => setState(() => _manualCode = true),
-                      child: Text(l10n.enterCodeInstead),
-                    )
-                  else ...[
-                    const SizedBox(height: 14),
-                    TextField(
-                      controller: _payoutCodeController,
-                      keyboardType: TextInputType.number,
-                      decoration: InputDecoration(
-                        labelText: l10n.customerPickupCode,
-                        hintText: '261023-1234-5678',
-                        border: const OutlineInputBorder(),
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    SizedBox(
-                      width: double.infinity,
-                      child: OutlinedButton(
-                        onPressed: _busy
-                            ? null
-                            : () => payOut(verifiedByScan: false),
-                        child: Text(l10n.payOutWithCode),
-                      ),
-                    ),
-                  ],
-                ],
+                          const SizedBox(height: 8),
+                          if (_amountToNet != null)
+                            Text(
+                              l10n.customerReceives(
+                                _amountToNet!.toStringAsFixed(2),
+                                toCurrency,
+                              ),
+                            ),
+                        ] else if (_calculating)
+                          Text(l10n.calculating),
+                      ],
 
-                if (status == 'customer_accepted')
-                  SafeArea(
-                    top: false,
-                    child: Column(
-                      children: [
-                        if (paymentSent)
-                          Padding(
-                            padding: const EdgeInsets.only(bottom: 8),
-                            child: Text(
-                              l10n.sentToCustomer(paymentLabel),
-                              style: const TextStyle(color: Colors.grey),
-                            ),
+                      if (const [
+                        'customer_accepted',
+                        'customer_paid',
+                        'payment_confirmed',
+                        'completed',
+                      ].contains(status)) ...[
+                        Text(
+                          l10n.exchangeRateValue(
+                            fromCurrency,
+                            savedRateFromTo.toStringAsFixed(6),
+                            toCurrency,
                           ),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          l10n.grossReceived(
+                            savedAmountToGross.toStringAsFixed(2),
+                            toCurrency,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          l10n.feeValue(
+                            savedFeePercent.toStringAsFixed(2),
+                            savedFeeAmountFrom.toStringAsFixed(2),
+                            fromCurrency,
+                            savedFeeAmountTo.toStringAsFixed(2),
+                            toCurrency,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          l10n.customerReceives(
+                            savedAmountToNet.toStringAsFixed(2),
+                            toCurrency,
+                          ),
+                        ),
+                      ],
+
+                      if (paymentSent &&
+                          const [
+                            'customer_paid',
+                            'payment_confirmed',
+                            'completed',
+                          ].contains(status)) ...[
+                        const SizedBox(height: 8),
+                        Text(l10n.paymentMethodValue(paymentLabel)),
+                      ],
+
+                      if (status == 'customer_accepted' && officeId.isNotEmpty)
+                        FutureBuilder<DocumentSnapshot>(
+                          future: FirebaseFirestore.instance
+                              .collection('offices')
+                              .doc(officeId)
+                              .get(),
+                          builder: (context, snap) {
+                            if (snap.connectionState ==
+                                ConnectionState.waiting) {
+                              return const Padding(
+                                padding: EdgeInsets.only(top: 16),
+                                child: CircularProgressIndicator(),
+                              );
+                            }
+
+                            if (!snap.hasData || !snap.data!.exists) {
+                              return Padding(
+                                padding: const EdgeInsets.only(top: 16),
+                                child: Text(l10n.officeNotFound),
+                              );
+                            }
+
+                            final office =
+                                snap.data!.data() as Map<String, dynamic>;
+                            final List rawMethods =
+                                office['paymentMethods'] as List? ?? [];
+
+                            final methods = _filterPaymentMethods(
+                              rawMethods: rawMethods,
+                              fromCurrency: fromCurrency,
+                            );
+
+                            _methodCache = {
+                              for (final m in methods)
+                                (m['id'] ?? '').toString(): m,
+                            };
+
+                            if (methods.isEmpty) {
+                              return Padding(
+                                padding: const EdgeInsets.only(top: 16),
+                                child: Text(l10n.noPaymentMethodsForCurrency),
+                              );
+                            }
+
+                            return Padding(
+                              padding: const EdgeInsets.only(top: 16),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    l10n.choosePaymentMethodForCustomer,
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 8),
+                                  RadioGroup<String>(
+                                    groupValue: _selectedMethodId,
+                                    onChanged: (value) {
+                                      setState(() {
+                                        _selectedMethodId = value;
+                                      });
+                                    },
+                                    child: Column(
+                                      children: methods.map((method) {
+                                        final id = (method['id'] ?? '')
+                                            .toString();
+                                        final label = (method['label'] ?? '')
+                                            .toString();
+                                        final details =
+                                            (method['details'] ?? '')
+                                                .toString();
+
+                                        return Card(
+                                          child: RadioListTile<String>(
+                                            value: id,
+                                            title: Text(label),
+                                            subtitle: Text(
+                                              details,
+                                              softWrap: true,
+                                            ),
+                                          ),
+                                        );
+                                      }).toList(),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            );
+                          },
+                        ),
+
+                      const Spacer(),
+
+                      if (countered) ...[
                         SizedBox(
                           width: double.infinity,
-                          child: OutlinedButton(
-                            onPressed:
-                                (_busy ||
-                                    _selectedMethodId == null ||
-                                    !_methodCache.containsKey(
-                                      _selectedMethodId,
-                                    ))
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.green,
+                            ),
+                            onPressed: _busy || savedRateFromTo <= 0
                                 ? null
-                                : () => _sendPaymentDetails(txRef),
+                                : () => _acceptCounter(
+                                    txRef: txRef,
+                                    amountFrom: amountFrom,
+                                    rate: savedRateFromTo,
+                                    counterFee: counterFee,
+                                  ),
                             child: Text(
-                              paymentSent
-                                  ? l10n.resendPaymentDetails
-                                  : l10n.sendPaymentDetailsToCustomer,
+                              l10n.acceptCounterOffer(
+                                counterFee.toStringAsFixed(2),
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                      ],
+
+                      if (status == 'customer_requested' ||
+                          status == 'manager_proposed' ||
+                          countered)
+                        SizedBox(
+                          width: double.infinity,
+                          child: ElevatedButton(
+                            onPressed:
+                                (_rate == null || feePercentInput == null)
+                                ? null
+                                : () async {
+                                    await txRef.update({
+                                      'status': 'manager_proposed',
+                                      'feePercent': feePercentInput,
+                                      'feeAmountFrom': _feeAmountFrom,
+                                      'rateFromTo': _rate,
+                                      'amountToGross': _amountToGross,
+                                      'amountToNet': _amountToNet,
+                                      'feeAmountTo': _feeAmountTo,
+                                      'managerProposedAt':
+                                          FieldValue.serverTimestamp(),
+                                    });
+
+                                    if (context.mounted) {
+                                      Navigator.pop(context);
+                                    }
+                                  },
+                            child: Text(
+                              countered
+                                  ? l10n.sendNewProposal
+                                  : l10n.proposeTerms,
+                            ),
+                          ),
+                        ),
+
+                      if (status == 'customer_paid') ...[
+                        Card(
+                          child: Padding(
+                            padding: const EdgeInsets.all(12),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  l10n.customerMarkedPaid,
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                if ('${data['paymentNote'] ?? ''}'
+                                    .isNotEmpty) ...[
+                                  const SizedBox(height: 4),
+                                  Text('"${data['paymentNote']}"'),
+                                ],
+                                const SizedBox(height: 4),
+                                if ('${data['receiptPath'] ?? ''}'.isNotEmpty)
+                                  ReceiptButton(
+                                    path: '${data['receiptPath']}',
+                                    label: l10n.showReceiptNamed(
+                                      '${data['receiptName'] ?? ''}',
+                                    ),
+                                  )
+                                else
+                                  Text(
+                                    l10n.noReceiptAttached,
+                                    style: const TextStyle(color: Colors.grey),
+                                  ),
+                              ],
                             ),
                           ),
                         ),
@@ -991,18 +867,177 @@ class _ManagerTransactionDetailScreenState
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.green,
                             ),
-                            // För kunder utan konto (eller om kunden inte
-                            // hunnit markera) kan managern bekräfta direkt.
-                            onPressed: (_busy || !paymentSent)
+                            onPressed: _busy
                                 ? null
                                 : () => _confirmPayment(txRef),
                             child: Text(l10n.confirmPayment),
                           ),
                         ),
+                        const SizedBox(height: 8),
+                        SizedBox(
+                          width: double.infinity,
+                          child: OutlinedButton(
+                            onPressed: _busy
+                                ? null
+                                : () => _reportPaymentMissing(txRef),
+                            child: Text(l10n.paymentMissing),
+                          ),
+                        ),
                       ],
-                    ),
+
+                      if (status == 'payment_confirmed') ...[
+                        Builder(
+                          builder: (context) {
+                            // Kom managern hit via skanning från startsidan frågar
+                            // vi direkt om utbetalning.
+                            final token = widget.scannedToken;
+                            if (token != null && !_scannedTokenHandled) {
+                              _scannedTokenHandled = true;
+                              WidgetsBinding.instance.addPostFrameCallback((_) {
+                                if (!mounted) return;
+                                _payOutAfterScan(
+                                  token: token,
+                                  data: data,
+                                  payOut: () => payOut(verifiedByScan: true),
+                                );
+                              });
+                            }
+                            return const SizedBox.shrink();
+                          },
+                        ),
+                        Card(
+                          child: Padding(
+                            padding: const EdgeInsets.all(12),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  l10n.paymentConfirmedManager,
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  l10n.payoutInstructions(
+                                    savedAmountToNet.toStringAsFixed(2),
+                                    toCurrency,
+                                  ),
+                                ),
+                                if (data['createdByManager'] == true) ...[
+                                  const SizedBox(height: 8),
+                                  Text(
+                                    l10n.giveCodeToWalkIn(
+                                      '${data['pickupCode'] ?? ''}',
+                                    ),
+                                  ),
+                                ],
+                              ],
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        // Kunder med konto visar QR-koden; managern skannar den.
+                        SizedBox(
+                          width: double.infinity,
+                          child: ElevatedButton.icon(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.green,
+                            ),
+                            icon: const Icon(Icons.qr_code_scanner),
+                            label: Text(l10n.scanCustomerQr),
+                            onPressed: _busy
+                                ? null
+                                : () => _scanAndPayOut(
+                                    data: data,
+                                    payOut: () => payOut(verifiedByScan: true),
+                                  ),
+                          ),
+                        ),
+                        // Reserv: skriva in koden (t.ex. kund utan konto eller
+                        // om kameran inte fungerar).
+                        if (!_manualCode)
+                          TextButton(
+                            onPressed: () => setState(() => _manualCode = true),
+                            child: Text(l10n.enterCodeInstead),
+                          )
+                        else ...[
+                          const SizedBox(height: 14),
+                          TextField(
+                            controller: _payoutCodeController,
+                            keyboardType: TextInputType.number,
+                            decoration: InputDecoration(
+                              labelText: l10n.customerPickupCode,
+                              hintText: '261023-1234-5678',
+                              border: const OutlineInputBorder(),
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          SizedBox(
+                            width: double.infinity,
+                            child: OutlinedButton(
+                              onPressed: _busy
+                                  ? null
+                                  : () => payOut(verifiedByScan: false),
+                              child: Text(l10n.payOutWithCode),
+                            ),
+                          ),
+                        ],
+                      ],
+
+                      if (status == 'customer_accepted')
+                        SafeArea(
+                          top: false,
+                          child: Column(
+                            children: [
+                              if (paymentSent)
+                                Padding(
+                                  padding: const EdgeInsets.only(bottom: 8),
+                                  child: Text(
+                                    l10n.sentToCustomer(paymentLabel),
+                                    style: const TextStyle(color: Colors.grey),
+                                  ),
+                                ),
+                              SizedBox(
+                                width: double.infinity,
+                                child: OutlinedButton(
+                                  onPressed:
+                                      (_busy ||
+                                          _selectedMethodId == null ||
+                                          !_methodCache.containsKey(
+                                            _selectedMethodId,
+                                          ))
+                                      ? null
+                                      : () => _sendPaymentDetails(txRef),
+                                  child: Text(
+                                    paymentSent
+                                        ? l10n.resendPaymentDetails
+                                        : l10n.sendPaymentDetailsToCustomer,
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              SizedBox(
+                                width: double.infinity,
+                                child: ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.green,
+                                  ),
+                                  // För kunder utan konto (eller om kunden inte
+                                  // hunnit markera) kan managern bekräfta direkt.
+                                  onPressed: (_busy || !paymentSent)
+                                      ? null
+                                      : () => _confirmPayment(txRef),
+                                  child: Text(l10n.confirmPayment),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                    ],
                   ),
-              ],
+                ),
+              ),
             ),
           );
         },
