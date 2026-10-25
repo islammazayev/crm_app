@@ -1685,4 +1685,168 @@ class AppLocalizationsRu extends AppLocalizations {
   String feeAfterTierLine(Object base, Object discount, Object fee) {
     return '$base % − скидка $discount % = клиент платит $fee %';
   }
+
+  @override
+  String get buyCardSubtitle =>
+      'Покупка валюты наличными в офисе или на ваш банк.';
+
+  @override
+  String get currencyToBuy => 'Валюта, которую вы покупаете';
+
+  @override
+  String get currencyToPayWith => 'Валюта, которой вы платите';
+
+  @override
+  String get howToReceive => 'Как вы хотите получить деньги?';
+
+  @override
+  String get deliveryCash => 'Наличными';
+
+  @override
+  String get deliveryBank => 'На мой банк';
+
+  @override
+  String get deliveryCashHint =>
+      'Вы получаете деньги в офисе по коду или QR-коду.';
+
+  @override
+  String get deliveryBankHint =>
+      'Когда офис получит вашу оплату, вы вводите банковские данные, и офис отправляет деньги туда.';
+
+  @override
+  String get chooseCurrenciesFirst => 'Сначала выберите валюты';
+
+  @override
+  String get officeForPickup => 'Офис, где вы получите деньги';
+
+  @override
+  String get officeForBankPayout => 'Офис, который принимает вашу оплату';
+
+  @override
+  String get amountToBuy => 'Сколько вы хотите купить?';
+
+  @override
+  String get sendBuyRequest => 'Отправить заявку на покупку';
+
+  @override
+  String get buyRequestSent => 'Заявка на покупку отправлена в офис.';
+
+  @override
+  String buySummary(Object amount, Object to, Object from) {
+    return 'Покупка $amount $to за $from';
+  }
+
+  @override
+  String youPay(Object amount, Object currency) {
+    return 'Вы платите: $amount $currency';
+  }
+
+  @override
+  String customerPays(Object amount, Object currency) {
+    return 'Клиент платит: $amount $currency';
+  }
+
+  @override
+  String get buyPriceComing =>
+      'Офис рассчитает стоимость и отправит предложение.';
+
+  @override
+  String get paidOutToBankBody => 'Деньги отправлены на ваш банк.';
+
+  @override
+  String get enterBankDetailsIntro => 'Укажите, куда отправить деньги.';
+
+  @override
+  String get bankNameLabel => 'Название банка';
+
+  @override
+  String get bankPhoneLabel => 'Номер телефона';
+
+  @override
+  String get bankAccountHolderLabel => 'Имя и фамилия владельца счёта';
+
+  @override
+  String get sendBankDetails => 'Отправить банковские данные';
+
+  @override
+  String get fillAllBankFields => 'Заполните все поля (не более 100 символов).';
+
+  @override
+  String get bankDetailsWaiting => 'Спасибо! Офис отправит деньги на ваш банк.';
+
+  @override
+  String bankNameValue(Object value) {
+    return 'Банк: $value';
+  }
+
+  @override
+  String bankPhoneValue(Object value) {
+    return 'Телефон: $value';
+  }
+
+  @override
+  String bankAccountHolderValue(Object value) {
+    return 'Владелец счёта: $value';
+  }
+
+  @override
+  String get changeBankDetails => 'Изменить банковские данные';
+
+  @override
+  String get waitingForBankDetails =>
+      'Ожидаем, пока клиент введёт банковские данные.';
+
+  @override
+  String sendToBankInstructions(Object amount, Object currency) {
+    return 'Отправьте $amount $currency на банк клиента:';
+  }
+
+  @override
+  String get markSentToBank => 'Деньги отправлены в банк';
+
+  @override
+  String confirmSentToBank(Object amount, Object currency) {
+    return 'Вы отправили $amount $currency на банк клиента? Перевод будет выполнен, а баланс офиса обновлён.';
+  }
+
+  @override
+  String get confirm => 'Подтвердить';
+
+  @override
+  String rateFieldLabel(Object from, Object to) {
+    return 'Курс: 1 $from = ? $to';
+  }
+
+  @override
+  String get invalidRate => 'Введите курс больше 0.';
+
+  @override
+  String rateChangedFromMarket(Object rate) {
+    return 'Свой курс. Рыночный курс: $rate';
+  }
+
+  @override
+  String get marketRateUsed => 'Рыночный курс. Вы можете его изменить.';
+
+  @override
+  String get useMarketRate => 'Использовать рыночный курс';
+
+  @override
+  String get pickupCodeDigitsHint =>
+      'Вводите только цифры, дефисы добавятся автоматически.';
+
+  @override
+  String get balancesTitle => 'Баланс';
+
+  @override
+  String get officeBalanceTitle => 'Баланс офиса';
+
+  @override
+  String get cashierBalancesTitle => 'Балансы кассиров';
+
+  @override
+  String get balancesCardSubtitle => 'Баланс офиса и кассиров, отдельно.';
+
+  @override
+  String get noBalance => 'Нет баланса.';
 }

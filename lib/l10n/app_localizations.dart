@@ -2843,6 +2843,282 @@ abstract class AppLocalizations {
   /// In sv, this message translates to:
   /// **'{base} % − rabatt {discount} % = kunden betalar {fee} %'**
   String feeAfterTierLine(Object base, Object discount, Object fee);
+
+  /// No description provided for @buyCardSubtitle.
+  ///
+  /// In sv, this message translates to:
+  /// **'Köp valuta kontant på kontoret eller till din bank.'**
+  String get buyCardSubtitle;
+
+  /// No description provided for @currencyToBuy.
+  ///
+  /// In sv, this message translates to:
+  /// **'Valuta du vill köpa'**
+  String get currencyToBuy;
+
+  /// No description provided for @currencyToPayWith.
+  ///
+  /// In sv, this message translates to:
+  /// **'Valuta du betalar med'**
+  String get currencyToPayWith;
+
+  /// No description provided for @howToReceive.
+  ///
+  /// In sv, this message translates to:
+  /// **'Hur vill du få pengarna?'**
+  String get howToReceive;
+
+  /// No description provided for @deliveryCash.
+  ///
+  /// In sv, this message translates to:
+  /// **'Kontant'**
+  String get deliveryCash;
+
+  /// No description provided for @deliveryBank.
+  ///
+  /// In sv, this message translates to:
+  /// **'Till min bank'**
+  String get deliveryBank;
+
+  /// No description provided for @deliveryCashHint.
+  ///
+  /// In sv, this message translates to:
+  /// **'Du hämtar pengarna på kontoret med en kod eller QR-kod.'**
+  String get deliveryCashHint;
+
+  /// No description provided for @deliveryBankHint.
+  ///
+  /// In sv, this message translates to:
+  /// **'När kontoret har fått din betalning fyller du i dina bankuppgifter, och kontoret skickar pengarna dit.'**
+  String get deliveryBankHint;
+
+  /// No description provided for @chooseCurrenciesFirst.
+  ///
+  /// In sv, this message translates to:
+  /// **'Välj valutorna först'**
+  String get chooseCurrenciesFirst;
+
+  /// No description provided for @officeForPickup.
+  ///
+  /// In sv, this message translates to:
+  /// **'Kontor där du hämtar pengarna'**
+  String get officeForPickup;
+
+  /// No description provided for @officeForBankPayout.
+  ///
+  /// In sv, this message translates to:
+  /// **'Kontor som tar emot din betalning'**
+  String get officeForBankPayout;
+
+  /// No description provided for @amountToBuy.
+  ///
+  /// In sv, this message translates to:
+  /// **'Hur mycket vill du köpa?'**
+  String get amountToBuy;
+
+  /// No description provided for @sendBuyRequest.
+  ///
+  /// In sv, this message translates to:
+  /// **'Skicka köpförfrågan'**
+  String get sendBuyRequest;
+
+  /// No description provided for @buyRequestSent.
+  ///
+  /// In sv, this message translates to:
+  /// **'Köpförfrågan är skickad till kontoret.'**
+  String get buyRequestSent;
+
+  /// No description provided for @buySummary.
+  ///
+  /// In sv, this message translates to:
+  /// **'Köp {amount} {to} med {from}'**
+  String buySummary(Object amount, Object to, Object from);
+
+  /// No description provided for @youPay.
+  ///
+  /// In sv, this message translates to:
+  /// **'Du betalar: {amount} {currency}'**
+  String youPay(Object amount, Object currency);
+
+  /// No description provided for @customerPays.
+  ///
+  /// In sv, this message translates to:
+  /// **'Kunden betalar: {amount} {currency}'**
+  String customerPays(Object amount, Object currency);
+
+  /// No description provided for @buyPriceComing.
+  ///
+  /// In sv, this message translates to:
+  /// **'Kontoret räknar ut vad det kostar och skickar ett förslag.'**
+  String get buyPriceComing;
+
+  /// No description provided for @paidOutToBankBody.
+  ///
+  /// In sv, this message translates to:
+  /// **'Pengarna är skickade till din bank.'**
+  String get paidOutToBankBody;
+
+  /// No description provided for @enterBankDetailsIntro.
+  ///
+  /// In sv, this message translates to:
+  /// **'Fyll i vart pengarna ska skickas.'**
+  String get enterBankDetailsIntro;
+
+  /// No description provided for @bankNameLabel.
+  ///
+  /// In sv, this message translates to:
+  /// **'Bankens namn'**
+  String get bankNameLabel;
+
+  /// No description provided for @bankPhoneLabel.
+  ///
+  /// In sv, this message translates to:
+  /// **'Telefonnummer'**
+  String get bankPhoneLabel;
+
+  /// No description provided for @bankAccountHolderLabel.
+  ///
+  /// In sv, this message translates to:
+  /// **'Kontoinnehavarens namn och efternamn'**
+  String get bankAccountHolderLabel;
+
+  /// No description provided for @sendBankDetails.
+  ///
+  /// In sv, this message translates to:
+  /// **'Skicka bankuppgifter'**
+  String get sendBankDetails;
+
+  /// No description provided for @fillAllBankFields.
+  ///
+  /// In sv, this message translates to:
+  /// **'Fyll i alla fälten (högst 100 tecken).'**
+  String get fillAllBankFields;
+
+  /// No description provided for @bankDetailsWaiting.
+  ///
+  /// In sv, this message translates to:
+  /// **'Tack! Kontoret skickar pengarna till din bank.'**
+  String get bankDetailsWaiting;
+
+  /// No description provided for @bankNameValue.
+  ///
+  /// In sv, this message translates to:
+  /// **'Bank: {value}'**
+  String bankNameValue(Object value);
+
+  /// No description provided for @bankPhoneValue.
+  ///
+  /// In sv, this message translates to:
+  /// **'Telefon: {value}'**
+  String bankPhoneValue(Object value);
+
+  /// No description provided for @bankAccountHolderValue.
+  ///
+  /// In sv, this message translates to:
+  /// **'Kontoinnehavare: {value}'**
+  String bankAccountHolderValue(Object value);
+
+  /// No description provided for @changeBankDetails.
+  ///
+  /// In sv, this message translates to:
+  /// **'Ändra bankuppgifter'**
+  String get changeBankDetails;
+
+  /// No description provided for @waitingForBankDetails.
+  ///
+  /// In sv, this message translates to:
+  /// **'Väntar på att kunden fyller i sina bankuppgifter.'**
+  String get waitingForBankDetails;
+
+  /// No description provided for @sendToBankInstructions.
+  ///
+  /// In sv, this message translates to:
+  /// **'Skicka {amount} {currency} till kundens bank:'**
+  String sendToBankInstructions(Object amount, Object currency);
+
+  /// No description provided for @markSentToBank.
+  ///
+  /// In sv, this message translates to:
+  /// **'Pengarna är skickade till banken'**
+  String get markSentToBank;
+
+  /// No description provided for @confirmSentToBank.
+  ///
+  /// In sv, this message translates to:
+  /// **'Har du skickat {amount} {currency} till kundens bank? Transaktionen blir genomförd och kontorets saldo uppdateras.'**
+  String confirmSentToBank(Object amount, Object currency);
+
+  /// No description provided for @confirm.
+  ///
+  /// In sv, this message translates to:
+  /// **'Bekräfta'**
+  String get confirm;
+
+  /// No description provided for @rateFieldLabel.
+  ///
+  /// In sv, this message translates to:
+  /// **'Växelkurs: 1 {from} = ? {to}'**
+  String rateFieldLabel(Object from, Object to);
+
+  /// No description provided for @invalidRate.
+  ///
+  /// In sv, this message translates to:
+  /// **'Ange en växelkurs större än 0.'**
+  String get invalidRate;
+
+  /// No description provided for @rateChangedFromMarket.
+  ///
+  /// In sv, this message translates to:
+  /// **'Egen kurs. Marknadskurs: {rate}'**
+  String rateChangedFromMarket(Object rate);
+
+  /// No description provided for @marketRateUsed.
+  ///
+  /// In sv, this message translates to:
+  /// **'Marknadskurs. Du kan ändra den.'**
+  String get marketRateUsed;
+
+  /// No description provided for @useMarketRate.
+  ///
+  /// In sv, this message translates to:
+  /// **'Använd marknadskursen'**
+  String get useMarketRate;
+
+  /// No description provided for @pickupCodeDigitsHint.
+  ///
+  /// In sv, this message translates to:
+  /// **'Skriv bara siffrorna, bindestrecken kommer automatiskt.'**
+  String get pickupCodeDigitsHint;
+
+  /// No description provided for @balancesTitle.
+  ///
+  /// In sv, this message translates to:
+  /// **'Saldo'**
+  String get balancesTitle;
+
+  /// No description provided for @officeBalanceTitle.
+  ///
+  /// In sv, this message translates to:
+  /// **'Kontorets saldo'**
+  String get officeBalanceTitle;
+
+  /// No description provided for @cashierBalancesTitle.
+  ///
+  /// In sv, this message translates to:
+  /// **'Kassörernas saldo'**
+  String get cashierBalancesTitle;
+
+  /// No description provided for @balancesCardSubtitle.
+  ///
+  /// In sv, this message translates to:
+  /// **'Kontorets och kassörernas saldo, var för sig.'**
+  String get balancesCardSubtitle;
+
+  /// No description provided for @noBalance.
+  ///
+  /// In sv, this message translates to:
+  /// **'Inget saldo.'**
+  String get noBalance;
 }
 
 class _AppLocalizationsDelegate

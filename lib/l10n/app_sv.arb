@@ -1219,5 +1219,142 @@
         "type": "Object"
       }
     }
-  }
+  },
+  "buyCardSubtitle": "Köp valuta kontant på kontoret eller till din bank.",
+  "currencyToBuy": "Valuta du vill köpa",
+  "currencyToPayWith": "Valuta du betalar med",
+  "howToReceive": "Hur vill du få pengarna?",
+  "deliveryCash": "Kontant",
+  "deliveryBank": "Till min bank",
+  "deliveryCashHint": "Du hämtar pengarna på kontoret med en kod eller QR-kod.",
+  "deliveryBankHint": "När kontoret har fått din betalning fyller du i dina bankuppgifter, och kontoret skickar pengarna dit.",
+  "chooseCurrenciesFirst": "Välj valutorna först",
+  "officeForPickup": "Kontor där du hämtar pengarna",
+  "officeForBankPayout": "Kontor som tar emot din betalning",
+  "amountToBuy": "Hur mycket vill du köpa?",
+  "sendBuyRequest": "Skicka köpförfrågan",
+  "buyRequestSent": "Köpförfrågan är skickad till kontoret.",
+  "buySummary": "Köp {amount} {to} med {from}",
+  "@buySummary": {
+    "placeholders": {
+      "amount": {
+        "type": "Object"
+      },
+      "to": {
+        "type": "Object"
+      },
+      "from": {
+        "type": "Object"
+      }
+    }
+  },
+  "youPay": "Du betalar: {amount} {currency}",
+  "@youPay": {
+    "placeholders": {
+      "amount": {
+        "type": "Object"
+      },
+      "currency": {
+        "type": "Object"
+      }
+    }
+  },
+  "customerPays": "Kunden betalar: {amount} {currency}",
+  "@customerPays": {
+    "placeholders": {
+      "amount": {
+        "type": "Object"
+      },
+      "currency": {
+        "type": "Object"
+      }
+    }
+  },
+  "buyPriceComing": "Kontoret räknar ut vad det kostar och skickar ett förslag.",
+  "paidOutToBankBody": "Pengarna är skickade till din bank.",
+  "enterBankDetailsIntro": "Fyll i vart pengarna ska skickas.",
+  "bankNameLabel": "Bankens namn",
+  "bankPhoneLabel": "Telefonnummer",
+  "bankAccountHolderLabel": "Kontoinnehavarens namn och efternamn",
+  "sendBankDetails": "Skicka bankuppgifter",
+  "fillAllBankFields": "Fyll i alla fälten (högst 100 tecken).",
+  "bankDetailsWaiting": "Tack! Kontoret skickar pengarna till din bank.",
+  "bankNameValue": "Bank: {value}",
+  "@bankNameValue": {
+    "placeholders": {
+      "value": {
+        "type": "Object"
+      }
+    }
+  },
+  "bankPhoneValue": "Telefon: {value}",
+  "@bankPhoneValue": {
+    "placeholders": {
+      "value": {
+        "type": "Object"
+      }
+    }
+  },
+  "bankAccountHolderValue": "Kontoinnehavare: {value}",
+  "@bankAccountHolderValue": {
+    "placeholders": {
+      "value": {
+        "type": "Object"
+      }
+    }
+  },
+  "changeBankDetails": "Ändra bankuppgifter",
+  "waitingForBankDetails": "Väntar på att kunden fyller i sina bankuppgifter.",
+  "sendToBankInstructions": "Skicka {amount} {currency} till kundens bank:",
+  "@sendToBankInstructions": {
+    "placeholders": {
+      "amount": {
+        "type": "Object"
+      },
+      "currency": {
+        "type": "Object"
+      }
+    }
+  },
+  "markSentToBank": "Pengarna är skickade till banken",
+  "confirmSentToBank": "Har du skickat {amount} {currency} till kundens bank? Transaktionen blir genomförd och kontorets saldo uppdateras.",
+  "@confirmSentToBank": {
+    "placeholders": {
+      "amount": {
+        "type": "Object"
+      },
+      "currency": {
+        "type": "Object"
+      }
+    }
+  },
+  "confirm": "Bekräfta",
+  "rateFieldLabel": "Växelkurs: 1 {from} = ? {to}",
+  "@rateFieldLabel": {
+    "placeholders": {
+      "from": {
+        "type": "Object"
+      },
+      "to": {
+        "type": "Object"
+      }
+    }
+  },
+  "invalidRate": "Ange en växelkurs större än 0.",
+  "rateChangedFromMarket": "Egen kurs. Marknadskurs: {rate}",
+  "@rateChangedFromMarket": {
+    "placeholders": {
+      "rate": {
+        "type": "Object"
+      }
+    }
+  },
+  "marketRateUsed": "Marknadskurs. Du kan ändra den.",
+  "useMarketRate": "Använd marknadskursen",
+  "pickupCodeDigitsHint": "Skriv bara siffrorna, bindestrecken kommer automatiskt.",
+  "balancesTitle": "Saldo",
+  "officeBalanceTitle": "Kontorets saldo",
+  "cashierBalancesTitle": "Kassörernas saldo",
+  "balancesCardSubtitle": "Kontorets och kassörernas saldo, var för sig.",
+  "noBalance": "Inget saldo."
 }

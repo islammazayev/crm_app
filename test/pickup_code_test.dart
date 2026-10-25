@@ -1,4 +1,5 @@
 import 'package:crm_app/utils/pickup_code.dart';
+import 'package:crm_app/utils/pickup_code_formatter.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -44,5 +45,16 @@ void main() {
     expect(pickupCodeMatches(' 261023 4821 7730 ', code), isTrue);
     expect(pickupCodeMatches('261023-4821-7731', code), isFalse);
     expect(pickupCodeMatches('', code), isFalse);
+  });
+
+  test('bindestrecken sätts in medan man skriver siffror', () {
+    String type(String text) => PickupCodeInputFormatter()
+        .formatEditUpdate(TextEditingValue.empty, TextEditingValue(text: text))
+        .text;
+    expect(type('2610'), '2610');
+    expect(type('2610234'), '261023-4');
+    expect(type('26102348217730'), '261023-4821-7730');
+    expect(type('261023-4821-77309'), '261023-4821-7730');
+    expect(type('261023 48'), '261023-48');
   });
 }

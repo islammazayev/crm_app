@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
+import '../customer/pages/customer_buy_page.dart';
 import '../customer/pages/customer_send_page.dart';
 import '../customer/screens/customer_transactions_screen.dart';
 import '../l10n/locale_controller.dart';
@@ -121,8 +122,15 @@ class CustomerWelcomeScreen extends StatelessWidget {
                     );
                   },
                 ),
+                ActionCard(
+                  icon: Icons.shopping_cart_outlined,
+                  iconColor: AppColors.warning,
+                  title: l10n.tabBuy,
+                  subtitle: l10n.buyCardSubtitle,
+                  badge: '+',
+                  onTap: () => _open(context, const CustomerBuyPage()),
+                ),
                 for (final (icon, title) in [
-                  (Icons.shopping_cart_outlined, l10n.tabBuy),
                   (Icons.sell_outlined, l10n.tabSell),
                   (Icons.currency_exchange, l10n.tabExchange),
                 ])

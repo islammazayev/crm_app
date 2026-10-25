@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 
 import '../../l10n/locale_controller.dart';
 import '../../utils/client_id.dart';
+import '../../utils/transaction_kind.dart';
 import '../../utils/transaction_no.dart';
 import 'manager_transactions_detail_screen.dart';
 
@@ -63,9 +64,6 @@ class ManagerTransactionsPage extends StatelessWidget {
             itemBuilder: (context, index) {
               final doc = docs[index];
               final data = doc.data() as Map<String, dynamic>;
-              final amountFrom = ((data['amountFrom'] ?? 0) as num).toDouble();
-              final fromCurrency = data['fromCurrency']?.toString() ?? '';
-              final toCurrency = data['toCurrency']?.toString() ?? '';
               final createdAt = (data['createAt'] as Timestamp?)?.toDate();
               final status = data['status']?.toString() ?? '';
 
@@ -121,7 +119,7 @@ class ManagerTransactionsPage extends StatelessWidget {
                       : l10n.unknownClient,
                 ),
                 subtitle: Text(
-                  '$amountFrom $fromCurrency → $toCurrency'
+                  '${transactionSummary(l10n, data)}'
                   '${createdAt != null ? '\n${createdAt.toLocal()}' : ''}'
                   '\n$statusText',
                 ),

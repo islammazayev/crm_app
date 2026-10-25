@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 import '../../l10n/app_localizations.dart';
 import '../../l10n/locale_controller.dart';
+import '../../utils/transaction_kind.dart';
 import '../../utils/transaction_no.dart';
 import '../screens/customer_transaction_detail_screen.dart';
 
@@ -93,9 +94,6 @@ class CustomerTransactionsScreen extends StatelessWidget {
               final doc = docs[index];
               final data = doc.data() as Map<String, dynamic>;
 
-              final amountFrom = data['amountFrom'] ?? 0;
-              final fromCurrency = data['fromCurrency']?.toString() ?? '';
-              final toCurrency = data['toCurrency']?.toString() ?? '';
               final status = data['status']?.toString() ?? '';
               final createdAt = (data['createAt'] as Timestamp?)?.toDate();
 
@@ -105,7 +103,7 @@ class CustomerTransactionsScreen extends StatelessWidget {
                 title: Text(
                   [
                     formatTransactionNo(data['transactionNo']),
-                    '$amountFrom $fromCurrency → $toCurrency',
+                    transactionSummary(l10n, data),
                   ].where((t) => t.isNotEmpty).join('  ·  '),
                 ),
                 subtitle: Text(

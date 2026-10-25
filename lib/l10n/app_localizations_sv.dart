@@ -1679,4 +1679,170 @@ class AppLocalizationsSv extends AppLocalizations {
   String feeAfterTierLine(Object base, Object discount, Object fee) {
     return '$base % − rabatt $discount % = kunden betalar $fee %';
   }
+
+  @override
+  String get buyCardSubtitle =>
+      'Köp valuta kontant på kontoret eller till din bank.';
+
+  @override
+  String get currencyToBuy => 'Valuta du vill köpa';
+
+  @override
+  String get currencyToPayWith => 'Valuta du betalar med';
+
+  @override
+  String get howToReceive => 'Hur vill du få pengarna?';
+
+  @override
+  String get deliveryCash => 'Kontant';
+
+  @override
+  String get deliveryBank => 'Till min bank';
+
+  @override
+  String get deliveryCashHint =>
+      'Du hämtar pengarna på kontoret med en kod eller QR-kod.';
+
+  @override
+  String get deliveryBankHint =>
+      'När kontoret har fått din betalning fyller du i dina bankuppgifter, och kontoret skickar pengarna dit.';
+
+  @override
+  String get chooseCurrenciesFirst => 'Välj valutorna först';
+
+  @override
+  String get officeForPickup => 'Kontor där du hämtar pengarna';
+
+  @override
+  String get officeForBankPayout => 'Kontor som tar emot din betalning';
+
+  @override
+  String get amountToBuy => 'Hur mycket vill du köpa?';
+
+  @override
+  String get sendBuyRequest => 'Skicka köpförfrågan';
+
+  @override
+  String get buyRequestSent => 'Köpförfrågan är skickad till kontoret.';
+
+  @override
+  String buySummary(Object amount, Object to, Object from) {
+    return 'Köp $amount $to med $from';
+  }
+
+  @override
+  String youPay(Object amount, Object currency) {
+    return 'Du betalar: $amount $currency';
+  }
+
+  @override
+  String customerPays(Object amount, Object currency) {
+    return 'Kunden betalar: $amount $currency';
+  }
+
+  @override
+  String get buyPriceComing =>
+      'Kontoret räknar ut vad det kostar och skickar ett förslag.';
+
+  @override
+  String get paidOutToBankBody => 'Pengarna är skickade till din bank.';
+
+  @override
+  String get enterBankDetailsIntro => 'Fyll i vart pengarna ska skickas.';
+
+  @override
+  String get bankNameLabel => 'Bankens namn';
+
+  @override
+  String get bankPhoneLabel => 'Telefonnummer';
+
+  @override
+  String get bankAccountHolderLabel => 'Kontoinnehavarens namn och efternamn';
+
+  @override
+  String get sendBankDetails => 'Skicka bankuppgifter';
+
+  @override
+  String get fillAllBankFields => 'Fyll i alla fälten (högst 100 tecken).';
+
+  @override
+  String get bankDetailsWaiting =>
+      'Tack! Kontoret skickar pengarna till din bank.';
+
+  @override
+  String bankNameValue(Object value) {
+    return 'Bank: $value';
+  }
+
+  @override
+  String bankPhoneValue(Object value) {
+    return 'Telefon: $value';
+  }
+
+  @override
+  String bankAccountHolderValue(Object value) {
+    return 'Kontoinnehavare: $value';
+  }
+
+  @override
+  String get changeBankDetails => 'Ändra bankuppgifter';
+
+  @override
+  String get waitingForBankDetails =>
+      'Väntar på att kunden fyller i sina bankuppgifter.';
+
+  @override
+  String sendToBankInstructions(Object amount, Object currency) {
+    return 'Skicka $amount $currency till kundens bank:';
+  }
+
+  @override
+  String get markSentToBank => 'Pengarna är skickade till banken';
+
+  @override
+  String confirmSentToBank(Object amount, Object currency) {
+    return 'Har du skickat $amount $currency till kundens bank? Transaktionen blir genomförd och kontorets saldo uppdateras.';
+  }
+
+  @override
+  String get confirm => 'Bekräfta';
+
+  @override
+  String rateFieldLabel(Object from, Object to) {
+    return 'Växelkurs: 1 $from = ? $to';
+  }
+
+  @override
+  String get invalidRate => 'Ange en växelkurs större än 0.';
+
+  @override
+  String rateChangedFromMarket(Object rate) {
+    return 'Egen kurs. Marknadskurs: $rate';
+  }
+
+  @override
+  String get marketRateUsed => 'Marknadskurs. Du kan ändra den.';
+
+  @override
+  String get useMarketRate => 'Använd marknadskursen';
+
+  @override
+  String get pickupCodeDigitsHint =>
+      'Skriv bara siffrorna, bindestrecken kommer automatiskt.';
+
+  @override
+  String get balancesTitle => 'Saldo';
+
+  @override
+  String get officeBalanceTitle => 'Kontorets saldo';
+
+  @override
+  String get cashierBalancesTitle => 'Kassörernas saldo';
+
+  @override
+  String get balancesCardSubtitle =>
+      'Kontorets och kassörernas saldo, var för sig.';
+
+  @override
+  String get noBalance => 'Inget saldo.';
 }

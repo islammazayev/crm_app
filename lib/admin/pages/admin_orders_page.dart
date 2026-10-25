@@ -16,6 +16,7 @@ import '../../models/transaction_model.dart';
 import '../../utils/client_id.dart';
 import '../../utils/csv.dart';
 import '../../utils/search_match.dart';
+import '../../utils/transaction_kind.dart';
 import '../../utils/transaction_no.dart';
 import '../../widgets/confirm_delete.dart';
 import '../../widgets/order_report.dart';
@@ -643,6 +644,8 @@ class _AdminOrdersPageState extends State<AdminOrdersPage> {
                         if (no.isNotEmpty) no,
                         if (clientId.isNotEmpty) l10n.clientShort(clientId),
                         if (customerName.isNotEmpty) customerName,
+                        if (isBuyTransaction(data))
+                          transactionSummary(l10n, data),
                       ].join(' · ');
 
                       return TransactionModel(

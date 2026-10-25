@@ -6,6 +6,7 @@ import '../../l10n/locale_controller.dart';
 import '../../l10n/rate_error_text.dart';
 import '../../services/exchange_rate_service.dart';
 import '../../services/transaction_number_service.dart';
+import '../../widgets/rate_field.dart';
 import 'manager_transactions_detail_screen.dart';
 
 /// Manager registrerar en kund som kommer in på kontoret och saknar konto.
@@ -27,6 +28,11 @@ class _ManagerCreateTransactionScreenState
   final _amountCtrl = TextEditingController();
   final _feeCtrl = TextEditingController(text: '5');
 
+  /// Marknadskursen fylls i när båda valutorna är valda; managern kan ändra.
+  final _rateCtrl = TextEditingController();
+  double? _marketRate;
+  bool _loadingRate = false;
+
   List<String> _currencies = [];
   String? _from;
   String? _to;
@@ -46,7 +52,34 @@ class _ManagerCreateTransactionScreenState
     _phoneCtrl.dispose();
     _amountCtrl.dispose();
     _feeCtrl.dispose();
+    _rateCtrl.dispose();
     super.dispose();
+  }
+
+  Future<void> _loadRate() async {
+    final from = _from, to = _to;
+    setState(() {
+      _marketRate = null;
+      _rateCtrl.clear();
+      _loadingRate = from != null && to != null && from != to;
+    });
+    if (!_loadingRate) return;
+    try {
+      final rate = await ExchangeRateService.getRate(from!, to!);
+      if (!mounted || from != _from || to != _to) return;
+      setState(() {
+        _marketRate = rate;
+        _rateCtrl.text = formatRate(rate);
+      });
+    } catch (e) {
+      if (mounted) {
+        _snack(context.l10n.errorWithDetails(rateErrorText(context.l10n, e)));
+      }
+    } finally {
+      if (mounted && from == _from && to == _to) {
+        setState(() => _loadingRate = false);
+      }
+    }
   }
 
   Future<void> _loadCurrencies() async {
@@ -94,10 +127,14 @@ class _ManagerCreateTransactionScreenState
       _snack(l10n.enterFeeRange);
       return;
     }
+    final rate = parseRate(_rateCtrl.text);
+    if (rate == null) {
+      _snack(l10n.invalidRate);
+      return;
+    }
 
     setState(() => _saving = true);
     try {
-      final rate = await ExchangeRateService.getRate(_from!, _to!);
       final feeAmountFrom = amount * feePercent / 100;
       final amountToGross = amount * rate;
       final amountToNet = (amount - feeAmountFrom) * rate;
@@ -177,7 +214,11 @@ class _ManagerCreateTransactionScreenState
                   items: _currencies
                       .map((c) => DropdownMenuItem(value: c, child: Text(c)))
                       .toList(),
-                  onChanged: (v) => setState(() => _from = v),
+                  onChanged: (v) {
+                    _from = v;
+                    if (_to == v) _to = null;
+                    _loadRate();
+                  },
                 ),
                 const SizedBox(height: 14),
                 DropdownButtonFormField<String>(
@@ -190,8 +231,24 @@ class _ManagerCreateTransactionScreenState
                       .where((c) => c != _from)
                       .map((c) => DropdownMenuItem(value: c, child: Text(c)))
                       .toList(),
-                  onChanged: (v) => setState(() => _to = v),
+                  onChanged: (v) {
+                    _to = v;
+                    _loadRate();
+                  },
                 ),
+                if (_loadingRate) ...[
+                  const SizedBox(height: 14),
+                  Text(l10n.calculating),
+                ] else if (_from != null && _to != null) ...[
+                  const SizedBox(height: 14),
+                  RateField(
+                    controller: _rateCtrl,
+                    fromCurrency: _from!,
+                    toCurrency: _to!,
+                    marketRate: _marketRate,
+                    onChanged: (_) => setState(() {}),
+                  ),
+                ],
                 const SizedBox(height: 14),
                 TextField(
                   controller: _amountCtrl,

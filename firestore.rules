@@ -104,6 +104,30 @@ service cloud.firestore {
         : !d.keys().hasAny(['customerTier', 'tierDiscount']);
     }
 
+    // ─── KÖP ────────────────────────────────────────────────────────
+    // Ett köp (kind == 'buy') anger hur mycket kunden vill få (buyAmount i
+    // toCurrency) och hur: kontant på kontoret eller till kundens bank.
+    // Vad kunden ska betala (amountFrom) räknar managern ut i sitt förslag.
+    function isBuy(data) {
+      return data.get('kind', '') == 'buy';
+    }
+
+    function hasValidAmounts(d) {
+      return isBuy(d)
+        ? d.buyAmount is number && d.buyAmount > 0
+          && d.deliveryMethod in ['cash', 'bank']
+          && d.get('amountFrom', null) == null
+        : d.amountFrom is number && d.amountFrom > 0
+          && !d.keys().hasAny(['kind', 'buyAmount', 'deliveryMethod']);
+    }
+
+    // Bankuppgifter som kunden fyller i för utbetalning till banken.
+    function isShortText(d, key) {
+      return d.get(key, '') is string
+        && d.get(key, '').size() > 0
+        && d.get(key, '').size() <= 100;
+    }
+
     // ─── USERS ──────────────────────────────────────────────────────
     match /users/{userId} {
       allow read: if isSignedIn() && (isAdmin() || request.auth.uid == userId);
@@ -396,12 +420,12 @@ service cloud.firestore {
              'officeId', 'fromCurrency', 'toCurrency', 'amountFrom',
              'amountTo', 'feePercent', 'feeAmount', 'paymentMethod',
              'status', 'createAt', 'transactionNo',
-             'customerTier', 'tierDiscount'
+             'customerTier', 'tierDiscount',
+             'kind', 'buyAmount', 'deliveryMethod'
            ])
         && hasValidTransactionNo()
         && hasValidTierSnapshot()
-        && request.resource.data.amountFrom is number
-        && request.resource.data.amountFrom > 0
+        && hasValidAmounts(request.resource.data)
         && request.resource.data.officeId is string
         && request.resource.data.fromCurrency is string
         && request.resource.data.toCurrency is string
@@ -459,8 +483,13 @@ service cloud.firestore {
                'managerProposedAt', 'completedAt',
                'pickupCode', 'pickupToken', 'paymentConfirmedAt',
                'paymentIssueNote', 'paymentIssueAt', 'payoutCode',
-               'baseFeePercent'
+               'baseFeePercent', 'amountFrom', 'paidOutToBankAt'
              ])
+          // Beloppet kunden betalar ändras bara när managern föreslår villkor
+          // för ett köp (se nedan).
+          && (!request.resource.data.diff(resource.data).changedKeys().hasAny(['amountFrom'])
+              || (isBuy(resource.data)
+                  && request.resource.data.status in ['manager_proposed', 'customer_accepted']))
           && (
             (
               request.resource.data.status == 'manager_proposed'
@@ -473,6 +502,12 @@ service cloud.firestore {
                            (request.resource.data.baseFeePercent > resource.data.tierDiscount
                              ? request.resource.data.baseFeePercent - resource.data.tierDiscount
                              : 0)))
+              // Köp: kunden ska få exakt det belopp hen vill köpa.
+              && (!isBuy(resource.data)
+                  || (request.resource.data.amountFrom is number
+                      && request.resource.data.amountFrom > 0
+                      && request.resource.data.amountToNet is number
+                      && math.abs(request.resource.data.amountToNet - resource.data.buyAmount) < 0.01))
             )
             // Acceptera kundens motförslag: kundens avgift, samma växelkurs.
             || (
@@ -480,6 +515,9 @@ service cloud.firestore {
               && resource.data.status == 'customer_countered'
               && request.resource.data.feePercent == resource.data.counterFeePercent
               && request.resource.data.rateFromTo == resource.data.rateFromTo
+              // Köp: kunden får fortfarande det hen köper, men betalar mindre.
+              && (!isBuy(resource.data)
+                  || math.abs(request.resource.data.amountToNet - resource.data.buyAmount) < 0.01)
             )
             // Skicka betalningsuppgifter till kunden efter accept (status oförändrad).
             || (
@@ -519,9 +557,13 @@ service cloud.firestore {
               request.resource.data.status == 'completed'
               && resource.data.status == 'payment_confirmed'
               && request.resource.data.diff(resource.data).changedKeys().hasOnly([
-                   'status', 'completedAt', 'payoutCode'
+                   'status', 'completedAt', 'payoutCode', 'paidOutToBankAt'
                  ])
-              && request.resource.data.payoutCode == resource.data.pickupCode
+              // Kontant: rätt uthämtningskod. Bank: kunden har fyllt i sina
+              // bankuppgifter och managern har skickat pengarna dit.
+              && (resource.data.get('deliveryMethod', 'cash') == 'bank'
+                  ? isShortText(resource.data, 'bankAccountHolder')
+                  : request.resource.data.payoutCode == resource.data.pickupCode)
               && getAfter(/databases/$(database)/documents/offices/$(resource.data.officeId))
                    .data.get('lastBookedTransactionId', '') == docId
             )
@@ -555,6 +597,21 @@ service cloud.firestore {
           && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
                'status', 'customerPaidAt', 'paymentNote', 'receiptPath',
                'receiptName', 'receiptContentType'
+             ])
+        )
+
+        // Kund: bankuppgifter för utbetalning, när betalningen är bekräftad.
+        || (
+          isCustomer()
+          && resource.data.customerId == request.auth.uid
+          && resource.data.status == 'payment_confirmed'
+          && resource.data.get('deliveryMethod', '') == 'bank'
+          && isShortText(request.resource.data, 'bankName')
+          && isShortText(request.resource.data, 'bankPhone')
+          && isShortText(request.resource.data, 'bankAccountHolder')
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+               'bankName', 'bankPhone', 'bankAccountHolder',
+               'bankDetailsAt'
              ])
         )
 
