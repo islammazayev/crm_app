@@ -1669,4 +1669,130 @@ class AppLocalizationsTr extends AppLocalizations {
   String feeAfterTierLine(Object base, Object discount, Object fee) {
     return '%$base − indirim %$discount = müşteri %$fee öder';
   }
+
+  @override
+  String get buyCardSubtitle => 'Ofisten nakit veya bankanıza döviz alın.';
+
+  @override
+  String get currencyToBuy => 'Almak istediğiniz döviz';
+
+  @override
+  String get currencyToPayWith => 'Ödeme yapacağınız döviz';
+
+  @override
+  String get howToReceive => 'Parayı nasıl almak istiyorsunuz?';
+
+  @override
+  String get deliveryCash => 'Nakit';
+
+  @override
+  String get deliveryBank => 'Bankama';
+
+  @override
+  String get deliveryCashHint =>
+      'Parayı ofisten bir kod veya QR kod ile alırsınız.';
+
+  @override
+  String get deliveryBankHint =>
+      'Ofis ödemenizi aldıktan sonra banka bilgilerinizi girersiniz ve ofis parayı oraya gönderir.';
+
+  @override
+  String get chooseCurrenciesFirst => 'Önce dövizleri seçin';
+
+  @override
+  String get officeForPickup => 'Parayı alacağınız ofis';
+
+  @override
+  String get officeForBankPayout => 'Ödemenizi alacak ofis';
+
+  @override
+  String get amountToBuy => 'Ne kadar almak istiyorsunuz?';
+
+  @override
+  String get sendBuyRequest => 'Alım talebi gönder';
+
+  @override
+  String get buyRequestSent => 'Alım talebi ofise gönderildi.';
+
+  @override
+  String buySummary(Object amount, Object to, Object from) {
+    return '$from ile $amount $to alım';
+  }
+
+  @override
+  String youPay(Object amount, Object currency) {
+    return 'Ödeyeceğiniz: $amount $currency';
+  }
+
+  @override
+  String customerPays(Object amount, Object currency) {
+    return 'Müşterinin ödeyeceği: $amount $currency';
+  }
+
+  @override
+  String get buyPriceComing => 'Ofis tutarı hesaplayıp bir teklif gönderecek.';
+
+  @override
+  String get paidOutToBankBody => 'Para bankanıza gönderildi.';
+
+  @override
+  String get enterBankDetailsIntro => 'Paranın nereye gönderileceğini girin.';
+
+  @override
+  String get bankNameLabel => 'Banka adı';
+
+  @override
+  String get bankPhoneLabel => 'Telefon numarası';
+
+  @override
+  String get bankAccountHolderLabel => 'Hesap sahibinin adı ve soyadı';
+
+  @override
+  String get sendBankDetails => 'Banka bilgilerini gönder';
+
+  @override
+  String get fillAllBankFields =>
+      'Tüm alanları doldurun (en fazla 100 karakter).';
+
+  @override
+  String get bankDetailsWaiting =>
+      'Teşekkürler! Ofis parayı bankanıza gönderecek.';
+
+  @override
+  String bankNameValue(Object value) {
+    return 'Banka: $value';
+  }
+
+  @override
+  String bankPhoneValue(Object value) {
+    return 'Telefon: $value';
+  }
+
+  @override
+  String bankAccountHolderValue(Object value) {
+    return 'Hesap sahibi: $value';
+  }
+
+  @override
+  String get changeBankDetails => 'Banka bilgilerini değiştir';
+
+  @override
+  String get waitingForBankDetails =>
+      'Müşterinin banka bilgilerini girmesi bekleniyor.';
+
+  @override
+  String sendToBankInstructions(Object amount, Object currency) {
+    return 'Müşterinin bankasına $amount $currency gönderin:';
+  }
+
+  @override
+  String get markSentToBank => 'Para bankaya gönderildi';
+
+  @override
+  String confirmSentToBank(Object amount, Object currency) {
+    return 'Müşterinin bankasına $amount $currency gönderdiniz mi? İşlem tamamlanacak ve ofis bakiyesi güncellenecek.';
+  }
+
+  @override
+  String get confirm => 'Onayla';
 }

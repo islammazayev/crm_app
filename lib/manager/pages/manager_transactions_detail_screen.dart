@@ -5,10 +5,12 @@ import '../../l10n/rate_error_text.dart';
 import '../../l10n/status_text.dart';
 import '../../utils/client_id.dart';
 import '../../utils/customer_tiers.dart';
+import '../../utils/fee_calc.dart';
 import '../../utils/pickup_code.dart';
 import 'pickup_scanner_page.dart';
 import '../../widgets/receipt_button.dart';
 import '../../services/exchange_rate_service.dart';
+import '../../utils/transaction_kind.dart';
 import '../../utils/transaction_no.dart';
 import '../../utils/balances.dart';
 
@@ -37,6 +39,11 @@ class _ManagerTransactionDetailScreenState
   /// Kundens nivå (från transaktionen). Rabatten dras från avgiften
   /// managern skriver.
   CustomerTierInfo? _tier;
+
+  /// Köp: beloppet kunden vill få. Då räknas det kunden betalar
+  /// ([_amountFrom]) ut från kurs och avgift.
+  double? _buyAmount;
+  double? _amountFrom;
 
   double? _rate;
   double? _amountToGross;
@@ -75,19 +82,27 @@ class _ManagerTransactionDetailScreenState
       final rate =
           _rate ?? await ExchangeRateService.getRate(fromCurrency, toCurrency);
 
-      final feeAmountFrom = amountFrom * feePercent / 100;
-      final amountFromNet = amountFrom - feeAmountFrom;
-
-      final amountToGross = amountFrom * rate;
-      final amountToNet = amountFromNet * rate;
-      final feeAmountTo = amountToGross - amountToNet;
+      final buy = _buyAmount;
+      if (buy != null && feePercent >= 100) return;
+      final a = buy != null
+          ? ExchangeAmounts.forBuy(
+              buyAmount: buy,
+              feePercent: feePercent,
+              rate: rate,
+            )
+          : ExchangeAmounts.fromPaid(
+              amountFrom: amountFrom,
+              feePercent: feePercent,
+              rate: rate,
+            );
 
       setState(() {
         _rate = rate;
-        _feeAmountFrom = feeAmountFrom;
-        _amountToGross = amountToGross;
-        _amountToNet = amountToNet;
-        _feeAmountTo = feeAmountTo;
+        _amountFrom = a.amountFrom;
+        _feeAmountFrom = a.feeAmountFrom;
+        _amountToGross = a.amountToGross;
+        _amountToNet = a.amountToNet;
+        _feeAmountTo = a.feeAmountTo;
       });
     } catch (e) {
       if (!mounted) return;
@@ -131,17 +146,25 @@ class _ManagerTransactionDetailScreenState
   }) async {
     setState(() => _busy = true);
     try {
-      final feeAmountFrom = amountFrom * counterFee / 100;
-      final amountToGross = amountFrom * rate;
-      final amountToNet = (amountFrom - feeAmountFrom) * rate;
+      // Köp: kunden får fortfarande det hen köper, men betalar mindre.
+      final buy = _buyAmount;
+      final a = buy != null
+          ? ExchangeAmounts.forBuy(
+              buyAmount: buy,
+              feePercent: counterFee,
+              rate: rate,
+            )
+          : ExchangeAmounts.fromPaid(
+              amountFrom: amountFrom,
+              feePercent: counterFee,
+              rate: rate,
+            );
       await txRef.update({
         'status': 'customer_accepted',
         'feePercent': counterFee,
-        'feeAmountFrom': feeAmountFrom,
         'rateFromTo': rate,
-        'amountToGross': amountToGross,
-        'amountToNet': amountToNet,
-        'feeAmountTo': amountToGross - amountToNet,
+        ...a.toMap(),
+        if (buy != null) 'amountFrom': a.amountFrom,
       });
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
@@ -339,6 +362,7 @@ class _ManagerTransactionDetailScreenState
     required double amountToNet,
     required String pickupCode,
     bool verifiedByScan = false,
+    bool toBank = false,
   }) async {
     final l10n = context.l10n;
     final entered = _payoutCodeController.text;
@@ -374,6 +398,7 @@ class _ManagerTransactionDetailScreenState
         'completedAt': FieldValue.serverTimestamp(),
         // Måste vara exakt kundens kod (kontrolleras i reglerna).
         'payoutCode': pickupCode,
+        if (toBank) 'paidOutToBankAt': FieldValue.serverTimestamp(),
       });
       batch.update(officeRef, {
         'balances.$fromCurrency': FieldValue.increment(amountFrom),
@@ -427,6 +452,11 @@ class _ManagerTransactionDetailScreenState
           final String toCurrency = (data['toCurrency'] ?? '').toString();
           final String status = (data['status'] ?? '').toString();
           final String officeId = (data['officeId'] ?? '').toString();
+          final bool isBuy = isBuyTransaction(data);
+          final bool toBank = isBankPayout(data);
+          _buyAmount = isBuy
+              ? ((data['buyAmount'] ?? 0) as num).toDouble()
+              : null;
           final String? chosenPaymentMethodId =
               data['chosenPaymentMethodId'] as String?;
 
@@ -460,6 +490,7 @@ class _ManagerTransactionDetailScreenState
             amountToNet: savedAmountToNet,
             pickupCode: '${data['pickupCode'] ?? ''}',
             verifiedByScan: verifiedByScan,
+            toBank: isBankPayout(data),
           );
 
           final feePercentInput = double.tryParse(
@@ -545,7 +576,22 @@ class _ManagerTransactionDetailScreenState
                         ),
                         const SizedBox(height: 8),
                       ],
-                      Text(l10n.customerSends(amountFrom, fromCurrency)),
+                      if (isBuy) ...[
+                        Text(
+                          transactionSummary(l10n, data),
+                          style: const TextStyle(fontWeight: FontWeight.w600),
+                        ),
+                        if (amountFrom > 0) ...[
+                          const SizedBox(height: 8),
+                          Text(
+                            l10n.customerPays(
+                              amountFrom.toStringAsFixed(2),
+                              fromCurrency,
+                            ),
+                          ),
+                        ],
+                      ] else
+                        Text(l10n.customerSends(amountFrom, fromCurrency)),
                       const SizedBox(height: 8),
                       Text(l10n.toCurrencyValue(toCurrency)),
                       const SizedBox(height: 8),
@@ -652,6 +698,18 @@ class _ManagerTransactionDetailScreenState
                                 toCurrency,
                               ),
                             ),
+                          if (isBuy && _amountFrom != null) ...[
+                            const SizedBox(height: 8),
+                            Text(
+                              l10n.customerPays(
+                                _amountFrom!.toStringAsFixed(2),
+                                fromCurrency,
+                              ),
+                              style: const TextStyle(
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ],
                           const SizedBox(height: 8),
                           if (_amountToNet != null)
                             Text(
@@ -844,6 +902,7 @@ class _ManagerTransactionDetailScreenState
                                     await txRef.update({
                                       'status': 'manager_proposed',
                                       'feePercent': feeToCustomer,
+                                      if (isBuy) 'amountFrom': _amountFrom,
                                       if (tierInfo != null)
                                         'baseFeePercent': feePercentInput,
                                       'feeAmountFrom': _feeAmountFrom,
@@ -927,7 +986,94 @@ class _ManagerTransactionDetailScreenState
                         ),
                       ],
 
-                      if (status == 'payment_confirmed') ...[
+                      if (status == 'payment_confirmed' && toBank) ...[
+                        Card(
+                          child: Padding(
+                            padding: const EdgeInsets.all(12),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  l10n.paymentConfirmedManager,
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                const SizedBox(height: 4),
+                                if ('${data['bankAccountHolder'] ?? ''}'
+                                    .isEmpty)
+                                  Text(l10n.waitingForBankDetails)
+                                else ...[
+                                  Text(
+                                    l10n.sendToBankInstructions(
+                                      savedAmountToNet.toStringAsFixed(2),
+                                      toCurrency,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 8),
+                                  SelectableText(
+                                    [
+                                      l10n.bankNameValue(
+                                        '${data['bankName'] ?? ''}',
+                                      ),
+                                      l10n.bankPhoneValue(
+                                        '${data['bankPhone'] ?? ''}',
+                                      ),
+                                      l10n.bankAccountHolderValue(
+                                        '${data['bankAccountHolder'] ?? ''}',
+                                      ),
+                                    ].join('\n'),
+                                  ),
+                                ],
+                              ],
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        SizedBox(
+                          width: double.infinity,
+                          child: ElevatedButton.icon(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.green,
+                            ),
+                            icon: const Icon(Icons.account_balance),
+                            label: Text(l10n.markSentToBank),
+                            onPressed:
+                                _busy ||
+                                    '${data['bankAccountHolder'] ?? ''}'.isEmpty
+                                ? null
+                                : () async {
+                                    final ok = await showDialog<bool>(
+                                      context: context,
+                                      builder: (ctx) => AlertDialog(
+                                        title: Text(l10n.markSentToBank),
+                                        content: Text(
+                                          l10n.confirmSentToBank(
+                                            savedAmountToNet.toStringAsFixed(2),
+                                            toCurrency,
+                                          ),
+                                        ),
+                                        actions: [
+                                          TextButton(
+                                            onPressed: () =>
+                                                Navigator.pop(ctx, false),
+                                            child: Text(l10n.cancel),
+                                          ),
+                                          ElevatedButton(
+                                            onPressed: () =>
+                                                Navigator.pop(ctx, true),
+                                            child: Text(l10n.confirm),
+                                          ),
+                                        ],
+                                      ),
+                                    );
+                                    if (ok == true) {
+                                      await payOut(verifiedByScan: true);
+                                    }
+                                  },
+                          ),
+                        ),
+                      ] else if (status == 'payment_confirmed') ...[
                         Builder(
                           builder: (context) {
                             // Kom managern hit via skanning från startsidan frågar

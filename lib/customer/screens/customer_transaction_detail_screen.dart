@@ -6,6 +6,7 @@ import '../../l10n/locale_controller.dart';
 import '../../services/receipt_service.dart';
 import '../../theme/app_theme.dart';
 import '../../utils/pickup_code.dart';
+import '../../utils/transaction_kind.dart';
 import '../../widgets/receipt_button.dart';
 import '../../utils/transaction_no.dart';
 import 'customer_transactions_screen.dart' show customerStatusText;
@@ -58,6 +59,8 @@ class CustomerTransactionDetailScreen extends StatelessWidget {
               .toDouble();
 
           final String status = (data['status'] ?? '').toString();
+          final bool isBuy = isBuyTransaction(data);
+          final bool toBank = isBankPayout(data);
           final String paymentLabel = (data['paymentMethodLabel'] ?? '')
               .toString();
           final String paymentDetails = (data['paymentMethodDetails'] ?? '')
@@ -86,7 +89,24 @@ class CustomerTransactionDetailScreen extends StatelessWidget {
                         ),
                         const SizedBox(height: 8),
                       ],
-                      Text(l10n.youSend(amountFrom, fromCurrency)),
+                      if (isBuy) ...[
+                        Text(
+                          transactionSummary(l10n, data),
+                          style: const TextStyle(fontWeight: FontWeight.w600),
+                        ),
+                        const SizedBox(height: 8),
+                        // Vad köpet kostar vet kunden först när managern har
+                        // föreslagit kurs och avgift.
+                        Text(
+                          amountFrom > 0
+                              ? l10n.youPay(
+                                  amountFrom.toStringAsFixed(2),
+                                  fromCurrency,
+                                )
+                              : l10n.buyPriceComing,
+                        ),
+                      ] else
+                        Text(l10n.youSend(amountFrom, fromCurrency)),
                       const SizedBox(height: 8),
                       Text(
                         l10n.exchangeRateValue(
@@ -198,7 +218,10 @@ class CustomerTransactionDetailScreen extends StatelessWidget {
                         ),
                       ],
 
-                      if (status == 'payment_confirmed') ...[
+                      if (status == 'payment_confirmed' && toBank) ...[
+                        const SizedBox(height: 16),
+                        _BankDetailsCard(docRef: docRef, data: data),
+                      ] else if (status == 'payment_confirmed') ...[
                         const SizedBox(height: 16),
                         _PickupCodeCard(
                           code: '${data['pickupCode'] ?? ''}',
@@ -219,7 +242,9 @@ class CustomerTransactionDetailScreen extends StatelessWidget {
                           color: AppColors.success,
                           icon: Icons.task_alt,
                           title: l10n.paidOutTitle,
-                          body: l10n.paidOutBody,
+                          body: toBank
+                              ? l10n.paidOutToBankBody
+                              : l10n.paidOutBody,
                         ),
                       ],
 
@@ -512,6 +537,137 @@ class _NoticeCard extends StatelessWidget {
               ],
             ),
           ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Köp till bank: när betalningen är bekräftad fyller kunden i vart pengarna
+/// ska. Därefter visas uppgifterna tills kontoret har skickat pengarna.
+class _BankDetailsCard extends StatefulWidget {
+  final DocumentReference docRef;
+  final Map<String, dynamic> data;
+
+  const _BankDetailsCard({required this.docRef, required this.data});
+
+  @override
+  State<_BankDetailsCard> createState() => _BankDetailsCardState();
+}
+
+class _BankDetailsCardState extends State<_BankDetailsCard> {
+  late final _bankName = TextEditingController(
+    text: '${widget.data['bankName'] ?? ''}',
+  );
+  late final _phone = TextEditingController(
+    text: '${widget.data['bankPhone'] ?? ''}',
+  );
+  late final _holder = TextEditingController(
+    text: '${widget.data['bankAccountHolder'] ?? ''}',
+  );
+  late bool _editing = '${widget.data['bankAccountHolder'] ?? ''}'.isEmpty;
+  bool _saving = false;
+
+  @override
+  void dispose() {
+    _bankName.dispose();
+    _phone.dispose();
+    _holder.dispose();
+    super.dispose();
+  }
+
+  Future<void> _save() async {
+    final l10n = context.l10n;
+    final values = [_bankName, _phone, _holder].map((c) => c.text.trim());
+    if (values.any((v) => v.isEmpty || v.length > 100)) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l10n.fillAllBankFields)));
+      return;
+    }
+    setState(() => _saving = true);
+    try {
+      await widget.docRef.update({
+        'bankName': _bankName.text.trim(),
+        'bankPhone': _phone.text.trim(),
+        'bankAccountHolder': _holder.text.trim(),
+        'bankDetailsAt': FieldValue.serverTimestamp(),
+      });
+      if (mounted) setState(() => _editing = false);
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(l10n.errorWithDetails('$e'))));
+      }
+    } finally {
+      if (mounted) setState(() => _saving = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final d = widget.data;
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: AppColors.primaryDim,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppColors.primary.withValues(alpha: 0.5)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            l10n.paymentConfirmedTitle,
+            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+          ),
+          const SizedBox(height: 8),
+          if (_editing) ...[
+            Text(l10n.enterBankDetailsIntro),
+            const SizedBox(height: 12),
+            TextField(
+              controller: _bankName,
+              decoration: InputDecoration(labelText: l10n.bankNameLabel),
+            ),
+            const SizedBox(height: 12),
+            TextField(
+              controller: _phone,
+              keyboardType: TextInputType.phone,
+              decoration: InputDecoration(labelText: l10n.bankPhoneLabel),
+            ),
+            const SizedBox(height: 12),
+            TextField(
+              controller: _holder,
+              decoration: InputDecoration(
+                labelText: l10n.bankAccountHolderLabel,
+              ),
+            ),
+            const SizedBox(height: 16),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: _saving ? null : _save,
+                child: Text(l10n.sendBankDetails),
+              ),
+            ),
+          ] else ...[
+            Text(l10n.bankDetailsWaiting),
+            const SizedBox(height: 12),
+            Text(l10n.bankNameValue('${d['bankName'] ?? ''}')),
+            Text(l10n.bankPhoneValue('${d['bankPhone'] ?? ''}')),
+            Text(
+              l10n.bankAccountHolderValue('${d['bankAccountHolder'] ?? ''}'),
+            ),
+            const SizedBox(height: 8),
+            TextButton.icon(
+              onPressed: () => setState(() => _editing = true),
+              icon: const Icon(Icons.edit_outlined),
+              label: Text(l10n.changeBankDetails),
+            ),
+          ],
         ],
       ),
     );

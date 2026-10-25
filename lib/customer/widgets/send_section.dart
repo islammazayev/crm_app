@@ -6,41 +6,7 @@ import '../../l10n/app_localizations.dart';
 import '../../l10n/locale_controller.dart';
 import '../../services/transaction_number_service.dart';
 import '../../utils/customer_tiers.dart';
-
-/// Ett kontor så som kunden får se det (från `officeListings`):
-/// bara land, stad och vilka valutor kontoret hanterar.
-class _OfficeListing {
-  final String id;
-  final String country;
-  final String city;
-  final List<String> currencies;
-
-  _OfficeListing({
-    required this.id,
-    required this.country,
-    required this.city,
-    required this.currencies,
-  });
-
-  factory _OfficeListing.fromDoc(
-    QueryDocumentSnapshot<Map<String, dynamic>> doc,
-  ) {
-    final data = doc.data();
-    return _OfficeListing(
-      id: doc.id,
-      country: (data['country'] ?? '').toString(),
-      city: (data['city'] ?? '').toString(),
-      currencies: (data['currencies'] as List? ?? [])
-          .map((e) => e.toString())
-          .toList(),
-    );
-  }
-
-  String label(AppLocalizations l10n) {
-    if (city.isEmpty) return country.isEmpty ? l10n.office : country;
-    return country.isEmpty ? city : '$city – $country';
-  }
-}
+import 'office_listing.dart';
 
 /// Skicka-flödet: kunden väljer först vilken valuta hen vill skicka. Därefter
 /// visas bara de kontor som hanterar den valutan, och sist väljer kunden
@@ -61,7 +27,7 @@ class _SendSectionState extends State<SendSection> {
   bool _loadingOffices = true;
   bool _sending = false;
   String Function(AppLocalizations l10n)? _error;
-  List<_OfficeListing> _offices = [];
+  List<OfficeListing> _offices = [];
 
   @override
   void initState() {
@@ -77,7 +43,7 @@ class _SendSectionState extends State<SendSection> {
 
       if (!mounted) return;
       setState(() {
-        _offices = snap.docs.map(_OfficeListing.fromDoc).toList();
+        _offices = snap.docs.map(OfficeListing.fromDoc).toList();
         _loadingOffices = false;
       });
     } catch (e) {
@@ -106,13 +72,13 @@ class _SendSectionState extends State<SendSection> {
   }
 
   /// Kontor som hanterar valutan kunden vill skicka.
-  List<_OfficeListing> get _officesForFromCurrency {
+  List<OfficeListing> get _officesForFromCurrency {
     final from = _selectedFromCurrency;
     if (from == null) return [];
     return _offices.where((o) => o.currencies.contains(from)).toList();
   }
 
-  _OfficeListing? get _selectedOffice {
+  OfficeListing? get _selectedOffice {
     final id = _selectedOfficeId;
     if (id == null) return null;
     for (final o in _offices) {

@@ -1674,4 +1674,132 @@ class AppLocalizationsEn extends AppLocalizations {
   String feeAfterTierLine(Object base, Object discount, Object fee) {
     return '$base% − discount $discount% = the customer pays $fee%';
   }
+
+  @override
+  String get buyCardSubtitle =>
+      'Buy currency in cash at the office or to your bank.';
+
+  @override
+  String get currencyToBuy => 'Currency you want to buy';
+
+  @override
+  String get currencyToPayWith => 'Currency you pay with';
+
+  @override
+  String get howToReceive => 'How do you want to receive the money?';
+
+  @override
+  String get deliveryCash => 'Cash';
+
+  @override
+  String get deliveryBank => 'To my bank';
+
+  @override
+  String get deliveryCashHint =>
+      'You pick up the money at the office with a code or QR code.';
+
+  @override
+  String get deliveryBankHint =>
+      'Once the office has received your payment, you enter your bank details and the office sends the money there.';
+
+  @override
+  String get chooseCurrenciesFirst => 'Choose the currencies first';
+
+  @override
+  String get officeForPickup => 'Office where you pick up the money';
+
+  @override
+  String get officeForBankPayout => 'Office that receives your payment';
+
+  @override
+  String get amountToBuy => 'How much do you want to buy?';
+
+  @override
+  String get sendBuyRequest => 'Send purchase request';
+
+  @override
+  String get buyRequestSent => 'The purchase request was sent to the office.';
+
+  @override
+  String buySummary(Object amount, Object to, Object from) {
+    return 'Buy $amount $to with $from';
+  }
+
+  @override
+  String youPay(Object amount, Object currency) {
+    return 'You pay: $amount $currency';
+  }
+
+  @override
+  String customerPays(Object amount, Object currency) {
+    return 'The customer pays: $amount $currency';
+  }
+
+  @override
+  String get buyPriceComing =>
+      'The office works out the price and sends a proposal.';
+
+  @override
+  String get paidOutToBankBody => 'The money has been sent to your bank.';
+
+  @override
+  String get enterBankDetailsIntro => 'Enter where the money should be sent.';
+
+  @override
+  String get bankNameLabel => 'Bank name';
+
+  @override
+  String get bankPhoneLabel => 'Phone number';
+
+  @override
+  String get bankAccountHolderLabel => 'Account holder\'s first and last name';
+
+  @override
+  String get sendBankDetails => 'Send bank details';
+
+  @override
+  String get fillAllBankFields =>
+      'Fill in all fields (at most 100 characters).';
+
+  @override
+  String get bankDetailsWaiting =>
+      'Thank you! The office will send the money to your bank.';
+
+  @override
+  String bankNameValue(Object value) {
+    return 'Bank: $value';
+  }
+
+  @override
+  String bankPhoneValue(Object value) {
+    return 'Phone: $value';
+  }
+
+  @override
+  String bankAccountHolderValue(Object value) {
+    return 'Account holder: $value';
+  }
+
+  @override
+  String get changeBankDetails => 'Change bank details';
+
+  @override
+  String get waitingForBankDetails =>
+      'Waiting for the customer to enter their bank details.';
+
+  @override
+  String sendToBankInstructions(Object amount, Object currency) {
+    return 'Send $amount $currency to the customer\'s bank:';
+  }
+
+  @override
+  String get markSentToBank => 'Money sent to the bank';
+
+  @override
+  String confirmSentToBank(Object amount, Object currency) {
+    return 'Have you sent $amount $currency to the customer\'s bank? The transaction will be completed and the office balance updated.';
+  }
+
+  @override
+  String get confirm => 'Confirm';
 }
