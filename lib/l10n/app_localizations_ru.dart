@@ -1624,10 +1624,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get customerTiersIntro =>
-      'Скидка — это процентные пункты, которые вычитаются из стандартной комиссии. Пример: стандартная комиссия 5 % и Золото 1 % — клиент платит не более 4 %. Менеджер может поставить комиссию ниже, но не выше. Уровень клиенту назначается в разделе «Клиенты».';
-
-  @override
-  String get standardFeeLabel => 'Стандартная комиссия';
+      'Скидка — это процентные пункты, которые вычитаются из комиссии, введённой менеджером. Пример: менеджер вводит 5 %, клиент уровня Золото со скидкой 1 % платит 4 %. Уровень клиенту назначается в разделе «Клиенты».';
 
   @override
   String tierDiscountLabel(Object tier) {
@@ -1635,13 +1632,7 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
-  String tierFeeResult(Object fee) {
-    return 'Клиент платит не более $fee %';
-  }
-
-  @override
-  String get tierInvalidValues =>
-      'Введите числа от 0. Скидка не может быть больше стандартной комиссии.';
+  String get tierInvalidValues => 'Введите число от 0 до 100.';
 
   @override
   String get tierSettingsSaved => 'Уровни клиентов сохранены.';
@@ -1659,8 +1650,8 @@ class AppLocalizationsRu extends AppLocalizations {
       'Оставьте пустым, чтобы использовать скидку уровня.';
 
   @override
-  String tierFeeSummary(Object standard, Object discount, Object fee) {
-    return 'Стандартная комиссия $standard % − скидка $discount % = не более $fee %';
+  String tierFeeSummary(Object discount, Object fee) {
+    return 'Скидка $discount п.п. Пример: комиссия 5 % → клиент платит $fee %.';
   }
 
   @override
@@ -1676,17 +1667,22 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
-  String customerTierManagerLine(Object tier, Object discount, Object max) {
-    return '$tier: скидка $discount %, комиссия не более $max %';
-  }
-
-  @override
-  String feeAboveTierMax(Object max) {
-    return 'Уровень клиента допускает не более $max %';
+  String customerTierManagerLine(Object tier, Object discount) {
+    return '$tier: скидка $discount % вычитается из введённой вами комиссии';
   }
 
   @override
   String customerTierBadge(Object tier, Object discount) {
     return '$tier – скидка $discount % на комиссию';
+  }
+
+  @override
+  String tierFeeExample(Object fee) {
+    return 'Пример: комиссия 5 % → клиент платит $fee %';
+  }
+
+  @override
+  String feeAfterTierLine(Object base, Object discount, Object fee) {
+    return '$base % − скидка $discount % = клиент платит $fee %';
   }
 }

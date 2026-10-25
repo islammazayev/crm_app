@@ -66,7 +66,7 @@ class _AdminCustomersSectionState extends State<AdminCustomersSection> {
           );
           final customInvalid =
               customCtrl.text.trim().isNotEmpty &&
-              (custom == null || custom < 0 || custom > _tiers.standardFee);
+              (custom == null || custom < 0 || custom > 100);
           final discount = tier == null
               ? null
               : (custom ?? _tiers.discounts[tier]!);
@@ -114,9 +114,13 @@ class _AdminCustomersSectionState extends State<AdminCustomersSection> {
                     const SizedBox(height: 14),
                     Text(
                       l10n.tierFeeSummary(
-                        formatPercent(_tiers.standardFee),
                         formatPercent(discount!),
-                        formatPercent(_tiers.standardFee - discount),
+                        formatPercent(
+                          CustomerTierInfo(
+                            tier: tier!,
+                            discount: discount,
+                          ).feeAfterDiscount(5),
+                        ),
                       ),
                     ),
                   ],

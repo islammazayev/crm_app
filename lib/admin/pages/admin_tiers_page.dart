@@ -4,7 +4,7 @@ import '../../l10n/locale_controller.dart';
 import '../../theme/app_theme.dart';
 import '../../utils/customer_tiers.dart';
 
-/// Admin: standardavgift och rabatt (procentenheter) per kundnivå.
+/// Admin: rabatt (procentenheter) per kundnivå.
 class AdminTiersPage extends StatefulWidget {
   const AdminTiersPage({super.key});
 
@@ -13,7 +13,6 @@ class AdminTiersPage extends StatefulWidget {
 }
 
 class _AdminTiersPageState extends State<AdminTiersPage> {
-  final _standardCtrl = TextEditingController();
   final _discountCtrls = {
     for (final t in CustomerTier.values) t: TextEditingController(),
   };
@@ -35,7 +34,6 @@ class _AdminTiersPageState extends State<AdminTiersPage> {
     }
     if (!mounted) return;
     setState(() {
-      _standardCtrl.text = formatPercent(settings.standardFee);
       for (final t in CustomerTier.values) {
         _discountCtrls[t]!.text = formatPercent(settings.discounts[t]!);
       }
@@ -45,7 +43,6 @@ class _AdminTiersPageState extends State<AdminTiersPage> {
 
   @override
   void dispose() {
-    _standardCtrl.dispose();
     for (final c in _discountCtrls.values) {
       c.dispose();
     }
@@ -57,13 +54,10 @@ class _AdminTiersPageState extends State<AdminTiersPage> {
 
   Future<void> _save() async {
     final l10n = context.l10n;
-    final standard = _parse(_standardCtrl);
     final discounts = {
       for (final t in CustomerTier.values) t: _parse(_discountCtrls[t]!),
     };
-    if (standard == null ||
-        standard < 0 ||
-        discounts.values.any((d) => d == null || d < 0 || d > standard)) {
+    if (discounts.values.any((d) => d == null || d < 0 || d > 100)) {
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text(l10n.tierInvalidValues)));
@@ -74,7 +68,6 @@ class _AdminTiersPageState extends State<AdminTiersPage> {
     try {
       await TierSettings.ref.set(
         TierSettings(
-          standardFee: standard,
           discounts: discounts.map((t, d) => MapEntry(t, d!)),
         ).toMap(),
       );
@@ -97,7 +90,6 @@ class _AdminTiersPageState extends State<AdminTiersPage> {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final standard = _parse(_standardCtrl);
 
     Widget field(TextEditingController c, String label, {String? helper}) =>
         TextField(
@@ -129,16 +121,22 @@ class _AdminTiersPageState extends State<AdminTiersPage> {
                     ),
                   ),
                   const SizedBox(height: 20),
-                  field(_standardCtrl, l10n.standardFeeLabel),
-                  const SizedBox(height: 24),
                   for (final t in CustomerTier.values) ...[
                     field(
                       _discountCtrls[t]!,
                       l10n.tierDiscountLabel('${t.emoji} ${t.label(l10n)}'),
                       helper: () {
                         final d = _parse(_discountCtrls[t]!);
-                        if (standard == null || d == null) return null;
-                        return l10n.tierFeeResult(formatPercent(standard - d));
+                        if (d == null) return null;
+                        // Exempel med 5 % så att admin ser vad rabatten gör.
+                        return l10n.tierFeeExample(
+                          formatPercent(
+                            CustomerTierInfo(
+                              tier: t,
+                              discount: d,
+                            ).feeAfterDiscount(5),
+                          ),
+                        );
                       }(),
                     ),
                     const SizedBox(height: 16),

@@ -2757,14 +2757,8 @@ abstract class AppLocalizations {
   /// No description provided for @customerTiersIntro.
   ///
   /// In sv, this message translates to:
-  /// **'Rabatten är procentenheter som dras från standardavgiften. Exempel: standardavgift 5 % och Guld 1 % ger kunden högst 4 %. Managern får sätta en lägre avgift men inte en högre. Du ger kunder en nivå under Kunder.'**
+  /// **'Rabatten är procentenheter som dras från avgiften managern skriver. Exempel: managern skriver 5 % och kunden är Guld med 1 % rabatt, då betalar kunden 4 %. Du ger kunder en nivå under Kunder.'**
   String get customerTiersIntro;
-
-  /// No description provided for @standardFeeLabel.
-  ///
-  /// In sv, this message translates to:
-  /// **'Standardavgift'**
-  String get standardFeeLabel;
 
   /// No description provided for @tierDiscountLabel.
   ///
@@ -2772,16 +2766,10 @@ abstract class AppLocalizations {
   /// **'Rabatt för {tier}'**
   String tierDiscountLabel(Object tier);
 
-  /// No description provided for @tierFeeResult.
-  ///
-  /// In sv, this message translates to:
-  /// **'Kunden betalar högst {fee} %'**
-  String tierFeeResult(Object fee);
-
   /// No description provided for @tierInvalidValues.
   ///
   /// In sv, this message translates to:
-  /// **'Ange tal från 0 och uppåt. Rabatten får inte vara större än standardavgiften.'**
+  /// **'Ange ett tal från 0 till 100.'**
   String get tierInvalidValues;
 
   /// No description provided for @tierSettingsSaved.
@@ -2811,8 +2799,8 @@ abstract class AppLocalizations {
   /// No description provided for @tierFeeSummary.
   ///
   /// In sv, this message translates to:
-  /// **'Standardavgift {standard} % − rabatt {discount} % = högst {fee} %'**
-  String tierFeeSummary(Object standard, Object discount, Object fee);
+  /// **'Rabatt {discount} procentenheter. Exempel: avgift 5 % → kunden betalar {fee} %.'**
+  String tierFeeSummary(Object discount, Object fee);
 
   /// No description provided for @tierNoAccountNote.
   ///
@@ -2835,20 +2823,26 @@ abstract class AppLocalizations {
   /// No description provided for @customerTierManagerLine.
   ///
   /// In sv, this message translates to:
-  /// **'{tier}: {discount} % rabatt, avgift högst {max} %'**
-  String customerTierManagerLine(Object tier, Object discount, Object max);
-
-  /// No description provided for @feeAboveTierMax.
-  ///
-  /// In sv, this message translates to:
-  /// **'Kundens nivå tillåter högst {max} %'**
-  String feeAboveTierMax(Object max);
+  /// **'{tier}: {discount} % rabatt dras från avgiften du skriver'**
+  String customerTierManagerLine(Object tier, Object discount);
 
   /// No description provided for @customerTierBadge.
   ///
   /// In sv, this message translates to:
   /// **'{tier} – {discount} % rabatt på avgiften'**
   String customerTierBadge(Object tier, Object discount);
+
+  /// No description provided for @tierFeeExample.
+  ///
+  /// In sv, this message translates to:
+  /// **'Exempel: avgift 5 % → kunden betalar {fee} %'**
+  String tierFeeExample(Object fee);
+
+  /// No description provided for @feeAfterTierLine.
+  ///
+  /// In sv, this message translates to:
+  /// **'{base} % − rabatt {discount} % = kunden betalar {fee} %'**
+  String feeAfterTierLine(Object base, Object discount, Object fee);
 }
 
 class _AppLocalizationsDelegate

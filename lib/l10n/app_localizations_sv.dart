@@ -1618,10 +1618,7 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String get customerTiersIntro =>
-      'Rabatten är procentenheter som dras från standardavgiften. Exempel: standardavgift 5 % och Guld 1 % ger kunden högst 4 %. Managern får sätta en lägre avgift men inte en högre. Du ger kunder en nivå under Kunder.';
-
-  @override
-  String get standardFeeLabel => 'Standardavgift';
+      'Rabatten är procentenheter som dras från avgiften managern skriver. Exempel: managern skriver 5 % och kunden är Guld med 1 % rabatt, då betalar kunden 4 %. Du ger kunder en nivå under Kunder.';
 
   @override
   String tierDiscountLabel(Object tier) {
@@ -1629,13 +1626,7 @@ class AppLocalizationsSv extends AppLocalizations {
   }
 
   @override
-  String tierFeeResult(Object fee) {
-    return 'Kunden betalar högst $fee %';
-  }
-
-  @override
-  String get tierInvalidValues =>
-      'Ange tal från 0 och uppåt. Rabatten får inte vara större än standardavgiften.';
+  String get tierInvalidValues => 'Ange ett tal från 0 till 100.';
 
   @override
   String get tierSettingsSaved => 'Kundnivåerna är sparade.';
@@ -1653,8 +1644,8 @@ class AppLocalizationsSv extends AppLocalizations {
       'Lämna tomt för att använda nivåns rabatt.';
 
   @override
-  String tierFeeSummary(Object standard, Object discount, Object fee) {
-    return 'Standardavgift $standard % − rabatt $discount % = högst $fee %';
+  String tierFeeSummary(Object discount, Object fee) {
+    return 'Rabatt $discount procentenheter. Exempel: avgift 5 % → kunden betalar $fee %.';
   }
 
   @override
@@ -1670,17 +1661,22 @@ class AppLocalizationsSv extends AppLocalizations {
   }
 
   @override
-  String customerTierManagerLine(Object tier, Object discount, Object max) {
-    return '$tier: $discount % rabatt, avgift högst $max %';
-  }
-
-  @override
-  String feeAboveTierMax(Object max) {
-    return 'Kundens nivå tillåter högst $max %';
+  String customerTierManagerLine(Object tier, Object discount) {
+    return '$tier: $discount % rabatt dras från avgiften du skriver';
   }
 
   @override
   String customerTierBadge(Object tier, Object discount) {
     return '$tier – $discount % rabatt på avgiften';
+  }
+
+  @override
+  String tierFeeExample(Object fee) {
+    return 'Exempel: avgift 5 % → kunden betalar $fee %';
+  }
+
+  @override
+  String feeAfterTierLine(Object base, Object discount, Object fee) {
+    return '$base % − rabatt $discount % = kunden betalar $fee %';
   }
 }

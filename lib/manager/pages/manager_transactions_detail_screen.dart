@@ -34,6 +34,10 @@ class _ManagerTransactionDetailScreenState
     extends State<ManagerTransactionDetailScreen> {
   final _feeController = TextEditingController(text: '5');
 
+  /// Kundens nivå (från transaktionen). Rabatten dras från avgiften
+  /// managern skriver.
+  CustomerTierInfo? _tier;
+
   double? _rate;
   double? _amountToGross;
   double? _amountToNet;
@@ -62,10 +66,9 @@ class _ManagerTransactionDetailScreenState
     required String fromCurrency,
     required String toCurrency,
   }) async {
-    final feePercent = double.tryParse(
-      _feeController.text.replaceAll(',', '.'),
-    );
-    if (feePercent == null) return;
+    final typedFee = double.tryParse(_feeController.text.replaceAll(',', '.'));
+    if (typedFee == null) return;
+    final feePercent = _tier?.feeAfterDiscount(typedFee) ?? typedFee;
 
     setState(() => _calculating = true);
     try {
@@ -463,12 +466,13 @@ class _ManagerTransactionDetailScreenState
             _feeController.text.replaceAll(',', '.'),
           );
 
-          // Kundens nivå: avgiften får inte vara högre än nivåns tak.
+          // Kundens nivå: rabatten dras från avgiften managern skriver, och
+          // kunden betalar det som blir kvar.
           final tierInfo = CustomerTierInfo.fromTransaction(data);
-          final feeAboveTier =
-              tierInfo != null &&
-              feePercentInput != null &&
-              feePercentInput > tierInfo.maxFeePercent;
+          _tier = tierInfo;
+          final double? feeToCustomer = feePercentInput == null
+              ? null
+              : tierInfo?.feeAfterDiscount(feePercentInput) ?? feePercentInput;
 
           // Kundens motförslag: fyll i kundens avgift och använd samma
           // växelkurs som i förslaget, så att managern ser vad det innebär.
@@ -478,7 +482,10 @@ class _ManagerTransactionDetailScreenState
           if (countered && !_counterPrefilled) {
             _counterPrefilled = true;
             _autoCalcStarted = true;
-            _feeController.text = counterFee.toString();
+            // Fältet är avgiften före rabatt, så rabatten läggs tillbaka.
+            _feeController.text = formatPercent(
+              counterFee + (tierInfo?.discount ?? 0),
+            );
             if (savedRateFromTo > 0) _rate = savedRateFromTo;
             WidgetsBinding.instance.addPostFrameCallback((_) {
               if (!mounted) return;
@@ -492,25 +499,19 @@ class _ManagerTransactionDetailScreenState
 
           // Räkna direkt med standardavgiften när sidan öppnas, så att knappen
           // "Föreslå villkor" inte är avstängd tills managern ändrar avgiften.
-          // Kunder med nivå får avgiften med rabatten redan avdragen.
+          // Ett tidigare förslag fylls i med managerns avgift (före rabatt).
           if (!_autoCalcStarted &&
               _rate == null &&
               (status == 'customer_requested' ||
                   status == 'manager_proposed')) {
             _autoCalcStarted = true;
-            WidgetsBinding.instance.addPostFrameCallback((_) async {
-              double? fee;
-              if (status == 'manager_proposed' && savedFeePercent > 0) {
-                fee = savedFeePercent;
-              } else if (tierInfo != null) {
-                fee = tierInfo.maxFeePercent;
-              } else {
-                try {
-                  fee = (await TierSettings.load()).standardFee;
-                } catch (_) {}
-              }
+            if (status == 'manager_proposed' && savedFeePercent > 0) {
+              _feeController.text = formatPercent(
+                (data['baseFeePercent'] as num?)?.toDouble() ?? savedFeePercent,
+              );
+            }
+            WidgetsBinding.instance.addPostFrameCallback((_) {
               if (!mounted) return;
-              if (fee != null) _feeController.text = formatPercent(fee);
               _recalculate(
                 amountFrom: amountFrom,
                 fromCurrency: fromCurrency,
@@ -555,7 +556,6 @@ class _ManagerTransactionDetailScreenState
                           l10n.customerTierManagerLine(
                             '${tierInfo.tier.emoji} ${tierInfo.tier.label(l10n)}',
                             formatPercent(tierInfo.discount),
-                            formatPercent(tierInfo.maxFeePercent),
                           ),
                           style: const TextStyle(fontWeight: FontWeight.w600),
                         ),
@@ -605,9 +605,14 @@ class _ManagerTransactionDetailScreenState
                           decoration: InputDecoration(
                             labelText: l10n.feePercentLabel,
                             border: const OutlineInputBorder(),
-                            errorText: feeAboveTier
-                                ? l10n.feeAboveTierMax(
-                                    formatPercent(tierInfo.maxFeePercent),
+                            helperText:
+                                tierInfo != null &&
+                                    feePercentInput != null &&
+                                    feeToCustomer != null
+                                ? l10n.feeAfterTierLine(
+                                    formatPercent(feePercentInput),
+                                    formatPercent(tierInfo.discount),
+                                    formatPercent(feeToCustomer),
                                   )
                                 : null,
                           ),
@@ -620,7 +625,7 @@ class _ManagerTransactionDetailScreenState
                           },
                         ),
                         const SizedBox(height: 16),
-                        if (_rate != null && feePercentInput != null) ...[
+                        if (_rate != null && feeToCustomer != null) ...[
                           Text(
                             l10n.exchangeRateValue(
                               fromCurrency,
@@ -640,7 +645,7 @@ class _ManagerTransactionDetailScreenState
                           if (_feeAmountFrom != null && _feeAmountTo != null)
                             Text(
                               l10n.feeValue(
-                                feePercentInput.toStringAsFixed(2),
+                                feeToCustomer.toStringAsFixed(2),
                                 _feeAmountFrom!.toStringAsFixed(2),
                                 fromCurrency,
                                 _feeAmountTo!.toStringAsFixed(2),
@@ -833,15 +838,14 @@ class _ManagerTransactionDetailScreenState
                         SizedBox(
                           width: double.infinity,
                           child: ElevatedButton(
-                            onPressed:
-                                (_rate == null ||
-                                    feePercentInput == null ||
-                                    feeAboveTier)
+                            onPressed: (_rate == null || feeToCustomer == null)
                                 ? null
                                 : () async {
                                     await txRef.update({
                                       'status': 'manager_proposed',
-                                      'feePercent': feePercentInput,
+                                      'feePercent': feeToCustomer,
+                                      if (tierInfo != null)
+                                        'baseFeePercent': feePercentInput,
                                       'feeAmountFrom': _feeAmountFrom,
                                       'rateFromTo': _rate,
                                       'amountToGross': _amountToGross,

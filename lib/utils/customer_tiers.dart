@@ -33,24 +33,18 @@ String formatPercent(num value) {
   return text.replaceFirst(RegExp(r'\.?0+$'), '');
 }
 
-/// Standardavgift och rabatt per nivå (procentenheter) från meta/tiers.
-/// Standardvärdena är desamma som i firestore.rules och gäller tills admin
-/// sparar egna.
+/// Rabatt per nivå (procentenheter) från meta/tiers. Standardvärdena är
+/// desamma som i firestore.rules och gäller tills admin sparar egna.
 class TierSettings {
-  static const defaultStandardFee = 5.0;
   static const defaultDiscounts = {
     CustomerTier.silver: 0.5,
     CustomerTier.gold: 1.0,
     CustomerTier.diamond: 1.5,
   };
 
-  final double standardFee;
   final Map<CustomerTier, double> discounts;
 
-  const TierSettings({
-    this.standardFee = defaultStandardFee,
-    this.discounts = defaultDiscounts,
-  });
+  const TierSettings({this.discounts = defaultDiscounts});
 
   static DocumentReference<Map<String, dynamic>> get ref =>
       FirebaseFirestore.instance.collection('meta').doc('tiers');
@@ -58,8 +52,6 @@ class TierSettings {
   factory TierSettings.fromMap(Map<String, dynamic>? data) {
     final raw = (data?['discounts'] as Map?) ?? const {};
     return TierSettings(
-      standardFee:
-          (data?['standardFee'] as num?)?.toDouble() ?? defaultStandardFee,
       discounts: {
         for (final t in CustomerTier.values)
           t: (raw[t.name] as num?)?.toDouble() ?? defaultDiscounts[t]!,
@@ -68,7 +60,6 @@ class TierSettings {
   }
 
   Map<String, dynamic> toMap() => {
-    'standardFee': standardFee,
     'discounts': {for (final e in discounts.entries) e.key.name: e.value},
   };
 
@@ -88,7 +79,6 @@ class TierSettings {
     return CustomerTierInfo(
       tier: tier,
       discount: discount,
-      maxFeePercent: standardFee - discount,
       isCustom: custom != null,
     );
   }
@@ -97,32 +87,30 @@ class TierSettings {
 class CustomerTierInfo {
   final CustomerTier tier;
   final double discount;
-  final double maxFeePercent;
   final bool isCustom;
 
   const CustomerTierInfo({
     required this.tier,
     required this.discount,
-    required this.maxFeePercent,
     this.isCustom = false,
   });
 
-  /// Nivån och taket som kundens förfrågan bär (se firestore.rules).
+  /// Nivån och rabatten som kundens förfrågan bär (se firestore.rules).
   Map<String, dynamic> toTransactionFields() => {
     'customerTier': tier.name,
     'tierDiscount': discount,
-    'maxFeePercent': maxFeePercent,
   };
+
+  /// Avgiften kunden betalar när managern skriver [baseFee]: rabatten
+  /// dras av, men avgiften blir aldrig under 0 (samma som i reglerna).
+  double feeAfterDiscount(double baseFee) =>
+      baseFee > discount ? baseFee - discount : 0;
 
   /// Nivån från en transaktion, eller null om den saknar nivå.
   static CustomerTierInfo? fromTransaction(Map<String, dynamic> data) {
     final tier = parseTier(data['customerTier']);
-    final max = (data['maxFeePercent'] as num?)?.toDouble();
-    if (tier == null || max == null) return null;
-    return CustomerTierInfo(
-      tier: tier,
-      discount: (data['tierDiscount'] as num?)?.toDouble() ?? 0,
-      maxFeePercent: max,
-    );
+    final discount = (data['tierDiscount'] as num?)?.toDouble();
+    if (tier == null || discount == null) return null;
+    return CustomerTierInfo(tier: tier, discount: discount);
   }
 }

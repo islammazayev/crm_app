@@ -32,12 +32,12 @@ beforeEach(async () => {
     await setDoc(doc(db, 'customers', 'gold'), { userId: 'gold', clientId: 1, tier: 'gold' });
     await setDoc(doc(db, 'customers', 'plain'), { userId: 'plain', clientId: 2 });
     await setDoc(doc(db, 'meta', 'tiers'), {
-      standardFee: 5, discounts: { silver: 0.5, gold: 1, diamond: 2 },
+      discounts: { silver: 0.5, gold: 1, diamond: 2 },
     });
     await setDoc(doc(db, 'officeListings', 'O1'), { currencies: ['SEK', 'EUR'] });
     await setDoc(doc(db, 'transactions', 'capped'), {
       status: 'customer_requested', officeId: 'O1', customerId: 'gold',
-      customerTier: 'gold', tierDiscount: 1, maxFeePercent: 4,
+      customerTier: 'gold', tierDiscount: 1,
     });
     await setDoc(doc(db, 'transactions', 'free'), {
       status: 'customer_requested', officeId: 'O1', customerId: 'plain',
@@ -55,14 +55,14 @@ const request = (uid, extra = {}) => ({
 });
 
 describe('kundens förfrågan', () => {
-  test('kund med nivå skickar rätt nivå och tak', async () => {
+  test('kund med nivå skickar rätt nivå och rabatt', async () => {
     await assertSucceeds(setDoc(doc(as('gold'), 'transactions', 't1'),
-      request('gold', { customerTier: 'gold', tierDiscount: 1, maxFeePercent: 4 })));
+      request('gold', { customerTier: 'gold', tierDiscount: 1 })));
   });
 
-  test('fel tak eller saknad nivå nekas', async () => {
+  test('fel rabatt eller saknad nivå nekas', async () => {
     await assertFails(setDoc(doc(as('gold'), 'transactions', 't1'),
-      request('gold', { customerTier: 'gold', tierDiscount: 3, maxFeePercent: 2 })));
+      request('gold', { customerTier: 'gold', tierDiscount: 3 })));
     await assertFails(setDoc(doc(as('gold'), 'transactions', 't2'), request('gold')));
   });
 
@@ -71,13 +71,13 @@ describe('kundens förfrågan', () => {
       await updateDoc(doc(ctx.firestore(), 'customers', 'gold'), { tierDiscount: 1.5 });
     });
     await assertSucceeds(setDoc(doc(as('gold'), 'transactions', 't1'),
-      request('gold', { customerTier: 'gold', tierDiscount: 1.5, maxFeePercent: 3.5 })));
+      request('gold', { customerTier: 'gold', tierDiscount: 1.5 })));
   });
 
   test('kund utan nivå får inte hitta på en', async () => {
     await assertSucceeds(setDoc(doc(as('plain'), 'transactions', 't1'), request('plain')));
     await assertFails(setDoc(doc(as('plain'), 'transactions', 't2'),
-      request('plain', { customerTier: 'diamond', tierDiscount: 2, maxFeePercent: 3 })));
+      request('plain', { customerTier: 'diamond', tierDiscount: 2 })));
   });
 });
 
@@ -89,24 +89,33 @@ describe('nivån sätts bara av admin', () => {
 
   test('admin sätter nivå och rabatter', async () => {
     await assertSucceeds(updateDoc(doc(as('admin'), 'customers', 'plain'), { tier: 'silver' }));
-    await assertSucceeds(updateDoc(doc(as('admin'), 'meta', 'tiers'), { standardFee: 4 }));
-    await assertFails(updateDoc(doc(as('M'), 'meta', 'tiers'), { standardFee: 9 }));
+    await assertSucceeds(updateDoc(doc(as('admin'), 'meta', 'tiers'), { 'discounts.gold': 1.2 }));
+    await assertFails(updateDoc(doc(as('M'), 'meta', 'tiers'), { 'discounts.gold': 9 }));
   });
 });
 
 describe('managerns förslag', () => {
-  const propose = (fee) => ({ status: 'manager_proposed', feePercent: fee, rateFromTo: 0.09 });
-
-  test('avgift upp till taket godkänns, även lägre', async () => {
-    await assertSucceeds(updateDoc(doc(as('M'), 'transactions', 'capped'), propose(4)));
-    await assertSucceeds(updateDoc(doc(as('M'), 'transactions', 'capped'), propose(2.5)));
+  const propose = (base, fee) => ({
+    status: 'manager_proposed', baseFeePercent: base, feePercent: fee, rateFromTo: 0.09,
   });
 
-  test('avgift över taket nekas', async () => {
-    await assertFails(updateDoc(doc(as('M'), 'transactions', 'capped'), propose(4.5)));
+  test('rabatten dras från managerns avgift, oavsett vilken avgift', async () => {
+    await assertSucceeds(updateDoc(doc(as('M'), 'transactions', 'capped'), propose(5, 4)));
+    await assertSucceeds(updateDoc(doc(as('M'), 'transactions', 'capped'), propose(8, 7)));
   });
 
-  test('kund utan nivå har inget tak', async () => {
-    await assertSucceeds(updateDoc(doc(as('M'), 'transactions', 'free'), propose(7)));
+  test('avgiften går inte under 0', async () => {
+    await assertSucceeds(updateDoc(doc(as('M'), 'transactions', 'capped'), propose(0.5, 0)));
+  });
+
+  test('utan avdragen rabatt nekas', async () => {
+    await assertFails(updateDoc(doc(as('M'), 'transactions', 'capped'), propose(5, 5)));
+    await assertFails(updateDoc(doc(as('M'), 'transactions', 'capped'),
+      { status: 'manager_proposed', feePercent: 4, rateFromTo: 0.09 }));
+  });
+
+  test('kund utan nivå: managerns avgift gäller som den är', async () => {
+    await assertSucceeds(updateDoc(doc(as('M'), 'transactions', 'free'),
+      { status: 'manager_proposed', feePercent: 7, rateFromTo: 0.09 }));
   });
 });

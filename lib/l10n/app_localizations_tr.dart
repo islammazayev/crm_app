@@ -1608,10 +1608,7 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get customerTiersIntro =>
-      'İndirim, standart ücretten düşülen yüzde puandır. Örnek: %5 standart ücret ve %1 Altın, müşteriye en fazla %4 verir. Yönetici daha düşük bir ücret belirleyebilir ama daha yüksek belirleyemez. Müşterilere seviyeyi Müşteriler bölümünden verirsiniz.';
-
-  @override
-  String get standardFeeLabel => 'Standart ücret';
+      'İndirim, yöneticinin girdiği ücretten düşülen yüzde puandır. Örnek: yönetici %5 girer ve müşteri %1 indirimli Altın seviyesindeyse müşteri %4 öder. Müşterilere seviyeyi Müşteriler bölümünden verirsiniz.';
 
   @override
   String tierDiscountLabel(Object tier) {
@@ -1619,13 +1616,7 @@ class AppLocalizationsTr extends AppLocalizations {
   }
 
   @override
-  String tierFeeResult(Object fee) {
-    return 'Müşteri en fazla %$fee öder';
-  }
-
-  @override
-  String get tierInvalidValues =>
-      '0 veya daha büyük sayılar girin. İndirim standart ücretten büyük olamaz.';
+  String get tierInvalidValues => '0 ile 100 arasında bir sayı girin.';
 
   @override
   String get tierSettingsSaved => 'Müşteri seviyeleri kaydedildi.';
@@ -1643,8 +1634,8 @@ class AppLocalizationsTr extends AppLocalizations {
       'Seviyenin indirimini kullanmak için boş bırakın.';
 
   @override
-  String tierFeeSummary(Object standard, Object discount, Object fee) {
-    return 'Standart ücret %$standard − indirim %$discount = en fazla %$fee';
+  String tierFeeSummary(Object discount, Object fee) {
+    return 'İndirim $discount yüzde puan. Örnek: ücret %5 → müşteri %$fee öder.';
   }
 
   @override
@@ -1660,17 +1651,22 @@ class AppLocalizationsTr extends AppLocalizations {
   }
 
   @override
-  String customerTierManagerLine(Object tier, Object discount, Object max) {
-    return '$tier: %$discount indirim, ücret en fazla %$max';
-  }
-
-  @override
-  String feeAboveTierMax(Object max) {
-    return 'Müşterinin seviyesi en fazla %$max izin veriyor';
+  String customerTierManagerLine(Object tier, Object discount) {
+    return '$tier: girdiğiniz ücretten %$discount indirim düşülür';
   }
 
   @override
   String customerTierBadge(Object tier, Object discount) {
     return '$tier – ücrette %$discount indirim';
+  }
+
+  @override
+  String tierFeeExample(Object fee) {
+    return 'Örnek: ücret %5 → müşteri %$fee öder';
+  }
+
+  @override
+  String feeAfterTierLine(Object base, Object discount, Object fee) {
+    return '%$base − indirim %$discount = müşteri %$fee öder';
   }
 }

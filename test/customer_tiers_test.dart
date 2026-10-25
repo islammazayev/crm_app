@@ -3,7 +3,6 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   const settings = TierSettings(
-    standardFee: 5,
     discounts: {
       CustomerTier.silver: 0.5,
       CustomerTier.gold: 1,
@@ -11,20 +10,21 @@ void main() {
     },
   );
 
-  test('nivåns rabatt dras från standardavgiften', () {
+  test('nivåns rabatt dras från managerns avgift', () {
     final info = settings.forCustomer({'tier': 'gold'})!;
     expect(info.discount, 1);
-    expect(info.maxFeePercent, 4);
+    expect(info.feeAfterDiscount(5), 4);
+    expect(info.feeAfterDiscount(8), 7);
+    expect(info.feeAfterDiscount(0.5), 0);
     expect(info.toTransactionFields(), {
       'customerTier': 'gold',
       'tierDiscount': 1,
-      'maxFeePercent': 4,
     });
   });
 
   test('egen rabatt går före nivåns', () {
     final info = settings.forCustomer({'tier': 'silver', 'tierDiscount': 1.5})!;
-    expect(info.maxFeePercent, 3.5);
+    expect(info.discount, 1.5);
     expect(info.isCustom, isTrue);
   });
 
@@ -35,7 +35,7 @@ void main() {
 
   test('standardvärden när admin inte har sparat något', () {
     final info = TierSettings.fromMap(null).forCustomer({'tier': 'diamond'})!;
-    expect(info.maxFeePercent, 3.5);
+    expect(info.discount, 1.5);
   });
 
   test('procent visas utan onödiga decimaler', () {

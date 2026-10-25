@@ -76,8 +76,9 @@ service cloud.firestore {
     // ─── KUNDNIVÅER ────────────────────────────────────────────────
     // Admin ger kunden en nivå (tier) i customers/{uid} och kan ge en egen
     // rabatt (tierDiscount) i stället för nivåns. Rabatten är procentenheter
-    // som dras från standardavgiften i meta/tiers. Samma standardvärden som
-    // i appen (lib/utils/customer_tiers.dart) gäller tills admin sparar egna.
+    // som dras från avgiften managern skriver. Rabatten per nivå ligger i
+    // meta/tiers; samma standardvärden som i appen
+    // (lib/utils/customer_tiers.dart) gäller tills admin sparar egna.
     function tierSettings() {
       let path = /databases/$(database)/documents/meta/tiers;
       return exists(path) ? get(path).data : {};
@@ -90,11 +91,7 @@ service cloud.firestore {
         : tierSettings().get('discounts', {}).get(customer.tier, defaults[customer.tier]);
     }
 
-    function maxFeeFor(customer) {
-      return tierSettings().get('standardFee', 5) - tierDiscountFor(customer);
-    }
-
-    // Kundens förfrågan bär nivån och avgiftstaket så att managern ser dem
+    // Kundens förfrågan bär nivån och rabatten så att managern ser dem
     // (managern läser inte kundregistret). De måste stämma med kundposten,
     // och kunder utan nivå får inte skicka några.
     function hasValidTierSnapshot() {
@@ -104,8 +101,7 @@ service cloud.firestore {
       return customer.get('tier', null) in ['silver', 'gold', 'diamond']
         ? d.get('customerTier', null) == customer.tier
           && d.get('tierDiscount', null) == tierDiscountFor(customer)
-          && d.get('maxFeePercent', null) == maxFeeFor(customer)
-        : !d.keys().hasAny(['customerTier', 'tierDiscount', 'maxFeePercent']);
+        : !d.keys().hasAny(['customerTier', 'tierDiscount']);
     }
 
     // ─── USERS ──────────────────────────────────────────────────────
@@ -400,7 +396,7 @@ service cloud.firestore {
              'officeId', 'fromCurrency', 'toCurrency', 'amountFrom',
              'amountTo', 'feePercent', 'feeAmount', 'paymentMethod',
              'status', 'createAt', 'transactionNo',
-             'customerTier', 'tierDiscount', 'maxFeePercent'
+             'customerTier', 'tierDiscount'
            ])
         && hasValidTransactionNo()
         && hasValidTierSnapshot()
@@ -462,16 +458,21 @@ service cloud.firestore {
                'paymentMethodDetails', 'paymentSentAt',
                'managerProposedAt', 'completedAt',
                'pickupCode', 'pickupToken', 'paymentConfirmedAt',
-               'paymentIssueNote', 'paymentIssueAt', 'payoutCode'
+               'paymentIssueNote', 'paymentIssueAt', 'payoutCode',
+               'baseFeePercent'
              ])
           && (
             (
               request.resource.data.status == 'manager_proposed'
               && resource.data.status in ['customer_requested', 'manager_proposed', 'customer_countered']
-              // Kunder med nivå: avgiften får inte överstiga nivåns tak.
-              && (!('maxFeePercent' in resource.data)
-                  || (request.resource.data.feePercent is number
-                      && request.resource.data.feePercent <= resource.data.maxFeePercent))
+              // Kunder med nivå: avgiften är managerns avgift (baseFeePercent)
+              // minus nivåns rabatt, men aldrig under 0.
+              && (!('tierDiscount' in resource.data)
+                  || (request.resource.data.baseFeePercent is number
+                      && request.resource.data.feePercent ==
+                           (request.resource.data.baseFeePercent > resource.data.tierDiscount
+                             ? request.resource.data.baseFeePercent - resource.data.tierDiscount
+                             : 0)))
             )
             // Acceptera kundens motförslag: kundens avgift, samma växelkurs.
             || (

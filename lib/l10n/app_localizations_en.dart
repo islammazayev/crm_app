@@ -1614,10 +1614,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get customerTiersIntro =>
-      'The discount is percentage points taken off the standard fee. Example: a 5% standard fee and Gold at 1% gives the customer at most 4%. The manager may set a lower fee but not a higher one. You give customers a tier under Customers.';
-
-  @override
-  String get standardFeeLabel => 'Standard fee';
+      'The discount is percentage points taken off the fee the manager enters. Example: the manager enters 5% and the customer is Gold with a 1% discount, so the customer pays 4%. You give customers a tier under Customers.';
 
   @override
   String tierDiscountLabel(Object tier) {
@@ -1625,13 +1622,7 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String tierFeeResult(Object fee) {
-    return 'The customer pays at most $fee%';
-  }
-
-  @override
-  String get tierInvalidValues =>
-      'Enter numbers from 0 and up. The discount cannot be larger than the standard fee.';
+  String get tierInvalidValues => 'Enter a number from 0 to 100.';
 
   @override
   String get tierSettingsSaved => 'Customer tiers saved.';
@@ -1648,8 +1639,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get customDiscountHelper => 'Leave empty to use the tier\'s discount.';
 
   @override
-  String tierFeeSummary(Object standard, Object discount, Object fee) {
-    return 'Standard fee $standard% − discount $discount% = at most $fee%';
+  String tierFeeSummary(Object discount, Object fee) {
+    return 'Discount $discount percentage points. Example: fee 5% → the customer pays $fee%.';
   }
 
   @override
@@ -1665,17 +1656,22 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String customerTierManagerLine(Object tier, Object discount, Object max) {
-    return '$tier: $discount% discount, fee at most $max%';
-  }
-
-  @override
-  String feeAboveTierMax(Object max) {
-    return 'The customer\'s tier allows at most $max%';
+  String customerTierManagerLine(Object tier, Object discount) {
+    return '$tier: a $discount% discount is taken off the fee you enter';
   }
 
   @override
   String customerTierBadge(Object tier, Object discount) {
     return '$tier – $discount% discount on the fee';
+  }
+
+  @override
+  String tierFeeExample(Object fee) {
+    return 'Example: fee 5% → the customer pays $fee%';
+  }
+
+  @override
+  String feeAfterTierLine(Object base, Object discount, Object fee) {
+    return '$base% − discount $discount% = the customer pays $fee%';
   }
 }

@@ -1134,8 +1134,7 @@
   "tierLabel": "Kundnivå",
   "customerTiers": "Kundnivåer",
   "customerTiersCardSubtitle": "Silver, Guld och Diamant med rabatt på avgiften",
-  "customerTiersIntro": "Rabatten är procentenheter som dras från standardavgiften. Exempel: standardavgift 5 % och Guld 1 % ger kunden högst 4 %. Managern får sätta en lägre avgift men inte en högre. Du ger kunder en nivå under Kunder.",
-  "standardFeeLabel": "Standardavgift",
+  "customerTiersIntro": "Rabatten är procentenheter som dras från avgiften managern skriver. Exempel: managern skriver 5 % och kunden är Guld med 1 % rabatt, då betalar kunden 4 %. Du ger kunder en nivå under Kunder.",
   "tierDiscountLabel": "Rabatt för {tier}",
   "@tierDiscountLabel": {
     "placeholders": {
@@ -1144,15 +1143,7 @@
       }
     }
   },
-  "tierFeeResult": "Kunden betalar högst {fee} %",
-  "@tierFeeResult": {
-    "placeholders": {
-      "fee": {
-        "type": "Object"
-      }
-    }
-  },
-  "tierInvalidValues": "Ange tal från 0 och uppåt. Rabatten får inte vara större än standardavgiften.",
+  "tierInvalidValues": "Ange ett tal från 0 till 100.",
   "tierSettingsSaved": "Kundnivåerna är sparade.",
   "customerTierTitle": "Kundnivå för {name}",
   "@customerTierTitle": {
@@ -1164,20 +1155,7 @@
   },
   "customDiscountLabel": "Egen rabatt (valfritt)",
   "customDiscountHelper": "Lämna tomt för att använda nivåns rabatt.",
-  "tierFeeSummary": "Standardavgift {standard} % − rabatt {discount} % = högst {fee} %",
-  "@tierFeeSummary": {
-    "placeholders": {
-      "standard": {
-        "type": "Object"
-      },
-      "discount": {
-        "type": "Object"
-      },
-      "fee": {
-        "type": "Object"
-      }
-    }
-  },
+  "tierFeeSummary": "Rabatt {discount} procentenheter. Exempel: avgift 5 % → kunden betalar {fee} %.",
   "tierNoAccountNote": "Kunden har inget konto i appen. Nivån gäller först när kunden skickar förfrågningar i appen.",
   "customerTierSaved": "Kundnivån är sparad.",
   "tierDiscountShort": "{discount} % rabatt",
@@ -1188,28 +1166,7 @@
       }
     }
   },
-  "customerTierManagerLine": "{tier}: {discount} % rabatt, avgift högst {max} %",
-  "@customerTierManagerLine": {
-    "placeholders": {
-      "tier": {
-        "type": "Object"
-      },
-      "discount": {
-        "type": "Object"
-      },
-      "max": {
-        "type": "Object"
-      }
-    }
-  },
-  "feeAboveTierMax": "Kundens nivå tillåter högst {max} %",
-  "@feeAboveTierMax": {
-    "placeholders": {
-      "max": {
-        "type": "Object"
-      }
-    }
-  },
+  "customerTierManagerLine": "{tier}: {discount} % rabatt dras från avgiften du skriver",
   "customerTierBadge": "{tier} – {discount} % rabatt på avgiften",
   "@customerTierBadge": {
     "placeholders": {
@@ -1217,6 +1174,48 @@
         "type": "Object"
       },
       "discount": {
+        "type": "Object"
+      }
+    }
+  },
+  "@tierFeeSummary": {
+    "placeholders": {
+      "discount": {
+        "type": "Object"
+      },
+      "fee": {
+        "type": "Object"
+      }
+    }
+  },
+  "@customerTierManagerLine": {
+    "placeholders": {
+      "tier": {
+        "type": "Object"
+      },
+      "discount": {
+        "type": "Object"
+      }
+    }
+  },
+  "tierFeeExample": "Exempel: avgift 5 % → kunden betalar {fee} %",
+  "@tierFeeExample": {
+    "placeholders": {
+      "fee": {
+        "type": "Object"
+      }
+    }
+  },
+  "feeAfterTierLine": "{base} % − rabatt {discount} % = kunden betalar {fee} %",
+  "@feeAfterTierLine": {
+    "placeholders": {
+      "base": {
+        "type": "Object"
+      },
+      "discount": {
+        "type": "Object"
+      },
+      "fee": {
         "type": "Object"
       }
     }
