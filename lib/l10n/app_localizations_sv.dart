@@ -1825,4 +1825,8 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String get useMarketRate => 'Använd marknadskursen';
+
+  @override
+  String get pickupCodeDigitsHint =>
+      'Skriv bara siffrorna, bindestrecken kommer automatiskt.';
 }

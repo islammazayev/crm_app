@@ -1821,4 +1821,8 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get useMarketRate => 'Use the market rate';
+
+  @override
+  String get pickupCodeDigitsHint =>
+      'Type only the digits; the dashes are added automatically.';
 }

@@ -1814,4 +1814,8 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get useMarketRate => 'Piyasa kurunu kullan';
+
+  @override
+  String get pickupCodeDigitsHint =>
+      'Yalnızca rakamları yazın, tireler otomatik eklenir.';
 }

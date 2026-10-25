@@ -495,5 +495,6 @@
   "invalidRate": "Enter an exchange rate above 0.",
   "rateChangedFromMarket": "Own rate. Market rate: {rate}",
   "marketRateUsed": "Market rate. You can change it.",
-  "useMarketRate": "Use the market rate"
+  "useMarketRate": "Use the market rate",
+  "pickupCodeDigitsHint": "Type only the digits; the dashes are added automatically."
 }

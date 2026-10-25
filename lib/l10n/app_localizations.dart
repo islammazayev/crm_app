@@ -3083,6 +3083,12 @@ abstract class AppLocalizations {
   /// In sv, this message translates to:
   /// **'Använd marknadskursen'**
   String get useMarketRate;
+
+  /// No description provided for @pickupCodeDigitsHint.
+  ///
+  /// In sv, this message translates to:
+  /// **'Skriv bara siffrorna, bindestrecken kommer automatiskt.'**
+  String get pickupCodeDigitsHint;
 }
 
 class _AppLocalizationsDelegate

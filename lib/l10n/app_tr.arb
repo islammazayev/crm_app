@@ -495,5 +495,6 @@
   "invalidRate": "0'dan büyük bir kur girin.",
   "rateChangedFromMarket": "Özel kur. Piyasa kuru: {rate}",
   "marketRateUsed": "Piyasa kuru. Değiştirebilirsiniz.",
-  "useMarketRate": "Piyasa kurunu kullan"
+  "useMarketRate": "Piyasa kurunu kullan",
+  "pickupCodeDigitsHint": "Yalnızca rakamları yazın, tireler otomatik eklenir."
 }

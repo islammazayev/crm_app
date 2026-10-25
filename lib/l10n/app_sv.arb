@@ -1350,5 +1350,6 @@
     }
   },
   "marketRateUsed": "Marknadskurs. Du kan ändra den.",
-  "useMarketRate": "Använd marknadskursen"
+  "useMarketRate": "Använd marknadskursen",
+  "pickupCodeDigitsHint": "Skriv bara siffrorna, bindestrecken kommer automatiskt."
 }

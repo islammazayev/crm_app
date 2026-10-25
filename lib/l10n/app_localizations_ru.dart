@@ -1830,4 +1830,8 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get useMarketRate => 'Использовать рыночный курс';
+
+  @override
+  String get pickupCodeDigitsHint =>
+      'Вводите только цифры, дефисы добавятся автоматически.';
 }

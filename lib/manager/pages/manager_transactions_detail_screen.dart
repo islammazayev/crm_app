@@ -7,6 +7,7 @@ import '../../utils/client_id.dart';
 import '../../utils/customer_tiers.dart';
 import '../../utils/fee_calc.dart';
 import '../../utils/pickup_code.dart';
+import '../../utils/pickup_code_formatter.dart';
 import 'pickup_scanner_page.dart';
 import '../../widgets/rate_field.dart';
 import '../../widgets/receipt_button.dart';
@@ -1194,9 +1195,11 @@ class _ManagerTransactionDetailScreenState
                           const SizedBox(height: 14),
                           TextField(
                             controller: _payoutCodeController,
+                            inputFormatters: [PickupCodeInputFormatter()],
                             keyboardType: TextInputType.number,
                             decoration: InputDecoration(
                               labelText: l10n.customerPickupCode,
+                              helperText: l10n.pickupCodeDigitsHint,
                               hintText: '261023-1234-5678',
                               border: const OutlineInputBorder(),
                             ),
