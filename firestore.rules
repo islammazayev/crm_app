@@ -73,6 +73,37 @@ service cloud.firestore {
       return !('transactionNo' in request.resource.data) || hasNextTransactionNo();
     }
 
+    // ─── KUNDNIVÅER ────────────────────────────────────────────────
+    // Admin ger kunden en nivå (tier) i customers/{uid} och kan ge en egen
+    // rabatt (tierDiscount) i stället för nivåns. Rabatten är procentenheter
+    // som dras från avgiften managern skriver. Rabatten per nivå ligger i
+    // meta/tiers; samma standardvärden som i appen
+    // (lib/utils/customer_tiers.dart) gäller tills admin sparar egna.
+    function tierSettings() {
+      let path = /databases/$(database)/documents/meta/tiers;
+      return exists(path) ? get(path).data : {};
+    }
+
+    function tierDiscountFor(customer) {
+      let defaults = {'silver': 0.5, 'gold': 1, 'diamond': 1.5};
+      return customer.get('tierDiscount', null) != null
+        ? customer.tierDiscount
+        : tierSettings().get('discounts', {}).get(customer.tier, defaults[customer.tier]);
+    }
+
+    // Kundens förfrågan bär nivån och rabatten så att managern ser dem
+    // (managern läser inte kundregistret). De måste stämma med kundposten,
+    // och kunder utan nivå får inte skicka några.
+    function hasValidTierSnapshot() {
+      let path = /databases/$(database)/documents/customers/$(request.auth.uid);
+      let customer = exists(path) ? get(path).data : {};
+      let d = request.resource.data;
+      return customer.get('tier', null) in ['silver', 'gold', 'diamond']
+        ? d.get('customerTier', null) == customer.tier
+          && d.get('tierDiscount', null) == tierDiscountFor(customer)
+        : !d.keys().hasAny(['customerTier', 'tierDiscount']);
+    }
+
     // ─── USERS ──────────────────────────────────────────────────────
     match /users/{userId} {
       allow read: if isSignedIn() && (isAdmin() || request.auth.uid == userId);
@@ -121,7 +152,7 @@ service cloud.firestore {
       allow update: if isCustomer()
         && resource.data.userId == request.auth.uid
         && !request.resource.data.diff(resource.data).affectedKeys()
-             .hasAny(['clientId', 'userId', 'createAt']);
+             .hasAny(['clientId', 'userId', 'createAt', 'tier', 'tierDiscount']);
     }
 
     // ─── META ───────────────────────────────────────────────────────
@@ -364,9 +395,11 @@ service cloud.firestore {
              'customerId', 'clientId', 'customerName', 'customerPhone',
              'officeId', 'fromCurrency', 'toCurrency', 'amountFrom',
              'amountTo', 'feePercent', 'feeAmount', 'paymentMethod',
-             'status', 'createAt', 'transactionNo'
+             'status', 'createAt', 'transactionNo',
+             'customerTier', 'tierDiscount'
            ])
         && hasValidTransactionNo()
+        && hasValidTierSnapshot()
         && request.resource.data.amountFrom is number
         && request.resource.data.amountFrom > 0
         && request.resource.data.officeId is string
@@ -425,12 +458,21 @@ service cloud.firestore {
                'paymentMethodDetails', 'paymentSentAt',
                'managerProposedAt', 'completedAt',
                'pickupCode', 'pickupToken', 'paymentConfirmedAt',
-               'paymentIssueNote', 'paymentIssueAt', 'payoutCode'
+               'paymentIssueNote', 'paymentIssueAt', 'payoutCode',
+               'baseFeePercent'
              ])
           && (
             (
               request.resource.data.status == 'manager_proposed'
               && resource.data.status in ['customer_requested', 'manager_proposed', 'customer_countered']
+              // Kunder med nivå: avgiften är managerns avgift (baseFeePercent)
+              // minus nivåns rabatt, men aldrig under 0.
+              && (!('tierDiscount' in resource.data)
+                  || (request.resource.data.baseFeePercent is number
+                      && request.resource.data.feePercent ==
+                           (request.resource.data.baseFeePercent > resource.data.tierDiscount
+                             ? request.resource.data.baseFeePercent - resource.data.tierDiscount
+                             : 0)))
             )
             // Acceptera kundens motförslag: kundens avgift, samma växelkurs.
             || (

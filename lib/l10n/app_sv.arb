@@ -1126,5 +1126,98 @@
   "archiveTransactionTitle": "Arkivera transaktionen?",
   "archiveTransactionConfirm": "Transaktionen är genomförd och kan inte raderas. Den döljs i listan men räknas fortfarande i vinsten och exporten. Du kan visa och återställa den med \"Visa arkiverade\".",
   "transactionArchived": "Transaktionen är arkiverad.",
-  "transactionRestored": "Transaktionen är återställd."
+  "transactionRestored": "Transaktionen är återställd.",
+  "tierSilver": "Silver",
+  "tierGold": "Guld",
+  "tierDiamond": "Diamant",
+  "tierNone": "Ingen nivå",
+  "tierLabel": "Kundnivå",
+  "customerTiers": "Kundnivåer",
+  "customerTiersCardSubtitle": "Silver, Guld och Diamant med rabatt på avgiften",
+  "customerTiersIntro": "Rabatten är procentenheter som dras från avgiften managern skriver. Exempel: managern skriver 5 % och kunden är Guld med 1 % rabatt, då betalar kunden 4 %. Du ger kunder en nivå under Kunder.",
+  "tierDiscountLabel": "Rabatt för {tier}",
+  "@tierDiscountLabel": {
+    "placeholders": {
+      "tier": {
+        "type": "Object"
+      }
+    }
+  },
+  "tierInvalidValues": "Ange ett tal från 0 till 100.",
+  "tierSettingsSaved": "Kundnivåerna är sparade.",
+  "customerTierTitle": "Kundnivå för {name}",
+  "@customerTierTitle": {
+    "placeholders": {
+      "name": {
+        "type": "Object"
+      }
+    }
+  },
+  "customDiscountLabel": "Egen rabatt (valfritt)",
+  "customDiscountHelper": "Lämna tomt för att använda nivåns rabatt.",
+  "tierFeeSummary": "Rabatt {discount} procentenheter. Exempel: avgift 5 % → kunden betalar {fee} %.",
+  "tierNoAccountNote": "Kunden har inget konto i appen. Nivån gäller först när kunden skickar förfrågningar i appen.",
+  "customerTierSaved": "Kundnivån är sparad.",
+  "tierDiscountShort": "{discount} % rabatt",
+  "@tierDiscountShort": {
+    "placeholders": {
+      "discount": {
+        "type": "Object"
+      }
+    }
+  },
+  "customerTierManagerLine": "{tier}: {discount} % rabatt dras från avgiften du skriver",
+  "customerTierBadge": "{tier} – {discount} % rabatt på avgiften",
+  "@customerTierBadge": {
+    "placeholders": {
+      "tier": {
+        "type": "Object"
+      },
+      "discount": {
+        "type": "Object"
+      }
+    }
+  },
+  "@tierFeeSummary": {
+    "placeholders": {
+      "discount": {
+        "type": "Object"
+      },
+      "fee": {
+        "type": "Object"
+      }
+    }
+  },
+  "@customerTierManagerLine": {
+    "placeholders": {
+      "tier": {
+        "type": "Object"
+      },
+      "discount": {
+        "type": "Object"
+      }
+    }
+  },
+  "tierFeeExample": "Exempel: avgift 5 % → kunden betalar {fee} %",
+  "@tierFeeExample": {
+    "placeholders": {
+      "fee": {
+        "type": "Object"
+      }
+    }
+  },
+  "feeAfterTierLine": "{base} % − rabatt {discount} % = kunden betalar {fee} %",
+  "@feeAfterTierLine": {
+    "placeholders": {
+      "base": {
+        "type": "Object"
+      },
+      "discount": {
+        "type": "Object"
+      },
+      "fee": {
+        "type": "Object"
+      }
+    }
+  }
 }

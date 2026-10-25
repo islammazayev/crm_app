@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
@@ -5,6 +7,7 @@ import '../../forms/customer_form.dart';
 import '../../l10n/locale_controller.dart';
 import '../../theme/app_theme.dart';
 import '../../utils/customer_search.dart';
+import '../../utils/customer_tiers.dart';
 
 class AdminCustomersSection extends StatefulWidget {
   const AdminCustomersSection({super.key});
@@ -27,10 +30,145 @@ class _AdminCustomersSectionState extends State<AdminCustomersSection> {
       .collection('meta')
       .doc('customers');
 
+  TierSettings _tiers = const TierSettings();
+  late final StreamSubscription<TierSettings> _tiersSub;
+
+  @override
+  void initState() {
+    super.initState();
+    _tiersSub = TierSettings.watch().listen(
+      (t) => setState(() => _tiers = t),
+      onError: (Object e) => debugPrint('Kundnivåer kunde inte läsas: $e'),
+    );
+  }
+
   @override
   void dispose() {
+    _tiersSub.cancel();
     _searchController.dispose();
     super.dispose();
+  }
+
+  /// Ge kunden en nivå (eller ingen) och ev. en egen rabatt.
+  Future<void> _openTierDialog(CustomerSearchEntry c) async {
+    final l10n = context.l10n;
+    CustomerTier? tier = parseTier(c.tier);
+    final customCtrl = TextEditingController(
+      text: c.tierDiscount == null ? '' : formatPercent(c.tierDiscount!),
+    );
+
+    await showDialog(
+      context: context,
+      builder: (ctx) => StatefulBuilder(
+        builder: (ctx, setDialogState) {
+          final custom = double.tryParse(
+            customCtrl.text.trim().replaceAll(',', '.'),
+          );
+          final customInvalid =
+              customCtrl.text.trim().isNotEmpty &&
+              (custom == null || custom < 0 || custom > 100);
+          final discount = tier == null
+              ? null
+              : (custom ?? _tiers.discounts[tier]!);
+          return AlertDialog(
+            title: Text(l10n.customerTierTitle(c.fullName)),
+            content: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  DropdownButtonFormField<CustomerTier?>(
+                    initialValue: tier,
+                    decoration: InputDecoration(labelText: l10n.tierLabel),
+                    items: [
+                      DropdownMenuItem(value: null, child: Text(l10n.tierNone)),
+                      for (final t in CustomerTier.values)
+                        DropdownMenuItem(
+                          value: t,
+                          child: Text(
+                            '${t.emoji} ${t.label(l10n)} – '
+                            '${formatPercent(_tiers.discounts[t]!)} %',
+                          ),
+                        ),
+                    ],
+                    onChanged: (v) => setDialogState(() => tier = v),
+                  ),
+                  if (tier != null) ...[
+                    const SizedBox(height: 14),
+                    TextField(
+                      controller: customCtrl,
+                      keyboardType: const TextInputType.numberWithOptions(
+                        decimal: true,
+                      ),
+                      onChanged: (_) => setDialogState(() {}),
+                      decoration: InputDecoration(
+                        labelText: l10n.customDiscountLabel,
+                        helperText: l10n.customDiscountHelper,
+                        helperMaxLines: 3,
+                        errorText: customInvalid
+                            ? l10n.tierInvalidValues
+                            : null,
+                        suffixText: '%',
+                      ),
+                    ),
+                    const SizedBox(height: 14),
+                    Text(
+                      l10n.tierFeeSummary(
+                        formatPercent(discount!),
+                        formatPercent(
+                          CustomerTierInfo(
+                            tier: tier!,
+                            discount: discount,
+                          ).feeAfterDiscount(5),
+                        ),
+                      ),
+                    ),
+                  ],
+                  if (!c.hasAccount) ...[
+                    const SizedBox(height: 14),
+                    Text(
+                      l10n.tierNoAccountNote,
+                      style: const TextStyle(
+                        color: AppColors.textMuted,
+                        fontSize: 13,
+                      ),
+                    ),
+                  ],
+                ],
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(ctx),
+                child: Text(l10n.cancel),
+              ),
+              ElevatedButton(
+                onPressed: customInvalid
+                    ? null
+                    : () async {
+                        await customersRef.doc(c.docId).update({
+                          'tier': tier?.name ?? FieldValue.delete(),
+                          'tierDiscount': tier == null || custom == null
+                              ? FieldValue.delete()
+                              : custom,
+                          'updatedAt': FieldValue.serverTimestamp(),
+                        });
+                        if (ctx.mounted) Navigator.pop(ctx);
+                        if (mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text(l10n.customerTierSaved)),
+                          );
+                        }
+                      },
+                child: Text(l10n.save),
+              ),
+            ],
+          );
+        },
+      ),
+    );
+
+    customCtrl.dispose();
   }
 
   Future<int> _nextClientId() async {
@@ -226,6 +364,9 @@ class _AdminCustomersSectionState extends State<AdminCustomersSection> {
         phone: (c['phone'] ?? '').toString(),
         email: (c['email'] ?? '').toString(),
         places: (placesByUser[userId] ?? const <String>{}).toList()..sort(),
+        tier: c['tier'] as String?,
+        tierDiscount: (c['tierDiscount'] as num?)?.toDouble(),
+        hasAccount: c['userId'] != null,
       );
     }).toList();
   }
@@ -358,6 +499,10 @@ class _AdminCustomersSectionState extends State<AdminCustomersSection> {
   Widget _resultCard(CustomerSearchEntry c) {
     final l10n = context.l10n;
     final id = c.formattedClientId;
+    final tierInfo = _tiers.forCustomer({
+      'tier': c.tier,
+      'tierDiscount': c.tierDiscount,
+    });
     return Card(
       margin: const EdgeInsets.only(bottom: 8),
       child: ListTile(
@@ -375,15 +520,29 @@ class _AdminCustomersSectionState extends State<AdminCustomersSection> {
         title: Text(c.fullName.isEmpty ? l10n.unknownClient : c.fullName),
         subtitle: Text(
           [
+            if (tierInfo != null)
+              '${tierInfo.tier.emoji} ${tierInfo.tier.label(l10n)} – '
+                  '${l10n.tierDiscountShort(formatPercent(tierInfo.discount))}',
             if (c.phone.isNotEmpty) l10n.phoneValue(c.phone),
             if (c.email.isNotEmpty) l10n.emailValue(c.email),
             if (c.places.isNotEmpty) l10n.placesValue(c.places.join(', ')),
           ].join('\n'),
         ),
-        isThreeLine: c.email.isNotEmpty || c.places.isNotEmpty,
+        isThreeLine:
+            c.email.isNotEmpty || c.places.isNotEmpty || tierInfo != null,
         trailing: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
+            IconButton(
+              tooltip: l10n.tierLabel,
+              icon: Icon(
+                Icons.workspace_premium_outlined,
+                color: tierInfo == null
+                    ? AppColors.textMuted
+                    : AppColors.warning,
+              ),
+              onPressed: () => _openTierDialog(c),
+            ),
             IconButton(
               tooltip: l10n.edit,
               icon: const Icon(Icons.edit, color: Colors.blue),

@@ -1589,4 +1589,89 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get transactionRestored => 'The transaction was restored.';
+
+  @override
+  String get tierSilver => 'Silver';
+
+  @override
+  String get tierGold => 'Gold';
+
+  @override
+  String get tierDiamond => 'Diamond';
+
+  @override
+  String get tierNone => 'No tier';
+
+  @override
+  String get tierLabel => 'Customer tier';
+
+  @override
+  String get customerTiers => 'Customer tiers';
+
+  @override
+  String get customerTiersCardSubtitle =>
+      'Silver, Gold and Diamond with a fee discount';
+
+  @override
+  String get customerTiersIntro =>
+      'The discount is percentage points taken off the fee the manager enters. Example: the manager enters 5% and the customer is Gold with a 1% discount, so the customer pays 4%. You give customers a tier under Customers.';
+
+  @override
+  String tierDiscountLabel(Object tier) {
+    return 'Discount for $tier';
+  }
+
+  @override
+  String get tierInvalidValues => 'Enter a number from 0 to 100.';
+
+  @override
+  String get tierSettingsSaved => 'Customer tiers saved.';
+
+  @override
+  String customerTierTitle(Object name) {
+    return 'Customer tier for $name';
+  }
+
+  @override
+  String get customDiscountLabel => 'Own discount (optional)';
+
+  @override
+  String get customDiscountHelper => 'Leave empty to use the tier\'s discount.';
+
+  @override
+  String tierFeeSummary(Object discount, Object fee) {
+    return 'Discount $discount percentage points. Example: fee 5% → the customer pays $fee%.';
+  }
+
+  @override
+  String get tierNoAccountNote =>
+      'The customer has no app account. The tier applies once the customer sends requests in the app.';
+
+  @override
+  String get customerTierSaved => 'Customer tier saved.';
+
+  @override
+  String tierDiscountShort(Object discount) {
+    return '$discount% discount';
+  }
+
+  @override
+  String customerTierManagerLine(Object tier, Object discount) {
+    return '$tier: a $discount% discount is taken off the fee you enter';
+  }
+
+  @override
+  String customerTierBadge(Object tier, Object discount) {
+    return '$tier – $discount% discount on the fee';
+  }
+
+  @override
+  String tierFeeExample(Object fee) {
+    return 'Example: fee 5% → the customer pays $fee%';
+  }
+
+  @override
+  String feeAfterTierLine(Object base, Object discount, Object fee) {
+    return '$base% − discount $discount% = the customer pays $fee%';
+  }
 }

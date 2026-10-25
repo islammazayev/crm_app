@@ -8,6 +8,7 @@ import '../l10n/locale_controller.dart';
 import '../screens/auth_gate.dart';
 import '../theme/app_theme.dart';
 import '../utils/client_id.dart';
+import '../utils/customer_tiers.dart';
 import 'action_card.dart';
 import 'language_button.dart';
 
@@ -71,6 +72,7 @@ class CustomerWelcomeScreen extends StatelessWidget {
               '${l10n.phoneValue(phone)}',
               style: const TextStyle(color: AppColors.textMuted, fontSize: 14),
             ),
+            _TierBadge(uid: uid),
             const SizedBox(height: 24),
             SectionHeader(title: l10n.customerPanel),
             const SizedBox(height: 8),
@@ -137,6 +139,62 @@ class CustomerWelcomeScreen extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+/// Kundens nivå och rabatt, t.ex. "🥇 Guld – 1 % rabatt på avgiften".
+/// Visas inte alls för kunder utan nivå.
+class _TierBadge extends StatelessWidget {
+  final String uid;
+
+  const _TierBadge({required this.uid});
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    return StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+      stream: FirebaseFirestore.instance
+          .collection('customers')
+          .doc(uid)
+          .snapshots(),
+      builder: (context, customerSnap) {
+        return StreamBuilder<TierSettings>(
+          stream: TierSettings.watch(),
+          builder: (context, tierSnap) {
+            final info = (tierSnap.data ?? const TierSettings()).forCustomer(
+              customerSnap.data?.data(),
+            );
+            if (info == null) return const SizedBox.shrink();
+            return Padding(
+              padding: const EdgeInsets.only(top: 12),
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 14,
+                  vertical: 8,
+                ),
+                decoration: BoxDecoration(
+                  color: AppColors.warning.withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(
+                    color: AppColors.warning.withValues(alpha: 0.4),
+                  ),
+                ),
+                child: Text(
+                  l10n.customerTierBadge(
+                    '${info.tier.emoji} ${info.tier.label(l10n)}',
+                    formatPercent(info.discount),
+                  ),
+                  style: const TextStyle(
+                    color: AppColors.textPrimary,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            );
+          },
+        );
+      },
     );
   }
 }
