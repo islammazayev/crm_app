@@ -102,83 +102,70 @@ class CashierHomeScreen extends StatelessWidget {
                     const SizedBox(height: 16),
                     BalancesCard(balances: balances),
                     const SizedBox(height: 20),
-                    LayoutBuilder(
-                      builder: (context, constraints) {
-                        final isWide = constraints.maxWidth >= 760;
-                        return GridView.count(
-                          crossAxisCount: isWide ? 2 : 1,
-                          shrinkWrap: true,
-                          physics: const NeverScrollableScrollPhysics(),
-                          crossAxisSpacing: 16,
-                          mainAxisSpacing: 16,
-                          childAspectRatio: isWide ? 2.5 : 2.1,
-                          children: [
-                            ActionCard(
-                              icon: Icons.send_outlined,
-                              iconColor: AppColors.primary,
-                              title: l10n.sendMoney,
-                              subtitle: l10n.cashierSendSubtitle,
-                              badge: '+',
+                    ActionCardGrid(
+                      children: [
+                        ActionCard(
+                          icon: Icons.send_outlined,
+                          iconColor: AppColors.primary,
+                          title: l10n.sendMoney,
+                          subtitle: l10n.cashierSendSubtitle,
+                          badge: '+',
+                          onTap: () => Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) =>
+                                  CashierSendPage(me: me, balances: balances),
+                            ),
+                          ),
+                        ),
+                        StreamBuilder<
+                          List<QueryDocumentSnapshot<Map<String, dynamic>>>
+                        >(
+                          stream: myTransfers(uid),
+                          builder: (context, snap) {
+                            final docs = snap.data ?? const [];
+                            final incoming = docs
+                                .where(
+                                  (d) =>
+                                      d.data()['toId'] == uid &&
+                                      d.data()['status'] == 'pending',
+                                )
+                                .length;
+                            return ActionCard(
+                              icon: Icons.move_to_inbox_outlined,
+                              iconColor: AppColors.warning,
+                              title: l10n.incomingTransfers,
+                              subtitle: incoming > 0
+                                  ? l10n.incomingWaiting(incoming)
+                                  : l10n.incomingSubtitle,
+                              badge: snap.hasData ? '$incoming' : '…',
                               onTap: () => Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (_) => CashierSendPage(
-                                    me: me,
-                                    balances: balances,
+                                  builder: (_) => CashierTransfersPage(
+                                    cashierId: uid,
+                                    onlyIncomingPending: true,
                                   ),
                                 ),
                               ),
+                            );
+                          },
+                        ),
+                        ActionCard(
+                          icon: Icons.receipt_long_outlined,
+                          iconColor: AppColors.info,
+                          title: l10n.myTransfers,
+                          subtitle: l10n.myTransfersSubtitle,
+                          badge: '≡',
+                          onTap: () => Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) =>
+                                  CashierTransfersPage(cashierId: uid),
                             ),
-                            StreamBuilder<
-                              List<QueryDocumentSnapshot<Map<String, dynamic>>>
-                            >(
-                              stream: myTransfers(uid),
-                              builder: (context, snap) {
-                                final docs = snap.data ?? const [];
-                                final incoming = docs
-                                    .where(
-                                      (d) =>
-                                          d.data()['toId'] == uid &&
-                                          d.data()['status'] == 'pending',
-                                    )
-                                    .length;
-                                return ActionCard(
-                                  icon: Icons.move_to_inbox_outlined,
-                                  iconColor: AppColors.warning,
-                                  title: l10n.incomingTransfers,
-                                  subtitle: incoming > 0
-                                      ? l10n.incomingWaiting(incoming)
-                                      : l10n.incomingSubtitle,
-                                  badge: snap.hasData ? '$incoming' : '…',
-                                  onTap: () => Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (_) => CashierTransfersPage(
-                                        cashierId: uid,
-                                        onlyIncomingPending: true,
-                                      ),
-                                    ),
-                                  ),
-                                );
-                              },
-                            ),
-                            ActionCard(
-                              icon: Icons.receipt_long_outlined,
-                              iconColor: AppColors.info,
-                              title: l10n.myTransfers,
-                              subtitle: l10n.myTransfersSubtitle,
-                              badge: '≡',
-                              onTap: () => Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (_) =>
-                                      CashierTransfersPage(cashierId: uid),
-                                ),
-                              ),
-                            ),
-                          ],
-                        );
-                      },
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),

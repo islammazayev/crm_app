@@ -52,7 +52,9 @@ class ActionCard extends StatelessWidget {
                   decoration: BoxDecoration(
                     color: iconColor.withValues(alpha: 0.12),
                     borderRadius: BorderRadius.circular(18),
-                    border: Border.all(color: iconColor.withValues(alpha: 0.25)),
+                    border: Border.all(
+                      color: iconColor.withValues(alpha: 0.25),
+                    ),
                   ),
                   child: Icon(icon, color: iconColor, size: 30),
                 ),
@@ -83,7 +85,9 @@ class ActionCard extends StatelessWidget {
                               color: AppColors.primaryDim,
                               borderRadius: BorderRadius.circular(999),
                               border: Border.all(
-                                color: AppColors.primary.withValues(alpha: 0.25),
+                                color: AppColors.primary.withValues(
+                                  alpha: 0.25,
+                                ),
                               ),
                             ),
                             child: Text(
@@ -120,6 +124,50 @@ class ActionCard extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+/// Rutnät med kort som anpassar höjden efter innehållet: två kolumner på
+/// breda skärmar, en kolumn på mobil. Korten i samma rad blir lika höga,
+/// och långa texter (t.ex. på ryska) klipps aldrig.
+class ActionCardGrid extends StatelessWidget {
+  final List<Widget> children;
+
+  const ActionCardGrid({super.key, required this.children});
+
+  static const _gap = 16.0;
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final columns = constraints.maxWidth >= 760 ? 2 : 1;
+        final rows = <Widget>[];
+        for (var i = 0; i < children.length; i += columns) {
+          final row = children.skip(i).take(columns).toList();
+          rows.add(
+            IntrinsicHeight(
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  for (var j = 0; j < columns; j++) ...[
+                    if (j > 0) const SizedBox(width: _gap),
+                    Expanded(
+                      child: j < row.length ? row[j] : const SizedBox.shrink(),
+                    ),
+                  ],
+                ],
+              ),
+            ),
+          );
+        }
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          spacing: _gap,
+          children: rows,
+        );
+      },
     );
   }
 }

@@ -74,72 +74,59 @@ class CustomerWelcomeScreen extends StatelessWidget {
             const SizedBox(height: 24),
             SectionHeader(title: l10n.customerPanel),
             const SizedBox(height: 8),
-            LayoutBuilder(
-              builder: (context, constraints) {
-                final isWide = constraints.maxWidth >= 760;
-                return GridView.count(
-                  crossAxisCount: isWide ? 2 : 1,
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  crossAxisSpacing: 16,
-                  mainAxisSpacing: 16,
-                  childAspectRatio: isWide ? 2.5 : 2.1,
-                  children: [
-                    ActionCard(
-                      icon: Icons.send_outlined,
-                      iconColor: AppColors.primary,
-                      title: l10n.sendMoney,
-                      subtitle: l10n.sendMoneySubtitle,
-                      badge: '+',
-                      onTap: () => _open(context, const CustomerSendPage()),
-                    ),
-                    // Siffran visar förslag från managern som väntar på svar.
-                    StreamBuilder<QuerySnapshot>(
-                      stream: FirebaseFirestore.instance
-                          .collection('transactions')
-                          .where('customerId', isEqualTo: uid)
-                          .snapshots(),
-                      builder: (context, snapshot) {
-                        final docs = snapshot.data?.docs ?? const [];
-                        int countStatus(String status) => docs.where((d) {
-                          final data = d.data() as Map<String, dynamic>;
-                          return data['status'] == status;
-                        }).length;
-                        final waiting = countStatus('manager_proposed');
-                        final ready = countStatus('payment_confirmed');
-                        return ActionCard(
-                          icon: Icons.receipt_long_outlined,
-                          iconColor: AppColors.info,
-                          title: l10n.myTransactions,
-                          subtitle: waiting > 0
-                              ? l10n.offersWaiting(waiting)
-                              : ready > 0
-                              ? l10n.readyForPickup(ready)
-                              : l10n.myTransactionsSubtitle,
-                          badge: snapshot.hasData ? '${docs.length}' : '…',
-                          onTap: () => _open(
-                            context,
-                            const CustomerTransactionsScreen(),
-                          ),
-                        );
-                      },
-                    ),
-                    for (final (icon, title) in [
-                      (Icons.shopping_cart_outlined, l10n.tabBuy),
-                      (Icons.sell_outlined, l10n.tabSell),
-                      (Icons.currency_exchange, l10n.tabExchange),
-                    ])
-                      ActionCard(
-                        icon: icon,
-                        iconColor: AppColors.textMuted,
-                        title: title,
-                        subtitle: l10n.comingSoon(title),
-                        badge: l10n.soonBadge,
-                        onTap: () => _comingSoon(context, title),
-                      ),
-                  ],
-                );
-              },
+            ActionCardGrid(
+              children: [
+                ActionCard(
+                  icon: Icons.send_outlined,
+                  iconColor: AppColors.primary,
+                  title: l10n.sendMoney,
+                  subtitle: l10n.sendMoneySubtitle,
+                  badge: '+',
+                  onTap: () => _open(context, const CustomerSendPage()),
+                ),
+                // Siffran visar förslag från managern som väntar på svar.
+                StreamBuilder<QuerySnapshot>(
+                  stream: FirebaseFirestore.instance
+                      .collection('transactions')
+                      .where('customerId', isEqualTo: uid)
+                      .snapshots(),
+                  builder: (context, snapshot) {
+                    final docs = snapshot.data?.docs ?? const [];
+                    int countStatus(String status) => docs.where((d) {
+                      final data = d.data() as Map<String, dynamic>;
+                      return data['status'] == status;
+                    }).length;
+                    final waiting = countStatus('manager_proposed');
+                    final ready = countStatus('payment_confirmed');
+                    return ActionCard(
+                      icon: Icons.receipt_long_outlined,
+                      iconColor: AppColors.info,
+                      title: l10n.myTransactions,
+                      subtitle: waiting > 0
+                          ? l10n.offersWaiting(waiting)
+                          : ready > 0
+                          ? l10n.readyForPickup(ready)
+                          : l10n.myTransactionsSubtitle,
+                      badge: snapshot.hasData ? '${docs.length}' : '…',
+                      onTap: () =>
+                          _open(context, const CustomerTransactionsScreen()),
+                    );
+                  },
+                ),
+                for (final (icon, title) in [
+                  (Icons.shopping_cart_outlined, l10n.tabBuy),
+                  (Icons.sell_outlined, l10n.tabSell),
+                  (Icons.currency_exchange, l10n.tabExchange),
+                ])
+                  ActionCard(
+                    icon: icon,
+                    iconColor: AppColors.textMuted,
+                    title: title,
+                    subtitle: l10n.comingSoon(title),
+                    badge: l10n.soonBadge,
+                    onTap: () => _comingSoon(context, title),
+                  ),
+              ],
             ),
           ],
         ),

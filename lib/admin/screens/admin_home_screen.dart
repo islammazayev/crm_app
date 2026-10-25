@@ -95,62 +95,51 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
               ),
             ),
             const SizedBox(height: 20),
-            LayoutBuilder(
-              builder: (context, constraints) {
-                final isWide = constraints.maxWidth >= 760;
-                return GridView.count(
-                  crossAxisCount: isWide ? 2 : 1,
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  crossAxisSpacing: 16,
-                  mainAxisSpacing: 16,
-                  childAspectRatio: isWide ? 2.5 : 2.1,
-                  children: [
-                    _CountCard(
-                      query: db.collection('customers'),
-                      icon: Icons.people_outline,
-                      iconColor: AppColors.primary,
-                      title: l10n.customers,
-                      subtitle: l10n.customersCardSubtitle,
-                      onTap: () => _open(const AdminCustomersPage()),
-                    ),
-                    _CountCard(
-                      query: db.collection('offices'),
-                      icon: Icons.storefront_outlined,
-                      iconColor: AppColors.info,
-                      title: l10n.offices,
-                      subtitle: l10n.officesCardSubtitle,
-                      onTap: () => _open(const AdminOfficesPage()),
-                    ),
-                    _CountCard(
-                      query: db
-                          .collection('users')
-                          .where('role', isEqualTo: 'manager'),
-                      icon: Icons.badge_outlined,
-                      iconColor: AppColors.warning,
-                      title: l10n.managers,
-                      subtitle: l10n.managersCardSubtitle,
-                      onTap: () => _open(const AdminManagersPage()),
-                    ),
-                    _CountCard(
-                      query: db.collection('cashiers'),
-                      icon: Icons.point_of_sale,
-                      iconColor: AppColors.primary,
-                      title: l10n.cashiers,
-                      subtitle: l10n.cashiersCardSubtitle,
-                      onTap: () => _open(const AdminCashiersPage()),
-                    ),
-                    _CountCard(
-                      query: db.collection('transactions'),
-                      icon: Icons.receipt_long_outlined,
-                      iconColor: AppColors.success,
-                      title: l10n.orderHistory,
-                      subtitle: l10n.ordersCardSubtitle,
-                      onTap: () => _open(const AdminOrdersPage()),
-                    ),
-                  ],
-                );
-              },
+            ActionCardGrid(
+              children: [
+                _CountCard(
+                  query: db.collection('customers'),
+                  icon: Icons.people_outline,
+                  iconColor: AppColors.primary,
+                  title: l10n.customers,
+                  subtitle: l10n.customersCardSubtitle,
+                  onTap: () => _open(const AdminCustomersPage()),
+                ),
+                _CountCard(
+                  query: db.collection('offices'),
+                  icon: Icons.storefront_outlined,
+                  iconColor: AppColors.info,
+                  title: l10n.offices,
+                  subtitle: l10n.officesCardSubtitle,
+                  onTap: () => _open(const AdminOfficesPage()),
+                ),
+                _CountCard(
+                  query: db
+                      .collection('users')
+                      .where('role', isEqualTo: 'manager'),
+                  icon: Icons.badge_outlined,
+                  iconColor: AppColors.warning,
+                  title: l10n.managers,
+                  subtitle: l10n.managersCardSubtitle,
+                  onTap: () => _open(const AdminManagersPage()),
+                ),
+                _CountCard(
+                  query: db.collection('cashiers'),
+                  icon: Icons.point_of_sale,
+                  iconColor: AppColors.primary,
+                  title: l10n.cashiers,
+                  subtitle: l10n.cashiersCardSubtitle,
+                  onTap: () => _open(const AdminCashiersPage()),
+                ),
+                _CountCard(
+                  query: db.collection('transactions'),
+                  icon: Icons.receipt_long_outlined,
+                  iconColor: AppColors.success,
+                  title: l10n.orderHistory,
+                  subtitle: l10n.ordersCardSubtitle,
+                  onTap: () => _open(const AdminOrdersPage()),
+                ),
+              ],
             ),
           ],
         ),
