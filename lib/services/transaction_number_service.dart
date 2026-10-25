@@ -31,18 +31,17 @@ class TransactionNumberService {
   /// (äldst först). Körs av admin vid start; gör inget när alla har nummer.
   static Future<void> backfill() async {
     final all = await _db.collection('transactions').get();
-    final missing = all.docs
-        .where((d) => d.data()['transactionNo'] is! int)
-        .toList()
-      ..sort((a, b) {
-        DateTime? at(QueryDocumentSnapshot<Map<String, dynamic>> d) =>
-            (d.data()['createAt'] as Timestamp?)?.toDate();
-        final ta = at(a), tb = at(b);
-        if (ta == null && tb == null) return 0;
-        if (ta == null) return 1;
-        if (tb == null) return -1;
-        return ta.compareTo(tb);
-      });
+    final missing =
+        all.docs.where((d) => d.data()['transactionNo'] is! int).toList()
+          ..sort((a, b) {
+            DateTime? at(QueryDocumentSnapshot<Map<String, dynamic>> d) =>
+                (d.data()['createAt'] as Timestamp?)?.toDate();
+            final ta = at(a), tb = at(b);
+            if (ta == null && tb == null) return 0;
+            if (ta == null) return 1;
+            if (tb == null) return -1;
+            return ta.compareTo(tb);
+          });
     if (missing.isEmpty) return;
 
     // Reservera ett block av nummer i räknaren först, så att nya
@@ -55,11 +54,9 @@ class TransactionNumberService {
       final snap = await tx.get(_counter);
       final last = (snap.data()?['lastTransactionNo'] as num?)?.toInt() ?? 0;
       final start = (last > highest ? last : highest) + 1;
-      tx.set(
-        _counter,
-        {'lastTransactionNo': start + missing.length - 1},
-        SetOptions(merge: true),
-      );
+      tx.set(_counter, {
+        'lastTransactionNo': start + missing.length - 1,
+      }, SetOptions(merge: true));
       return start;
     });
 

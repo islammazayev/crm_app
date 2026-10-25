@@ -13,6 +13,13 @@ class CustomerSearchEntry {
   /// "Land Stad" för de kontor kunden har gjort transaktioner via.
   final List<String> places;
 
+  /// Kundens nivå och ev. egen rabatt (se customer_tiers.dart).
+  final String? tier;
+  final double? tierDiscount;
+
+  /// Kunden har ett konto i appen (bara då gäller nivån för förfrågningar).
+  final bool hasAccount;
+
   const CustomerSearchEntry({
     required this.docId,
     required this.clientId,
@@ -21,6 +28,9 @@ class CustomerSearchEntry {
     required this.phone,
     this.email = '',
     this.places = const [],
+    this.tier,
+    this.tierDiscount,
+    this.hasAccount = false,
   });
 
   String get formattedClientId => formatClientId(clientId);

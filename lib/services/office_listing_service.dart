@@ -59,7 +59,8 @@ class OfficeListingService {
       final data = office.data();
       final existing = listingById[office.id];
 
-      final inSync = existing != null &&
+      final inSync =
+          existing != null &&
           (existing['country'] ?? '').toString() ==
               (data['country'] ?? '').toString() &&
           (existing['city'] ?? '').toString() ==

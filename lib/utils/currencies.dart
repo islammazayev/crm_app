@@ -3,7 +3,14 @@
 /// Appen använder ISO-liknande koder överallt (RUB, EUR, USD, ...). Äldre data
 /// kan innehålla "RUBLE" eller "EURO"; [normalizeCurrency] gör om dem.
 const List<String> kSupportedCurrencies = [
-  'EUR', 'USD', 'SEK', 'RUB', 'USDT', 'GBP', 'AED', 'TRY',
+  'EUR',
+  'USD',
+  'SEK',
+  'RUB',
+  'USDT',
+  'GBP',
+  'AED',
+  'TRY',
 ];
 
 const Map<String, String> _aliases = {

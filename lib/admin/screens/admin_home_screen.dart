@@ -15,6 +15,7 @@ import '../pages/admin_customers_page.dart';
 import '../pages/admin_managers_page.dart';
 import '../pages/admin_offices_page.dart';
 import '../pages/admin_orders_page.dart';
+import '../pages/admin_tiers_page.dart';
 
 /// Adminens startsida: ett kort per område, som på managerns startsida.
 class AdminHomeScreen extends StatefulWidget {
@@ -138,6 +139,17 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                   title: l10n.orderHistory,
                   subtitle: l10n.ordersCardSubtitle,
                   onTap: () => _open(const AdminOrdersPage()),
+                ),
+                // Siffran visar hur många kunder som har en nivå.
+                _CountCard(
+                  query: db
+                      .collection('customers')
+                      .where('tier', whereIn: ['silver', 'gold', 'diamond']),
+                  icon: Icons.workspace_premium_outlined,
+                  iconColor: AppColors.warning,
+                  title: l10n.customerTiers,
+                  subtitle: l10n.customerTiersCardSubtitle,
+                  onTap: () => _open(const AdminTiersPage()),
                 ),
               ],
             ),

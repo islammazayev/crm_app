@@ -1599,4 +1599,94 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get transactionRestored => 'Перевод восстановлен.';
+
+  @override
+  String get tierSilver => 'Серебро';
+
+  @override
+  String get tierGold => 'Золото';
+
+  @override
+  String get tierDiamond => 'Бриллиант';
+
+  @override
+  String get tierNone => 'Без уровня';
+
+  @override
+  String get tierLabel => 'Уровень клиента';
+
+  @override
+  String get customerTiers => 'Уровни клиентов';
+
+  @override
+  String get customerTiersCardSubtitle =>
+      'Серебро, Золото и Бриллиант со скидкой на комиссию';
+
+  @override
+  String get customerTiersIntro =>
+      'Скидка — это процентные пункты, которые вычитаются из стандартной комиссии. Пример: стандартная комиссия 5 % и Золото 1 % — клиент платит не более 4 %. Менеджер может поставить комиссию ниже, но не выше. Уровень клиенту назначается в разделе «Клиенты».';
+
+  @override
+  String get standardFeeLabel => 'Стандартная комиссия';
+
+  @override
+  String tierDiscountLabel(Object tier) {
+    return 'Скидка для уровня $tier';
+  }
+
+  @override
+  String tierFeeResult(Object fee) {
+    return 'Клиент платит не более $fee %';
+  }
+
+  @override
+  String get tierInvalidValues =>
+      'Введите числа от 0. Скидка не может быть больше стандартной комиссии.';
+
+  @override
+  String get tierSettingsSaved => 'Уровни клиентов сохранены.';
+
+  @override
+  String customerTierTitle(Object name) {
+    return 'Уровень клиента $name';
+  }
+
+  @override
+  String get customDiscountLabel => 'Своя скидка (необязательно)';
+
+  @override
+  String get customDiscountHelper =>
+      'Оставьте пустым, чтобы использовать скидку уровня.';
+
+  @override
+  String tierFeeSummary(Object standard, Object discount, Object fee) {
+    return 'Стандартная комиссия $standard % − скидка $discount % = не более $fee %';
+  }
+
+  @override
+  String get tierNoAccountNote =>
+      'У клиента нет аккаунта в приложении. Уровень начнёт действовать, когда клиент будет отправлять заявки в приложении.';
+
+  @override
+  String get customerTierSaved => 'Уровень клиента сохранён.';
+
+  @override
+  String tierDiscountShort(Object discount) {
+    return 'скидка $discount %';
+  }
+
+  @override
+  String customerTierManagerLine(Object tier, Object discount, Object max) {
+    return '$tier: скидка $discount %, комиссия не более $max %';
+  }
+
+  @override
+  String feeAboveTierMax(Object max) {
+    return 'Уровень клиента допускает не более $max %';
+  }
+
+  @override
+  String customerTierBadge(Object tier, Object discount) {
+    return '$tier – скидка $discount % на комиссию';
+  }
 }

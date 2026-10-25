@@ -2711,6 +2711,144 @@ abstract class AppLocalizations {
   /// In sv, this message translates to:
   /// **'Transaktionen är återställd.'**
   String get transactionRestored;
+
+  /// No description provided for @tierSilver.
+  ///
+  /// In sv, this message translates to:
+  /// **'Silver'**
+  String get tierSilver;
+
+  /// No description provided for @tierGold.
+  ///
+  /// In sv, this message translates to:
+  /// **'Guld'**
+  String get tierGold;
+
+  /// No description provided for @tierDiamond.
+  ///
+  /// In sv, this message translates to:
+  /// **'Diamant'**
+  String get tierDiamond;
+
+  /// No description provided for @tierNone.
+  ///
+  /// In sv, this message translates to:
+  /// **'Ingen nivå'**
+  String get tierNone;
+
+  /// No description provided for @tierLabel.
+  ///
+  /// In sv, this message translates to:
+  /// **'Kundnivå'**
+  String get tierLabel;
+
+  /// No description provided for @customerTiers.
+  ///
+  /// In sv, this message translates to:
+  /// **'Kundnivåer'**
+  String get customerTiers;
+
+  /// No description provided for @customerTiersCardSubtitle.
+  ///
+  /// In sv, this message translates to:
+  /// **'Silver, Guld och Diamant med rabatt på avgiften'**
+  String get customerTiersCardSubtitle;
+
+  /// No description provided for @customerTiersIntro.
+  ///
+  /// In sv, this message translates to:
+  /// **'Rabatten är procentenheter som dras från standardavgiften. Exempel: standardavgift 5 % och Guld 1 % ger kunden högst 4 %. Managern får sätta en lägre avgift men inte en högre. Du ger kunder en nivå under Kunder.'**
+  String get customerTiersIntro;
+
+  /// No description provided for @standardFeeLabel.
+  ///
+  /// In sv, this message translates to:
+  /// **'Standardavgift'**
+  String get standardFeeLabel;
+
+  /// No description provided for @tierDiscountLabel.
+  ///
+  /// In sv, this message translates to:
+  /// **'Rabatt för {tier}'**
+  String tierDiscountLabel(Object tier);
+
+  /// No description provided for @tierFeeResult.
+  ///
+  /// In sv, this message translates to:
+  /// **'Kunden betalar högst {fee} %'**
+  String tierFeeResult(Object fee);
+
+  /// No description provided for @tierInvalidValues.
+  ///
+  /// In sv, this message translates to:
+  /// **'Ange tal från 0 och uppåt. Rabatten får inte vara större än standardavgiften.'**
+  String get tierInvalidValues;
+
+  /// No description provided for @tierSettingsSaved.
+  ///
+  /// In sv, this message translates to:
+  /// **'Kundnivåerna är sparade.'**
+  String get tierSettingsSaved;
+
+  /// No description provided for @customerTierTitle.
+  ///
+  /// In sv, this message translates to:
+  /// **'Kundnivå för {name}'**
+  String customerTierTitle(Object name);
+
+  /// No description provided for @customDiscountLabel.
+  ///
+  /// In sv, this message translates to:
+  /// **'Egen rabatt (valfritt)'**
+  String get customDiscountLabel;
+
+  /// No description provided for @customDiscountHelper.
+  ///
+  /// In sv, this message translates to:
+  /// **'Lämna tomt för att använda nivåns rabatt.'**
+  String get customDiscountHelper;
+
+  /// No description provided for @tierFeeSummary.
+  ///
+  /// In sv, this message translates to:
+  /// **'Standardavgift {standard} % − rabatt {discount} % = högst {fee} %'**
+  String tierFeeSummary(Object standard, Object discount, Object fee);
+
+  /// No description provided for @tierNoAccountNote.
+  ///
+  /// In sv, this message translates to:
+  /// **'Kunden har inget konto i appen. Nivån gäller först när kunden skickar förfrågningar i appen.'**
+  String get tierNoAccountNote;
+
+  /// No description provided for @customerTierSaved.
+  ///
+  /// In sv, this message translates to:
+  /// **'Kundnivån är sparad.'**
+  String get customerTierSaved;
+
+  /// No description provided for @tierDiscountShort.
+  ///
+  /// In sv, this message translates to:
+  /// **'{discount} % rabatt'**
+  String tierDiscountShort(Object discount);
+
+  /// No description provided for @customerTierManagerLine.
+  ///
+  /// In sv, this message translates to:
+  /// **'{tier}: {discount} % rabatt, avgift högst {max} %'**
+  String customerTierManagerLine(Object tier, Object discount, Object max);
+
+  /// No description provided for @feeAboveTierMax.
+  ///
+  /// In sv, this message translates to:
+  /// **'Kundens nivå tillåter högst {max} %'**
+  String feeAboveTierMax(Object max);
+
+  /// No description provided for @customerTierBadge.
+  ///
+  /// In sv, this message translates to:
+  /// **'{tier} – {discount} % rabatt på avgiften'**
+  String customerTierBadge(Object tier, Object discount);
 }
 
 class _AppLocalizationsDelegate

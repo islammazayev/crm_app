@@ -9,10 +9,7 @@ import '../l10n/locale_controller.dart';
 class CreateManagerForm extends StatefulWidget {
   final List<QueryDocumentSnapshot> officeDocs;
 
-  const CreateManagerForm({
-    super.key,
-    required this.officeDocs,
-  });
+  const CreateManagerForm({super.key, required this.officeDocs});
 
   @override
   State<CreateManagerForm> createState() => _CreateManagerFormState();
@@ -68,20 +65,20 @@ class _CreateManagerFormState extends State<CreateManagerForm> {
         password: _passwordController.text.trim(),
         writeProfile: (uid) =>
             FirebaseFirestore.instance.collection('users').doc(uid).set({
-          'email': _emailController.text.trim(),
-          'role': 'manager',
-          'officeId': _selectedOfficeId,
-          'firstName': _firstNameController.text.trim(),
-          'lastName': _lastNameController.text.trim(),
-          'phone': _phoneController.text.trim(),
-          'createAt': FieldValue.serverTimestamp(),
-        }),
+              'email': _emailController.text.trim(),
+              'role': 'manager',
+              'officeId': _selectedOfficeId,
+              'firstName': _firstNameController.text.trim(),
+              'lastName': _lastNameController.text.trim(),
+              'phone': _phoneController.text.trim(),
+              'createAt': FieldValue.serverTimestamp(),
+            }),
       );
 
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(context.l10n.managerCreated)),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(context.l10n.managerCreated)));
 
       _formKey.currentState!.reset();
       _firstNameController.clear();
@@ -132,8 +129,9 @@ class _CreateManagerFormState extends State<CreateManagerForm> {
                 child: TextFormField(
                   controller: _firstNameController,
                   decoration: InputDecoration(labelText: l10n.firstName),
-                  validator: (v) =>
-                      (v == null || v.trim().isEmpty) ? l10n.enterFirstName : null,
+                  validator: (v) => (v == null || v.trim().isEmpty)
+                      ? l10n.enterFirstName
+                      : null,
                 ),
               ),
               const SizedBox(width: 8),
@@ -141,8 +139,9 @@ class _CreateManagerFormState extends State<CreateManagerForm> {
                 child: TextFormField(
                   controller: _lastNameController,
                   decoration: InputDecoration(labelText: l10n.lastName),
-                  validator: (v) =>
-                      (v == null || v.trim().isEmpty) ? l10n.enterLastName : null,
+                  validator: (v) => (v == null || v.trim().isEmpty)
+                      ? l10n.enterLastName
+                      : null,
                 ),
               ),
             ],

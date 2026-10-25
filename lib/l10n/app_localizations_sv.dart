@@ -1593,4 +1593,94 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String get transactionRestored => 'Transaktionen är återställd.';
+
+  @override
+  String get tierSilver => 'Silver';
+
+  @override
+  String get tierGold => 'Guld';
+
+  @override
+  String get tierDiamond => 'Diamant';
+
+  @override
+  String get tierNone => 'Ingen nivå';
+
+  @override
+  String get tierLabel => 'Kundnivå';
+
+  @override
+  String get customerTiers => 'Kundnivåer';
+
+  @override
+  String get customerTiersCardSubtitle =>
+      'Silver, Guld och Diamant med rabatt på avgiften';
+
+  @override
+  String get customerTiersIntro =>
+      'Rabatten är procentenheter som dras från standardavgiften. Exempel: standardavgift 5 % och Guld 1 % ger kunden högst 4 %. Managern får sätta en lägre avgift men inte en högre. Du ger kunder en nivå under Kunder.';
+
+  @override
+  String get standardFeeLabel => 'Standardavgift';
+
+  @override
+  String tierDiscountLabel(Object tier) {
+    return 'Rabatt för $tier';
+  }
+
+  @override
+  String tierFeeResult(Object fee) {
+    return 'Kunden betalar högst $fee %';
+  }
+
+  @override
+  String get tierInvalidValues =>
+      'Ange tal från 0 och uppåt. Rabatten får inte vara större än standardavgiften.';
+
+  @override
+  String get tierSettingsSaved => 'Kundnivåerna är sparade.';
+
+  @override
+  String customerTierTitle(Object name) {
+    return 'Kundnivå för $name';
+  }
+
+  @override
+  String get customDiscountLabel => 'Egen rabatt (valfritt)';
+
+  @override
+  String get customDiscountHelper =>
+      'Lämna tomt för att använda nivåns rabatt.';
+
+  @override
+  String tierFeeSummary(Object standard, Object discount, Object fee) {
+    return 'Standardavgift $standard % − rabatt $discount % = högst $fee %';
+  }
+
+  @override
+  String get tierNoAccountNote =>
+      'Kunden har inget konto i appen. Nivån gäller först när kunden skickar förfrågningar i appen.';
+
+  @override
+  String get customerTierSaved => 'Kundnivån är sparad.';
+
+  @override
+  String tierDiscountShort(Object discount) {
+    return '$discount % rabatt';
+  }
+
+  @override
+  String customerTierManagerLine(Object tier, Object discount, Object max) {
+    return '$tier: $discount % rabatt, avgift högst $max %';
+  }
+
+  @override
+  String feeAboveTierMax(Object max) {
+    return 'Kundens nivå tillåter högst $max %';
+  }
+
+  @override
+  String customerTierBadge(Object tier, Object discount) {
+    return '$tier – $discount % rabatt på avgiften';
+  }
 }

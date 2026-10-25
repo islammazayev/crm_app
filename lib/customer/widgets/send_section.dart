@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import '../../l10n/app_localizations.dart';
 import '../../l10n/locale_controller.dart';
 import '../../services/transaction_number_service.dart';
+import '../../utils/customer_tiers.dart';
 
 /// Ett kontor så som kunden får se det (från `officeListings`):
 /// bara land, stad och vilka valutor kontoret hanterar.
@@ -171,6 +172,8 @@ class _SendSectionState extends State<SendSection> {
       final customer = customerSnap.docs.first.data();
       final customerName =
           '${customer['firstName'] ?? ''} ${customer['lastName'] ?? ''}'.trim();
+      // Kundens nivå och avgiftstak följer med så att managern ser dem.
+      final tier = (await TierSettings.load()).forCustomer(customer);
 
       await TransactionNumberService.create({
         'customerId': user.uid,
@@ -189,6 +192,7 @@ class _SendSectionState extends State<SendSection> {
         'paymentMethod': null,
         'status': 'customer_requested',
         'createAt': FieldValue.serverTimestamp(),
+        ...?tier?.toTransactionFields(),
       });
 
       if (!mounted) return;

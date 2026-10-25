@@ -1126,5 +1126,99 @@
   "archiveTransactionTitle": "Arkivera transaktionen?",
   "archiveTransactionConfirm": "Transaktionen är genomförd och kan inte raderas. Den döljs i listan men räknas fortfarande i vinsten och exporten. Du kan visa och återställa den med \"Visa arkiverade\".",
   "transactionArchived": "Transaktionen är arkiverad.",
-  "transactionRestored": "Transaktionen är återställd."
+  "transactionRestored": "Transaktionen är återställd.",
+  "tierSilver": "Silver",
+  "tierGold": "Guld",
+  "tierDiamond": "Diamant",
+  "tierNone": "Ingen nivå",
+  "tierLabel": "Kundnivå",
+  "customerTiers": "Kundnivåer",
+  "customerTiersCardSubtitle": "Silver, Guld och Diamant med rabatt på avgiften",
+  "customerTiersIntro": "Rabatten är procentenheter som dras från standardavgiften. Exempel: standardavgift 5 % och Guld 1 % ger kunden högst 4 %. Managern får sätta en lägre avgift men inte en högre. Du ger kunder en nivå under Kunder.",
+  "standardFeeLabel": "Standardavgift",
+  "tierDiscountLabel": "Rabatt för {tier}",
+  "@tierDiscountLabel": {
+    "placeholders": {
+      "tier": {
+        "type": "Object"
+      }
+    }
+  },
+  "tierFeeResult": "Kunden betalar högst {fee} %",
+  "@tierFeeResult": {
+    "placeholders": {
+      "fee": {
+        "type": "Object"
+      }
+    }
+  },
+  "tierInvalidValues": "Ange tal från 0 och uppåt. Rabatten får inte vara större än standardavgiften.",
+  "tierSettingsSaved": "Kundnivåerna är sparade.",
+  "customerTierTitle": "Kundnivå för {name}",
+  "@customerTierTitle": {
+    "placeholders": {
+      "name": {
+        "type": "Object"
+      }
+    }
+  },
+  "customDiscountLabel": "Egen rabatt (valfritt)",
+  "customDiscountHelper": "Lämna tomt för att använda nivåns rabatt.",
+  "tierFeeSummary": "Standardavgift {standard} % − rabatt {discount} % = högst {fee} %",
+  "@tierFeeSummary": {
+    "placeholders": {
+      "standard": {
+        "type": "Object"
+      },
+      "discount": {
+        "type": "Object"
+      },
+      "fee": {
+        "type": "Object"
+      }
+    }
+  },
+  "tierNoAccountNote": "Kunden har inget konto i appen. Nivån gäller först när kunden skickar förfrågningar i appen.",
+  "customerTierSaved": "Kundnivån är sparad.",
+  "tierDiscountShort": "{discount} % rabatt",
+  "@tierDiscountShort": {
+    "placeholders": {
+      "discount": {
+        "type": "Object"
+      }
+    }
+  },
+  "customerTierManagerLine": "{tier}: {discount} % rabatt, avgift högst {max} %",
+  "@customerTierManagerLine": {
+    "placeholders": {
+      "tier": {
+        "type": "Object"
+      },
+      "discount": {
+        "type": "Object"
+      },
+      "max": {
+        "type": "Object"
+      }
+    }
+  },
+  "feeAboveTierMax": "Kundens nivå tillåter högst {max} %",
+  "@feeAboveTierMax": {
+    "placeholders": {
+      "max": {
+        "type": "Object"
+      }
+    }
+  },
+  "customerTierBadge": "{tier} – {discount} % rabatt på avgiften",
+  "@customerTierBadge": {
+    "placeholders": {
+      "tier": {
+        "type": "Object"
+      },
+      "discount": {
+        "type": "Object"
+      }
+    }
+  }
 }

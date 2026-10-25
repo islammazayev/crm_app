@@ -4,6 +4,7 @@ import '../../l10n/locale_controller.dart';
 import '../../l10n/rate_error_text.dart';
 import '../../l10n/status_text.dart';
 import '../../utils/client_id.dart';
+import '../../utils/customer_tiers.dart';
 import '../../utils/pickup_code.dart';
 import 'pickup_scanner_page.dart';
 import '../../widgets/receipt_button.dart';
@@ -462,6 +463,13 @@ class _ManagerTransactionDetailScreenState
             _feeController.text.replaceAll(',', '.'),
           );
 
+          // Kundens nivå: avgiften får inte vara högre än nivåns tak.
+          final tierInfo = CustomerTierInfo.fromTransaction(data);
+          final feeAboveTier =
+              tierInfo != null &&
+              feePercentInput != null &&
+              feePercentInput > tierInfo.maxFeePercent;
+
           // Kundens motförslag: fyll i kundens avgift och använd samma
           // växelkurs som i förslaget, så att managern ser vad det innebär.
           final countered = status == 'customer_countered';
@@ -484,13 +492,25 @@ class _ManagerTransactionDetailScreenState
 
           // Räkna direkt med standardavgiften när sidan öppnas, så att knappen
           // "Föreslå villkor" inte är avstängd tills managern ändrar avgiften.
+          // Kunder med nivå får avgiften med rabatten redan avdragen.
           if (!_autoCalcStarted &&
               _rate == null &&
               (status == 'customer_requested' ||
                   status == 'manager_proposed')) {
             _autoCalcStarted = true;
-            WidgetsBinding.instance.addPostFrameCallback((_) {
+            WidgetsBinding.instance.addPostFrameCallback((_) async {
+              double? fee;
+              if (status == 'manager_proposed' && savedFeePercent > 0) {
+                fee = savedFeePercent;
+              } else if (tierInfo != null) {
+                fee = tierInfo.maxFeePercent;
+              } else {
+                try {
+                  fee = (await TierSettings.load()).standardFee;
+                } catch (_) {}
+              }
               if (!mounted) return;
+              if (fee != null) _feeController.text = formatPercent(fee);
               _recalculate(
                 amountFrom: amountFrom,
                 fromCurrency: fromCurrency,
@@ -529,6 +549,17 @@ class _ManagerTransactionDetailScreenState
                       Text(l10n.toCurrencyValue(toCurrency)),
                       const SizedBox(height: 8),
                       Text(l10n.orderStatusLine(statusText(l10n, status))),
+                      if (tierInfo != null) ...[
+                        const SizedBox(height: 8),
+                        Text(
+                          l10n.customerTierManagerLine(
+                            '${tierInfo.tier.emoji} ${tierInfo.tier.label(l10n)}',
+                            formatPercent(tierInfo.discount),
+                            formatPercent(tierInfo.maxFeePercent),
+                          ),
+                          style: const TextStyle(fontWeight: FontWeight.w600),
+                        ),
+                      ],
                       const SizedBox(height: 16),
 
                       if (countered)
@@ -574,6 +605,11 @@ class _ManagerTransactionDetailScreenState
                           decoration: InputDecoration(
                             labelText: l10n.feePercentLabel,
                             border: const OutlineInputBorder(),
+                            errorText: feeAboveTier
+                                ? l10n.feeAboveTierMax(
+                                    formatPercent(tierInfo.maxFeePercent),
+                                  )
+                                : null,
                           ),
                           onChanged: (_) {
                             _recalculate(
@@ -798,7 +834,9 @@ class _ManagerTransactionDetailScreenState
                           width: double.infinity,
                           child: ElevatedButton(
                             onPressed:
-                                (_rate == null || feePercentInput == null)
+                                (_rate == null ||
+                                    feePercentInput == null ||
+                                    feeAboveTier)
                                 ? null
                                 : () async {
                                     await txRef.update({

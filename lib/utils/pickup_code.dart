@@ -18,9 +18,9 @@ const _tokenChars =
 /// Hemlig nyckel i QR-koden: 32 slumpade tecken (cirka 190 bitar), så den
 /// går inte att gissa.
 String newPickupToken() => List.generate(
-      32,
-      (_) => _tokenChars[_random.nextInt(_tokenChars.length)],
-    ).join();
+  32,
+  (_) => _tokenChars[_random.nextInt(_tokenChars.length)],
+).join();
 
 const _qrPrefix = 'crmpickup:v1:';
 

@@ -6,11 +6,7 @@ class CustomerList extends StatelessWidget {
   final List<Customer> customers;
   final void Function(int index)? onDelete;
 
-  const CustomerList({
-    super.key,
-    required this.customers,
-    this.onDelete,
-  });
+  const CustomerList({super.key, required this.customers, this.onDelete});
 
   @override
   Widget build(BuildContext context) {

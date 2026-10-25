@@ -26,8 +26,7 @@ class CurrencyMigrationService {
       }
 
       final rawBalances = data['balances'];
-      if (rawBalances is Map &&
-          needsCurrencyNormalization(rawBalances.keys)) {
+      if (rawBalances is Map && needsCurrencyNormalization(rawBalances.keys)) {
         final merged = <String, dynamic>{};
         rawBalances.forEach((k, v) {
           final key = normalizeCurrency(k.toString());

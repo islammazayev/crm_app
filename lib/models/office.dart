@@ -27,10 +27,9 @@ class OfficePaymentMethod {
       id: (map['id'] ?? '').toString(),
       label: (map['label'] ?? '').toString(),
       details: (map['details'] ?? '').toString(),
-      supportedFromCurrencies:
-          (map['supportedFromCurrencies'] as List? ?? [])
-              .map((e) => e.toString())
-              .toList(),
+      supportedFromCurrencies: (map['supportedFromCurrencies'] as List? ?? [])
+          .map((e) => e.toString())
+          .toList(),
     );
   }
 }
@@ -78,8 +77,11 @@ class Office {
       balances: parseBalances(map['balances'], officeId: id),
       managerUserId: map['managerUserId']?.toString(),
       paymentMethods: (map['paymentMethods'] as List? ?? [])
-          .map((e) => OfficePaymentMethod.fromMap(
-              Map<String, dynamic>.from(e as Map)))
+          .map(
+            (e) => OfficePaymentMethod.fromMap(
+              Map<String, dynamic>.from(e as Map),
+            ),
+          )
           .toList(),
     );
   }

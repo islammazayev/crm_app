@@ -1583,4 +1583,94 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get transactionRestored => 'İşlem geri yüklendi.';
+
+  @override
+  String get tierSilver => 'Gümüş';
+
+  @override
+  String get tierGold => 'Altın';
+
+  @override
+  String get tierDiamond => 'Elmas';
+
+  @override
+  String get tierNone => 'Seviye yok';
+
+  @override
+  String get tierLabel => 'Müşteri seviyesi';
+
+  @override
+  String get customerTiers => 'Müşteri seviyeleri';
+
+  @override
+  String get customerTiersCardSubtitle =>
+      'Ücret indirimli Gümüş, Altın ve Elmas';
+
+  @override
+  String get customerTiersIntro =>
+      'İndirim, standart ücretten düşülen yüzde puandır. Örnek: %5 standart ücret ve %1 Altın, müşteriye en fazla %4 verir. Yönetici daha düşük bir ücret belirleyebilir ama daha yüksek belirleyemez. Müşterilere seviyeyi Müşteriler bölümünden verirsiniz.';
+
+  @override
+  String get standardFeeLabel => 'Standart ücret';
+
+  @override
+  String tierDiscountLabel(Object tier) {
+    return '$tier için indirim';
+  }
+
+  @override
+  String tierFeeResult(Object fee) {
+    return 'Müşteri en fazla %$fee öder';
+  }
+
+  @override
+  String get tierInvalidValues =>
+      '0 veya daha büyük sayılar girin. İndirim standart ücretten büyük olamaz.';
+
+  @override
+  String get tierSettingsSaved => 'Müşteri seviyeleri kaydedildi.';
+
+  @override
+  String customerTierTitle(Object name) {
+    return '$name için müşteri seviyesi';
+  }
+
+  @override
+  String get customDiscountLabel => 'Özel indirim (isteğe bağlı)';
+
+  @override
+  String get customDiscountHelper =>
+      'Seviyenin indirimini kullanmak için boş bırakın.';
+
+  @override
+  String tierFeeSummary(Object standard, Object discount, Object fee) {
+    return 'Standart ücret %$standard − indirim %$discount = en fazla %$fee';
+  }
+
+  @override
+  String get tierNoAccountNote =>
+      'Müşterinin uygulamada hesabı yok. Seviye, müşteri uygulamadan talep gönderdiğinde geçerli olur.';
+
+  @override
+  String get customerTierSaved => 'Müşteri seviyesi kaydedildi.';
+
+  @override
+  String tierDiscountShort(Object discount) {
+    return '%$discount indirim';
+  }
+
+  @override
+  String customerTierManagerLine(Object tier, Object discount, Object max) {
+    return '$tier: %$discount indirim, ücret en fazla %$max';
+  }
+
+  @override
+  String feeAboveTierMax(Object max) {
+    return 'Müşterinin seviyesi en fazla %$max izin veriyor';
+  }
+
+  @override
+  String customerTierBadge(Object tier, Object discount) {
+    return '$tier – ücrette %$discount indirim';
+  }
 }

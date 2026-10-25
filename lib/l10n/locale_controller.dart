@@ -52,7 +52,10 @@ class LocaleController extends ValueNotifier<Locale?> {
   }
 
   /// Väljer första av enhetens språk som appen har, annars [fallback].
-  static Locale resolve(List<Locale>? deviceLocales, Iterable<Locale> supported) {
+  static Locale resolve(
+    List<Locale>? deviceLocales,
+    Iterable<Locale> supported,
+  ) {
     for (final device in deviceLocales ?? const <Locale>[]) {
       for (final s in supported) {
         if (s.languageCode == device.languageCode) return s;
