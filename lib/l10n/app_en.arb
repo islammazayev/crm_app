@@ -490,5 +490,10 @@
   "sendToBankInstructions": "Send {amount} {currency} to the customer's bank:",
   "markSentToBank": "Money sent to the bank",
   "confirmSentToBank": "Have you sent {amount} {currency} to the customer's bank? The transaction will be completed and the office balance updated.",
-  "confirm": "Confirm"
+  "confirm": "Confirm",
+  "rateFieldLabel": "Exchange rate: 1 {from} = ? {to}",
+  "invalidRate": "Enter an exchange rate above 0.",
+  "rateChangedFromMarket": "Own rate. Market rate: {rate}",
+  "marketRateUsed": "Market rate. You can change it.",
+  "useMarketRate": "Use the market rate"
 }

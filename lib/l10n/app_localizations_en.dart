@@ -1802,4 +1802,23 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get confirm => 'Confirm';
+
+  @override
+  String rateFieldLabel(Object from, Object to) {
+    return 'Exchange rate: 1 $from = ? $to';
+  }
+
+  @override
+  String get invalidRate => 'Enter an exchange rate above 0.';
+
+  @override
+  String rateChangedFromMarket(Object rate) {
+    return 'Own rate. Market rate: $rate';
+  }
+
+  @override
+  String get marketRateUsed => 'Market rate. You can change it.';
+
+  @override
+  String get useMarketRate => 'Use the market rate';
 }

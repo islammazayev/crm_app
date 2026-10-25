@@ -1811,4 +1811,23 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get confirm => 'Подтвердить';
+
+  @override
+  String rateFieldLabel(Object from, Object to) {
+    return 'Курс: 1 $from = ? $to';
+  }
+
+  @override
+  String get invalidRate => 'Введите курс больше 0.';
+
+  @override
+  String rateChangedFromMarket(Object rate) {
+    return 'Свой курс. Рыночный курс: $rate';
+  }
+
+  @override
+  String get marketRateUsed => 'Рыночный курс. Вы можете его изменить.';
+
+  @override
+  String get useMarketRate => 'Использовать рыночный курс';
 }

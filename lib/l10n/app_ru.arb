@@ -490,5 +490,10 @@
   "sendToBankInstructions": "Отправьте {amount} {currency} на банк клиента:",
   "markSentToBank": "Деньги отправлены в банк",
   "confirmSentToBank": "Вы отправили {amount} {currency} на банк клиента? Перевод будет выполнен, а баланс офиса обновлён.",
-  "confirm": "Подтвердить"
+  "confirm": "Подтвердить",
+  "rateFieldLabel": "Курс: 1 {from} = ? {to}",
+  "invalidRate": "Введите курс больше 0.",
+  "rateChangedFromMarket": "Свой курс. Рыночный курс: {rate}",
+  "marketRateUsed": "Рыночный курс. Вы можете его изменить.",
+  "useMarketRate": "Использовать рыночный курс"
 }

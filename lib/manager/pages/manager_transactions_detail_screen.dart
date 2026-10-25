@@ -8,6 +8,7 @@ import '../../utils/customer_tiers.dart';
 import '../../utils/fee_calc.dart';
 import '../../utils/pickup_code.dart';
 import 'pickup_scanner_page.dart';
+import '../../widgets/rate_field.dart';
 import '../../widgets/receipt_button.dart';
 import '../../services/exchange_rate_service.dart';
 import '../../utils/transaction_kind.dart';
@@ -45,7 +46,10 @@ class _ManagerTransactionDetailScreenState
   double? _buyAmount;
   double? _amountFrom;
 
+  /// Kursen i förslaget: marknadskursen, eller den kurs managern skrivit.
   double? _rate;
+  double? _marketRate;
+  final _rateController = TextEditingController();
   double? _amountToGross;
   double? _amountToNet;
   double? _feeAmountFrom;
@@ -64,6 +68,7 @@ class _ManagerTransactionDetailScreenState
   @override
   void dispose() {
     _feeController.dispose();
+    _rateController.dispose();
     _payoutCodeController.dispose();
     super.dispose();
   }
@@ -79,8 +84,22 @@ class _ManagerTransactionDetailScreenState
 
     setState(() => _calculating = true);
     try {
-      final rate =
-          _rate ?? await ExchangeRateService.getRate(fromCurrency, toCurrency);
+      // Marknadskursen hämtas en gång och visas som jämförelse även när
+      // managern har skrivit en egen kurs.
+      if (_marketRate == null) {
+        try {
+          _marketRate = await ExchangeRateService.getRate(
+            fromCurrency,
+            toCurrency,
+          );
+        } catch (_) {
+          if (_rate == null) rethrow;
+        }
+      }
+      final rate = _rate ?? _marketRate!;
+      if (_rateController.text.isEmpty) {
+        _rateController.text = formatRate(rate);
+      }
 
       final buy = _buyAmount;
       if (buy != null && feePercent >= 100) return;
@@ -517,7 +536,10 @@ class _ManagerTransactionDetailScreenState
             _feeController.text = formatPercent(
               counterFee + (tierInfo?.discount ?? 0),
             );
-            if (savedRateFromTo > 0) _rate = savedRateFromTo;
+            if (savedRateFromTo > 0) {
+              _rate = savedRateFromTo;
+              _rateController.text = formatRate(savedRateFromTo);
+            }
             WidgetsBinding.instance.addPostFrameCallback((_) {
               if (!mounted) return;
               _recalculate(
@@ -536,6 +558,11 @@ class _ManagerTransactionDetailScreenState
               (status == 'customer_requested' ||
                   status == 'manager_proposed')) {
             _autoCalcStarted = true;
+            // Ett tidigare förslag behåller sin kurs (ev. managerns egen).
+            if (status == 'manager_proposed' && savedRateFromTo > 0) {
+              _rate = savedRateFromTo;
+              _rateController.text = formatRate(savedRateFromTo);
+            }
             if (status == 'manager_proposed' && savedFeePercent > 0) {
               _feeController.text = formatPercent(
                 (data['baseFeePercent'] as num?)?.toDouble() ?? savedFeePercent,
@@ -671,15 +698,26 @@ class _ManagerTransactionDetailScreenState
                           },
                         ),
                         const SizedBox(height: 16),
-                        if (_rate != null && feeToCustomer != null) ...[
-                          Text(
-                            l10n.exchangeRateValue(
-                              fromCurrency,
-                              _rate!.toStringAsFixed(6),
-                              toCurrency,
-                            ),
+                        if (_rate != null) ...[
+                          RateField(
+                            controller: _rateController,
+                            fromCurrency: fromCurrency,
+                            toCurrency: toCurrency,
+                            marketRate: _marketRate,
+                            onChanged: (rate) {
+                              setState(() {});
+                              if (rate == null) return;
+                              _rate = rate;
+                              _recalculate(
+                                amountFrom: amountFrom,
+                                fromCurrency: fromCurrency,
+                                toCurrency: toCurrency,
+                              );
+                            },
                           ),
-                          const SizedBox(height: 8),
+                          const SizedBox(height: 16),
+                        ],
+                        if (_rate != null && feeToCustomer != null) ...[
                           if (_amountToGross != null)
                             Text(
                               l10n.grossReceived(
@@ -896,7 +934,10 @@ class _ManagerTransactionDetailScreenState
                         SizedBox(
                           width: double.infinity,
                           child: ElevatedButton(
-                            onPressed: (_rate == null || feeToCustomer == null)
+                            onPressed:
+                                (_rate == null ||
+                                    feeToCustomer == null ||
+                                    parseRate(_rateController.text) == null)
                                 ? null
                                 : () async {
                                     await txRef.update({

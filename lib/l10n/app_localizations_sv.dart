@@ -1806,4 +1806,23 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String get confirm => 'Bekräfta';
+
+  @override
+  String rateFieldLabel(Object from, Object to) {
+    return 'Växelkurs: 1 $from = ? $to';
+  }
+
+  @override
+  String get invalidRate => 'Ange en växelkurs större än 0.';
+
+  @override
+  String rateChangedFromMarket(Object rate) {
+    return 'Egen kurs. Marknadskurs: $rate';
+  }
+
+  @override
+  String get marketRateUsed => 'Marknadskurs. Du kan ändra den.';
+
+  @override
+  String get useMarketRate => 'Använd marknadskursen';
 }

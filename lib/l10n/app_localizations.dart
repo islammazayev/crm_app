@@ -3053,6 +3053,36 @@ abstract class AppLocalizations {
   /// In sv, this message translates to:
   /// **'Bekräfta'**
   String get confirm;
+
+  /// No description provided for @rateFieldLabel.
+  ///
+  /// In sv, this message translates to:
+  /// **'Växelkurs: 1 {from} = ? {to}'**
+  String rateFieldLabel(Object from, Object to);
+
+  /// No description provided for @invalidRate.
+  ///
+  /// In sv, this message translates to:
+  /// **'Ange en växelkurs större än 0.'**
+  String get invalidRate;
+
+  /// No description provided for @rateChangedFromMarket.
+  ///
+  /// In sv, this message translates to:
+  /// **'Egen kurs. Marknadskurs: {rate}'**
+  String rateChangedFromMarket(Object rate);
+
+  /// No description provided for @marketRateUsed.
+  ///
+  /// In sv, this message translates to:
+  /// **'Marknadskurs. Du kan ändra den.'**
+  String get marketRateUsed;
+
+  /// No description provided for @useMarketRate.
+  ///
+  /// In sv, this message translates to:
+  /// **'Använd marknadskursen'**
+  String get useMarketRate;
 }
 
 class _AppLocalizationsDelegate

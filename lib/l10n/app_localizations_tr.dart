@@ -1795,4 +1795,23 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get confirm => 'Onayla';
+
+  @override
+  String rateFieldLabel(Object from, Object to) {
+    return 'Kur: 1 $from = ? $to';
+  }
+
+  @override
+  String get invalidRate => '0\'dan büyük bir kur girin.';
+
+  @override
+  String rateChangedFromMarket(Object rate) {
+    return 'Özel kur. Piyasa kuru: $rate';
+  }
+
+  @override
+  String get marketRateUsed => 'Piyasa kuru. Değiştirebilirsiniz.';
+
+  @override
+  String get useMarketRate => 'Piyasa kurunu kullan';
 }

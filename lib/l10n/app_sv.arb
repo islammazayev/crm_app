@@ -1328,5 +1328,27 @@
       }
     }
   },
-  "confirm": "Bekräfta"
+  "confirm": "Bekräfta",
+  "rateFieldLabel": "Växelkurs: 1 {from} = ? {to}",
+  "@rateFieldLabel": {
+    "placeholders": {
+      "from": {
+        "type": "Object"
+      },
+      "to": {
+        "type": "Object"
+      }
+    }
+  },
+  "invalidRate": "Ange en växelkurs större än 0.",
+  "rateChangedFromMarket": "Egen kurs. Marknadskurs: {rate}",
+  "@rateChangedFromMarket": {
+    "placeholders": {
+      "rate": {
+        "type": "Object"
+      }
+    }
+  },
+  "marketRateUsed": "Marknadskurs. Du kan ändra den.",
+  "useMarketRate": "Använd marknadskursen"
 }

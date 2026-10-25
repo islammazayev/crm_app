@@ -490,5 +490,10 @@
   "sendToBankInstructions": "Müşterinin bankasına {amount} {currency} gönderin:",
   "markSentToBank": "Para bankaya gönderildi",
   "confirmSentToBank": "Müşterinin bankasına {amount} {currency} gönderdiniz mi? İşlem tamamlanacak ve ofis bakiyesi güncellenecek.",
-  "confirm": "Onayla"
+  "confirm": "Onayla",
+  "rateFieldLabel": "Kur: 1 {from} = ? {to}",
+  "invalidRate": "0'dan büyük bir kur girin.",
+  "rateChangedFromMarket": "Özel kur. Piyasa kuru: {rate}",
+  "marketRateUsed": "Piyasa kuru. Değiştirebilirsiniz.",
+  "useMarketRate": "Piyasa kurunu kullan"
 }
