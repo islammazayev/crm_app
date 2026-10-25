@@ -1825,4 +1825,20 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get pickupCodeDigitsHint =>
       'Type only the digits; the dashes are added automatically.';
+
+  @override
+  String get balancesTitle => 'Balance';
+
+  @override
+  String get officeBalanceTitle => 'Office balance';
+
+  @override
+  String get cashierBalancesTitle => 'Cashier balances';
+
+  @override
+  String get balancesCardSubtitle =>
+      'The office\'s and the cashiers\' balances, separately.';
+
+  @override
+  String get noBalance => 'No balance.';
 }

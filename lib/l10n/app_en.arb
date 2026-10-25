@@ -496,5 +496,10 @@
   "rateChangedFromMarket": "Own rate. Market rate: {rate}",
   "marketRateUsed": "Market rate. You can change it.",
   "useMarketRate": "Use the market rate",
-  "pickupCodeDigitsHint": "Type only the digits; the dashes are added automatically."
+  "pickupCodeDigitsHint": "Type only the digits; the dashes are added automatically.",
+  "balancesTitle": "Balance",
+  "officeBalanceTitle": "Office balance",
+  "cashierBalancesTitle": "Cashier balances",
+  "balancesCardSubtitle": "The office's and the cashiers' balances, separately.",
+  "noBalance": "No balance."
 }

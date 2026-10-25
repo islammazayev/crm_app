@@ -1829,4 +1829,20 @@ class AppLocalizationsSv extends AppLocalizations {
   @override
   String get pickupCodeDigitsHint =>
       'Skriv bara siffrorna, bindestrecken kommer automatiskt.';
+
+  @override
+  String get balancesTitle => 'Saldo';
+
+  @override
+  String get officeBalanceTitle => 'Kontorets saldo';
+
+  @override
+  String get cashierBalancesTitle => 'Kassörernas saldo';
+
+  @override
+  String get balancesCardSubtitle =>
+      'Kontorets och kassörernas saldo, var för sig.';
+
+  @override
+  String get noBalance => 'Inget saldo.';
 }

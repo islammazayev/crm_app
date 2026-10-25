@@ -496,5 +496,10 @@
   "rateChangedFromMarket": "Özel kur. Piyasa kuru: {rate}",
   "marketRateUsed": "Piyasa kuru. Değiştirebilirsiniz.",
   "useMarketRate": "Piyasa kurunu kullan",
-  "pickupCodeDigitsHint": "Yalnızca rakamları yazın, tireler otomatik eklenir."
+  "pickupCodeDigitsHint": "Yalnızca rakamları yazın, tireler otomatik eklenir.",
+  "balancesTitle": "Bakiye",
+  "officeBalanceTitle": "Ofis bakiyesi",
+  "cashierBalancesTitle": "Kasiyer bakiyeleri",
+  "balancesCardSubtitle": "Ofisin ve kasiyerlerin bakiyeleri, ayrı ayrı.",
+  "noBalance": "Bakiye yok."
 }

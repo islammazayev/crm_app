@@ -1351,5 +1351,10 @@
   },
   "marketRateUsed": "Marknadskurs. Du kan ändra den.",
   "useMarketRate": "Använd marknadskursen",
-  "pickupCodeDigitsHint": "Skriv bara siffrorna, bindestrecken kommer automatiskt."
+  "pickupCodeDigitsHint": "Skriv bara siffrorna, bindestrecken kommer automatiskt.",
+  "balancesTitle": "Saldo",
+  "officeBalanceTitle": "Kontorets saldo",
+  "cashierBalancesTitle": "Kassörernas saldo",
+  "balancesCardSubtitle": "Kontorets och kassörernas saldo, var för sig.",
+  "noBalance": "Inget saldo."
 }

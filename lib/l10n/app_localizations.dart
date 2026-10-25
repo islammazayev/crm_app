@@ -3089,6 +3089,36 @@ abstract class AppLocalizations {
   /// In sv, this message translates to:
   /// **'Skriv bara siffrorna, bindestrecken kommer automatiskt.'**
   String get pickupCodeDigitsHint;
+
+  /// No description provided for @balancesTitle.
+  ///
+  /// In sv, this message translates to:
+  /// **'Saldo'**
+  String get balancesTitle;
+
+  /// No description provided for @officeBalanceTitle.
+  ///
+  /// In sv, this message translates to:
+  /// **'Kontorets saldo'**
+  String get officeBalanceTitle;
+
+  /// No description provided for @cashierBalancesTitle.
+  ///
+  /// In sv, this message translates to:
+  /// **'Kassörernas saldo'**
+  String get cashierBalancesTitle;
+
+  /// No description provided for @balancesCardSubtitle.
+  ///
+  /// In sv, this message translates to:
+  /// **'Kontorets och kassörernas saldo, var för sig.'**
+  String get balancesCardSubtitle;
+
+  /// No description provided for @noBalance.
+  ///
+  /// In sv, this message translates to:
+  /// **'Inget saldo.'**
+  String get noBalance;
 }
 
 class _AppLocalizationsDelegate

@@ -1818,4 +1818,20 @@ class AppLocalizationsTr extends AppLocalizations {
   @override
   String get pickupCodeDigitsHint =>
       'Yalnızca rakamları yazın, tireler otomatik eklenir.';
+
+  @override
+  String get balancesTitle => 'Bakiye';
+
+  @override
+  String get officeBalanceTitle => 'Ofis bakiyesi';
+
+  @override
+  String get cashierBalancesTitle => 'Kasiyer bakiyeleri';
+
+  @override
+  String get balancesCardSubtitle =>
+      'Ofisin ve kasiyerlerin bakiyeleri, ayrı ayrı.';
+
+  @override
+  String get noBalance => 'Bakiye yok.';
 }

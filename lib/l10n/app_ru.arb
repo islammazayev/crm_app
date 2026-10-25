@@ -496,5 +496,10 @@
   "rateChangedFromMarket": "Свой курс. Рыночный курс: {rate}",
   "marketRateUsed": "Рыночный курс. Вы можете его изменить.",
   "useMarketRate": "Использовать рыночный курс",
-  "pickupCodeDigitsHint": "Вводите только цифры, дефисы добавятся автоматически."
+  "pickupCodeDigitsHint": "Вводите только цифры, дефисы добавятся автоматически.",
+  "balancesTitle": "Баланс",
+  "officeBalanceTitle": "Баланс офиса",
+  "cashierBalancesTitle": "Балансы кассиров",
+  "balancesCardSubtitle": "Баланс офиса и кассиров, отдельно.",
+  "noBalance": "Нет баланса."
 }

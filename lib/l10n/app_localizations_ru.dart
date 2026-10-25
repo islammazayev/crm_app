@@ -1834,4 +1834,19 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String get pickupCodeDigitsHint =>
       'Вводите только цифры, дефисы добавятся автоматически.';
+
+  @override
+  String get balancesTitle => 'Баланс';
+
+  @override
+  String get officeBalanceTitle => 'Баланс офиса';
+
+  @override
+  String get cashierBalancesTitle => 'Балансы кассиров';
+
+  @override
+  String get balancesCardSubtitle => 'Баланс офиса и кассиров, отдельно.';
+
+  @override
+  String get noBalance => 'Нет баланса.';
 }
