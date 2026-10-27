@@ -477,11 +477,17 @@ service cloud.firestore {
                 && new.status == 'cancelled'
                 && changed.hasOnly(['status', 'decidedAt']))
             ))
-          // Accepterad: markera att de egna pengarna är skickade.
+          // Accepterad: markera att de egna pengarna är skickade, med ett
+          // valfritt kvitto i Storage under exchangeReceipts/{id}/{sida}/.
           || (old.status == 'accepted'
             && new.status == 'accepted'
             && new.get(side + 'Sent', false) == true
-            && changed.hasOnly([side + 'Sent', side + 'SentAt']))
+            && changed.hasOnly([side + 'Sent', side + 'SentAt',
+                                side + 'ReceiptPath', side + 'ReceiptName',
+                                side + 'ReceiptContentType'])
+            && (!(side + 'ReceiptPath' in new)
+                || new[side + 'ReceiptPath'].matches(
+                     'exchangeReceipts/' + eid + '/' + side + '/.+')))
           // Accepterad: markera att den andra sidans pengar har kommit. Den
           // som bekräftar sist gör växlingen genomförd och bokför båda
           // saldona i samma batch.

@@ -2076,4 +2076,13 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get alreadyHaveAccountLogin => 'Zaten hesabınız var mı? Giriş yapın';
+
+  @override
+  String get attachReceiptOptional => 'Makbuz ekle (isteğe bağlı)';
+
+  @override
+  String get officeReceipt => 'Ofis makbuzu';
+
+  @override
+  String get partnerReceipt => 'Ortak makbuzu';
 }

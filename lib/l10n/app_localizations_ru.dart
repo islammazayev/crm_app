@@ -2091,4 +2091,13 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get alreadyHaveAccountLogin => 'Уже есть аккаунт? Войти';
+
+  @override
+  String get attachReceiptOptional => 'Прикрепить квитанцию (необязательно)';
+
+  @override
+  String get officeReceipt => 'Квитанция офиса';
+
+  @override
+  String get partnerReceipt => 'Квитанция партнёра';
 }

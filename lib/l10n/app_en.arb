@@ -570,5 +570,8 @@
   "inviteSmsText": "Hi {name}! Welcome as our customer. Create your account here: {link}",
   "inviteWelcome": "Welcome! You are already our customer with client ID {clientId}. Create your account below to see your transactions in the app.",
   "inviteInvalid": "The link no longer works. You can still create an account below.",
-  "alreadyHaveAccountLogin": "Already have an account? Log in"
+  "alreadyHaveAccountLogin": "Already have an account? Log in",
+  "attachReceiptOptional": "Attach receipt (optional)",
+  "officeReceipt": "Office receipt",
+  "partnerReceipt": "Partner receipt"
 }

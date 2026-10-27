@@ -3533,6 +3533,24 @@ abstract class AppLocalizations {
   /// In sv, this message translates to:
   /// **'Har du redan ett konto? Logga in'**
   String get alreadyHaveAccountLogin;
+
+  /// No description provided for @attachReceiptOptional.
+  ///
+  /// In sv, this message translates to:
+  /// **'Bifoga kvitto (valfritt)'**
+  String get attachReceiptOptional;
+
+  /// No description provided for @officeReceipt.
+  ///
+  /// In sv, this message translates to:
+  /// **'Kontorets kvitto'**
+  String get officeReceipt;
+
+  /// No description provided for @partnerReceipt.
+  ///
+  /// In sv, this message translates to:
+  /// **'Partnerns kvitto'**
+  String get partnerReceipt;
 }
 
 class _AppLocalizationsDelegate

@@ -570,5 +570,8 @@
   "inviteSmsText": "Merhaba {name}! Müşterimiz olarak hoş geldiniz. Hesabınızı buradan oluşturun: {link}",
   "inviteWelcome": "Hoş geldiniz! {clientId} müşteri numarasıyla zaten müşterimizsiniz. İşlemlerinizi uygulamada görmek için aşağıdan hesabınızı oluşturun.",
   "inviteInvalid": "Bağlantı artık geçerli değil. Yine de aşağıdan hesap oluşturabilirsiniz.",
-  "alreadyHaveAccountLogin": "Zaten hesabınız var mı? Giriş yapın"
+  "alreadyHaveAccountLogin": "Zaten hesabınız var mı? Giriş yapın",
+  "attachReceiptOptional": "Makbuz ekle (isteğe bağlı)",
+  "officeReceipt": "Ofis makbuzu",
+  "partnerReceipt": "Ortak makbuzu"
 }

@@ -2087,4 +2087,13 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String get alreadyHaveAccountLogin => 'Har du redan ett konto? Logga in';
+
+  @override
+  String get attachReceiptOptional => 'Bifoga kvitto (valfritt)';
+
+  @override
+  String get officeReceipt => 'Kontorets kvitto';
+
+  @override
+  String get partnerReceipt => 'Partnerns kvitto';
 }

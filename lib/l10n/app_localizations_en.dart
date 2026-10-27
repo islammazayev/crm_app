@@ -2084,4 +2084,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get alreadyHaveAccountLogin => 'Already have an account? Log in';
+
+  @override
+  String get attachReceiptOptional => 'Attach receipt (optional)';
+
+  @override
+  String get officeReceipt => 'Office receipt';
+
+  @override
+  String get partnerReceipt => 'Partner receipt';
 }

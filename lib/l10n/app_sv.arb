@@ -1524,5 +1524,8 @@
     }
   },
   "inviteInvalid": "Länken fungerar inte längre. Du kan ändå skapa ett konto nedan.",
-  "alreadyHaveAccountLogin": "Har du redan ett konto? Logga in"
+  "alreadyHaveAccountLogin": "Har du redan ett konto? Logga in",
+  "attachReceiptOptional": "Bifoga kvitto (valfritt)",
+  "officeReceipt": "Kontorets kvitto",
+  "partnerReceipt": "Partnerns kvitto"
 }
