@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
@@ -59,6 +60,10 @@ class CustomerTransactionDetailScreen extends StatelessWidget {
               .toDouble();
 
           final String status = (data['status'] ?? '').toString();
+          // Transaktioner som managern skapat på kontoret (innan kunden hade
+          // konto) visas, men kunden har inget att göra i dem.
+          final bool mine =
+              data['customerId'] == FirebaseAuth.instance.currentUser?.uid;
           final bool isBuy = isBuyTransaction(data);
           final bool toBank = isBankPayout(data);
           final String paymentLabel = (data['paymentMethodLabel'] ?? '')
@@ -255,7 +260,8 @@ class CustomerTransactionDetailScreen extends StatelessWidget {
 
                       const Spacer(),
 
-                      if (status == 'customer_accepted' &&
+                      if (mine &&
+                          status == 'customer_accepted' &&
                           paymentLabel.isNotEmpty)
                         SizedBox(
                           width: double.infinity,
@@ -269,7 +275,7 @@ class CustomerTransactionDetailScreen extends StatelessWidget {
 
                       // Svar på managerns förslag: acceptera, avböj eller (en gång)
                       // motförslag med lägre avgift.
-                      if (status == 'manager_proposed') ...[
+                      if (mine && status == 'manager_proposed') ...[
                         Row(
                           children: [
                             Expanded(

@@ -2028,4 +2028,52 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get sendProposal => 'Teklif gönder';
+
+  @override
+  String get searchExistingCustomer => 'Mevcut müşteri ara';
+
+  @override
+  String get noCustomerFoundNew =>
+      'Müşteri bulunamadı. Aşağıya yeni müşteri girin.';
+
+  @override
+  String get orNewCustomer => 'Veya yeni müşteri:';
+
+  @override
+  String get hasAppAccount => 'Uygulamada hesabı var';
+
+  @override
+  String get noAppAccount => 'Uygulamada hesabı yok';
+
+  @override
+  String get changeCustomer => 'Değiştir';
+
+  @override
+  String get inviteCustomerQuestion =>
+      'Müşteri bizim müşterimiz olmak istiyor mu?';
+
+  @override
+  String get inviteCustomerHint =>
+      'Müşteri müşteri kaydına eklenir ve uygulamada hesap oluşturmak için SMS ile bir bağlantı alır.';
+
+  @override
+  String get invitePhoneRequired =>
+      'Bağlantıyı göndermek için müşterinin telefon numarasını girin.';
+
+  @override
+  String inviteSmsText(Object name, Object link) {
+    return 'Merhaba $name! Müşterimiz olarak hoş geldiniz. Hesabınızı buradan oluşturun: $link';
+  }
+
+  @override
+  String inviteWelcome(Object clientId) {
+    return 'Hoş geldiniz! $clientId müşteri numarasıyla zaten müşterimizsiniz. İşlemlerinizi uygulamada görmek için aşağıdan hesabınızı oluşturun.';
+  }
+
+  @override
+  String get inviteInvalid =>
+      'Bağlantı artık geçerli değil. Yine de aşağıdan hesap oluşturabilirsiniz.';
+
+  @override
+  String get alreadyHaveAccountLogin => 'Zaten hesabınız var mı? Giriş yapın';
 }

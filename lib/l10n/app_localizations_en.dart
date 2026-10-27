@@ -2036,4 +2036,52 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get sendProposal => 'Send proposal';
+
+  @override
+  String get searchExistingCustomer => 'Search existing customer';
+
+  @override
+  String get noCustomerFoundNew =>
+      'No customer found. Enter a new customer below.';
+
+  @override
+  String get orNewCustomer => 'Or a new customer:';
+
+  @override
+  String get hasAppAccount => 'Has an app account';
+
+  @override
+  String get noAppAccount => 'No app account';
+
+  @override
+  String get changeCustomer => 'Change';
+
+  @override
+  String get inviteCustomerQuestion =>
+      'Does the customer want to become our customer?';
+
+  @override
+  String get inviteCustomerHint =>
+      'The customer is saved in the customer register and gets a link by SMS to create an app account.';
+
+  @override
+  String get invitePhoneRequired =>
+      'Enter the customer\'s phone number to send the link.';
+
+  @override
+  String inviteSmsText(Object name, Object link) {
+    return 'Hi $name! Welcome as our customer. Create your account here: $link';
+  }
+
+  @override
+  String inviteWelcome(Object clientId) {
+    return 'Welcome! You are already our customer with client ID $clientId. Create your account below to see your transactions in the app.';
+  }
+
+  @override
+  String get inviteInvalid =>
+      'The link no longer works. You can still create an account below.';
+
+  @override
+  String get alreadyHaveAccountLogin => 'Already have an account? Log in';
 }

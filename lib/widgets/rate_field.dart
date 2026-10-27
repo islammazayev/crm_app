@@ -38,7 +38,12 @@ class RateField extends StatelessWidget {
     final l10n = context.l10n;
     final rate = parseRate(controller.text);
     final market = marketRate;
-    final changed = market != null && rate != null && rate != market;
+    // Jämför som de visas (6 decimaler), annars syns "egen kurs" fast
+    // fältet visar marknadskursen.
+    final changed =
+        market != null &&
+        rate != null &&
+        formatRate(rate) != formatRate(market);
 
     return TextField(
       controller: controller,

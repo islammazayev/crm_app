@@ -557,5 +557,18 @@
   "currencyYouGet": "Currency you get",
   "exchangeProposalSent": "The proposal was sent.",
   "choosePartner": "Partner",
-  "sendProposal": "Send proposal"
+  "sendProposal": "Send proposal",
+  "searchExistingCustomer": "Search existing customer",
+  "noCustomerFoundNew": "No customer found. Enter a new customer below.",
+  "orNewCustomer": "Or a new customer:",
+  "hasAppAccount": "Has an app account",
+  "noAppAccount": "No app account",
+  "changeCustomer": "Change",
+  "inviteCustomerQuestion": "Does the customer want to become our customer?",
+  "inviteCustomerHint": "The customer is saved in the customer register and gets a link by SMS to create an app account.",
+  "invitePhoneRequired": "Enter the customer's phone number to send the link.",
+  "inviteSmsText": "Hi {name}! Welcome as our customer. Create your account here: {link}",
+  "inviteWelcome": "Welcome! You are already our customer with client ID {clientId}. Create your account below to see your transactions in the app.",
+  "inviteInvalid": "The link no longer works. You can still create an account below.",
+  "alreadyHaveAccountLogin": "Already have an account? Log in"
 }

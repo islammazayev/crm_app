@@ -2044,4 +2044,51 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get sendProposal => 'Отправить предложение';
+
+  @override
+  String get searchExistingCustomer => 'Найти существующего клиента';
+
+  @override
+  String get noCustomerFoundNew =>
+      'Клиент не найден. Введите нового клиента ниже.';
+
+  @override
+  String get orNewCustomer => 'Или новый клиент:';
+
+  @override
+  String get hasAppAccount => 'Есть аккаунт в приложении';
+
+  @override
+  String get noAppAccount => 'Нет аккаунта в приложении';
+
+  @override
+  String get changeCustomer => 'Сменить';
+
+  @override
+  String get inviteCustomerQuestion => 'Клиент хочет стать нашим клиентом?';
+
+  @override
+  String get inviteCustomerHint =>
+      'Клиент будет сохранён в базе клиентов и получит ссылку по SMS для создания аккаунта в приложении.';
+
+  @override
+  String get invitePhoneRequired =>
+      'Введите номер телефона клиента, чтобы отправить ссылку.';
+
+  @override
+  String inviteSmsText(Object name, Object link) {
+    return 'Здравствуйте, $name! Добро пожаловать к нам. Создайте аккаунт здесь: $link';
+  }
+
+  @override
+  String inviteWelcome(Object clientId) {
+    return 'Добро пожаловать! Вы уже наш клиент с ID $clientId. Создайте аккаунт ниже, чтобы видеть свои переводы в приложении.';
+  }
+
+  @override
+  String get inviteInvalid =>
+      'Ссылка больше не действует. Вы всё равно можете создать аккаунт ниже.';
+
+  @override
+  String get alreadyHaveAccountLogin => 'Уже есть аккаунт? Войти';
 }

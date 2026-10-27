@@ -3455,6 +3455,84 @@ abstract class AppLocalizations {
   /// In sv, this message translates to:
   /// **'Skicka förslag'**
   String get sendProposal;
+
+  /// No description provided for @searchExistingCustomer.
+  ///
+  /// In sv, this message translates to:
+  /// **'Sök befintlig kund'**
+  String get searchExistingCustomer;
+
+  /// No description provided for @noCustomerFoundNew.
+  ///
+  /// In sv, this message translates to:
+  /// **'Ingen kund hittades. Skriv in en ny kund nedan.'**
+  String get noCustomerFoundNew;
+
+  /// No description provided for @orNewCustomer.
+  ///
+  /// In sv, this message translates to:
+  /// **'Eller ny kund:'**
+  String get orNewCustomer;
+
+  /// No description provided for @hasAppAccount.
+  ///
+  /// In sv, this message translates to:
+  /// **'Har konto i appen'**
+  String get hasAppAccount;
+
+  /// No description provided for @noAppAccount.
+  ///
+  /// In sv, this message translates to:
+  /// **'Inget konto i appen'**
+  String get noAppAccount;
+
+  /// No description provided for @changeCustomer.
+  ///
+  /// In sv, this message translates to:
+  /// **'Byt'**
+  String get changeCustomer;
+
+  /// No description provided for @inviteCustomerQuestion.
+  ///
+  /// In sv, this message translates to:
+  /// **'Vill kunden bli kund hos oss?'**
+  String get inviteCustomerQuestion;
+
+  /// No description provided for @inviteCustomerHint.
+  ///
+  /// In sv, this message translates to:
+  /// **'Kunden sparas i kundregistret och får en länk via SMS för att skapa konto i appen.'**
+  String get inviteCustomerHint;
+
+  /// No description provided for @invitePhoneRequired.
+  ///
+  /// In sv, this message translates to:
+  /// **'Skriv kundens telefonnummer för att kunna skicka länken.'**
+  String get invitePhoneRequired;
+
+  /// No description provided for @inviteSmsText.
+  ///
+  /// In sv, this message translates to:
+  /// **'Hej {name}! Välkommen som kund hos oss. Skapa ditt konto här: {link}'**
+  String inviteSmsText(Object name, Object link);
+
+  /// No description provided for @inviteWelcome.
+  ///
+  /// In sv, this message translates to:
+  /// **'Välkommen! Du är redan kund hos oss med klient-ID {clientId}. Skapa ditt konto nedan, så ser du dina transaktioner i appen.'**
+  String inviteWelcome(Object clientId);
+
+  /// No description provided for @inviteInvalid.
+  ///
+  /// In sv, this message translates to:
+  /// **'Länken fungerar inte längre. Du kan ändå skapa ett konto nedan.'**
+  String get inviteInvalid;
+
+  /// No description provided for @alreadyHaveAccountLogin.
+  ///
+  /// In sv, this message translates to:
+  /// **'Har du redan ett konto? Logga in'**
+  String get alreadyHaveAccountLogin;
 }
 
 class _AppLocalizationsDelegate

@@ -2040,4 +2040,51 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String get sendProposal => 'Skicka förslag';
+
+  @override
+  String get searchExistingCustomer => 'Sök befintlig kund';
+
+  @override
+  String get noCustomerFoundNew =>
+      'Ingen kund hittades. Skriv in en ny kund nedan.';
+
+  @override
+  String get orNewCustomer => 'Eller ny kund:';
+
+  @override
+  String get hasAppAccount => 'Har konto i appen';
+
+  @override
+  String get noAppAccount => 'Inget konto i appen';
+
+  @override
+  String get changeCustomer => 'Byt';
+
+  @override
+  String get inviteCustomerQuestion => 'Vill kunden bli kund hos oss?';
+
+  @override
+  String get inviteCustomerHint =>
+      'Kunden sparas i kundregistret och får en länk via SMS för att skapa konto i appen.';
+
+  @override
+  String get invitePhoneRequired =>
+      'Skriv kundens telefonnummer för att kunna skicka länken.';
+
+  @override
+  String inviteSmsText(Object name, Object link) {
+    return 'Hej $name! Välkommen som kund hos oss. Skapa ditt konto här: $link';
+  }
+
+  @override
+  String inviteWelcome(Object clientId) {
+    return 'Välkommen! Du är redan kund hos oss med klient-ID $clientId. Skapa ditt konto nedan, så ser du dina transaktioner i appen.';
+  }
+
+  @override
+  String get inviteInvalid =>
+      'Länken fungerar inte längre. Du kan ändå skapa ett konto nedan.';
+
+  @override
+  String get alreadyHaveAccountLogin => 'Har du redan ett konto? Logga in';
 }
