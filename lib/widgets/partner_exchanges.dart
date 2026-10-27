@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 
 import '../l10n/app_localizations.dart';
 import '../l10n/locale_controller.dart';
+import '../services/exchange_rate_service.dart';
 import '../services/partner_service.dart';
 import '../theme/app_theme.dart';
 import '../utils/currencies.dart';
@@ -241,18 +242,20 @@ class _ExchangeCardState extends State<_ExchangeCard> {
                     ),
                     OutlinedButton(
                       onPressed: () async {
-                        final t = await showExchangeCounterDialog(
+                        await Navigator.push(
                           context,
-                          terms: terms,
-                          side: side,
-                        );
-                        if (t == null) return;
-                        await _run(
-                          () => PartnerService.counter(
-                            ref,
-                            side,
-                            officeGivesAmount: t.officeGivesAmount,
-                            partnerGivesAmount: t.partnerGivesAmount,
+                          MaterialPageRoute(
+                            builder: (_) => NewExchangePage(
+                              side: side,
+                              initial: terms,
+                              onSubmit: (t, _, note) => PartnerService.counter(
+                                ref,
+                                side,
+                                officeGivesAmount: t.officeGivesAmount,
+                                partnerGivesAmount: t.partnerGivesAmount,
+                                note: note,
+                              ),
+                            ),
                           ),
                         );
                       },
@@ -330,80 +333,15 @@ class _ExchangeCardState extends State<_ExchangeCard> {
   }
 }
 
-/// Motförslag: samma valutor, nya belopp.
-Future<ExchangeTerms?> showExchangeCounterDialog(
-  BuildContext context, {
-  required ExchangeTerms terms,
-  required ExchangeSide side,
-}) {
-  final v = _view(terms, side);
-  final giveCtrl = TextEditingController(text: v.give.toString());
-  final getCtrl = TextEditingController(text: v.get.toString());
-  final l10n = context.l10n;
-  return showDialog<ExchangeTerms>(
-    context: context,
-    builder: (ctx) => AlertDialog(
-      title: Text(l10n.counterProposal),
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          TextField(
-            controller: giveCtrl,
-            keyboardType: const TextInputType.numberWithOptions(decimal: true),
-            decoration: InputDecoration(
-              labelText: l10n.youGiveLabel,
-              suffixText: v.giveCur,
-            ),
-          ),
-          const SizedBox(height: 14),
-          TextField(
-            controller: getCtrl,
-            keyboardType: const TextInputType.numberWithOptions(decimal: true),
-            decoration: InputDecoration(
-              labelText: l10n.youGetLabel,
-              suffixText: v.getCur,
-            ),
-          ),
-        ],
-      ),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.pop(ctx),
-          child: Text(l10n.cancel),
-        ),
-        ElevatedButton(
-          onPressed: () {
-            final give = parseRate(giveCtrl.text);
-            final get = parseRate(getCtrl.text);
-            if (give == null || get == null) return;
-            Navigator.pop(
-              ctx,
-              side == ExchangeSide.office
-                  ? ExchangeTerms(
-                      officeGivesCurrency: v.giveCur,
-                      officeGivesAmount: give,
-                      partnerGivesCurrency: v.getCur,
-                      partnerGivesAmount: get,
-                    )
-                  : ExchangeTerms(
-                      officeGivesCurrency: v.getCur,
-                      officeGivesAmount: get,
-                      partnerGivesCurrency: v.giveCur,
-                      partnerGivesAmount: give,
-                    ),
-            );
-          },
-          child: Text(l10n.send),
-        ),
-      ],
-    ),
-  );
-}
-
-/// Nytt förslag: valuta och belopp man ger och får. Kursen visas medan man
-/// skriver. [partnerChoices] visas för managern (vilken partner).
+/// Nytt förslag eller motförslag. Man väljer valutorna och skriver beloppet
+/// man ger; kursen fylls i med marknadskursen och kan ändras, och beloppet
+/// man får räknas ut (som när managern föreslår villkor till en kund).
+///
+/// [initial] betyder motförslag: valutorna är låsta och belopp och kurs är
+/// förifyllda. [partnerChoices] visas för managern vid nytt förslag.
 class NewExchangePage extends StatefulWidget {
   final ExchangeSide side;
+  final ExchangeTerms? initial;
   final Map<String, String> partnerChoices;
   final Future<void> Function(
     ExchangeTerms terms,
@@ -416,6 +354,7 @@ class NewExchangePage extends StatefulWidget {
     super.key,
     required this.side,
     required this.onSubmit,
+    this.initial,
     this.partnerChoices = const {},
   });
 
@@ -428,28 +367,81 @@ class _NewExchangePageState extends State<NewExchangePage> {
   String? _giveCur;
   String? _getCur;
   final _give = TextEditingController();
-  final _get = TextEditingController();
+  final _rate = TextEditingController();
   final _note = TextEditingController();
+  double? _marketRate;
+  bool _loadingRate = false;
   bool _sending = false;
+
+  bool get _isCounter => widget.initial != null;
+
+  @override
+  void initState() {
+    super.initState();
+    final t = widget.initial;
+    if (t != null) {
+      final v = _view(t, widget.side);
+      _giveCur = v.giveCur;
+      _getCur = v.getCur;
+      _give.text = formatRate(v.give);
+      _rate.text = formatRate(v.give == 0 ? 0 : v.get / v.give);
+      _loadMarketRate(keepTyped: true);
+    }
+  }
 
   @override
   void dispose() {
     _give.dispose();
-    _get.dispose();
+    _rate.dispose();
     _note.dispose();
     super.dispose();
+  }
+
+  /// Hämtar marknadskursen när båda valutorna är valda. Går det inte kan
+  /// man skriva kursen själv.
+  Future<void> _loadMarketRate({bool keepTyped = false}) async {
+    final from = _giveCur, to = _getCur;
+    setState(() {
+      _marketRate = null;
+      if (!keepTyped) _rate.clear();
+      _loadingRate = from != null && to != null && from != to;
+    });
+    if (!_loadingRate) return;
+    try {
+      final rate = await ExchangeRateService.getRate(from!, to!);
+      if (!mounted || from != _giveCur || to != _getCur) return;
+      setState(() {
+        _marketRate = rate;
+        if (_rate.text.trim().isEmpty) _rate.text = formatRate(rate);
+      });
+    } catch (_) {
+      // Ingen marknadskurs (t.ex. valutan saknas hos tjänsten).
+    } finally {
+      if (mounted && from == _giveCur && to == _getCur) {
+        setState(() => _loadingRate = false);
+      }
+    }
+  }
+
+  /// Beloppet man får: det man ger gånger kursen, avrundat till ören.
+  double? get _getAmount {
+    final give = parseRate(_give.text);
+    final rate = parseRate(_rate.text);
+    if (give == null || rate == null) return null;
+    return (give * rate * 100).round() / 100;
   }
 
   Future<void> _submit() async {
     final l10n = context.l10n;
     final give = parseRate(_give.text);
-    final get = parseRate(_get.text);
-    final needsPartner = widget.side == ExchangeSide.office;
+    final get = _getAmount;
+    final needsPartner = widget.side == ExchangeSide.office && !_isCounter;
     if (_giveCur == null ||
         _getCur == null ||
         _giveCur == _getCur ||
         give == null ||
         get == null ||
+        get <= 0 ||
         (needsPartner && _partnerId == null)) {
       ScaffoldMessenger.of(
         context,
@@ -489,26 +481,28 @@ class _NewExchangePageState extends State<NewExchangePage> {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final give = parseRate(_give.text);
-    final get = parseRate(_get.text);
+    final get = _getAmount;
 
     Widget currency(String? value, String label, ValueChanged<String?> on) =>
         DropdownButtonFormField<String>(
+          key: ValueKey('$label-$value'),
           initialValue: value,
           decoration: InputDecoration(labelText: label),
           items: [
             for (final c in kSupportedCurrencies)
               DropdownMenuItem(value: c, child: Text(c)),
           ],
-          onChanged: on,
+          onChanged: _isCounter ? null : on,
         );
 
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.newExchange)),
+      appBar: AppBar(
+        title: Text(_isCounter ? l10n.counterProposal : l10n.newExchange),
+      ),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          if (widget.side == ExchangeSide.office) ...[
+          if (widget.side == ExchangeSide.office && !_isCounter) ...[
             DropdownButtonFormField<String>(
               initialValue: _partnerId,
               decoration: InputDecoration(labelText: l10n.choosePartner),
@@ -520,11 +514,10 @@ class _NewExchangePageState extends State<NewExchangePage> {
             ),
             const SizedBox(height: 16),
           ],
-          currency(
-            _giveCur,
-            l10n.currencyYouGive,
-            (v) => setState(() => _giveCur = v),
-          ),
+          currency(_giveCur, l10n.currencyYouGive, (v) {
+            _giveCur = v;
+            _loadMarketRate();
+          }),
           const SizedBox(height: 12),
           TextField(
             controller: _give,
@@ -536,33 +529,28 @@ class _NewExchangePageState extends State<NewExchangePage> {
             ),
           ),
           const SizedBox(height: 20),
-          currency(
-            _getCur,
-            l10n.currencyYouGet,
-            (v) => setState(() => _getCur = v),
-          ),
-          const SizedBox(height: 12),
-          TextField(
-            controller: _get,
-            onChanged: (_) => setState(() {}),
-            keyboardType: const TextInputType.numberWithOptions(decimal: true),
-            decoration: InputDecoration(
-              labelText: l10n.youGetLabel,
-              suffixText: _getCur,
-            ),
-          ),
-          if (give != null &&
-              get != null &&
-              _giveCur != null &&
-              _getCur != null) ...[
-            const SizedBox(height: 12),
-            Text(
-              l10n.exchangeRateLine(
-                _giveCur!,
-                formatRate(get / give),
-                _getCur!,
+          currency(_getCur, l10n.currencyYouGet, (v) {
+            _getCur = v;
+            _loadMarketRate();
+          }),
+          if (_giveCur != null && _getCur != null && _giveCur != _getCur) ...[
+            const SizedBox(height: 16),
+            if (_loadingRate && _rate.text.isEmpty)
+              Text(l10n.calculating)
+            else
+              RateField(
+                controller: _rate,
+                fromCurrency: _giveCur!,
+                toCurrency: _getCur!,
+                marketRate: _marketRate,
+                onChanged: (_) => setState(() {}),
               ),
-              style: const TextStyle(fontWeight: FontWeight.w600),
+          ],
+          if (get != null && _getCur != null) ...[
+            const SizedBox(height: 16),
+            Text(
+              l10n.exchangeYouGet(_money(get, _getCur!)),
+              style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 16),
             ),
           ],
           const SizedBox(height: 16),
@@ -574,7 +562,7 @@ class _NewExchangePageState extends State<NewExchangePage> {
           const SizedBox(height: 16),
           ElevatedButton(
             onPressed: _sending ? null : _submit,
-            child: Text(l10n.sendProposal),
+            child: Text(_isCounter ? l10n.send : l10n.sendProposal),
           ),
         ],
       ),

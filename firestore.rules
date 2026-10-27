@@ -490,7 +490,21 @@ service cloud.firestore {
         || managesPartner(resource.data);
       allow write: if isAdmin();
 
-      // Saldot ändras bara när en växling blir genomförd (se ovan).
+      // Partnern fyller själv på (eller drar av) sitt saldo, så att
+      // managern ser vilka valutor partnern har. Saldot får inte bli < 0
+      // i den valuta som ändras.
+      allow update: if isPartner()
+        && request.auth.uid == pid
+        && request.resource.data.diff(resource.data).changedKeys()
+             .hasOnly(['balances', 'balancesUpdatedAt', 'lastAdjustedCurrency'])
+        && request.resource.data.lastAdjustedCurrency is string
+        && request.resource.data.get('balances', {})
+             .diff(resource.data.get('balances', {})).affectedKeys()
+             .hasOnly([request.resource.data.lastAdjustedCurrency])
+        && request.resource.data.balances
+             .get(request.resource.data.lastAdjustedCurrency, 0) >= 0;
+
+      // Saldot ändras annars bara när en växling blir genomförd (se ovan).
       allow update: if (request.auth.uid == pid || isManager())
         && request.resource.data.diff(resource.data).changedKeys()
              .hasOnly(['balances', 'lastExchangeId'])

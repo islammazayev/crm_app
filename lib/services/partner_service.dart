@@ -71,6 +71,17 @@ class PartnerService {
   exchangesForPartner(String partnerId) =>
       mergedQuery([exchanges.where('partnerId', isEqualTo: partnerId)]);
 
+  /// Partnern fyller på (eller drar av, med minus) sitt eget saldo.
+  static Future<void> adjustOwnBalance(
+    String uid,
+    String currency,
+    double delta,
+  ) => partner(uid).update({
+    'balances.$currency': FieldValue.increment(delta),
+    'lastAdjustedCurrency': currency,
+    'balancesUpdatedAt': FieldValue.serverTimestamp(),
+  });
+
   static Future<void> propose({
     required ExchangeSide by,
     required String officeId,

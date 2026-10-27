@@ -8,6 +8,7 @@ import '../../screens/auth_gate.dart';
 import '../../services/partner_service.dart';
 import '../../theme/app_theme.dart';
 import '../../utils/balances.dart';
+import '../../utils/currencies.dart';
 import '../../widgets/language_button.dart';
 import '../../widgets/partner_exchanges.dart';
 
@@ -15,6 +16,85 @@ import '../../widgets/partner_exchanges.dart';
 /// alla växlingar. Ingen avgift och ingen vinst, bara växling.
 class PartnerHomeScreen extends StatelessWidget {
   const PartnerHomeScreen({super.key});
+
+  /// Fyll på (eller dra av, med minus) eget saldo i en valuta.
+  Future<void> _adjustBalance(
+    BuildContext context,
+    String uid,
+    Map<String, double> balances,
+  ) async {
+    final l10n = context.l10n;
+    String currency = kSupportedCurrencies.first;
+    final amountCtrl = TextEditingController();
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => StatefulBuilder(
+        builder: (ctx, setLocal) => AlertDialog(
+          title: Text(l10n.adjustBalance),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              DropdownButtonFormField<String>(
+                initialValue: currency,
+                decoration: InputDecoration(labelText: l10n.currency),
+                items: [
+                  for (final c in kSupportedCurrencies)
+                    DropdownMenuItem(
+                      value: c,
+                      child: Text(
+                        '$c  (${(balances[c] ?? 0).toStringAsFixed(2)})',
+                      ),
+                    ),
+                ],
+                onChanged: (v) => setLocal(() => currency = v ?? currency),
+              ),
+              const SizedBox(height: 14),
+              TextField(
+                controller: amountCtrl,
+                keyboardType: const TextInputType.numberWithOptions(
+                  decimal: true,
+                  signed: true,
+                ),
+                decoration: InputDecoration(
+                  labelText: l10n.amount,
+                  helperText: l10n.adjustBalanceHint,
+                ),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx, false),
+              child: Text(l10n.cancel),
+            ),
+            ElevatedButton(
+              onPressed: () => Navigator.pop(ctx, true),
+              child: Text(l10n.ok),
+            ),
+          ],
+        ),
+      ),
+    );
+    final amount =
+        double.tryParse(amountCtrl.text.trim().replaceAll(',', '.')) ?? 0;
+    amountCtrl.dispose();
+    if (ok != true || amount == 0 || !context.mounted) return;
+    final messenger = ScaffoldMessenger.of(context);
+    if ((balances[currency] ?? 0) + amount < 0) {
+      messenger.showSnackBar(
+        SnackBar(content: Text(l10n.balanceWouldBeNegative)),
+      );
+      return;
+    }
+    try {
+      await PartnerService.adjustOwnBalance(uid, currency, amount);
+      messenger.showSnackBar(SnackBar(content: Text(l10n.balanceUpdated)));
+    } catch (e) {
+      messenger.showSnackBar(
+        SnackBar(content: Text(l10n.errorWithDetails('$e'))),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -75,6 +155,19 @@ class PartnerHomeScreen extends StatelessWidget {
               const SizedBox(height: 16),
               BalancesCard(
                 balances: parseBalances(d['balances'], officeId: uid),
+              ),
+              const SizedBox(height: 8),
+              Align(
+                alignment: Alignment.centerRight,
+                child: TextButton.icon(
+                  icon: const Icon(Icons.add_card),
+                  label: Text(l10n.adjustBalance),
+                  onPressed: () => _adjustBalance(
+                    context,
+                    uid,
+                    parseBalances(d['balances'], officeId: uid),
+                  ),
+                ),
               ),
               const SizedBox(height: 16),
               SizedBox(

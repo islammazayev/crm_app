@@ -191,3 +191,22 @@ describe('skickat och mottaget', () => {
     await assertFails(finish('M'));
   });
 });
+
+describe('partnerns eget saldo', () => {
+  test('partnern fyller på eller drar av en valuta', async () => {
+    await assertSucceeds(updateDoc(doc(as('P'), 'partners', 'P'), { 'balances.USDT': increment(1000), lastAdjustedCurrency: 'USDT' }));
+    await assertSucceeds(updateDoc(doc(as('P'), 'partners', 'P'), { 'balances.EUR': increment(-100), lastAdjustedCurrency: 'EUR' }));
+  });
+
+  test('saldot kan inte bli negativt', async () => {
+    await assertFails(updateDoc(doc(as('P'), 'partners', 'P'), { 'balances.EUR': increment(-600), lastAdjustedCurrency: 'EUR' }));
+  });
+
+  test('partnern kan inte ändra koppling eller annans saldo', async () => {
+    await assertFails(updateDoc(doc(as('P'), 'partners', 'P'), { exchangeOfficeId: 'O2' }));
+    await assertFails(updateDoc(doc(as('P'), 'partners', 'P'),
+      { 'balances.EUR': increment(1), 'balances.SEK': increment(1), lastAdjustedCurrency: 'EUR' }));
+    await assertFails(updateDoc(doc(as('P'), 'partners', 'P2'), { 'balances.EUR': increment(10) }));
+    await assertFails(updateDoc(doc(as('M'), 'partners', 'P'), { 'balances.EUR': increment(10) }));
+  });
+});
