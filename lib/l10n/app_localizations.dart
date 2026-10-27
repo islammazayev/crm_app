@@ -3161,6 +3161,300 @@ abstract class AppLocalizations {
   /// In sv, this message translates to:
   /// **'Sälj {amount} {from} för {to}'**
   String sellSummary(Object amount, Object from, Object to);
+
+  /// No description provided for @partners.
+  ///
+  /// In sv, this message translates to:
+  /// **'Partner'**
+  String get partners;
+
+  /// No description provided for @partnersCardSubtitle.
+  ///
+  /// In sv, this message translates to:
+  /// **'Växla valuta med dina partner.'**
+  String get partnersCardSubtitle;
+
+  /// No description provided for @partnersAdminCardSubtitle.
+  ///
+  /// In sv, this message translates to:
+  /// **'Skapa partner och koppla dem till kontor eller manager.'**
+  String get partnersAdminCardSubtitle;
+
+  /// No description provided for @editPartnerTitle.
+  ///
+  /// In sv, this message translates to:
+  /// **'Ändra partner'**
+  String get editPartnerTitle;
+
+  /// No description provided for @partnerUpdated.
+  ///
+  /// In sv, this message translates to:
+  /// **'Partnern är uppdaterad.'**
+  String get partnerUpdated;
+
+  /// No description provided for @deletePartnerTitle.
+  ///
+  /// In sv, this message translates to:
+  /// **'Ta bort partnern?'**
+  String get deletePartnerTitle;
+
+  /// No description provided for @deletePartnerConfirm.
+  ///
+  /// In sv, this message translates to:
+  /// **'{name} kommer inte längre åt appen och saldot tas bort. Inloggningskontot finns kvar och kan tas bort under Authentication i Firebase-konsolen.'**
+  String deletePartnerConfirm(Object name);
+
+  /// No description provided for @partnerDeleted.
+  ///
+  /// In sv, this message translates to:
+  /// **'Partnern är borttagen.'**
+  String get partnerDeleted;
+
+  /// No description provided for @existingPartners.
+  ///
+  /// In sv, this message translates to:
+  /// **'Partner'**
+  String get existingPartners;
+
+  /// No description provided for @searchPartnersLabel.
+  ///
+  /// In sv, this message translates to:
+  /// **'Sök partner (namn, kontor, manager)'**
+  String get searchPartnersLabel;
+
+  /// No description provided for @createNewPartner.
+  ///
+  /// In sv, this message translates to:
+  /// **'Skapa ny partner'**
+  String get createNewPartner;
+
+  /// No description provided for @createPartner.
+  ///
+  /// In sv, this message translates to:
+  /// **'Skapa partner'**
+  String get createPartner;
+
+  /// No description provided for @partnerCreated.
+  ///
+  /// In sv, this message translates to:
+  /// **'Partnern är skapad.'**
+  String get partnerCreated;
+
+  /// No description provided for @couldNotCreatePartner.
+  ///
+  /// In sv, this message translates to:
+  /// **'Kunde inte skapa partner: {error}'**
+  String couldNotCreatePartner(Object error);
+
+  /// No description provided for @partnerAppBarTitle.
+  ///
+  /// In sv, this message translates to:
+  /// **'CRM – Partner'**
+  String get partnerAppBarTitle;
+
+  /// No description provided for @partnerNotSetUp.
+  ///
+  /// In sv, this message translates to:
+  /// **'Ditt partnerkonto är inte kopplat till något kontor än. Kontakta admin.'**
+  String get partnerNotSetUp;
+
+  /// No description provided for @newExchange.
+  ///
+  /// In sv, this message translates to:
+  /// **'Nytt växlingsförslag'**
+  String get newExchange;
+
+  /// No description provided for @exchangesTitle.
+  ///
+  /// In sv, this message translates to:
+  /// **'Växlingar'**
+  String get exchangesTitle;
+
+  /// No description provided for @partnerBalancesTitle.
+  ///
+  /// In sv, this message translates to:
+  /// **'Partnernas saldo'**
+  String get partnerBalancesTitle;
+
+  /// No description provided for @noPartnersLinked.
+  ///
+  /// In sv, this message translates to:
+  /// **'Inga partner är kopplade till dig eller ditt kontor.'**
+  String get noPartnersLinked;
+
+  /// No description provided for @exchangeProposed.
+  ///
+  /// In sv, this message translates to:
+  /// **'Förslag'**
+  String get exchangeProposed;
+
+  /// No description provided for @exchangeAccepted.
+  ///
+  /// In sv, this message translates to:
+  /// **'Accepterad'**
+  String get exchangeAccepted;
+
+  /// No description provided for @exchangeRejected.
+  ///
+  /// In sv, this message translates to:
+  /// **'Avböjd'**
+  String get exchangeRejected;
+
+  /// No description provided for @exchangeCancelled.
+  ///
+  /// In sv, this message translates to:
+  /// **'Avbruten'**
+  String get exchangeCancelled;
+
+  /// No description provided for @exchangeCompleted.
+  ///
+  /// In sv, this message translates to:
+  /// **'Genomförd'**
+  String get exchangeCompleted;
+
+  /// No description provided for @noExchangesYet.
+  ///
+  /// In sv, this message translates to:
+  /// **'Inga växlingar än.'**
+  String get noExchangesYet;
+
+  /// No description provided for @exchangeOfficeGives.
+  ///
+  /// In sv, this message translates to:
+  /// **'Kontoret ger: {amount}'**
+  String exchangeOfficeGives(Object amount);
+
+  /// No description provided for @exchangePartnerGives.
+  ///
+  /// In sv, this message translates to:
+  /// **'Partnern ger: {amount}'**
+  String exchangePartnerGives(Object amount);
+
+  /// No description provided for @exchangeYouGive.
+  ///
+  /// In sv, this message translates to:
+  /// **'Du ger: {amount}'**
+  String exchangeYouGive(Object amount);
+
+  /// No description provided for @exchangeYouGet.
+  ///
+  /// In sv, this message translates to:
+  /// **'Du får: {amount}'**
+  String exchangeYouGet(Object amount);
+
+  /// No description provided for @exchangeRateLine.
+  ///
+  /// In sv, this message translates to:
+  /// **'Kurs: 1 {from} = {rate} {to}'**
+  String exchangeRateLine(Object from, Object rate, Object to);
+
+  /// No description provided for @exchangeOfficeSentDone.
+  ///
+  /// In sv, this message translates to:
+  /// **'✓ Kontoret har skickat'**
+  String get exchangeOfficeSentDone;
+
+  /// No description provided for @exchangeOfficeSentWaiting.
+  ///
+  /// In sv, this message translates to:
+  /// **'… Kontoret har inte skickat än'**
+  String get exchangeOfficeSentWaiting;
+
+  /// No description provided for @exchangePartnerSentDone.
+  ///
+  /// In sv, this message translates to:
+  /// **'✓ Partnern har skickat'**
+  String get exchangePartnerSentDone;
+
+  /// No description provided for @exchangePartnerSentWaiting.
+  ///
+  /// In sv, this message translates to:
+  /// **'… Partnern har inte skickat än'**
+  String get exchangePartnerSentWaiting;
+
+  /// No description provided for @counterProposal.
+  ///
+  /// In sv, this message translates to:
+  /// **'Motförslag'**
+  String get counterProposal;
+
+  /// No description provided for @waitingForAnswer.
+  ///
+  /// In sv, this message translates to:
+  /// **'Väntar på svar'**
+  String get waitingForAnswer;
+
+  /// No description provided for @markExchangeSent.
+  ///
+  /// In sv, this message translates to:
+  /// **'Jag har skickat {amount}'**
+  String markExchangeSent(Object amount);
+
+  /// No description provided for @confirmExchangeSent.
+  ///
+  /// In sv, this message translates to:
+  /// **'Bekräfta att du har skickat pengarna. Den andra sidan ser det och kan bekräfta när de har kommit.'**
+  String get confirmExchangeSent;
+
+  /// No description provided for @markExchangeReceived.
+  ///
+  /// In sv, this message translates to:
+  /// **'Jag har tagit emot {amount}'**
+  String markExchangeReceived(Object amount);
+
+  /// No description provided for @confirmExchangeReceived.
+  ///
+  /// In sv, this message translates to:
+  /// **'Bekräfta att pengarna har kommit. När båda har bekräftat blir växlingen genomförd och saldona uppdateras.'**
+  String get confirmExchangeReceived;
+
+  /// No description provided for @waitingForOtherReceived.
+  ///
+  /// In sv, this message translates to:
+  /// **'Väntar på att den andra sidan bekräftar att pengarna har kommit.'**
+  String get waitingForOtherReceived;
+
+  /// No description provided for @youGiveLabel.
+  ///
+  /// In sv, this message translates to:
+  /// **'Belopp du ger'**
+  String get youGiveLabel;
+
+  /// No description provided for @youGetLabel.
+  ///
+  /// In sv, this message translates to:
+  /// **'Belopp du får'**
+  String get youGetLabel;
+
+  /// No description provided for @currencyYouGive.
+  ///
+  /// In sv, this message translates to:
+  /// **'Valuta du ger'**
+  String get currencyYouGive;
+
+  /// No description provided for @currencyYouGet.
+  ///
+  /// In sv, this message translates to:
+  /// **'Valuta du får'**
+  String get currencyYouGet;
+
+  /// No description provided for @exchangeProposalSent.
+  ///
+  /// In sv, this message translates to:
+  /// **'Förslaget är skickat.'**
+  String get exchangeProposalSent;
+
+  /// No description provided for @choosePartner.
+  ///
+  /// In sv, this message translates to:
+  /// **'Partner'**
+  String get choosePartner;
+
+  /// No description provided for @sendProposal.
+  ///
+  /// In sv, this message translates to:
+  /// **'Skicka förslag'**
+  String get sendProposal;
 }
 
 class _AppLocalizationsDelegate

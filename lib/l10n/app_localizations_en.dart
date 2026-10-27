@@ -1865,4 +1865,175 @@ class AppLocalizationsEn extends AppLocalizations {
   String sellSummary(Object amount, Object from, Object to) {
     return 'Sell $amount $from for $to';
   }
+
+  @override
+  String get partners => 'Partners';
+
+  @override
+  String get partnersCardSubtitle => 'Exchange currency with your partners.';
+
+  @override
+  String get partnersAdminCardSubtitle =>
+      'Create partners and link them to an office or manager.';
+
+  @override
+  String get editPartnerTitle => 'Edit partner';
+
+  @override
+  String get partnerUpdated => 'The partner was updated.';
+
+  @override
+  String get deletePartnerTitle => 'Delete the partner?';
+
+  @override
+  String deletePartnerConfirm(Object name) {
+    return '$name will no longer have access to the app and the balance is removed. The login account remains and can be deleted under Authentication in the Firebase console.';
+  }
+
+  @override
+  String get partnerDeleted => 'The partner was deleted.';
+
+  @override
+  String get existingPartners => 'Partners';
+
+  @override
+  String get searchPartnersLabel => 'Search partner (name, office, manager)';
+
+  @override
+  String get createNewPartner => 'Create new partner';
+
+  @override
+  String get createPartner => 'Create partner';
+
+  @override
+  String get partnerCreated => 'The partner was created.';
+
+  @override
+  String couldNotCreatePartner(Object error) {
+    return 'Could not create partner: $error';
+  }
+
+  @override
+  String get partnerAppBarTitle => 'CRM – Partner';
+
+  @override
+  String get partnerNotSetUp =>
+      'Your partner account is not linked to an office yet. Contact the admin.';
+
+  @override
+  String get newExchange => 'New exchange proposal';
+
+  @override
+  String get exchangesTitle => 'Exchanges';
+
+  @override
+  String get partnerBalancesTitle => 'Partner balances';
+
+  @override
+  String get noPartnersLinked =>
+      'No partners are linked to you or your office.';
+
+  @override
+  String get exchangeProposed => 'Proposal';
+
+  @override
+  String get exchangeAccepted => 'Accepted';
+
+  @override
+  String get exchangeRejected => 'Rejected';
+
+  @override
+  String get exchangeCancelled => 'Cancelled';
+
+  @override
+  String get exchangeCompleted => 'Completed';
+
+  @override
+  String get noExchangesYet => 'No exchanges yet.';
+
+  @override
+  String exchangeOfficeGives(Object amount) {
+    return 'The office gives: $amount';
+  }
+
+  @override
+  String exchangePartnerGives(Object amount) {
+    return 'The partner gives: $amount';
+  }
+
+  @override
+  String exchangeYouGive(Object amount) {
+    return 'You give: $amount';
+  }
+
+  @override
+  String exchangeYouGet(Object amount) {
+    return 'You get: $amount';
+  }
+
+  @override
+  String exchangeRateLine(Object from, Object rate, Object to) {
+    return 'Rate: 1 $from = $rate $to';
+  }
+
+  @override
+  String get exchangeOfficeSentDone => '✓ The office has sent';
+
+  @override
+  String get exchangeOfficeSentWaiting => '… The office has not sent yet';
+
+  @override
+  String get exchangePartnerSentDone => '✓ The partner has sent';
+
+  @override
+  String get exchangePartnerSentWaiting => '… The partner has not sent yet';
+
+  @override
+  String get counterProposal => 'Counter-proposal';
+
+  @override
+  String get waitingForAnswer => 'Waiting for an answer';
+
+  @override
+  String markExchangeSent(Object amount) {
+    return 'I have sent $amount';
+  }
+
+  @override
+  String get confirmExchangeSent =>
+      'Confirm that you have sent the money. The other side sees it and can confirm when it has arrived.';
+
+  @override
+  String markExchangeReceived(Object amount) {
+    return 'I have received $amount';
+  }
+
+  @override
+  String get confirmExchangeReceived =>
+      'Confirm that the money has arrived. When both have confirmed, the exchange is completed and the balances are updated.';
+
+  @override
+  String get waitingForOtherReceived =>
+      'Waiting for the other side to confirm that the money has arrived.';
+
+  @override
+  String get youGiveLabel => 'Amount you give';
+
+  @override
+  String get youGetLabel => 'Amount you get';
+
+  @override
+  String get currencyYouGive => 'Currency you give';
+
+  @override
+  String get currencyYouGet => 'Currency you get';
+
+  @override
+  String get exchangeProposalSent => 'The proposal was sent.';
+
+  @override
+  String get choosePartner => 'Partner';
+
+  @override
+  String get sendProposal => 'Send proposal';
 }
