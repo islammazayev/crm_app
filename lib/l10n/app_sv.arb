@@ -1592,19 +1592,13 @@
       }
     }
   },
-  "lowBalanceBody": "Kontoret har {available} {currency} men behöver {needed} {currency} för att betala ut. Det saknas {missing} {currency}.\n\nBe admin fylla på kontorets saldo, eller växla till dig {currency} med en partner.",
-  "@lowBalanceBody": {
+  "lowBalanceHas": "Kontoret har:",
+  "lowBalanceToPay": "Ska betalas ut:",
+  "lowBalanceMissing": "Saknas:",
+  "lowBalancePartnerHint": "Kolla med en partner om du kan växla till dig {currency}.",
+  "@lowBalancePartnerHint": {
     "placeholders": {
-      "available": {
-        "type": "Object"
-      },
       "currency": {
-        "type": "Object"
-      },
-      "needed": {
-        "type": "Object"
-      },
-      "missing": {
         "type": "Object"
       }
     }

@@ -601,5 +601,8 @@
   "pickUpAtOfficeTitle": "Ofis adresi",
   "youPayCashAtOffice": "Ofiste nakit ödüyorsunuz",
   "lowBalanceTitle": "Yeterli {currency} yok",
-  "lowBalanceBody": "Ofiste {available} {currency} var ama ödeme için {needed} {currency} gerekiyor. {missing} {currency} eksik.\n\nYöneticiden ofis bakiyesini doldurmasını isteyin veya bir ortakla {currency} bozdurun."
+  "lowBalanceHas": "Ofiste olan:",
+  "lowBalanceToPay": "Ödenecek:",
+  "lowBalanceMissing": "Eksik:",
+  "lowBalancePartnerHint": "Bir ortakla {currency} bozdurup bozduramayacağınızı kontrol edin."
 }

@@ -2197,12 +2197,16 @@ class AppLocalizationsSv extends AppLocalizations {
   }
 
   @override
-  String lowBalanceBody(
-    Object available,
-    Object currency,
-    Object needed,
-    Object missing,
-  ) {
-    return 'Kontoret har $available $currency men behöver $needed $currency för att betala ut. Det saknas $missing $currency.\n\nBe admin fylla på kontorets saldo, eller växla till dig $currency med en partner.';
+  String get lowBalanceHas => 'Kontoret har:';
+
+  @override
+  String get lowBalanceToPay => 'Ska betalas ut:';
+
+  @override
+  String get lowBalanceMissing => 'Saknas:';
+
+  @override
+  String lowBalancePartnerHint(Object currency) {
+    return 'Kolla med en partner om du kan växla till dig $currency.';
   }
 }

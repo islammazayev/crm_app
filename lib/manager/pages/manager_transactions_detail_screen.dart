@@ -446,6 +446,19 @@ class _ManagerTransactionDetailScreenState
     }
   }
 
+  Widget _lowBalanceRow(String label, String value, {Color? color}) => Padding(
+    padding: const EdgeInsets.symmetric(vertical: 4),
+    child: Row(
+      children: [
+        Expanded(child: Text(label)),
+        Text(
+          value,
+          style: TextStyle(fontWeight: FontWeight.w700, color: color),
+        ),
+      ],
+    ),
+  );
+
   /// Kontoret har inte tillräckligt i valutan som ska betalas ut.
   Future<void> _showLowBalance({
     required String currency,
@@ -462,14 +475,30 @@ class _ManagerTransactionDetailScreenState
           size: 40,
         ),
         title: Text(l10n.lowBalanceTitle(currency)),
-        content: Text(
-          l10n.lowBalanceBody(
-            available.toStringAsFixed(2),
-            needed.toStringAsFixed(2),
-            currency,
-            (needed - available).toStringAsFixed(2),
-          ),
-          textAlign: TextAlign.center,
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            _lowBalanceRow(
+              l10n.lowBalanceHas,
+              '${available.toStringAsFixed(2)} $currency',
+            ),
+            _lowBalanceRow(
+              l10n.lowBalanceToPay,
+              '${needed.toStringAsFixed(2)} $currency',
+            ),
+            const Divider(height: 20),
+            _lowBalanceRow(
+              l10n.lowBalanceMissing,
+              '${(needed - available).toStringAsFixed(2)} $currency',
+              color: Colors.red,
+            ),
+            const SizedBox(height: 16),
+            Text(
+              l10n.lowBalancePartnerHint(currency),
+              textAlign: TextAlign.center,
+              style: const TextStyle(color: AppColors.textMuted),
+            ),
+          ],
         ),
         actions: [
           ElevatedButton(

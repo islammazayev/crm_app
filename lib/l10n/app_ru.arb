@@ -601,5 +601,8 @@
   "pickUpAtOfficeTitle": "Адрес офиса",
   "youPayCashAtOffice": "Вы платите наличными в офисе",
   "lowBalanceTitle": "Недостаточно {currency}",
-  "lowBalanceBody": "В офисе {available} {currency}, а для выплаты нужно {needed} {currency}. Не хватает {missing} {currency}.\n\nПопросите администратора пополнить баланс офиса или обменяйте на {currency} у партнёра."
+  "lowBalanceHas": "В офисе есть:",
+  "lowBalanceToPay": "Нужно выплатить:",
+  "lowBalanceMissing": "Не хватает:",
+  "lowBalancePartnerHint": "Уточните у партнёра, можно ли обменять на {currency}."
 }

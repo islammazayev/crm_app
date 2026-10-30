@@ -2182,12 +2182,16 @@ class AppLocalizationsTr extends AppLocalizations {
   }
 
   @override
-  String lowBalanceBody(
-    Object available,
-    Object currency,
-    Object needed,
-    Object missing,
-  ) {
-    return 'Ofiste $available $currency var ama ödeme için $needed $currency gerekiyor. $missing $currency eksik.\n\nYöneticiden ofis bakiyesini doldurmasını isteyin veya bir ortakla $currency bozdurun.';
+  String get lowBalanceHas => 'Ofiste olan:';
+
+  @override
+  String get lowBalanceToPay => 'Ödenecek:';
+
+  @override
+  String get lowBalanceMissing => 'Eksik:';
+
+  @override
+  String lowBalancePartnerHint(Object currency) {
+    return 'Bir ortakla $currency bozdurup bozduramayacağınızı kontrol edin.';
   }
 }

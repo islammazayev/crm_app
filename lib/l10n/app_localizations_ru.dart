@@ -2200,12 +2200,16 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
-  String lowBalanceBody(
-    Object available,
-    Object currency,
-    Object needed,
-    Object missing,
-  ) {
-    return 'В офисе $available $currency, а для выплаты нужно $needed $currency. Не хватает $missing $currency.\n\nПопросите администратора пополнить баланс офиса или обменяйте на $currency у партнёра.';
+  String get lowBalanceHas => 'В офисе есть:';
+
+  @override
+  String get lowBalanceToPay => 'Нужно выплатить:';
+
+  @override
+  String get lowBalanceMissing => 'Не хватает:';
+
+  @override
+  String lowBalancePartnerHint(Object currency) {
+    return 'Уточните у партнёра, можно ли обменять на $currency.';
   }
 }

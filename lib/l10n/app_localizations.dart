@@ -3714,16 +3714,29 @@ abstract class AppLocalizations {
   /// **'Inte tillräckligt med {currency}'**
   String lowBalanceTitle(Object currency);
 
-  /// No description provided for @lowBalanceBody.
+  /// No description provided for @lowBalanceHas.
   ///
   /// In sv, this message translates to:
-  /// **'Kontoret har {available} {currency} men behöver {needed} {currency} för att betala ut. Det saknas {missing} {currency}.\n\nBe admin fylla på kontorets saldo, eller växla till dig {currency} med en partner.'**
-  String lowBalanceBody(
-    Object available,
-    Object currency,
-    Object needed,
-    Object missing,
-  );
+  /// **'Kontoret har:'**
+  String get lowBalanceHas;
+
+  /// No description provided for @lowBalanceToPay.
+  ///
+  /// In sv, this message translates to:
+  /// **'Ska betalas ut:'**
+  String get lowBalanceToPay;
+
+  /// No description provided for @lowBalanceMissing.
+  ///
+  /// In sv, this message translates to:
+  /// **'Saknas:'**
+  String get lowBalanceMissing;
+
+  /// No description provided for @lowBalancePartnerHint.
+  ///
+  /// In sv, this message translates to:
+  /// **'Kolla med en partner om du kan växla till dig {currency}.'**
+  String lowBalancePartnerHint(Object currency);
 }
 
 class _AppLocalizationsDelegate

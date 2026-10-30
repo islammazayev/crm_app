@@ -2192,12 +2192,16 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String lowBalanceBody(
-    Object available,
-    Object currency,
-    Object needed,
-    Object missing,
-  ) {
-    return 'The office has $available $currency but needs $needed $currency to pay out. $missing $currency is missing.\n\nAsk the admin to top up the office balance, or exchange for $currency with a partner.';
+  String get lowBalanceHas => 'The office has:';
+
+  @override
+  String get lowBalanceToPay => 'To pay out:';
+
+  @override
+  String get lowBalanceMissing => 'Missing:';
+
+  @override
+  String lowBalancePartnerHint(Object currency) {
+    return 'Check with a partner whether you can exchange for $currency.';
   }
 }
