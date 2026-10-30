@@ -2169,4 +2169,10 @@ class AppLocalizationsTr extends AppLocalizations {
   String customerPaysCashAmount(Object amount, Object currency) {
     return 'Müşteri $amount $currency öder';
   }
+
+  @override
+  String get pickUpAtOfficeTitle => 'Parayı buradan alırsınız';
+
+  @override
+  String get youPayCashAtOffice => 'Ofiste nakit ödüyorsunuz';
 }

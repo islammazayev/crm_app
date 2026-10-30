@@ -2184,4 +2184,10 @@ class AppLocalizationsSv extends AppLocalizations {
   String customerPaysCashAmount(Object amount, Object currency) {
     return 'Kunden betalar $amount $currency';
   }
+
+  @override
+  String get pickUpAtOfficeTitle => 'Här hämtar du ut pengarna';
+
+  @override
+  String get youPayCashAtOffice => 'Du betalar kontant på kontoret';
 }

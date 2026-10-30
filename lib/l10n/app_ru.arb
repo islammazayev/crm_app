@@ -597,5 +597,7 @@
   "cashPaymentsSubtitle": "Клиенты, которые будут платить наличными в офисе.",
   "noCashPaymentsWaiting": "Сейчас нет ожидающих оплат наличными.",
   "confirmCashReceived": "Вы получили {amount} наличными от {name}? Тогда клиент получит код выдачи.",
-  "customerPaysCashAmount": "Клиент платит {amount} {currency}"
+  "customerPaysCashAmount": "Клиент платит {amount} {currency}",
+  "pickUpAtOfficeTitle": "Здесь вы получите деньги",
+  "youPayCashAtOffice": "Вы платите наличными в офисе"
 }

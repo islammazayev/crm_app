@@ -2179,4 +2179,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String customerPaysCashAmount(Object amount, Object currency) {
     return 'The customer pays $amount $currency';
   }
+
+  @override
+  String get pickUpAtOfficeTitle => 'Pick up the money here';
+
+  @override
+  String get youPayCashAtOffice => 'You pay cash at the office';
 }

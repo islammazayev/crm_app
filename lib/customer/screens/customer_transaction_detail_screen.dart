@@ -156,6 +156,20 @@ class CustomerTransactionDetailScreen extends StatelessWidget {
                       ),
                       // Kontant: kunden går till kontoret och betalar där;
                       // managern eller kassören bekräftar inbetalningen.
+                      // Kontant: adressen syns redan innan kunden har
+                      // accepterat, så att kunden vet vart hen ska.
+                      if (payMethodOf(data) == PayMethod.cash &&
+                          const [
+                            'customer_requested',
+                            'manager_proposed',
+                            'customer_countered',
+                          ].contains(status)) ...[
+                        const SizedBox(height: 16),
+                        OfficeAddressCard(
+                          officeId: '${data['officeId'] ?? ''}',
+                          title: l10n.youPayCashAtOffice,
+                        ),
+                      ],
                       if (payMethodOf(data) == PayMethod.cash &&
                           status == 'customer_accepted') ...[
                         const SizedBox(height: 16),
@@ -261,6 +275,12 @@ class CustomerTransactionDetailScreen extends StatelessWidget {
                                 ),
                           amount: _num(data['amountToNet']).toStringAsFixed(2),
                           currency: toCurrency,
+                        ),
+                        // Var kunden hämtar ut pengarna.
+                        const SizedBox(height: 12),
+                        OfficeAddressCard(
+                          officeId: '${data['officeId'] ?? ''}',
+                          title: l10n.pickUpAtOfficeTitle,
                         ),
                       ],
 

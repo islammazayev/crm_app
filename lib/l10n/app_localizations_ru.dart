@@ -2187,4 +2187,10 @@ class AppLocalizationsRu extends AppLocalizations {
   String customerPaysCashAmount(Object amount, Object currency) {
     return 'Клиент платит $amount $currency';
   }
+
+  @override
+  String get pickUpAtOfficeTitle => 'Здесь вы получите деньги';
+
+  @override
+  String get youPayCashAtOffice => 'Вы платите наличными в офисе';
 }

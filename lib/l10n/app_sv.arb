@@ -1581,5 +1581,7 @@
         "type": "Object"
       }
     }
-  }
+  },
+  "pickUpAtOfficeTitle": "Här hämtar du ut pengarna",
+  "youPayCashAtOffice": "Du betalar kontant på kontoret"
 }

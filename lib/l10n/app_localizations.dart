@@ -3695,6 +3695,18 @@ abstract class AppLocalizations {
   /// In sv, this message translates to:
   /// **'Kunden betalar {amount} {currency}'**
   String customerPaysCashAmount(Object amount, Object currency);
+
+  /// No description provided for @pickUpAtOfficeTitle.
+  ///
+  /// In sv, this message translates to:
+  /// **'Här hämtar du ut pengarna'**
+  String get pickUpAtOfficeTitle;
+
+  /// No description provided for @youPayCashAtOffice.
+  ///
+  /// In sv, this message translates to:
+  /// **'Du betalar kontant på kontoret'**
+  String get youPayCashAtOffice;
 }
 
 class _AppLocalizationsDelegate
