@@ -2190,4 +2190,19 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String get youPayCashAtOffice => 'Du betalar kontant på kontoret';
+
+  @override
+  String lowBalanceTitle(Object currency) {
+    return 'Inte tillräckligt med $currency';
+  }
+
+  @override
+  String lowBalanceBody(
+    Object available,
+    Object currency,
+    Object needed,
+    Object missing,
+  ) {
+    return 'Kontoret har $available $currency men behöver $needed $currency för att betala ut. Det saknas $missing $currency.\n\nBe admin fylla på kontorets saldo, eller växla till dig $currency med en partner.';
+  }
 }

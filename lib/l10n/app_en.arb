@@ -599,5 +599,7 @@
   "confirmCashReceived": "Have you received {amount} in cash from {name}? The customer then gets their pickup code.",
   "customerPaysCashAmount": "The customer pays {amount} {currency}",
   "pickUpAtOfficeTitle": "Office address",
-  "youPayCashAtOffice": "You pay cash at the office"
+  "youPayCashAtOffice": "You pay cash at the office",
+  "lowBalanceTitle": "Not enough {currency}",
+  "lowBalanceBody": "The office has {available} {currency} but needs {needed} {currency} to pay out. {missing} {currency} is missing.\n\nAsk the admin to top up the office balance, or exchange for {currency} with a partner."
 }

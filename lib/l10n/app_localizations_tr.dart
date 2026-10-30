@@ -2175,4 +2175,19 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get youPayCashAtOffice => 'Ofiste nakit ödüyorsunuz';
+
+  @override
+  String lowBalanceTitle(Object currency) {
+    return 'Yeterli $currency yok';
+  }
+
+  @override
+  String lowBalanceBody(
+    Object available,
+    Object currency,
+    Object needed,
+    Object missing,
+  ) {
+    return 'Ofiste $available $currency var ama ödeme için $needed $currency gerekiyor. $missing $currency eksik.\n\nYöneticiden ofis bakiyesini doldurmasını isteyin veya bir ortakla $currency bozdurun.';
+  }
 }

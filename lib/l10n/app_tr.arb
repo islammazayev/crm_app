@@ -599,5 +599,7 @@
   "confirmCashReceived": "{name} kişisinden {amount} nakit aldınız mı? Müşteri ardından teslim kodunu alır.",
   "customerPaysCashAmount": "Müşteri {amount} {currency} öder",
   "pickUpAtOfficeTitle": "Ofis adresi",
-  "youPayCashAtOffice": "Ofiste nakit ödüyorsunuz"
+  "youPayCashAtOffice": "Ofiste nakit ödüyorsunuz",
+  "lowBalanceTitle": "Yeterli {currency} yok",
+  "lowBalanceBody": "Ofiste {available} {currency} var ama ödeme için {needed} {currency} gerekiyor. {missing} {currency} eksik.\n\nYöneticiden ofis bakiyesini doldurmasını isteyin veya bir ortakla {currency} bozdurun."
 }

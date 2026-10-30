@@ -3707,6 +3707,23 @@ abstract class AppLocalizations {
   /// In sv, this message translates to:
   /// **'Du betalar kontant på kontoret'**
   String get youPayCashAtOffice;
+
+  /// No description provided for @lowBalanceTitle.
+  ///
+  /// In sv, this message translates to:
+  /// **'Inte tillräckligt med {currency}'**
+  String lowBalanceTitle(Object currency);
+
+  /// No description provided for @lowBalanceBody.
+  ///
+  /// In sv, this message translates to:
+  /// **'Kontoret har {available} {currency} men behöver {needed} {currency} för att betala ut. Det saknas {missing} {currency}.\n\nBe admin fylla på kontorets saldo, eller växla till dig {currency} med en partner.'**
+  String lowBalanceBody(
+    Object available,
+    Object currency,
+    Object needed,
+    Object missing,
+  );
 }
 
 class _AppLocalizationsDelegate

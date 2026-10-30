@@ -1583,5 +1583,30 @@
     }
   },
   "pickUpAtOfficeTitle": "Kontorets adress",
-  "youPayCashAtOffice": "Du betalar kontant på kontoret"
+  "youPayCashAtOffice": "Du betalar kontant på kontoret",
+  "lowBalanceTitle": "Inte tillräckligt med {currency}",
+  "@lowBalanceTitle": {
+    "placeholders": {
+      "currency": {
+        "type": "Object"
+      }
+    }
+  },
+  "lowBalanceBody": "Kontoret har {available} {currency} men behöver {needed} {currency} för att betala ut. Det saknas {missing} {currency}.\n\nBe admin fylla på kontorets saldo, eller växla till dig {currency} med en partner.",
+  "@lowBalanceBody": {
+    "placeholders": {
+      "available": {
+        "type": "Object"
+      },
+      "currency": {
+        "type": "Object"
+      },
+      "needed": {
+        "type": "Object"
+      },
+      "missing": {
+        "type": "Object"
+      }
+    }
+  }
 }

@@ -2185,4 +2185,19 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get youPayCashAtOffice => 'You pay cash at the office';
+
+  @override
+  String lowBalanceTitle(Object currency) {
+    return 'Not enough $currency';
+  }
+
+  @override
+  String lowBalanceBody(
+    Object available,
+    Object currency,
+    Object needed,
+    Object missing,
+  ) {
+    return 'The office has $available $currency but needs $needed $currency to pay out. $missing $currency is missing.\n\nAsk the admin to top up the office balance, or exchange for $currency with a partner.';
+  }
 }

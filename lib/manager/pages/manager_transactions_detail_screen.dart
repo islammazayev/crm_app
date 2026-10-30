@@ -15,6 +15,7 @@ import '../../widgets/receipt_button.dart';
 import '../../services/exchange_rate_service.dart';
 import '../../utils/transaction_kind.dart';
 import '../../utils/transaction_no.dart';
+import '../../theme/app_theme.dart';
 import '../../utils/balances.dart';
 
 class ManagerTransactionDetailScreen extends StatefulWidget {
@@ -404,13 +405,15 @@ class _ManagerTransactionDetailScreenState
       );
       final available = balances[toCurrency] ?? 0;
       if (available < amountToNet) {
-        throw Exception(
-          l10n.insufficientBalance(
-            toCurrency,
-            available.toStringAsFixed(2),
-            amountToNet.toStringAsFixed(2),
-          ),
-        );
+        // Visas som en tydlig ruta mitt på skärmen, inte som ett fel.
+        if (mounted) {
+          await _showLowBalance(
+            currency: toCurrency,
+            available: available,
+            needed: amountToNet,
+          );
+        }
+        return;
       }
 
       final batch = db.batch();
@@ -441,6 +444,41 @@ class _ManagerTransactionDetailScreenState
     } finally {
       if (mounted) setState(() => _busy = false);
     }
+  }
+
+  /// Kontoret har inte tillräckligt i valutan som ska betalas ut.
+  Future<void> _showLowBalance({
+    required String currency,
+    required double available,
+    required double needed,
+  }) {
+    final l10n = context.l10n;
+    return showDialog<void>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        icon: const Icon(
+          Icons.account_balance_wallet_outlined,
+          color: AppColors.warning,
+          size: 40,
+        ),
+        title: Text(l10n.lowBalanceTitle(currency)),
+        content: Text(
+          l10n.lowBalanceBody(
+            available.toStringAsFixed(2),
+            needed.toStringAsFixed(2),
+            currency,
+            (needed - available).toStringAsFixed(2),
+          ),
+          textAlign: TextAlign.center,
+        ),
+        actions: [
+          ElevatedButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: Text(l10n.ok),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
