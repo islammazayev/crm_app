@@ -598,6 +598,6 @@
   "noCashPaymentsWaiting": "Şu anda bekleyen nakit ödeme yok.",
   "confirmCashReceived": "{name} kişisinden {amount} nakit aldınız mı? Müşteri ardından teslim kodunu alır.",
   "customerPaysCashAmount": "Müşteri {amount} {currency} öder",
-  "pickUpAtOfficeTitle": "Parayı buradan alırsınız",
+  "pickUpAtOfficeTitle": "Ofis adresi",
   "youPayCashAtOffice": "Ofiste nakit ödüyorsunuz"
 }

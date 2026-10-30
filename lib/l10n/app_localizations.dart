@@ -3699,7 +3699,7 @@ abstract class AppLocalizations {
   /// No description provided for @pickUpAtOfficeTitle.
   ///
   /// In sv, this message translates to:
-  /// **'Här hämtar du ut pengarna'**
+  /// **'Kontorets adress'**
   String get pickUpAtOfficeTitle;
 
   /// No description provided for @youPayCashAtOffice.

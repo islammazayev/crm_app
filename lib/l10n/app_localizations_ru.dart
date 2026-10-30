@@ -2189,7 +2189,7 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
-  String get pickUpAtOfficeTitle => 'Здесь вы получите деньги';
+  String get pickUpAtOfficeTitle => 'Адрес офиса';
 
   @override
   String get youPayCashAtOffice => 'Вы платите наличными в офисе';

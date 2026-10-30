@@ -97,17 +97,39 @@ class OfficeAddressCard extends StatelessWidget {
         final address = '${d['address'] ?? ''}'.trim();
         final mapUrl = '${d['mapUrl'] ?? ''}'.trim();
         return Card(
-          child: Padding(
-            padding: const EdgeInsets.all(12),
+          margin: EdgeInsets.zero,
+          child: Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(14),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  title,
-                  style: const TextStyle(fontWeight: FontWeight.bold),
+                // Liten informationsrad, inte en rubrik.
+                Row(
+                  children: [
+                    const Icon(
+                      Icons.place_outlined,
+                      size: 16,
+                      color: AppColors.textMuted,
+                    ),
+                    const SizedBox(width: 6),
+                    Expanded(
+                      child: Text(
+                        title,
+                        style: const TextStyle(
+                          color: AppColors.textMuted,
+                          fontSize: 13,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
-                const SizedBox(height: 6),
-                if (place.isNotEmpty) Text(place),
+                const SizedBox(height: 8),
+                if (place.isNotEmpty)
+                  Text(
+                    place,
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
                 SelectableText(
                   address.isEmpty ? l10n.officeAddressMissing : address,
                 ),

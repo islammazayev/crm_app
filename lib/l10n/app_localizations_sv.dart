@@ -2186,7 +2186,7 @@ class AppLocalizationsSv extends AppLocalizations {
   }
 
   @override
-  String get pickUpAtOfficeTitle => 'Här hämtar du ut pengarna';
+  String get pickUpAtOfficeTitle => 'Kontorets adress';
 
   @override
   String get youPayCashAtOffice => 'Du betalar kontant på kontoret';

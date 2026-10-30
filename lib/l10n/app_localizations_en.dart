@@ -2181,7 +2181,7 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get pickUpAtOfficeTitle => 'Pick up the money here';
+  String get pickUpAtOfficeTitle => 'Office address';
 
   @override
   String get youPayCashAtOffice => 'You pay cash at the office';

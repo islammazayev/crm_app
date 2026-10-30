@@ -598,6 +598,6 @@
   "noCashPaymentsWaiting": "Сейчас нет ожидающих оплат наличными.",
   "confirmCashReceived": "Вы получили {amount} наличными от {name}? Тогда клиент получит код выдачи.",
   "customerPaysCashAmount": "Клиент платит {amount} {currency}",
-  "pickUpAtOfficeTitle": "Здесь вы получите деньги",
+  "pickUpAtOfficeTitle": "Адрес офиса",
   "youPayCashAtOffice": "Вы платите наличными в офисе"
 }

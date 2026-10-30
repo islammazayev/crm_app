@@ -2171,7 +2171,7 @@ class AppLocalizationsTr extends AppLocalizations {
   }
 
   @override
-  String get pickUpAtOfficeTitle => 'Parayı buradan alırsınız';
+  String get pickUpAtOfficeTitle => 'Ofis adresi';
 
   @override
   String get youPayCashAtOffice => 'Ofiste nakit ödüyorsunuz';

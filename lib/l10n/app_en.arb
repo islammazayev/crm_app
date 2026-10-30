@@ -598,6 +598,6 @@
   "noCashPaymentsWaiting": "No cash payments are waiting right now.",
   "confirmCashReceived": "Have you received {amount} in cash from {name}? The customer then gets their pickup code.",
   "customerPaysCashAmount": "The customer pays {amount} {currency}",
-  "pickUpAtOfficeTitle": "Pick up the money here",
+  "pickUpAtOfficeTitle": "Office address",
   "youPayCashAtOffice": "You pay cash at the office"
 }
