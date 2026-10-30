@@ -119,7 +119,8 @@ describe('olästa', () => {
     await assertFails(updateDoc(doc(as('K'), 'chats', 'tx_t1'), { officeIds: ['O2'] }));
   });
 
-  test('en chatt som inte finns kan kollas', async () => {
+  test('en chatt som inte finns kan kollas och visas tom', async () => {
     await assertSucceeds(getDoc(doc(as('M'), 'chats', 'tx_t1')));
+    await assertSucceeds(getDocs(collection(as('M'), 'chats', 'tx_t1', 'messages')));
   });
 });

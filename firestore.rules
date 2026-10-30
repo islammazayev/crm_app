@@ -1059,8 +1059,11 @@ service cloud.firestore {
              .hasOnly([request.auth.uid]);
 
       match /messages/{messageId} {
+        // Finns chatten inte än finns det inga meddelanden; listan får då
+        // läsas (den är tom), så att chatten öppnas utan fel.
         allow read: if isSignedIn()
-          && isChatMember(get(/databases/$(database)/documents/chats/$(chatId)).data);
+          && (!exists(/databases/$(database)/documents/chats/$(chatId))
+              || isChatMember(get(/databases/$(database)/documents/chats/$(chatId)).data));
         allow delete: if isAdmin();
 
         allow create: if isSignedIn()
