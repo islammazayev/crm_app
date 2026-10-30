@@ -1830,7 +1830,7 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get balancesCardSubtitle =>
-      'Ofisin ve kasiyerlerin bakiyeleri, ayrı ayrı.';
+      'Ofisin ve kasiyerlerin bakiyeleri, toplam ve ayrı ayrı.';
 
   @override
   String get noBalance => 'Bakiye yok.';
@@ -2085,4 +2085,10 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get partnerReceipt => 'Ortak makbuzu';
+
+  @override
+  String get totalBalanceTitle => 'Toplam bakiye';
+
+  @override
+  String get totalBalanceSubtitle => 'Ofis + kasiyerler (ortaklar hariç)';
 }

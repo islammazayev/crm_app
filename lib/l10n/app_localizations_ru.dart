@@ -1845,7 +1845,8 @@ class AppLocalizationsRu extends AppLocalizations {
   String get cashierBalancesTitle => 'Балансы кассиров';
 
   @override
-  String get balancesCardSubtitle => 'Баланс офиса и кассиров, отдельно.';
+  String get balancesCardSubtitle =>
+      'Баланс офиса и кассиров, общий и по отдельности.';
 
   @override
   String get noBalance => 'Нет баланса.';
@@ -2100,4 +2101,10 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get partnerReceipt => 'Квитанция партнёра';
+
+  @override
+  String get totalBalanceTitle => 'Общий баланс';
+
+  @override
+  String get totalBalanceSubtitle => 'Офис + кассиры (без партнёров)';
 }

@@ -1837,7 +1837,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get balancesCardSubtitle =>
-      'The office\'s and the cashiers\' balances, separately.';
+      'The office\'s and the cashiers\' balances, in total and separately.';
 
   @override
   String get noBalance => 'No balance.';
@@ -2093,4 +2093,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get partnerReceipt => 'Partner receipt';
+
+  @override
+  String get totalBalanceTitle => 'Total balance';
+
+  @override
+  String get totalBalanceSubtitle => 'Office + cashiers (excluding partners)';
 }

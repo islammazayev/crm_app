@@ -500,7 +500,7 @@
   "balancesTitle": "Bakiye",
   "officeBalanceTitle": "Ofis bakiyesi",
   "cashierBalancesTitle": "Kasiyer bakiyeleri",
-  "balancesCardSubtitle": "Ofisin ve kasiyerlerin bakiyeleri, ayrı ayrı.",
+  "balancesCardSubtitle": "Ofisin ve kasiyerlerin bakiyeleri, toplam ve ayrı ayrı.",
   "noBalance": "Bakiye yok.",
   "sellCardSubtitle": "Döviz satın, parayı nakit veya bankanıza alın.",
   "currencyToSell": "Satmak istediğiniz döviz",
@@ -573,5 +573,7 @@
   "alreadyHaveAccountLogin": "Zaten hesabınız var mı? Giriş yapın",
   "attachReceiptOptional": "Makbuz ekle (isteğe bağlı)",
   "officeReceipt": "Ofis makbuzu",
-  "partnerReceipt": "Ortak makbuzu"
+  "partnerReceipt": "Ortak makbuzu",
+  "totalBalanceTitle": "Toplam bakiye",
+  "totalBalanceSubtitle": "Ofis + kasiyerler (ortaklar hariç)"
 }

@@ -500,7 +500,7 @@
   "balancesTitle": "Balance",
   "officeBalanceTitle": "Office balance",
   "cashierBalancesTitle": "Cashier balances",
-  "balancesCardSubtitle": "The office's and the cashiers' balances, separately.",
+  "balancesCardSubtitle": "The office's and the cashiers' balances, in total and separately.",
   "noBalance": "No balance.",
   "sellCardSubtitle": "Sell currency and get the money in cash or to your bank.",
   "currencyToSell": "Currency you want to sell",
@@ -573,5 +573,7 @@
   "alreadyHaveAccountLogin": "Already have an account? Log in",
   "attachReceiptOptional": "Attach receipt (optional)",
   "officeReceipt": "Office receipt",
-  "partnerReceipt": "Partner receipt"
+  "partnerReceipt": "Partner receipt",
+  "totalBalanceTitle": "Total balance",
+  "totalBalanceSubtitle": "Office + cashiers (excluding partners)"
 }

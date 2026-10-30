@@ -500,7 +500,7 @@
   "balancesTitle": "Баланс",
   "officeBalanceTitle": "Баланс офиса",
   "cashierBalancesTitle": "Балансы кассиров",
-  "balancesCardSubtitle": "Баланс офиса и кассиров, отдельно.",
+  "balancesCardSubtitle": "Баланс офиса и кассиров, общий и по отдельности.",
   "noBalance": "Нет баланса.",
   "sellCardSubtitle": "Продайте валюту и получите деньги наличными или на банк.",
   "currencyToSell": "Валюта, которую вы продаёте",
@@ -573,5 +573,7 @@
   "alreadyHaveAccountLogin": "Уже есть аккаунт? Войти",
   "attachReceiptOptional": "Прикрепить квитанцию (необязательно)",
   "officeReceipt": "Квитанция офиса",
-  "partnerReceipt": "Квитанция партнёра"
+  "partnerReceipt": "Квитанция партнёра",
+  "totalBalanceTitle": "Общий баланс",
+  "totalBalanceSubtitle": "Офис + кассиры (без партнёров)"
 }

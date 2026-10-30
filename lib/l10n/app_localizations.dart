@@ -3111,7 +3111,7 @@ abstract class AppLocalizations {
   /// No description provided for @balancesCardSubtitle.
   ///
   /// In sv, this message translates to:
-  /// **'Kontorets och kassörernas saldo, var för sig.'**
+  /// **'Kontorets och kassörernas saldo, totalt och var för sig.'**
   String get balancesCardSubtitle;
 
   /// No description provided for @noBalance.
@@ -3551,6 +3551,18 @@ abstract class AppLocalizations {
   /// In sv, this message translates to:
   /// **'Partnerns kvitto'**
   String get partnerReceipt;
+
+  /// No description provided for @totalBalanceTitle.
+  ///
+  /// In sv, this message translates to:
+  /// **'Totalt saldo'**
+  String get totalBalanceTitle;
+
+  /// No description provided for @totalBalanceSubtitle.
+  ///
+  /// In sv, this message translates to:
+  /// **'Kontoret + kassörer (utan partner)'**
+  String get totalBalanceSubtitle;
 }
 
 class _AppLocalizationsDelegate

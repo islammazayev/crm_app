@@ -1841,7 +1841,7 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String get balancesCardSubtitle =>
-      'Kontorets och kassörernas saldo, var för sig.';
+      'Kontorets och kassörernas saldo, totalt och var för sig.';
 
   @override
   String get noBalance => 'Inget saldo.';
@@ -2096,4 +2096,10 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String get partnerReceipt => 'Partnerns kvitto';
+
+  @override
+  String get totalBalanceTitle => 'Totalt saldo';
+
+  @override
+  String get totalBalanceSubtitle => 'Kontoret + kassörer (utan partner)';
 }

@@ -1355,7 +1355,7 @@
   "balancesTitle": "Saldo",
   "officeBalanceTitle": "Kontorets saldo",
   "cashierBalancesTitle": "Kassörernas saldo",
-  "balancesCardSubtitle": "Kontorets och kassörernas saldo, var för sig.",
+  "balancesCardSubtitle": "Kontorets och kassörernas saldo, totalt och var för sig.",
   "noBalance": "Inget saldo.",
   "sellCardSubtitle": "Sälj valuta och få pengarna kontant eller till din bank.",
   "currencyToSell": "Valuta du vill sälja",
@@ -1527,5 +1527,7 @@
   "alreadyHaveAccountLogin": "Har du redan ett konto? Logga in",
   "attachReceiptOptional": "Bifoga kvitto (valfritt)",
   "officeReceipt": "Kontorets kvitto",
-  "partnerReceipt": "Partnerns kvitto"
+  "partnerReceipt": "Partnerns kvitto",
+  "totalBalanceTitle": "Totalt saldo",
+  "totalBalanceSubtitle": "Kontoret + kassörer (utan partner)"
 }
