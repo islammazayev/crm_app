@@ -162,11 +162,15 @@ service cloud.firestore {
 
     // ─── CUSTOMERS ──────────────────────────────────────────────────
     match /customers/{docId} {
-      // Admin läser allt, kund läser bara sin egen post.
-      // Managers läser inte kunder: kundens namn och klient-ID sparas
-      // i själva transaktionen när kunden skickar sin förfrågan.
+      // Admin och managers läser alla kunder (managern väljer kund när hen
+      // skapar en transaktion på kontoret). Kunden läser sin egen post.
       allow read: if isAdmin()
+        || isManager()
         || (isSignedIn() && resource.data.userId == request.auth.uid);
+
+      // En inbjuden kund (länk via SMS) läser sin post med dokument-ID:t i
+      // länken, för att fylla i registreringen. ID:t går inte att gissa.
+      allow get: if resource.data.get('inviteCode', '') != '';
 
       allow write: if isAdmin();
 
@@ -182,6 +186,46 @@ service cloud.firestore {
         && getAfter(metaCustomersPath()).data.lastClientId == lastClientIdBefore() + 1
         && request.resource.data.clientId == getAfter(metaCustomersPath()).data.lastClientId;
 
+      // Inbjuden kund: skapar customers/{uid} med samma klient-ID och nivå
+      // som den inbjudna posten (koden i länken måste stämma) och tar bort
+      // den gamla posten i samma batch.
+      allow create: if isCustomer()
+        && docId == request.auth.uid
+        && request.resource.data.userId == request.auth.uid
+        && request.resource.data.keys().hasOnly([
+             'clientId', 'firstName', 'lastName', 'email', 'phone', 'userId',
+             'createAt', 'inviteDocId', 'inviteCode', 'tier', 'tierDiscount'
+           ])
+        && claimsInvite(request.resource.data);
+
+      allow delete: if isCustomer()
+        && resource.data.get('inviteCode', '') != ''
+        && !('userId' in resource.data)
+        && getAfter(/databases/$(database)/documents/customers/$(request.auth.uid))
+             .data.get('inviteDocId', '') == docId;
+
+      // Managern skapar en kund som vill bli kund (med inbjudan). Klient-ID:t
+      // kommer från räknaren, precis som vid registrering.
+      allow create: if isManager()
+        && request.resource.data.keys().hasOnly([
+             'clientId', 'firstName', 'lastName', 'phone', 'createAt',
+             'inviteCode', 'invitedAt', 'createdByManagerId'
+           ])
+        && request.resource.data.createdByManagerId == request.auth.uid
+        && request.resource.data.inviteCode is string
+        && request.resource.data.inviteCode.size() >= 24
+        && request.resource.data.clientId is int
+        && getAfter(metaCustomersPath()).data.lastClientId == lastClientIdBefore() + 1
+        && request.resource.data.clientId == getAfter(metaCustomersPath()).data.lastClientId;
+
+      // Managern bjuder in en befintlig kund som saknar konto.
+      allow update: if isManager()
+        && !('userId' in resource.data)
+        && request.resource.data.diff(resource.data).affectedKeys()
+             .hasOnly(['inviteCode', 'invitedAt'])
+        && request.resource.data.inviteCode is string
+        && request.resource.data.inviteCode.size() >= 24;
+
       // Kunden får ändra sina kontaktuppgifter men inte clientId/userId.
       allow update: if isCustomer()
         && resource.data.userId == request.auth.uid
@@ -189,19 +233,35 @@ service cloud.firestore {
              .hasAny(['clientId', 'userId', 'createAt', 'tier', 'tierDiscount']);
     }
 
+    // Den inbjudna posten: koden stämmer, ingen har tagit den än, och
+    // klient-ID och nivå följer med oförändrade.
+    function claimsInvite(d) {
+      let path = /databases/$(database)/documents/customers/$(d.get('inviteDocId', 'x'));
+      let invited = get(path).data;
+      return d.inviteDocId is string
+        && invited.get('inviteCode', '') != ''
+        && d.get('inviteCode', '') == invited.inviteCode
+        && !('userId' in invited)
+        && d.clientId == invited.clientId
+        && d.get('tier', null) == invited.get('tier', null)
+        && d.get('tierDiscount', null) == invited.get('tierDiscount', null)
+        && !existsAfter(path);
+    }
+
     // ─── META ───────────────────────────────────────────────────────
     match /meta/{docId} {
       allow read: if isSignedIn();
       allow write: if isAdmin();
 
-      // Kunder får bara räkna upp kundräknaren med exakt 1 (vid registrering).
+      // Kunder (vid registrering) och managers (ny kund på kontoret) får bara
+      // räkna upp kundräknaren med exakt 1.
       allow create: if docId == 'customers'
-        && isCustomer()
+        && (isCustomer() || isManager())
         && request.resource.data.keys().hasOnly(['lastClientId'])
         && request.resource.data.lastClientId == 1;
 
       allow update: if docId == 'customers'
-        && isCustomer()
+        && (isCustomer() || isManager())
         && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['lastClientId'])
         && request.resource.data.lastClientId == resource.data.get('lastClientId', 0) + 1;
 
@@ -417,11 +477,17 @@ service cloud.firestore {
                 && new.status == 'cancelled'
                 && changed.hasOnly(['status', 'decidedAt']))
             ))
-          // Accepterad: markera att de egna pengarna är skickade.
+          // Accepterad: markera att de egna pengarna är skickade, med ett
+          // valfritt kvitto i Storage under exchangeReceipts/{id}/{sida}/.
           || (old.status == 'accepted'
             && new.status == 'accepted'
             && new.get(side + 'Sent', false) == true
-            && changed.hasOnly([side + 'Sent', side + 'SentAt']))
+            && changed.hasOnly([side + 'Sent', side + 'SentAt',
+                                side + 'ReceiptPath', side + 'ReceiptName',
+                                side + 'ReceiptContentType'])
+            && (!(side + 'ReceiptPath' in new)
+                || new[side + 'ReceiptPath'].matches(
+                     'exchangeReceipts/' + eid + '/' + side + '/.+')))
           // Accepterad: markera att den andra sidans pengar har kommit. Den
           // som bekräftar sist gör växlingen genomförd och bokför båda
           // saldona i samma batch.
@@ -619,12 +685,56 @@ service cloud.firestore {
     }
 
     // ─── TRANSACTIONS ───────────────────────────────────────────────
+    // Kassörens kontor: det kopplade kontoret, annars den kopplade
+    // managerns kontor.
+    function cashierOfficeId() {
+      let c = get(cashierPath(request.auth.uid)).data;
+      return c.get('officeId', null) != null
+        ? c.officeId
+        : c.get('cashOfficeId', null) != null
+        ? c.cashOfficeId
+        : c.get('managerId', null) != null
+        ? get(/databases/$(database)/documents/users/$(c.managerId)).data.get('officeId', null)
+        : null;
+    }
+
     match /transactions/{docId} {
+      // Kassören ser kontorets transaktioner (för kontanta inbetalningar).
+      allow read: if isCashier()
+        && cashierOfficeId() != null
+        && resource.data.officeId == cashierOfficeId();
+
+      // Kassören bekräftar en kontant inbetalning på kontoret och skapar
+      // uthämtningskoden, precis som managern. Kontorets saldo bokförs
+      // först när transaktionen genomförs.
+      allow update: if isCashier()
+        && resource.data.get('payMethod', 'bank') == 'cash'
+        && resource.data.status == 'customer_accepted'
+        && cashierOfficeId() != null
+        && resource.data.officeId == cashierOfficeId()
+        && request.resource.data.status == 'payment_confirmed'
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+             'status', 'pickupCode', 'pickupToken', 'paymentConfirmedAt',
+             'paymentConfirmedBy'
+           ])
+        && request.resource.data.paymentConfirmedBy == request.auth.uid
+        && request.resource.data.pickupCode is string
+        && request.resource.data.pickupCode.matches('[0-9]{6}-[0-9]{4}-[0-9]{4}')
+        && request.resource.data.pickupToken is string
+        && request.resource.data.pickupToken.size() == 32;
+
       allow read: if isAdmin()
         || (isManager()
             && myOfficeId() != null
             && resource.data.officeId == myOfficeId())
-        || (isCustomer() && resource.data.customerId == request.auth.uid);
+        || (isCustomer() && resource.data.customerId == request.auth.uid)
+        // Transaktioner som managern skapat på kontoret för kunden (innan
+        // kunden hade konto) hittas via klient-ID:t.
+        || (isCustomer()
+            && resource.data.customerId == ''
+            && resource.data.get('clientId', '') != ''
+            && resource.data.clientId == string(get(
+                 /databases/$(database)/documents/customers/$(request.auth.uid)).data.clientId));
 
       // Kunden skickar en förfrågan. Kontoret måste finnas i officeListings
       // och hantera både från- och tillvaluta.
@@ -638,9 +748,11 @@ service cloud.firestore {
              'amountTo', 'feePercent', 'feeAmount', 'paymentMethod',
              'status', 'createAt', 'transactionNo',
              'customerTier', 'tierDiscount',
-             'kind', 'buyAmount', 'deliveryMethod'
+             'kind', 'buyAmount', 'deliveryMethod', 'payMethod'
            ])
         && hasValidTransactionNo()
+        // Kunden betalar kontant på kontoret eller via bank (som förut).
+        && request.resource.data.get('payMethod', 'bank') in ['cash', 'bank']
         && hasValidTierSnapshot()
         && hasValidAmounts(request.resource.data)
         && request.resource.data.officeId is string
@@ -667,9 +779,16 @@ service cloud.firestore {
              'fromCurrency', 'toCurrency', 'amountFrom', 'feePercent',
              'feeAmountFrom', 'rateFromTo', 'amountToGross', 'amountToNet',
              'feeAmountTo', 'status', 'createAt', 'createdByManager',
-             'transactionNo'
+             'transactionNo', 'clientId', 'customerDocId', 'payMethod'
            ])
+        && request.resource.data.get('payMethod', 'bank') in ['cash', 'bank']
         && hasValidTransactionNo()
+        // Vald kund ur kundregistret: klient-ID:t måste vara kundens.
+        && (!request.resource.data.keys().hasAny(['clientId', 'customerDocId'])
+            || (request.resource.data.clientId is string
+                && request.resource.data.customerDocId is string
+                && request.resource.data.clientId == string(getAfter(
+                     /databases/$(database)/documents/customers/$(request.resource.data.customerDocId)).data.clientId)))
         && request.resource.data.amountFrom is number
         && request.resource.data.amountFrom > 0
         && request.resource.data.amountToNet is number

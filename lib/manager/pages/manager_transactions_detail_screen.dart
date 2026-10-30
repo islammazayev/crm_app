@@ -9,11 +9,13 @@ import '../../utils/fee_calc.dart';
 import '../../utils/pickup_code.dart';
 import '../../utils/pickup_code_formatter.dart';
 import 'pickup_scanner_page.dart';
+import '../../widgets/pay_method.dart';
 import '../../widgets/rate_field.dart';
 import '../../widgets/receipt_button.dart';
 import '../../services/exchange_rate_service.dart';
 import '../../utils/transaction_kind.dart';
 import '../../utils/transaction_no.dart';
+import '../../theme/app_theme.dart';
 import '../../utils/balances.dart';
 
 class ManagerTransactionDetailScreen extends StatefulWidget {
@@ -403,13 +405,15 @@ class _ManagerTransactionDetailScreenState
       );
       final available = balances[toCurrency] ?? 0;
       if (available < amountToNet) {
-        throw Exception(
-          l10n.insufficientBalance(
-            toCurrency,
-            available.toStringAsFixed(2),
-            amountToNet.toStringAsFixed(2),
-          ),
-        );
+        // Visas som en tydlig ruta mitt på skärmen, inte som ett fel.
+        if (mounted) {
+          await _showLowBalance(
+            currency: toCurrency,
+            available: available,
+            needed: amountToNet,
+          );
+        }
+        return;
       }
 
       final batch = db.batch();
@@ -440,6 +444,70 @@ class _ManagerTransactionDetailScreenState
     } finally {
       if (mounted) setState(() => _busy = false);
     }
+  }
+
+  Widget _lowBalanceRow(String label, String value, {Color? color}) => Padding(
+    padding: const EdgeInsets.symmetric(vertical: 4),
+    child: Row(
+      children: [
+        Expanded(child: Text(label)),
+        Text(
+          value,
+          style: TextStyle(fontWeight: FontWeight.w700, color: color),
+        ),
+      ],
+    ),
+  );
+
+  /// Kontoret har inte tillräckligt i valutan som ska betalas ut.
+  Future<void> _showLowBalance({
+    required String currency,
+    required double available,
+    required double needed,
+  }) {
+    final l10n = context.l10n;
+    return showDialog<void>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        icon: const Icon(
+          Icons.account_balance_wallet_outlined,
+          color: AppColors.warning,
+          size: 40,
+        ),
+        title: Text(l10n.lowBalanceTitle(currency)),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            _lowBalanceRow(
+              l10n.lowBalanceHas,
+              '${available.toStringAsFixed(2)} $currency',
+            ),
+            _lowBalanceRow(
+              l10n.lowBalanceToPay,
+              '${needed.toStringAsFixed(2)} $currency',
+            ),
+            const Divider(height: 20),
+            _lowBalanceRow(
+              l10n.lowBalanceMissing,
+              '${(needed - available).toStringAsFixed(2)} $currency',
+              color: Colors.red,
+            ),
+            const SizedBox(height: 16),
+            Text(
+              l10n.lowBalancePartnerHint(currency),
+              textAlign: TextAlign.center,
+              style: const TextStyle(color: AppColors.textMuted),
+            ),
+          ],
+        ),
+        actions: [
+          ElevatedButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: Text(l10n.ok),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -483,6 +551,8 @@ class _ManagerTransactionDetailScreenState
           final String paymentLabel = (data['paymentMethodLabel'] ?? '')
               .toString();
           final bool paymentSent = paymentLabel.isNotEmpty;
+          // Kontant: kunden betalar på kontoret, inga betalningsuppgifter.
+          final bool payCash = payMethodOf(data) == PayMethod.cash;
 
           if (_selectedMethodId == null && chosenPaymentMethodId != null) {
             _selectedMethodId = chosenPaymentMethodId;
@@ -815,7 +885,23 @@ class _ManagerTransactionDetailScreenState
                         Text(l10n.paymentMethodValue(paymentLabel)),
                       ],
 
-                      if (status == 'customer_accepted' && officeId.isNotEmpty)
+                      if (payCash &&
+                          const [
+                            'customer_requested',
+                            'manager_proposed',
+                            'customer_countered',
+                            'customer_accepted',
+                          ].contains(status)) ...[
+                        const SizedBox(height: 12),
+                        Text(
+                          l10n.customerPaysCashAtOffice,
+                          style: const TextStyle(fontWeight: FontWeight.w600),
+                        ),
+                      ],
+
+                      if (status == 'customer_accepted' &&
+                          officeId.isNotEmpty &&
+                          !payCash)
                         FutureBuilder<DocumentSnapshot>(
                           future: FirebaseFirestore.instance
                               .collection('offices')
@@ -1222,7 +1308,25 @@ class _ManagerTransactionDetailScreenState
                         ],
                       ],
 
-                      if (status == 'customer_accepted')
+                      // Kontant: bekräfta när kunden har lämnat pengarna.
+                      if (status == 'customer_accepted' && payCash)
+                        SafeArea(
+                          top: false,
+                          child: SizedBox(
+                            width: double.infinity,
+                            child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.green,
+                              ),
+                              onPressed: _busy
+                                  ? null
+                                  : () => _confirmPayment(txRef),
+                              child: Text(l10n.cashPaymentReceived),
+                            ),
+                          ),
+                        ),
+
+                      if (status == 'customer_accepted' && !payCash)
                         SafeArea(
                           top: false,
                           child: Column(

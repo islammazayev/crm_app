@@ -3111,7 +3111,7 @@ abstract class AppLocalizations {
   /// No description provided for @balancesCardSubtitle.
   ///
   /// In sv, this message translates to:
-  /// **'Kontorets och kassörernas saldo, var för sig.'**
+  /// **'Kontorets och kassörernas saldo, totalt och var för sig.'**
   String get balancesCardSubtitle;
 
   /// No description provided for @noBalance.
@@ -3455,6 +3455,288 @@ abstract class AppLocalizations {
   /// In sv, this message translates to:
   /// **'Skicka förslag'**
   String get sendProposal;
+
+  /// No description provided for @searchExistingCustomer.
+  ///
+  /// In sv, this message translates to:
+  /// **'Sök befintlig kund'**
+  String get searchExistingCustomer;
+
+  /// No description provided for @noCustomerFoundNew.
+  ///
+  /// In sv, this message translates to:
+  /// **'Ingen kund hittades. Skriv in en ny kund nedan.'**
+  String get noCustomerFoundNew;
+
+  /// No description provided for @orNewCustomer.
+  ///
+  /// In sv, this message translates to:
+  /// **'Eller ny kund:'**
+  String get orNewCustomer;
+
+  /// No description provided for @hasAppAccount.
+  ///
+  /// In sv, this message translates to:
+  /// **'Har konto i appen'**
+  String get hasAppAccount;
+
+  /// No description provided for @noAppAccount.
+  ///
+  /// In sv, this message translates to:
+  /// **'Inget konto i appen'**
+  String get noAppAccount;
+
+  /// No description provided for @changeCustomer.
+  ///
+  /// In sv, this message translates to:
+  /// **'Byt'**
+  String get changeCustomer;
+
+  /// No description provided for @inviteCustomerQuestion.
+  ///
+  /// In sv, this message translates to:
+  /// **'Vill kunden bli kund hos oss?'**
+  String get inviteCustomerQuestion;
+
+  /// No description provided for @inviteCustomerHint.
+  ///
+  /// In sv, this message translates to:
+  /// **'Kunden sparas i kundregistret och får en länk via SMS för att skapa konto i appen.'**
+  String get inviteCustomerHint;
+
+  /// No description provided for @invitePhoneRequired.
+  ///
+  /// In sv, this message translates to:
+  /// **'Skriv kundens telefonnummer för att kunna skicka länken.'**
+  String get invitePhoneRequired;
+
+  /// No description provided for @inviteSmsText.
+  ///
+  /// In sv, this message translates to:
+  /// **'Hej {name}! Välkommen som kund hos oss. Skapa ditt konto här: {link}'**
+  String inviteSmsText(Object name, Object link);
+
+  /// No description provided for @inviteWelcome.
+  ///
+  /// In sv, this message translates to:
+  /// **'Välkommen! Du är redan kund hos oss med klient-ID {clientId}. Skapa ditt konto nedan, så ser du dina transaktioner i appen.'**
+  String inviteWelcome(Object clientId);
+
+  /// No description provided for @inviteInvalid.
+  ///
+  /// In sv, this message translates to:
+  /// **'Länken fungerar inte längre. Du kan ändå skapa ett konto nedan.'**
+  String get inviteInvalid;
+
+  /// No description provided for @alreadyHaveAccountLogin.
+  ///
+  /// In sv, this message translates to:
+  /// **'Har du redan ett konto? Logga in'**
+  String get alreadyHaveAccountLogin;
+
+  /// No description provided for @attachReceiptOptional.
+  ///
+  /// In sv, this message translates to:
+  /// **'Bifoga kvitto (valfritt)'**
+  String get attachReceiptOptional;
+
+  /// No description provided for @officeReceipt.
+  ///
+  /// In sv, this message translates to:
+  /// **'Kontorets kvitto'**
+  String get officeReceipt;
+
+  /// No description provided for @partnerReceipt.
+  ///
+  /// In sv, this message translates to:
+  /// **'Partnerns kvitto'**
+  String get partnerReceipt;
+
+  /// No description provided for @totalBalanceTitle.
+  ///
+  /// In sv, this message translates to:
+  /// **'Totalt saldo'**
+  String get totalBalanceTitle;
+
+  /// No description provided for @totalBalanceSubtitle.
+  ///
+  /// In sv, this message translates to:
+  /// **'Kontoret + kassörer (utan partner)'**
+  String get totalBalanceSubtitle;
+
+  /// No description provided for @officeAddressLabel.
+  ///
+  /// In sv, this message translates to:
+  /// **'Adress (för kunder som betalar kontant)'**
+  String get officeAddressLabel;
+
+  /// No description provided for @officeMapUrlLabel.
+  ///
+  /// In sv, this message translates to:
+  /// **'Kartlänk'**
+  String get officeMapUrlLabel;
+
+  /// No description provided for @officeMapUrlHelper.
+  ///
+  /// In sv, this message translates to:
+  /// **'Öppna kontoret i Google Maps, tryck Dela och klistra in länken här.'**
+  String get officeMapUrlHelper;
+
+  /// No description provided for @howDoYouPay.
+  ///
+  /// In sv, this message translates to:
+  /// **'Hur betalar du?'**
+  String get howDoYouPay;
+
+  /// No description provided for @howDoesCustomerPay.
+  ///
+  /// In sv, this message translates to:
+  /// **'Hur betalar kunden?'**
+  String get howDoesCustomerPay;
+
+  /// No description provided for @payCashAtOffice.
+  ///
+  /// In sv, this message translates to:
+  /// **'Kontant på kontoret'**
+  String get payCashAtOffice;
+
+  /// No description provided for @payViaBank.
+  ///
+  /// In sv, this message translates to:
+  /// **'Via bank'**
+  String get payViaBank;
+
+  /// No description provided for @payCashHint.
+  ///
+  /// In sv, this message translates to:
+  /// **'Du får kontorets adress med kartlänk och lämnar pengarna där. Kontoret bekräftar inbetalningen.'**
+  String get payCashHint;
+
+  /// No description provided for @payBankHint.
+  ///
+  /// In sv, this message translates to:
+  /// **'Kontoret skickar betalningsuppgifter till dig, som förut.'**
+  String get payBankHint;
+
+  /// No description provided for @walkInCashHint.
+  ///
+  /// In sv, this message translates to:
+  /// **'Kunden betalar här på kontoret. Betalningen bekräftas direkt och kunden får sin uthämtningskod.'**
+  String get walkInCashHint;
+
+  /// No description provided for @walkInBankHint.
+  ///
+  /// In sv, this message translates to:
+  /// **'Du skickar betalningsuppgifter till kunden och bekräftar när pengarna har kommit, som förut.'**
+  String get walkInBankHint;
+
+  /// No description provided for @officeAddressMissing.
+  ///
+  /// In sv, this message translates to:
+  /// **'Kontoret har ingen adress än. Fråga kontoret.'**
+  String get officeAddressMissing;
+
+  /// No description provided for @openMap.
+  ///
+  /// In sv, this message translates to:
+  /// **'Öppna karta'**
+  String get openMap;
+
+  /// No description provided for @payCashAtOfficeAmount.
+  ///
+  /// In sv, this message translates to:
+  /// **'Betala {amount} {currency} kontant på kontoret'**
+  String payCashAtOfficeAmount(Object amount, Object currency);
+
+  /// No description provided for @payCashConfirmHint.
+  ///
+  /// In sv, this message translates to:
+  /// **'Kontoret bekräftar när du har lämnat pengarna. Då får du din uthämtningskod.'**
+  String get payCashConfirmHint;
+
+  /// No description provided for @customerPaysCashAtOffice.
+  ///
+  /// In sv, this message translates to:
+  /// **'💵 Kunden betalar kontant på kontoret'**
+  String get customerPaysCashAtOffice;
+
+  /// No description provided for @cashPaymentReceived.
+  ///
+  /// In sv, this message translates to:
+  /// **'Betalning mottagen (kontant)'**
+  String get cashPaymentReceived;
+
+  /// No description provided for @cashPaymentsTitle.
+  ///
+  /// In sv, this message translates to:
+  /// **'Kontanta inbetalningar'**
+  String get cashPaymentsTitle;
+
+  /// No description provided for @cashPaymentsSubtitle.
+  ///
+  /// In sv, this message translates to:
+  /// **'Kunder som ska betala kontant på kontoret.'**
+  String get cashPaymentsSubtitle;
+
+  /// No description provided for @noCashPaymentsWaiting.
+  ///
+  /// In sv, this message translates to:
+  /// **'Inga kontanta inbetalningar väntar just nu.'**
+  String get noCashPaymentsWaiting;
+
+  /// No description provided for @confirmCashReceived.
+  ///
+  /// In sv, this message translates to:
+  /// **'Har du tagit emot {amount} kontant från {name}? Kunden får då sin uthämtningskod.'**
+  String confirmCashReceived(Object amount, Object name);
+
+  /// No description provided for @customerPaysCashAmount.
+  ///
+  /// In sv, this message translates to:
+  /// **'Kunden betalar {amount} {currency}'**
+  String customerPaysCashAmount(Object amount, Object currency);
+
+  /// No description provided for @pickUpAtOfficeTitle.
+  ///
+  /// In sv, this message translates to:
+  /// **'Kontorets adress'**
+  String get pickUpAtOfficeTitle;
+
+  /// No description provided for @youPayCashAtOffice.
+  ///
+  /// In sv, this message translates to:
+  /// **'Du betalar kontant på kontoret'**
+  String get youPayCashAtOffice;
+
+  /// No description provided for @lowBalanceTitle.
+  ///
+  /// In sv, this message translates to:
+  /// **'Inte tillräckligt med {currency}'**
+  String lowBalanceTitle(Object currency);
+
+  /// No description provided for @lowBalanceHas.
+  ///
+  /// In sv, this message translates to:
+  /// **'Kontoret har:'**
+  String get lowBalanceHas;
+
+  /// No description provided for @lowBalanceToPay.
+  ///
+  /// In sv, this message translates to:
+  /// **'Ska betalas ut:'**
+  String get lowBalanceToPay;
+
+  /// No description provided for @lowBalanceMissing.
+  ///
+  /// In sv, this message translates to:
+  /// **'Saknas:'**
+  String get lowBalanceMissing;
+
+  /// No description provided for @lowBalancePartnerHint.
+  ///
+  /// In sv, this message translates to:
+  /// **'Kolla med en partner om du kan växla till dig {currency}.'**
+  String lowBalancePartnerHint(Object currency);
 }
 
 class _AppLocalizationsDelegate

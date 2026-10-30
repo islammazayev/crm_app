@@ -7,7 +7,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 /// bara veta vilka kontor som finns och vilka valutor de hanterar, och det
 /// är exakt vad `officeListings/{officeId}` innehåller:
 ///
-///   country, city, currencies, updatedAt
+///   country, city, address, mapUrl, currencies, updatedAt
+///
+/// Adressen och kartlänken visas för kunder som betalar kontant.
 ///
 /// Dokumenten skrivs bara av admin-appen (se firestore.rules).
 class OfficeListingService {
@@ -26,6 +28,8 @@ class OfficeListingService {
     return {
       'country': (office['country'] ?? '').toString(),
       'city': (office['city'] ?? '').toString(),
+      'address': (office['address'] ?? '').toString(),
+      'mapUrl': (office['mapUrl'] ?? '').toString(),
       'currencies': _currenciesOf(office),
       'updatedAt': FieldValue.serverTimestamp(),
     };
@@ -64,6 +68,10 @@ class OfficeListingService {
               (data['country'] ?? '').toString() &&
           (existing['city'] ?? '').toString() ==
               (data['city'] ?? '').toString() &&
+          (existing['address'] ?? '').toString() ==
+              (data['address'] ?? '').toString() &&
+          (existing['mapUrl'] ?? '').toString() ==
+              (data['mapUrl'] ?? '').toString() &&
           _sameSet(_currenciesOf(existing), _currenciesOf(data));
 
       if (!inSync) {

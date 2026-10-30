@@ -1841,7 +1841,7 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String get balancesCardSubtitle =>
-      'Kontorets och kassörernas saldo, var för sig.';
+      'Kontorets och kassörernas saldo, totalt och var för sig.';
 
   @override
   String get noBalance => 'Inget saldo.';
@@ -2040,4 +2040,173 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String get sendProposal => 'Skicka förslag';
+
+  @override
+  String get searchExistingCustomer => 'Sök befintlig kund';
+
+  @override
+  String get noCustomerFoundNew =>
+      'Ingen kund hittades. Skriv in en ny kund nedan.';
+
+  @override
+  String get orNewCustomer => 'Eller ny kund:';
+
+  @override
+  String get hasAppAccount => 'Har konto i appen';
+
+  @override
+  String get noAppAccount => 'Inget konto i appen';
+
+  @override
+  String get changeCustomer => 'Byt';
+
+  @override
+  String get inviteCustomerQuestion => 'Vill kunden bli kund hos oss?';
+
+  @override
+  String get inviteCustomerHint =>
+      'Kunden sparas i kundregistret och får en länk via SMS för att skapa konto i appen.';
+
+  @override
+  String get invitePhoneRequired =>
+      'Skriv kundens telefonnummer för att kunna skicka länken.';
+
+  @override
+  String inviteSmsText(Object name, Object link) {
+    return 'Hej $name! Välkommen som kund hos oss. Skapa ditt konto här: $link';
+  }
+
+  @override
+  String inviteWelcome(Object clientId) {
+    return 'Välkommen! Du är redan kund hos oss med klient-ID $clientId. Skapa ditt konto nedan, så ser du dina transaktioner i appen.';
+  }
+
+  @override
+  String get inviteInvalid =>
+      'Länken fungerar inte längre. Du kan ändå skapa ett konto nedan.';
+
+  @override
+  String get alreadyHaveAccountLogin => 'Har du redan ett konto? Logga in';
+
+  @override
+  String get attachReceiptOptional => 'Bifoga kvitto (valfritt)';
+
+  @override
+  String get officeReceipt => 'Kontorets kvitto';
+
+  @override
+  String get partnerReceipt => 'Partnerns kvitto';
+
+  @override
+  String get totalBalanceTitle => 'Totalt saldo';
+
+  @override
+  String get totalBalanceSubtitle => 'Kontoret + kassörer (utan partner)';
+
+  @override
+  String get officeAddressLabel => 'Adress (för kunder som betalar kontant)';
+
+  @override
+  String get officeMapUrlLabel => 'Kartlänk';
+
+  @override
+  String get officeMapUrlHelper =>
+      'Öppna kontoret i Google Maps, tryck Dela och klistra in länken här.';
+
+  @override
+  String get howDoYouPay => 'Hur betalar du?';
+
+  @override
+  String get howDoesCustomerPay => 'Hur betalar kunden?';
+
+  @override
+  String get payCashAtOffice => 'Kontant på kontoret';
+
+  @override
+  String get payViaBank => 'Via bank';
+
+  @override
+  String get payCashHint =>
+      'Du får kontorets adress med kartlänk och lämnar pengarna där. Kontoret bekräftar inbetalningen.';
+
+  @override
+  String get payBankHint =>
+      'Kontoret skickar betalningsuppgifter till dig, som förut.';
+
+  @override
+  String get walkInCashHint =>
+      'Kunden betalar här på kontoret. Betalningen bekräftas direkt och kunden får sin uthämtningskod.';
+
+  @override
+  String get walkInBankHint =>
+      'Du skickar betalningsuppgifter till kunden och bekräftar när pengarna har kommit, som förut.';
+
+  @override
+  String get officeAddressMissing =>
+      'Kontoret har ingen adress än. Fråga kontoret.';
+
+  @override
+  String get openMap => 'Öppna karta';
+
+  @override
+  String payCashAtOfficeAmount(Object amount, Object currency) {
+    return 'Betala $amount $currency kontant på kontoret';
+  }
+
+  @override
+  String get payCashConfirmHint =>
+      'Kontoret bekräftar när du har lämnat pengarna. Då får du din uthämtningskod.';
+
+  @override
+  String get customerPaysCashAtOffice =>
+      '💵 Kunden betalar kontant på kontoret';
+
+  @override
+  String get cashPaymentReceived => 'Betalning mottagen (kontant)';
+
+  @override
+  String get cashPaymentsTitle => 'Kontanta inbetalningar';
+
+  @override
+  String get cashPaymentsSubtitle =>
+      'Kunder som ska betala kontant på kontoret.';
+
+  @override
+  String get noCashPaymentsWaiting =>
+      'Inga kontanta inbetalningar väntar just nu.';
+
+  @override
+  String confirmCashReceived(Object amount, Object name) {
+    return 'Har du tagit emot $amount kontant från $name? Kunden får då sin uthämtningskod.';
+  }
+
+  @override
+  String customerPaysCashAmount(Object amount, Object currency) {
+    return 'Kunden betalar $amount $currency';
+  }
+
+  @override
+  String get pickUpAtOfficeTitle => 'Kontorets adress';
+
+  @override
+  String get youPayCashAtOffice => 'Du betalar kontant på kontoret';
+
+  @override
+  String lowBalanceTitle(Object currency) {
+    return 'Inte tillräckligt med $currency';
+  }
+
+  @override
+  String get lowBalanceHas => 'Kontoret har:';
+
+  @override
+  String get lowBalanceToPay => 'Ska betalas ut:';
+
+  @override
+  String get lowBalanceMissing => 'Saknas:';
+
+  @override
+  String lowBalancePartnerHint(Object currency) {
+    return 'Kolla med en partner om du kan växla till dig $currency.';
+  }
 }

@@ -31,3 +31,14 @@ Map<String, double> parseBalances(Object? raw, {String? officeId}) {
 
   return result;
 }
+
+/// Lägger ihop saldon per valuta, t.ex. kontorets och kassörernas.
+Map<String, double> sumBalances(Iterable<Map<String, double>> all) {
+  final total = <String, double>{};
+  for (final b in all) {
+    b.forEach((currency, value) {
+      total[currency] = (total[currency] ?? 0) + value;
+    });
+  }
+  return total;
+}

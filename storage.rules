@@ -2,6 +2,7 @@ rules_version = '2';
 
 // Kvitton som kunden bifogar när hen markerar en transaktion som betald.
 // Sökväg: receipts/{transaktions-ID}/{filnamn}
+// Kvitton i växlingar med partner: exchangeReceipts/{växlings-ID}/{sida}/{fil}
 service firebase.storage {
   match /b/{bucket}/o {
     function userDoc() {
@@ -10,6 +11,37 @@ service firebase.storage {
 
     function tx(txId) {
       return firestore.get(/databases/(default)/documents/transactions/$(txId)).data;
+    }
+
+    function exchange(id) {
+      return firestore.get(/databases/(default)/documents/partnerExchanges/$(id)).data;
+    }
+
+    // Kvitton i en växling mellan kontor och partner. side är 'office' eller
+    // 'partner': den sida som skickade pengarna och laddar upp kvittot.
+    match /exchangeReceipts/{exchangeId}/{side}/{fileName} {
+      // Båda sidorna och admin får se kvittona.
+      allow read: if request.auth != null
+        && (
+          userDoc().role == 'admin'
+          || exchange(exchangeId).partnerId == request.auth.uid
+          || (userDoc().role == 'manager'
+              && userDoc().get('officeId', null) == exchange(exchangeId).officeId)
+        );
+
+      // Bara den egna sidan, bara när växlingen är accepterad, högst 10 MB
+      // och bara bild eller PDF.
+      allow create: if request.auth != null
+        && exchange(exchangeId).status == 'accepted'
+        && (
+          (side == 'partner' && exchange(exchangeId).partnerId == request.auth.uid)
+          || (side == 'office'
+              && userDoc().role == 'manager'
+              && userDoc().get('officeId', null) == exchange(exchangeId).officeId)
+        )
+        && request.resource.size < 10 * 1024 * 1024
+        && (request.resource.contentType.matches('image/.*')
+            || request.resource.contentType == 'application/pdf');
     }
 
     match /receipts/{txId}/{fileName} {
