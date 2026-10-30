@@ -604,5 +604,13 @@
   "lowBalanceHas": "The office has:",
   "lowBalanceToPay": "To pay out:",
   "lowBalanceMissing": "Missing:",
-  "lowBalancePartnerHint": "Check with a partner whether you can exchange for {currency}."
+  "lowBalancePartnerHint": "Check with a partner whether you can exchange for {currency}.",
+  "chat": "Chat",
+  "chatEmpty": "No messages yet. Write here about this case to the others.",
+  "attachFile": "Attach picture or PDF",
+  "writeMessage": "Write a message…",
+  "messagesTitle": "Messages",
+  "noMessagesYet": "No messages yet. Open a case and tap the chat button to write.",
+  "unreadChats": "{count} chats with unread messages",
+  "messagesCardSubtitle": "Chat about cases with managers, cashiers and partners."
 }

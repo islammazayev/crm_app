@@ -604,5 +604,13 @@
   "lowBalanceHas": "Ofiste olan:",
   "lowBalanceToPay": "Ödenecek:",
   "lowBalanceMissing": "Eksik:",
-  "lowBalancePartnerHint": "Bir ortakla {currency} bozdurup bozduramayacağınızı kontrol edin."
+  "lowBalancePartnerHint": "Bir ortakla {currency} bozdurup bozduramayacağınızı kontrol edin.",
+  "chat": "Sohbet",
+  "chatEmpty": "Henüz mesaj yok. Bu iş hakkında diğerlerine buradan yazın.",
+  "attachFile": "Resim veya PDF ekle",
+  "writeMessage": "Bir mesaj yazın…",
+  "messagesTitle": "Mesajlar",
+  "noMessagesYet": "Henüz mesaj yok. Yazmak için bir iş açın ve sohbet düğmesine dokunun.",
+  "unreadChats": "Okunmamış mesajlı {count} sohbet",
+  "messagesCardSubtitle": "Yönetici, kasiyerler ve ortaklarla işler hakkında sohbet edin."
 }

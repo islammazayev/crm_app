@@ -9,6 +9,8 @@ import '../../utils/fee_calc.dart';
 import '../../utils/pickup_code.dart';
 import '../../utils/pickup_code_formatter.dart';
 import 'pickup_scanner_page.dart';
+import '../../services/chat_service.dart';
+import '../../widgets/chat.dart';
 import '../../widgets/pay_method.dart';
 import '../../widgets/rate_field.dart';
 import '../../widgets/receipt_button.dart';
@@ -660,20 +662,37 @@ class _ManagerTransactionDetailScreenState
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      if (formatTransactionNo(
-                        data['transactionNo'],
-                      ).isNotEmpty) ...[
-                        Text(
-                          l10n.transactionNoValue(
-                            formatTransactionNo(data['transactionNo']),
+                      // Nummer och kontorets interna chatt om transaktionen.
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              formatTransactionNo(data['transactionNo']).isEmpty
+                                  ? l10n.transaction
+                                  : l10n.transactionNoValue(
+                                      formatTransactionNo(
+                                        data['transactionNo'],
+                                      ),
+                                    ),
+                              style: const TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
                           ),
-                          style: const TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
+                          ChatButton(
+                            chatRef: ChatRef.transaction(
+                              snapshot.data!.id,
+                              data,
+                              title: [
+                                formatTransactionNo(data['transactionNo']),
+                                '${data['customerName'] ?? ''}',
+                              ].where((t) => t.isNotEmpty).join(' · '),
+                            ),
                           ),
-                        ),
-                        const SizedBox(height: 8),
-                      ],
+                        ],
+                      ),
+                      const SizedBox(height: 8),
                       if (isBuy) ...[
                         Text(
                           transactionSummary(l10n, data),

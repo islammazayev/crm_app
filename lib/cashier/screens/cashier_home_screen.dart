@@ -9,6 +9,7 @@ import '../../theme/app_theme.dart';
 import '../../utils/balances.dart';
 import '../../utils/merged_query.dart';
 import '../../widgets/action_card.dart';
+import '../../widgets/chat.dart';
 import '../../widgets/language_button.dart';
 import '../pages/cashier_cash_payments_page.dart';
 import '../pages/cashier_send_page.dart';
@@ -156,6 +157,7 @@ class CashierHomeScreen extends StatelessWidget {
                             );
                           },
                         ),
+                        const MessagesCard(),
                         // Kontanta inbetalningar på kontoret.
                         if (cashOfficeId != null)
                           StreamBuilder<

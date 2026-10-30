@@ -2194,4 +2194,33 @@ class AppLocalizationsTr extends AppLocalizations {
   String lowBalancePartnerHint(Object currency) {
     return 'Bir ortakla $currency bozdurup bozduramayacağınızı kontrol edin.';
   }
+
+  @override
+  String get chat => 'Sohbet';
+
+  @override
+  String get chatEmpty =>
+      'Henüz mesaj yok. Bu iş hakkında diğerlerine buradan yazın.';
+
+  @override
+  String get attachFile => 'Resim veya PDF ekle';
+
+  @override
+  String get writeMessage => 'Bir mesaj yazın…';
+
+  @override
+  String get messagesTitle => 'Mesajlar';
+
+  @override
+  String get noMessagesYet =>
+      'Henüz mesaj yok. Yazmak için bir iş açın ve sohbet düğmesine dokunun.';
+
+  @override
+  String unreadChats(Object count) {
+    return 'Okunmamış mesajlı $count sohbet';
+  }
+
+  @override
+  String get messagesCardSubtitle =>
+      'Yönetici, kasiyerler ve ortaklarla işler hakkında sohbet edin.';
 }

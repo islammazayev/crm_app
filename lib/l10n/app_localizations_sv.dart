@@ -2209,4 +2209,33 @@ class AppLocalizationsSv extends AppLocalizations {
   String lowBalancePartnerHint(Object currency) {
     return 'Kolla med en partner om du kan växla till dig $currency.';
   }
+
+  @override
+  String get chat => 'Chatt';
+
+  @override
+  String get chatEmpty =>
+      'Inga meddelanden än. Skriv här om ärendet till de andra på kontoret.';
+
+  @override
+  String get attachFile => 'Bifoga bild eller PDF';
+
+  @override
+  String get writeMessage => 'Skriv ett meddelande…';
+
+  @override
+  String get messagesTitle => 'Meddelanden';
+
+  @override
+  String get noMessagesYet =>
+      'Inga meddelanden än. Öppna ett ärende och tryck på chattknappen för att skriva.';
+
+  @override
+  String unreadChats(Object count) {
+    return '$count chattar med olästa meddelanden';
+  }
+
+  @override
+  String get messagesCardSubtitle =>
+      'Chatta om ärenden med manager, kassörer och partner.';
 }

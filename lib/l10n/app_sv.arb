@@ -1602,5 +1602,20 @@
         "type": "Object"
       }
     }
-  }
+  },
+  "chat": "Chatt",
+  "chatEmpty": "Inga meddelanden än. Skriv här om ärendet till de andra på kontoret.",
+  "attachFile": "Bifoga bild eller PDF",
+  "writeMessage": "Skriv ett meddelande…",
+  "messagesTitle": "Meddelanden",
+  "noMessagesYet": "Inga meddelanden än. Öppna ett ärende och tryck på chattknappen för att skriva.",
+  "unreadChats": "{count} chattar med olästa meddelanden",
+  "@unreadChats": {
+    "placeholders": {
+      "count": {
+        "type": "Object"
+      }
+    }
+  },
+  "messagesCardSubtitle": "Chatta om ärenden med manager, kassörer och partner."
 }
