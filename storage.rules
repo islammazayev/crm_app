@@ -44,6 +44,34 @@ service firebase.storage {
             || request.resource.contentType == 'application/pdf');
     }
 
+    function chat(id) {
+      return firestore.get(/databases/(default)/documents/chats/$(id)).data;
+    }
+
+    // Bilagor i den interna chatten (se chats i firestore.rules). Kassörer
+    // på ett kontor kontrolleras här bara på roll, eftersom deras kontor
+    // kräver ännu en uppslagning; sökvägen innehåller ärendets slumpade ID.
+    function chatMember(id) {
+      return userDoc().role == 'admin'
+        || (userDoc().role == 'manager'
+            && (userDoc().get('officeId', null) in chat(id).officeIds
+                || request.auth.uid in chat(id).managerIds))
+        || (userDoc().role == 'cashier'
+            && (request.auth.uid in chat(id).cashierIds
+                || chat(id).cashierOfficeIds.size() > 0))
+        || (userDoc().role == 'partner'
+            && chat(id).get('partnerId', '') == request.auth.uid);
+    }
+
+    match /chats/{chatId}/{fileName} {
+      allow read: if request.auth != null && chatMember(chatId);
+      allow create: if request.auth != null
+        && chatMember(chatId)
+        && request.resource.size < 10 * 1024 * 1024
+        && (request.resource.contentType.matches('image/.*')
+            || request.resource.contentType == 'application/pdf');
+    }
+
     match /receipts/{txId}/{fileName} {
       // Kunden själv, kontorets manager och admin får se kvittot.
       allow read: if request.auth != null

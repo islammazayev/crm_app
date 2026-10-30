@@ -604,5 +604,13 @@
   "lowBalanceHas": "В офисе есть:",
   "lowBalanceToPay": "Нужно выплатить:",
   "lowBalanceMissing": "Не хватает:",
-  "lowBalancePartnerHint": "Уточните у партнёра, можно ли обменять на {currency}."
+  "lowBalancePartnerHint": "Уточните у партнёра, можно ли обменять на {currency}.",
+  "chat": "Чат",
+  "chatEmpty": "Сообщений пока нет. Напишите здесь остальным об этом деле.",
+  "attachFile": "Прикрепить фото или PDF",
+  "writeMessage": "Напишите сообщение…",
+  "messagesTitle": "Сообщения",
+  "noMessagesYet": "Сообщений пока нет. Откройте дело и нажмите кнопку чата, чтобы написать.",
+  "unreadChats": "Чатов с непрочитанными: {count}",
+  "messagesCardSubtitle": "Чат по делам с менеджером, кассирами и партнёрами."
 }

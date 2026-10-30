@@ -3737,6 +3737,54 @@ abstract class AppLocalizations {
   /// In sv, this message translates to:
   /// **'Kolla med en partner om du kan växla till dig {currency}.'**
   String lowBalancePartnerHint(Object currency);
+
+  /// No description provided for @chat.
+  ///
+  /// In sv, this message translates to:
+  /// **'Chatt'**
+  String get chat;
+
+  /// No description provided for @chatEmpty.
+  ///
+  /// In sv, this message translates to:
+  /// **'Inga meddelanden än. Skriv här om ärendet till de andra på kontoret.'**
+  String get chatEmpty;
+
+  /// No description provided for @attachFile.
+  ///
+  /// In sv, this message translates to:
+  /// **'Bifoga bild eller PDF'**
+  String get attachFile;
+
+  /// No description provided for @writeMessage.
+  ///
+  /// In sv, this message translates to:
+  /// **'Skriv ett meddelande…'**
+  String get writeMessage;
+
+  /// No description provided for @messagesTitle.
+  ///
+  /// In sv, this message translates to:
+  /// **'Meddelanden'**
+  String get messagesTitle;
+
+  /// No description provided for @noMessagesYet.
+  ///
+  /// In sv, this message translates to:
+  /// **'Inga meddelanden än. Öppna ett ärende och tryck på chattknappen för att skriva.'**
+  String get noMessagesYet;
+
+  /// No description provided for @unreadChats.
+  ///
+  /// In sv, this message translates to:
+  /// **'{count} chattar med olästa meddelanden'**
+  String unreadChats(Object count);
+
+  /// No description provided for @messagesCardSubtitle.
+  ///
+  /// In sv, this message translates to:
+  /// **'Chatta om ärenden med manager, kassörer och partner.'**
+  String get messagesCardSubtitle;
 }
 
 class _AppLocalizationsDelegate

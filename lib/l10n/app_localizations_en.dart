@@ -2204,4 +2204,33 @@ class AppLocalizationsEn extends AppLocalizations {
   String lowBalancePartnerHint(Object currency) {
     return 'Check with a partner whether you can exchange for $currency.';
   }
+
+  @override
+  String get chat => 'Chat';
+
+  @override
+  String get chatEmpty =>
+      'No messages yet. Write here about this case to the others.';
+
+  @override
+  String get attachFile => 'Attach picture or PDF';
+
+  @override
+  String get writeMessage => 'Write a message…';
+
+  @override
+  String get messagesTitle => 'Messages';
+
+  @override
+  String get noMessagesYet =>
+      'No messages yet. Open a case and tap the chat button to write.';
+
+  @override
+  String unreadChats(Object count) {
+    return '$count chats with unread messages';
+  }
+
+  @override
+  String get messagesCardSubtitle =>
+      'Chat about cases with managers, cashiers and partners.';
 }

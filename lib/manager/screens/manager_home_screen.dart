@@ -7,6 +7,7 @@ import '../../screens/auth_gate.dart';
 import '../../services/partner_service.dart';
 import '../../theme/app_theme.dart';
 import '../../widgets/action_card.dart';
+import '../../widgets/chat.dart';
 import '../../widgets/language_button.dart';
 import '../../utils/balances.dart';
 import '../pages/manager_balances_page.dart';
@@ -283,6 +284,7 @@ class _ManagerHomeScreenState extends State<ManagerHomeScreen> {
                           ),
                         ),
                       ),
+                      const MessagesCard(),
                       // Växlingar med partner; siffran visar öppna.
                       StreamBuilder<
                         List<QueryDocumentSnapshot<Map<String, dynamic>>>

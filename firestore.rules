@@ -974,5 +974,113 @@ service cloud.firestore {
       // appen arkiverar dem i stället (archived: true).
       allow delete: if isAdmin() && resource.data.status != 'completed';
     }
+
+    // ─── CHATT ──────────────────────────────────────────────────────
+    // chats/{typ}_{id}: en intern chatt per ärende. typ är 'tx'
+    // (kundtransaktion), 'ex' (partnerväxling) eller 'ct' (överföring
+    // mellan kassörer). Vem som är med kopieras från ärendet när chatten
+    // skapas och kontrolleras mot det:
+    //   officeIds         managers på de kontoren
+    //   managerIds        managers som kassörerna är kopplade till (ct)
+    //   cashierOfficeIds  alla kassörer på de kontoren (tx, ex)
+    //   cashierIds        kassörerna i överföringen (ct)
+    //   partnerId         partnern i växlingen (ex)
+    // Kunder är aldrig med. Meddelanden: chats/{id}/messages/{id}, kan
+    // inte ändras eller tas bort (utom av admin).
+    function isChatMember(c) {
+      let me = hasProfile() ? get(userPath()).data : {};
+      let r = me.get('role', '');
+      return r == 'admin'
+        || (r == 'manager'
+            && ((me.get('officeId', null) != null
+                 && me.officeId in c.get('officeIds', []))
+                || request.auth.uid in c.get('managerIds', [])))
+        || (r == 'cashier'
+            && (request.auth.uid in c.get('cashierIds', [])
+                || cashierOfficeId() in c.get('cashierOfficeIds', [])))
+        || (r == 'partner' && c.get('partnerId', '') == request.auth.uid);
+    }
+
+    // Deltagarna stämmer med ärendet som chatten hör till.
+    function chatMatchesCase(chatId, c) {
+      return chatId == c.type + '_' + c.refId
+        && (
+          (c.type == 'tx'
+            && c.officeIds == [get(/databases/$(database)/documents/transactions/$(c.refId)).data.officeId]
+            && c.cashierOfficeIds == c.officeIds
+            && c.managerIds == [] && c.cashierIds == []
+            && c.get('partnerId', '') == '')
+          || (c.type == 'ex'
+            && c.officeIds == [get(/databases/$(database)/documents/partnerExchanges/$(c.refId)).data.officeId]
+            && c.cashierOfficeIds == c.officeIds
+            && c.managerIds == [] && c.cashierIds == []
+            && c.partnerId == get(/databases/$(database)/documents/partnerExchanges/$(c.refId)).data.partnerId)
+          || (c.type == 'ct'
+            && c.officeIds == [
+                 get(/databases/$(database)/documents/cashierTransfers/$(c.refId)).data.get('fromOfficeId', null),
+                 get(/databases/$(database)/documents/cashierTransfers/$(c.refId)).data.get('toOfficeId', null)]
+            && c.managerIds == [
+                 get(/databases/$(database)/documents/cashierTransfers/$(c.refId)).data.get('fromManagerId', null),
+                 get(/databases/$(database)/documents/cashierTransfers/$(c.refId)).data.get('toManagerId', null)]
+            && c.cashierIds == [
+                 get(/databases/$(database)/documents/cashierTransfers/$(c.refId)).data.fromId,
+                 get(/databases/$(database)/documents/cashierTransfers/$(c.refId)).data.toId]
+            && c.cashierOfficeIds == []
+            && c.get('partnerId', '') == '')
+        );
+    }
+
+    match /chats/{chatId} {
+      // En chatt som inte finns än får "läsas" (appen kollar om den finns).
+      allow get: if isSignedIn() && resource == null;
+      allow read: if isSignedIn() && isChatMember(resource.data);
+      allow delete: if isAdmin();
+
+      allow create: if isSignedIn()
+        && request.resource.data.keys().hasOnly([
+             'type', 'refId', 'title', 'officeIds', 'managerIds',
+             'cashierOfficeIds', 'cashierIds', 'partnerId', 'createdAt'
+           ])
+        && request.resource.data.title is string
+        && request.resource.data.title.size() <= 200
+        && chatMatchesCase(chatId, request.resource.data)
+        && isChatMember(request.resource.data);
+
+      // Senaste meddelandet (för listan) och när var och en senast läste.
+      // Man sätter bara sin egen läsmarkering.
+      allow update: if isSignedIn()
+        && isChatMember(resource.data)
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+             'lastMessageAt', 'lastText', 'lastSenderId', 'lastSenderName',
+             'readBy'
+           ])
+        && request.resource.data.get('readBy', {})
+             .diff(resource.data.get('readBy', {})).affectedKeys()
+             .hasOnly([request.auth.uid]);
+
+      match /messages/{messageId} {
+        // Finns chatten inte än finns det inga meddelanden; listan får då
+        // läsas (den är tom), så att chatten öppnas utan fel.
+        allow read: if isSignedIn()
+          && (!exists(/databases/$(database)/documents/chats/$(chatId))
+              || isChatMember(get(/databases/$(database)/documents/chats/$(chatId)).data));
+        allow delete: if isAdmin();
+
+        allow create: if isSignedIn()
+          && isChatMember(get(/databases/$(database)/documents/chats/$(chatId)).data)
+          && request.resource.data.senderId == request.auth.uid
+          && request.resource.data.createdAt == request.time
+          && request.resource.data.keys().hasOnly([
+               'senderId', 'senderName', 'text', 'createdAt',
+               'attachmentPath', 'attachmentName', 'attachmentContentType'
+             ])
+          && request.resource.data.get('text', '') is string
+          && request.resource.data.get('text', '').size() <= 2000
+          && (request.resource.data.get('text', '') != ''
+              || 'attachmentPath' in request.resource.data)
+          && (!('attachmentPath' in request.resource.data)
+              || request.resource.data.attachmentPath.matches('chats/' + chatId + '/.+'));
+      }
+    }
   }
 }
