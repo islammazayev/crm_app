@@ -1529,5 +1529,57 @@
   "officeReceipt": "Kontorets kvitto",
   "partnerReceipt": "Partnerns kvitto",
   "totalBalanceTitle": "Totalt saldo",
-  "totalBalanceSubtitle": "Kontoret + kassörer (utan partner)"
+  "totalBalanceSubtitle": "Kontoret + kassörer (utan partner)",
+  "officeAddressLabel": "Adress (för kunder som betalar kontant)",
+  "officeMapUrlLabel": "Kartlänk",
+  "officeMapUrlHelper": "Öppna kontoret i Google Maps, tryck Dela och klistra in länken här.",
+  "howDoYouPay": "Hur betalar du?",
+  "howDoesCustomerPay": "Hur betalar kunden?",
+  "payCashAtOffice": "Kontant på kontoret",
+  "payViaBank": "Via bank",
+  "payCashHint": "Du får kontorets adress med kartlänk och lämnar pengarna där. Kontoret bekräftar inbetalningen.",
+  "payBankHint": "Kontoret skickar betalningsuppgifter till dig, som förut.",
+  "walkInCashHint": "Kunden betalar här på kontoret. Betalningen bekräftas direkt och kunden får sin uthämtningskod.",
+  "walkInBankHint": "Du skickar betalningsuppgifter till kunden och bekräftar när pengarna har kommit, som förut.",
+  "officeAddressMissing": "Kontoret har ingen adress än. Fråga kontoret.",
+  "openMap": "Öppna karta",
+  "payCashAtOfficeAmount": "Betala {amount} {currency} kontant på kontoret",
+  "@payCashAtOfficeAmount": {
+    "placeholders": {
+      "amount": {
+        "type": "Object"
+      },
+      "currency": {
+        "type": "Object"
+      }
+    }
+  },
+  "payCashConfirmHint": "Kontoret bekräftar när du har lämnat pengarna. Då får du din uthämtningskod.",
+  "customerPaysCashAtOffice": "💵 Kunden betalar kontant på kontoret",
+  "cashPaymentReceived": "Betalning mottagen (kontant)",
+  "cashPaymentsTitle": "Kontanta inbetalningar",
+  "cashPaymentsSubtitle": "Kunder som ska betala kontant på kontoret.",
+  "noCashPaymentsWaiting": "Inga kontanta inbetalningar väntar just nu.",
+  "confirmCashReceived": "Har du tagit emot {amount} kontant från {name}? Kunden får då sin uthämtningskod.",
+  "@confirmCashReceived": {
+    "placeholders": {
+      "amount": {
+        "type": "Object"
+      },
+      "name": {
+        "type": "Object"
+      }
+    }
+  },
+  "customerPaysCashAmount": "Kunden betalar {amount} {currency}",
+  "@customerPaysCashAmount": {
+    "placeholders": {
+      "amount": {
+        "type": "Object"
+      },
+      "currency": {
+        "type": "Object"
+      }
+    }
+  }
 }

@@ -10,6 +10,7 @@ import '../../utils/balances.dart';
 import '../../utils/merged_query.dart';
 import '../../widgets/action_card.dart';
 import '../../widgets/language_button.dart';
+import '../pages/cashier_cash_payments_page.dart';
 import '../pages/cashier_send_page.dart';
 import '../pages/cashier_transfers_page.dart';
 import '../widgets/transfer_list.dart';
@@ -73,6 +74,10 @@ class CashierHomeScreen extends StatelessWidget {
                 cashSnap.data?.data()?['balances'],
                 officeId: uid,
               );
+              // Kontoret där kassören tar emot kontanta inbetalningar.
+              final String? cashOfficeId =
+                  me.officeId ??
+                  cashSnap.data?.data()?['cashOfficeId'] as String?;
               return SingleChildScrollView(
                 padding: const EdgeInsets.all(20),
                 child: Column(
@@ -151,6 +156,32 @@ class CashierHomeScreen extends StatelessWidget {
                             );
                           },
                         ),
+                        // Kontanta inbetalningar på kontoret.
+                        if (cashOfficeId != null)
+                          StreamBuilder<
+                            List<QueryDocumentSnapshot<Map<String, dynamic>>>
+                          >(
+                            stream: CashierCashPaymentsPage.waiting(
+                              cashOfficeId,
+                            ),
+                            builder: (context, snap) => ActionCard(
+                              icon: Icons.payments_outlined,
+                              iconColor: AppColors.success,
+                              title: l10n.cashPaymentsTitle,
+                              subtitle: l10n.cashPaymentsSubtitle,
+                              badge: snap.hasData
+                                  ? '${snap.data!.length}'
+                                  : '…',
+                              onTap: () => Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => CashierCashPaymentsPage(
+                                    officeId: cashOfficeId,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
                         ActionCard(
                           icon: Icons.receipt_long_outlined,
                           iconColor: AppColors.info,

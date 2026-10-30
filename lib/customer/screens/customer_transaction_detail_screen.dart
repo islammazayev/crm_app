@@ -8,6 +8,7 @@ import '../../services/receipt_service.dart';
 import '../../theme/app_theme.dart';
 import '../../utils/pickup_code.dart';
 import '../../utils/transaction_kind.dart';
+import '../../widgets/pay_method.dart';
 import '../../widgets/receipt_button.dart';
 import '../../utils/transaction_no.dart';
 import 'customer_transactions_screen.dart' show customerStatusText;
@@ -153,7 +154,24 @@ class CustomerTransactionDetailScreen extends StatelessWidget {
                       Text(
                         l10n.orderStatusLine(customerStatusText(l10n, status)),
                       ),
-                      if (paymentLabel.isNotEmpty &&
+                      // Kontant: kunden går till kontoret och betalar där;
+                      // managern eller kassören bekräftar inbetalningen.
+                      if (payMethodOf(data) == PayMethod.cash &&
+                          status == 'customer_accepted') ...[
+                        const SizedBox(height: 16),
+                        OfficeAddressCard(
+                          officeId: '${data['officeId'] ?? ''}',
+                          title: l10n.payCashAtOfficeAmount(
+                            amountFrom.toStringAsFixed(2),
+                            fromCurrency,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          l10n.payCashConfirmHint,
+                          style: const TextStyle(color: Colors.grey),
+                        ),
+                      ] else if (paymentLabel.isNotEmpty &&
                           const [
                             'customer_accepted',
                             'customer_paid',

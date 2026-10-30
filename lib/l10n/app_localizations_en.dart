@@ -2099,4 +2099,84 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get totalBalanceSubtitle => 'Office + cashiers (excluding partners)';
+
+  @override
+  String get officeAddressLabel => 'Address (for customers paying cash)';
+
+  @override
+  String get officeMapUrlLabel => 'Map link';
+
+  @override
+  String get officeMapUrlHelper =>
+      'Open the office in Google Maps, tap Share and paste the link here.';
+
+  @override
+  String get howDoYouPay => 'How do you pay?';
+
+  @override
+  String get howDoesCustomerPay => 'How does the customer pay?';
+
+  @override
+  String get payCashAtOffice => 'Cash at the office';
+
+  @override
+  String get payViaBank => 'Via bank';
+
+  @override
+  String get payCashHint =>
+      'You get the office address with a map link and hand in the money there. The office confirms the payment.';
+
+  @override
+  String get payBankHint => 'The office sends you payment details, as before.';
+
+  @override
+  String get walkInCashHint =>
+      'The customer pays here at the office. The payment is confirmed right away and the customer gets a pickup code.';
+
+  @override
+  String get walkInBankHint =>
+      'You send payment details to the customer and confirm when the money has arrived, as before.';
+
+  @override
+  String get officeAddressMissing =>
+      'The office has no address yet. Ask the office.';
+
+  @override
+  String get openMap => 'Open map';
+
+  @override
+  String payCashAtOfficeAmount(Object amount, Object currency) {
+    return 'Pay $amount $currency in cash at the office';
+  }
+
+  @override
+  String get payCashConfirmHint =>
+      'The office confirms when you have handed in the money. You then get your pickup code.';
+
+  @override
+  String get customerPaysCashAtOffice =>
+      '💵 The customer pays cash at the office';
+
+  @override
+  String get cashPaymentReceived => 'Payment received (cash)';
+
+  @override
+  String get cashPaymentsTitle => 'Cash payments';
+
+  @override
+  String get cashPaymentsSubtitle =>
+      'Customers who will pay cash at the office.';
+
+  @override
+  String get noCashPaymentsWaiting => 'No cash payments are waiting right now.';
+
+  @override
+  String confirmCashReceived(Object amount, Object name) {
+    return 'Have you received $amount in cash from $name? The customer then gets their pickup code.';
+  }
+
+  @override
+  String customerPaysCashAmount(Object amount, Object currency) {
+    return 'The customer pays $amount $currency';
+  }
 }

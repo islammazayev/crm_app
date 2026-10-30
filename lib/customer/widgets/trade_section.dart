@@ -6,6 +6,7 @@ import '../../l10n/app_localizations.dart';
 import '../../l10n/locale_controller.dart';
 import '../../services/transaction_number_service.dart';
 import '../../utils/customer_tiers.dart';
+import '../../widgets/pay_method.dart';
 import 'office_listing.dart';
 
 /// Hur kunden vill få valutan hen köper.
@@ -38,6 +39,7 @@ class _TradeSectionState extends State<TradeSection> {
   /// Valutan som väljs sedan: den kunden betalar med eller vill få.
   String? _payCurrency;
   DeliveryMethod _delivery = DeliveryMethod.cash;
+  PayMethod _payMethod = PayMethod.bank;
   String? _officeId;
   final _amountCtrl = TextEditingController();
 
@@ -161,6 +163,7 @@ class _TradeSectionState extends State<TradeSection> {
         'feePercent': null,
         'feeAmount': null,
         'paymentMethod': null,
+        'payMethod': _payMethod.name,
         'status': 'customer_requested',
         'createAt': FieldValue.serverTimestamp(),
         ...?tier?.toTransactionFields(),
@@ -270,6 +273,13 @@ class _TradeSectionState extends State<TradeSection> {
                 ? l10n.deliveryCashHint
                 : l10n.deliveryBankHint,
             style: const TextStyle(color: Colors.grey, fontSize: 13),
+          ),
+          const SizedBox(height: 20),
+
+          // Hur kunden betalar: kontant på kontoret eller via bank.
+          PayMethodPicker(
+            value: _payMethod,
+            onChanged: (v) => setState(() => _payMethod = v),
           ),
           const SizedBox(height: 20),
 

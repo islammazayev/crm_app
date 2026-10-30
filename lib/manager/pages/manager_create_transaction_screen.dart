@@ -11,6 +11,8 @@ import '../../services/transaction_number_service.dart';
 import '../../theme/app_theme.dart';
 import '../../utils/customer_search.dart';
 import '../../utils/fee_calc.dart';
+import '../../utils/pickup_code.dart';
+import '../../widgets/pay_method.dart';
 import '../../widgets/rate_field.dart';
 import 'manager_transactions_detail_screen.dart';
 
@@ -56,6 +58,9 @@ class _ManagerCreateTransactionScreenState
 
   /// Kunden vill bli kund hos oss: skapa/bjud in och skicka länk via SMS.
   bool _invite = false;
+
+  /// Kontant: kunden betalar här och nu, så betalningen bekräftas direkt.
+  PayMethod _payMethod = PayMethod.cash;
 
   bool get _selectedHasAccount => _selected?.data()['userId'] != null;
 
@@ -208,9 +213,21 @@ class _ManagerCreateTransactionScreenState
         'rateFromTo': rate,
         ...a.toMap(),
         'status': 'customer_accepted',
+        'payMethod': _payMethod.name,
         'createdByManager': true,
         'createAt': FieldValue.serverTimestamp(),
       });
+
+      // Kontant: kunden står på kontoret och har lämnat pengarna, så
+      // betalningen bekräftas direkt och kunden får uthämtningskoden.
+      if (_payMethod == PayMethod.cash) {
+        await ref.update({
+          'status': 'payment_confirmed',
+          'pickupCode': newPickupCode(),
+          'pickupToken': newPickupToken(),
+          'paymentConfirmedAt': FieldValue.serverTimestamp(),
+        });
+      }
 
       // SMS-appen öppnas med kundens nummer och länken; managern trycker
       // Skicka.
@@ -339,6 +356,12 @@ class _ManagerCreateTransactionScreenState
                   ),
                 ),
                 ..._resultLines(l10n),
+                const SizedBox(height: 20),
+                PayMethodPicker(
+                  forManager: true,
+                  value: _payMethod,
+                  onChanged: (v) => setState(() => _payMethod = v),
+                ),
                 const SizedBox(height: 20),
                 ElevatedButton(
                   onPressed: _saving ? null : _create,

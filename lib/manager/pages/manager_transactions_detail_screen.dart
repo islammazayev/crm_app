@@ -9,6 +9,7 @@ import '../../utils/fee_calc.dart';
 import '../../utils/pickup_code.dart';
 import '../../utils/pickup_code_formatter.dart';
 import 'pickup_scanner_page.dart';
+import '../../widgets/pay_method.dart';
 import '../../widgets/rate_field.dart';
 import '../../widgets/receipt_button.dart';
 import '../../services/exchange_rate_service.dart';
@@ -483,6 +484,8 @@ class _ManagerTransactionDetailScreenState
           final String paymentLabel = (data['paymentMethodLabel'] ?? '')
               .toString();
           final bool paymentSent = paymentLabel.isNotEmpty;
+          // Kontant: kunden betalar på kontoret, inga betalningsuppgifter.
+          final bool payCash = payMethodOf(data) == PayMethod.cash;
 
           if (_selectedMethodId == null && chosenPaymentMethodId != null) {
             _selectedMethodId = chosenPaymentMethodId;
@@ -815,7 +818,23 @@ class _ManagerTransactionDetailScreenState
                         Text(l10n.paymentMethodValue(paymentLabel)),
                       ],
 
-                      if (status == 'customer_accepted' && officeId.isNotEmpty)
+                      if (payCash &&
+                          const [
+                            'customer_requested',
+                            'manager_proposed',
+                            'customer_countered',
+                            'customer_accepted',
+                          ].contains(status)) ...[
+                        const SizedBox(height: 12),
+                        Text(
+                          l10n.customerPaysCashAtOffice,
+                          style: const TextStyle(fontWeight: FontWeight.w600),
+                        ),
+                      ],
+
+                      if (status == 'customer_accepted' &&
+                          officeId.isNotEmpty &&
+                          !payCash)
                         FutureBuilder<DocumentSnapshot>(
                           future: FirebaseFirestore.instance
                               .collection('offices')
@@ -1222,7 +1241,25 @@ class _ManagerTransactionDetailScreenState
                         ],
                       ],
 
-                      if (status == 'customer_accepted')
+                      // Kontant: bekräfta när kunden har lämnat pengarna.
+                      if (status == 'customer_accepted' && payCash)
+                        SafeArea(
+                          top: false,
+                          child: SizedBox(
+                            width: double.infinity,
+                            child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.green,
+                              ),
+                              onPressed: _busy
+                                  ? null
+                                  : () => _confirmPayment(txRef),
+                              child: Text(l10n.cashPaymentReceived),
+                            ),
+                          ),
+                        ),
+
+                      if (status == 'customer_accepted' && !payCash)
                         SafeArea(
                           top: false,
                           child: Column(

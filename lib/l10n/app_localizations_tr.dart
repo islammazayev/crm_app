@@ -2091,4 +2091,82 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get totalBalanceSubtitle => 'Ofis + kasiyerler (ortaklar hariç)';
+
+  @override
+  String get officeAddressLabel => 'Adres (nakit ödeyen müşteriler için)';
+
+  @override
+  String get officeMapUrlLabel => 'Harita bağlantısı';
+
+  @override
+  String get officeMapUrlHelper =>
+      'Ofisi Google Haritalar\'da açın, Paylaş\'a dokunun ve bağlantıyı buraya yapıştırın.';
+
+  @override
+  String get howDoYouPay => 'Nasıl ödüyorsunuz?';
+
+  @override
+  String get howDoesCustomerPay => 'Müşteri nasıl ödüyor?';
+
+  @override
+  String get payCashAtOffice => 'Ofiste nakit';
+
+  @override
+  String get payViaBank => 'Banka ile';
+
+  @override
+  String get payCashHint =>
+      'Harita bağlantısıyla ofis adresini alırsınız ve parayı orada teslim edersiniz. Ofis ödemeyi onaylar.';
+
+  @override
+  String get payBankHint =>
+      'Ofis size ödeme bilgilerini gönderir, eskisi gibi.';
+
+  @override
+  String get walkInCashHint =>
+      'Müşteri burada, ofiste öder. Ödeme hemen onaylanır ve müşteri teslim kodunu alır.';
+
+  @override
+  String get walkInBankHint =>
+      'Müşteriye ödeme bilgilerini gönderir ve para geldiğinde onaylarsınız, eskisi gibi.';
+
+  @override
+  String get officeAddressMissing => 'Ofisin henüz adresi yok. Ofise sorun.';
+
+  @override
+  String get openMap => 'Haritayı aç';
+
+  @override
+  String payCashAtOfficeAmount(Object amount, Object currency) {
+    return 'Ofiste $amount $currency nakit ödeyin';
+  }
+
+  @override
+  String get payCashConfirmHint =>
+      'Parayı teslim ettiğinizde ofis onaylar. Ardından teslim kodunuzu alırsınız.';
+
+  @override
+  String get customerPaysCashAtOffice => '💵 Müşteri ofiste nakit ödüyor';
+
+  @override
+  String get cashPaymentReceived => 'Ödeme alındı (nakit)';
+
+  @override
+  String get cashPaymentsTitle => 'Nakit ödemeler';
+
+  @override
+  String get cashPaymentsSubtitle => 'Ofiste nakit ödeyecek müşteriler.';
+
+  @override
+  String get noCashPaymentsWaiting => 'Şu anda bekleyen nakit ödeme yok.';
+
+  @override
+  String confirmCashReceived(Object amount, Object name) {
+    return '$name kişisinden $amount nakit aldınız mı? Müşteri ardından teslim kodunu alır.';
+  }
+
+  @override
+  String customerPaysCashAmount(Object amount, Object currency) {
+    return 'Müşteri $amount $currency öder';
+  }
 }

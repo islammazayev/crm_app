@@ -221,7 +221,13 @@ class _AdminCashiersPageState extends State<AdminCashiersPage> {
       await batch.commit();
       return;
     }
+    // Kassören bekräftar kontanta inbetalningar på det kopplade kontoret,
+    // annars på den kopplade managerns kontor.
+    final cashOfficeId =
+        officeId ??
+        (managerId == null ? null : links.managerOffices[managerId]);
     batch.update(CashierService.cashier(uid), {
+      'cashOfficeId': cashOfficeId ?? FieldValue.delete(),
       'firstName': firstName,
       'lastName': lastName,
       'officeId': officeId ?? FieldValue.delete(),

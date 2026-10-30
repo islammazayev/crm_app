@@ -2102,4 +2102,86 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String get totalBalanceSubtitle => 'Kontoret + kassörer (utan partner)';
+
+  @override
+  String get officeAddressLabel => 'Adress (för kunder som betalar kontant)';
+
+  @override
+  String get officeMapUrlLabel => 'Kartlänk';
+
+  @override
+  String get officeMapUrlHelper =>
+      'Öppna kontoret i Google Maps, tryck Dela och klistra in länken här.';
+
+  @override
+  String get howDoYouPay => 'Hur betalar du?';
+
+  @override
+  String get howDoesCustomerPay => 'Hur betalar kunden?';
+
+  @override
+  String get payCashAtOffice => 'Kontant på kontoret';
+
+  @override
+  String get payViaBank => 'Via bank';
+
+  @override
+  String get payCashHint =>
+      'Du får kontorets adress med kartlänk och lämnar pengarna där. Kontoret bekräftar inbetalningen.';
+
+  @override
+  String get payBankHint =>
+      'Kontoret skickar betalningsuppgifter till dig, som förut.';
+
+  @override
+  String get walkInCashHint =>
+      'Kunden betalar här på kontoret. Betalningen bekräftas direkt och kunden får sin uthämtningskod.';
+
+  @override
+  String get walkInBankHint =>
+      'Du skickar betalningsuppgifter till kunden och bekräftar när pengarna har kommit, som förut.';
+
+  @override
+  String get officeAddressMissing =>
+      'Kontoret har ingen adress än. Fråga kontoret.';
+
+  @override
+  String get openMap => 'Öppna karta';
+
+  @override
+  String payCashAtOfficeAmount(Object amount, Object currency) {
+    return 'Betala $amount $currency kontant på kontoret';
+  }
+
+  @override
+  String get payCashConfirmHint =>
+      'Kontoret bekräftar när du har lämnat pengarna. Då får du din uthämtningskod.';
+
+  @override
+  String get customerPaysCashAtOffice =>
+      '💵 Kunden betalar kontant på kontoret';
+
+  @override
+  String get cashPaymentReceived => 'Betalning mottagen (kontant)';
+
+  @override
+  String get cashPaymentsTitle => 'Kontanta inbetalningar';
+
+  @override
+  String get cashPaymentsSubtitle =>
+      'Kunder som ska betala kontant på kontoret.';
+
+  @override
+  String get noCashPaymentsWaiting =>
+      'Inga kontanta inbetalningar väntar just nu.';
+
+  @override
+  String confirmCashReceived(Object amount, Object name) {
+    return 'Har du tagit emot $amount kontant från $name? Kunden får då sin uthämtningskod.';
+  }
+
+  @override
+  String customerPaysCashAmount(Object amount, Object currency) {
+    return 'Kunden betalar $amount $currency';
+  }
 }

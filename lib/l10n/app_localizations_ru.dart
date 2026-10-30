@@ -2107,4 +2107,84 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get totalBalanceSubtitle => 'Офис + кассиры (без партнёров)';
+
+  @override
+  String get officeAddressLabel => 'Адрес (для клиентов, платящих наличными)';
+
+  @override
+  String get officeMapUrlLabel => 'Ссылка на карту';
+
+  @override
+  String get officeMapUrlHelper =>
+      'Откройте офис в Google Maps, нажмите «Поделиться» и вставьте ссылку сюда.';
+
+  @override
+  String get howDoYouPay => 'Как вы платите?';
+
+  @override
+  String get howDoesCustomerPay => 'Как платит клиент?';
+
+  @override
+  String get payCashAtOffice => 'Наличными в офисе';
+
+  @override
+  String get payViaBank => 'Через банк';
+
+  @override
+  String get payCashHint =>
+      'Вы получите адрес офиса со ссылкой на карту и сдадите деньги там. Офис подтвердит оплату.';
+
+  @override
+  String get payBankHint =>
+      'Офис отправит вам платёжные реквизиты, как раньше.';
+
+  @override
+  String get walkInCashHint =>
+      'Клиент платит здесь, в офисе. Оплата подтверждается сразу, и клиент получает код выдачи.';
+
+  @override
+  String get walkInBankHint =>
+      'Вы отправляете клиенту платёжные реквизиты и подтверждаете, когда деньги придут, как раньше.';
+
+  @override
+  String get officeAddressMissing =>
+      'У офиса пока нет адреса. Уточните в офисе.';
+
+  @override
+  String get openMap => 'Открыть карту';
+
+  @override
+  String payCashAtOfficeAmount(Object amount, Object currency) {
+    return 'Оплатите $amount $currency наличными в офисе';
+  }
+
+  @override
+  String get payCashConfirmHint =>
+      'Офис подтвердит, когда вы сдадите деньги. Тогда вы получите код выдачи.';
+
+  @override
+  String get customerPaysCashAtOffice => '💵 Клиент платит наличными в офисе';
+
+  @override
+  String get cashPaymentReceived => 'Оплата получена (наличные)';
+
+  @override
+  String get cashPaymentsTitle => 'Оплаты наличными';
+
+  @override
+  String get cashPaymentsSubtitle =>
+      'Клиенты, которые будут платить наличными в офисе.';
+
+  @override
+  String get noCashPaymentsWaiting => 'Сейчас нет ожидающих оплат наличными.';
+
+  @override
+  String confirmCashReceived(Object amount, Object name) {
+    return 'Вы получили $amount наличными от $name? Тогда клиент получит код выдачи.';
+  }
+
+  @override
+  String customerPaysCashAmount(Object amount, Object currency) {
+    return 'Клиент платит $amount $currency';
+  }
 }

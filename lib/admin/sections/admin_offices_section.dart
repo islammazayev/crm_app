@@ -39,6 +39,10 @@ class EditOfficeDialog extends StatefulWidget {
 class _EditOfficeDialogState extends State<EditOfficeDialog> {
   late final TextEditingController _countryCtrl;
   late final TextEditingController _cityCtrl;
+
+  /// Adress och kartlänk som kunden får när hen betalar kontant.
+  late final TextEditingController _addressCtrl;
+  late final TextEditingController _mapUrlCtrl;
   late Set<String> _selectedCurrencies;
   late List<PaymentMethodFormItem> _methods;
   bool _saving = false;
@@ -51,6 +55,12 @@ class _EditOfficeDialogState extends State<EditOfficeDialog> {
     );
     _cityCtrl = TextEditingController(
       text: (widget.data['city'] ?? '').toString(),
+    );
+    _addressCtrl = TextEditingController(
+      text: (widget.data['address'] ?? '').toString(),
+    );
+    _mapUrlCtrl = TextEditingController(
+      text: (widget.data['mapUrl'] ?? '').toString(),
     );
     _selectedCurrencies = Set<String>.from(
       (widget.data['currencies'] as List? ?? []).map((e) => e.toString()),
@@ -74,6 +84,8 @@ class _EditOfficeDialogState extends State<EditOfficeDialog> {
   void dispose() {
     _countryCtrl.dispose();
     _cityCtrl.dispose();
+    _addressCtrl.dispose();
+    _mapUrlCtrl.dispose();
     for (final m in _methods) {
       m.dispose();
     }
@@ -98,14 +110,19 @@ class _EditOfficeDialogState extends State<EditOfficeDialog> {
           .update({
         'country': _countryCtrl.text.trim(),
         'city': _cityCtrl.text.trim(),
+        'address': _addressCtrl.text.trim(),
+        'mapUrl': _mapUrlCtrl.text.trim(),
         'currencies': _selectedCurrencies.toList(),
         'paymentMethods': paymentMethods,
       });
 
-      // Håll kundernas publika kontorslista i synk (land, stad, valutor).
+      // Håll kundernas publika kontorslista i synk (land, stad, adress,
+      // kartlänk, valutor).
       await OfficeListingService.upsert(widget.officeId, {
         'country': _countryCtrl.text.trim(),
         'city': _cityCtrl.text.trim(),
+        'address': _addressCtrl.text.trim(),
+        'mapUrl': _mapUrlCtrl.text.trim(),
         'currencies': _selectedCurrencies.toList(),
       });
 
@@ -160,6 +177,26 @@ class _EditOfficeDialogState extends State<EditOfficeDialog> {
               controller: _cityCtrl,
               decoration: InputDecoration(
                 labelText: l10n.city,
+                border: const OutlineInputBorder(),
+              ),
+            ),
+            const SizedBox(height: 14),
+            TextField(
+              controller: _addressCtrl,
+              maxLines: 2,
+              decoration: InputDecoration(
+                labelText: l10n.officeAddressLabel,
+                border: const OutlineInputBorder(),
+              ),
+            ),
+            const SizedBox(height: 14),
+            TextField(
+              controller: _mapUrlCtrl,
+              keyboardType: TextInputType.url,
+              decoration: InputDecoration(
+                labelText: l10n.officeMapUrlLabel,
+                helperText: l10n.officeMapUrlHelper,
+                helperMaxLines: 3,
                 border: const OutlineInputBorder(),
               ),
             ),
