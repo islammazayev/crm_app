@@ -2241,4 +2241,40 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String get messagesCardSubtitle =>
       'Чат по делам с менеджером, кассирами и партнёрами.';
+
+  @override
+  String get alsoCashier => 'Также кассир';
+
+  @override
+  String get alsoCashierHint =>
+      'Менеджер также получает свою кассу в офисе и может переключаться между менеджером и кассиром в приложении.';
+
+  @override
+  String get alsoCashierBadge => '💵 Также кассир';
+
+  @override
+  String get chooseRoleTitle => 'Выберите меню';
+
+  @override
+  String get chooseRoleIntro =>
+      'Вы и менеджер, и кассир. Выберите меню. Переключиться можно позже кнопкой ⇄ вверху справа.';
+
+  @override
+  String get roleManager => 'Менеджер';
+
+  @override
+  String get roleManagerSubtitle =>
+      'Переводы офиса, баланс, партнёры и кассиры.';
+
+  @override
+  String get roleCashier => 'Кассир';
+
+  @override
+  String get roleCashierSubtitle => 'Ваша касса, переводы и оплаты наличными.';
+
+  @override
+  String get switchToCashier => 'Переключиться на кассира';
+
+  @override
+  String get switchToManager => 'Переключиться на менеджера';
 }

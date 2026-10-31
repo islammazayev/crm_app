@@ -56,7 +56,9 @@ service firebase.storage {
         || (userDoc().role == 'manager'
             && (userDoc().get('officeId', null) in chat(id).officeIds
                 || request.auth.uid in chat(id).managerIds))
-        || (userDoc().role == 'cashier'
+        || ((userDoc().role == 'cashier'
+             || (userDoc().role == 'manager'
+                 && userDoc().get('alsoCashier', false) == true))
             && (request.auth.uid in chat(id).cashierIds
                 || chat(id).cashierOfficeIds.size() > 0))
         || (userDoc().role == 'partner'

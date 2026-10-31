@@ -196,14 +196,17 @@ class ChatService {
         queries.add(chats.where('officeIds', arrayContains: office));
       }
       queries.add(chats.where('managerIds', arrayContains: uid));
-    } else if (role == 'cashier') {
+    }
+    // Kassör, eller manager som också är kassör.
+    if (role == 'cashier' || (role == 'manager' && me['alsoCashier'] == true)) {
       final c = (await _db.collection('cashiers').doc(uid).get()).data();
       final office = (c?['officeId'] ?? c?['cashOfficeId']) as String?;
       if (office != null) {
         queries.add(chats.where('cashierOfficeIds', arrayContains: office));
       }
       queries.add(chats.where('cashierIds', arrayContains: uid));
-    } else if (role == 'partner') {
+    }
+    if (role == 'partner') {
       queries.add(chats.where('partnerId', isEqualTo: uid));
     } else if (role == 'admin') {
       queries.add(chats);

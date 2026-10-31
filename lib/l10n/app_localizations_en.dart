@@ -2233,4 +2233,41 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get messagesCardSubtitle =>
       'Chat about cases with managers, cashiers and partners.';
+
+  @override
+  String get alsoCashier => 'Also cashier';
+
+  @override
+  String get alsoCashierHint =>
+      'The manager also gets their own cash desk at the office and can switch between manager and cashier in the app.';
+
+  @override
+  String get alsoCashierBadge => '💵 Also cashier';
+
+  @override
+  String get chooseRoleTitle => 'Choose menu';
+
+  @override
+  String get chooseRoleIntro =>
+      'You are both manager and cashier. Choose which menu to use. You can switch later with the ⇄ button at the top right.';
+
+  @override
+  String get roleManager => 'Manager';
+
+  @override
+  String get roleManagerSubtitle =>
+      'The office\'s transactions, balance, partners and cashiers.';
+
+  @override
+  String get roleCashier => 'Cashier';
+
+  @override
+  String get roleCashierSubtitle =>
+      'Your own cash desk, transfers and cash payments.';
+
+  @override
+  String get switchToCashier => 'Switch to cashier';
+
+  @override
+  String get switchToManager => 'Switch to manager';
 }

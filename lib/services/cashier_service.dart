@@ -52,6 +52,46 @@ class CashierService {
   static DocumentReference<Map<String, dynamic>> directory(String uid) =>
       _db.collection('cashierDirectory').doc(uid);
 
+  /// Gör en manager till kassör också (eller tar bort det). Kassören får en
+  /// egen kassa i cashiers/{uid} på managerns kontor och syns i katalogen.
+  /// Tas rollen bort finns kassan kvar (saldot försvinner inte), men
+  /// personen kommer inte längre åt den.
+  static Future<void> setManagerAlsoCashier({
+    required String uid,
+    required bool enabled,
+    required String firstName,
+    required String lastName,
+    required String? officeId,
+    required String officeLabel,
+  }) async {
+    final batch = _db.batch();
+    final user = _db.collection('users').doc(uid);
+    if (!enabled) {
+      batch.update(user, {'alsoCashier': FieldValue.delete()});
+      batch.delete(directory(uid));
+      await batch.commit();
+      return;
+    }
+    final existing = await cashier(uid).get();
+    batch.update(user, {'alsoCashier': true});
+    batch.set(cashier(uid), {
+      'firstName': firstName,
+      'lastName': lastName,
+      'officeId': officeId ?? FieldValue.delete(),
+      'managerId': FieldValue.delete(),
+      if (!existing.exists) 'balances': <String, double>{},
+      if (!existing.exists) 'createdAt': FieldValue.serverTimestamp(),
+    }, SetOptions(merge: true));
+    batch.set(directory(uid), {
+      'name': '$firstName $lastName'.trim(),
+      'officeId': officeId,
+      'officeLabel': officeLabel,
+      'managerId': null,
+      'managerName': '',
+    });
+    await batch.commit();
+  }
+
   /// Kassörer som bara är kopplade till en manager får managerns kontor som
   /// cashOfficeId (för kontanta inbetalningar). Körs av admin-appen.
   static Future<void> backfillCashOffice() async {

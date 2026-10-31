@@ -2238,4 +2238,41 @@ class AppLocalizationsSv extends AppLocalizations {
   @override
   String get messagesCardSubtitle =>
       'Chatta om ärenden med manager, kassörer och partner.';
+
+  @override
+  String get alsoCashier => 'Även kassör';
+
+  @override
+  String get alsoCashierHint =>
+      'Managern får också en egen kassa på kontoret och kan byta mellan manager och kassör i appen.';
+
+  @override
+  String get alsoCashierBadge => '💵 Även kassör';
+
+  @override
+  String get chooseRoleTitle => 'Välj meny';
+
+  @override
+  String get chooseRoleIntro =>
+      'Du är både manager och kassör. Välj vilken meny du vill använda. Du kan byta senare med knappen ⇄ uppe till höger.';
+
+  @override
+  String get roleManager => 'Manager';
+
+  @override
+  String get roleManagerSubtitle =>
+      'Kontorets transaktioner, saldo, partner och kassörer.';
+
+  @override
+  String get roleCashier => 'Kassör';
+
+  @override
+  String get roleCashierSubtitle =>
+      'Din egen kassa, överföringar och kontanta inbetalningar.';
+
+  @override
+  String get switchToCashier => 'Byt till kassör';
+
+  @override
+  String get switchToManager => 'Byt till manager';
 }

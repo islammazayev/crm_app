@@ -612,5 +612,16 @@
   "messagesTitle": "Mesajlar",
   "noMessagesYet": "Henüz mesaj yok. Yazmak için bir iş açın ve sohbet düğmesine dokunun.",
   "unreadChats": "Okunmamış mesajlı {count} sohbet",
-  "messagesCardSubtitle": "Yönetici, kasiyerler ve ortaklarla işler hakkında sohbet edin."
+  "messagesCardSubtitle": "Yönetici, kasiyerler ve ortaklarla işler hakkında sohbet edin.",
+  "alsoCashier": "Aynı zamanda kasiyer",
+  "alsoCashierHint": "Yönetici ofiste kendi kasasını da alır ve uygulamada yönetici ile kasiyer arasında geçiş yapabilir.",
+  "alsoCashierBadge": "💵 Aynı zamanda kasiyer",
+  "chooseRoleTitle": "Menü seçin",
+  "chooseRoleIntro": "Hem yönetici hem kasiyersiniz. Hangi menüyü kullanacağınızı seçin. Daha sonra sağ üstteki ⇄ düğmesiyle geçiş yapabilirsiniz.",
+  "roleManager": "Yönetici",
+  "roleManagerSubtitle": "Ofisin işlemleri, bakiyesi, ortakları ve kasiyerleri.",
+  "roleCashier": "Kasiyer",
+  "roleCashierSubtitle": "Kendi kasanız, transferler ve nakit ödemeler.",
+  "switchToCashier": "Kasiyere geç",
+  "switchToManager": "Yöneticiye geç"
 }

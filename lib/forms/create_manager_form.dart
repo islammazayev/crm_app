@@ -4,15 +4,13 @@ import 'package:flutter/material.dart';
 
 import '../l10n/auth_error_text.dart';
 import '../services/account_creator.dart';
+import '../services/cashier_service.dart';
 import '../l10n/locale_controller.dart';
 
 class CreateManagerForm extends StatefulWidget {
   final List<QueryDocumentSnapshot> officeDocs;
 
-  const CreateManagerForm({
-    super.key,
-    required this.officeDocs,
-  });
+  const CreateManagerForm({super.key, required this.officeDocs});
 
   @override
   State<CreateManagerForm> createState() => _CreateManagerFormState();
@@ -29,6 +27,9 @@ class _CreateManagerFormState extends State<CreateManagerForm> {
 
   String? _selectedOfficeId;
   bool _creating = false;
+
+  /// Managern är också kassör på kontoret (egen kassa).
+  bool _alsoCashier = false;
 
   @override
   void initState() {
@@ -66,22 +67,33 @@ class _CreateManagerFormState extends State<CreateManagerForm> {
       await createAccountAsAdmin(
         email: _emailController.text.trim(),
         password: _passwordController.text.trim(),
-        writeProfile: (uid) =>
-            FirebaseFirestore.instance.collection('users').doc(uid).set({
-          'email': _emailController.text.trim(),
-          'role': 'manager',
-          'officeId': _selectedOfficeId,
-          'firstName': _firstNameController.text.trim(),
-          'lastName': _lastNameController.text.trim(),
-          'phone': _phoneController.text.trim(),
-          'createAt': FieldValue.serverTimestamp(),
-        }),
+        writeProfile: (uid) async {
+          await FirebaseFirestore.instance.collection('users').doc(uid).set({
+            'email': _emailController.text.trim(),
+            'role': 'manager',
+            'officeId': _selectedOfficeId,
+            'firstName': _firstNameController.text.trim(),
+            'lastName': _lastNameController.text.trim(),
+            'phone': _phoneController.text.trim(),
+            'createAt': FieldValue.serverTimestamp(),
+          });
+          if (_alsoCashier) {
+            await CashierService.setManagerAlsoCashier(
+              uid: uid,
+              enabled: true,
+              firstName: _firstNameController.text.trim(),
+              lastName: _lastNameController.text.trim(),
+              officeId: _selectedOfficeId,
+              officeLabel: officeLabelOf(widget.officeDocs, _selectedOfficeId),
+            );
+          }
+        },
       );
 
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(context.l10n.managerCreated)),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(context.l10n.managerCreated)));
 
       _formKey.currentState!.reset();
       _firstNameController.clear();
@@ -89,6 +101,7 @@ class _CreateManagerFormState extends State<CreateManagerForm> {
       _emailController.clear();
       _phoneController.clear();
       _passwordController.clear();
+      setState(() => _alsoCashier = false);
     } on FirebaseAuthException catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
@@ -132,8 +145,9 @@ class _CreateManagerFormState extends State<CreateManagerForm> {
                 child: TextFormField(
                   controller: _firstNameController,
                   decoration: InputDecoration(labelText: l10n.firstName),
-                  validator: (v) =>
-                      (v == null || v.trim().isEmpty) ? l10n.enterFirstName : null,
+                  validator: (v) => (v == null || v.trim().isEmpty)
+                      ? l10n.enterFirstName
+                      : null,
                 ),
               ),
               const SizedBox(width: 8),
@@ -141,8 +155,9 @@ class _CreateManagerFormState extends State<CreateManagerForm> {
                 child: TextFormField(
                   controller: _lastNameController,
                   decoration: InputDecoration(labelText: l10n.lastName),
-                  validator: (v) =>
-                      (v == null || v.trim().isEmpty) ? l10n.enterLastName : null,
+                  validator: (v) => (v == null || v.trim().isEmpty)
+                      ? l10n.enterLastName
+                      : null,
                 ),
               ),
             ],
@@ -183,6 +198,14 @@ class _CreateManagerFormState extends State<CreateManagerForm> {
             onChanged: (v) => setState(() => _selectedOfficeId = v),
             decoration: InputDecoration(labelText: l10n.office),
           ),
+          CheckboxListTile(
+            contentPadding: EdgeInsets.zero,
+            controlAffinity: ListTileControlAffinity.leading,
+            value: _alsoCashier,
+            onChanged: (v) => setState(() => _alsoCashier = v ?? false),
+            title: Text(l10n.alsoCashier),
+            subtitle: Text(l10n.alsoCashierHint),
+          ),
           const SizedBox(height: 12),
           ElevatedButton.icon(
             onPressed: _creating ? null : _createManager,
@@ -199,4 +222,15 @@ class _CreateManagerFormState extends State<CreateManagerForm> {
       ),
     );
   }
+}
+
+/// "Land – Stad" för kontoret med [officeId], eller tomt.
+String officeLabelOf(List<QueryDocumentSnapshot> officeDocs, String? officeId) {
+  for (final o in officeDocs) {
+    if (o.id == officeId) {
+      final d = o.data() as Map<String, dynamic>;
+      return '${d['country'] ?? ''} – ${d['city'] ?? ''}';
+    }
+  }
+  return '';
 }

@@ -31,8 +31,12 @@ service cloud.firestore {
       return role() == 'customer';
     }
 
+    // Kassör, eller en manager som admin också har gjort till kassör
+    // (users/{uid}.alsoCashier). Den har då en egen kassa i cashiers/{uid}.
     function isCashier() {
-      return role() == 'cashier';
+      return role() == 'cashier'
+        || (role() == 'manager'
+            && get(userPath()).data.get('alsoCashier', false) == true);
     }
 
     function isPartner() {
@@ -153,11 +157,12 @@ service cloud.firestore {
       // Admin får göra allt (skapa managers, koppla kontor, radera).
       allow write: if isAdmin();
 
-      // Användare får uppdatera sig själva men inte ändra role/officeId/clientId.
+      // Användare får uppdatera sig själva men inte ändra roll, kontor,
+      // klient-ID eller om de också är kassör.
       allow update: if isSignedIn()
         && request.auth.uid == userId
         && !request.resource.data.diff(resource.data).affectedKeys()
-             .hasAny(['role', 'officeId', 'clientId']);
+             .hasAny(['role', 'officeId', 'clientId', 'alsoCashier']);
     }
 
     // ─── CUSTOMERS ──────────────────────────────────────────────────
@@ -995,7 +1000,8 @@ service cloud.firestore {
             && ((me.get('officeId', null) != null
                  && me.officeId in c.get('officeIds', []))
                 || request.auth.uid in c.get('managerIds', [])))
-        || (r == 'cashier'
+        || ((r == 'cashier'
+             || (r == 'manager' && me.get('alsoCashier', false) == true))
             && (request.auth.uid in c.get('cashierIds', [])
                 || cashierOfficeId() in c.get('cashierOfficeIds', [])))
         || (r == 'partner' && c.get('partnerId', '') == request.auth.uid);

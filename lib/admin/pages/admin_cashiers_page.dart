@@ -417,6 +417,22 @@ class _AdminCashiersPageState extends State<AdminCashiersPage> {
     );
     if (!ok) return;
     try {
+      // En manager som också är kassör: ta bara bort kassörsrollen, inte
+      // managern.
+      final user = await _db.collection('users').doc(doc.id).get();
+      if (!_isPartner && user.data()?['role'] == 'manager') {
+        final d = doc.data() ?? const {};
+        await CashierService.setManagerAlsoCashier(
+          uid: doc.id,
+          enabled: false,
+          firstName: '${d['firstName'] ?? ''}',
+          lastName: '${d['lastName'] ?? ''}',
+          officeId: d['officeId'] as String?,
+          officeLabel: '',
+        );
+        _snack(texts.deleted);
+        return;
+      }
       final batch = _db.batch();
       batch.delete(_db.collection('users').doc(doc.id));
       batch.delete(doc.reference);

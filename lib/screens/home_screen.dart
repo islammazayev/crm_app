@@ -3,10 +3,10 @@ import '../l10n/locale_controller.dart';
 import 'auth_gate.dart';
 import '../services/user_role_service.dart';
 import '../admin/screens/admin_home_screen.dart';
-import '../manager/screens/manager_home_screen.dart';
 import '../cashier/screens/cashier_home_screen.dart';
 import '../partner/screens/partner_home_screen.dart';
 import '../customer/screens/customer_home_screen.dart';
+import '../widgets/role_switch.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -48,7 +48,8 @@ class HomeScreen extends StatelessWidget {
         if (role == UserRole.admin) {
           return const AdminHomeScreen();
         } else if (role == UserRole.manager) {
-          return const ManagerHomeScreen();
+          // Är managern också kassör väljer hen meny först.
+          return const ManagerEntry();
         } else if (role == UserRole.cashier) {
           return const CashierHomeScreen();
         } else if (role == UserRole.partner) {

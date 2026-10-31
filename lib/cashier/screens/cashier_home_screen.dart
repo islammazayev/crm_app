@@ -11,6 +11,7 @@ import '../../utils/merged_query.dart';
 import '../../widgets/action_card.dart';
 import '../../widgets/chat.dart';
 import '../../widgets/language_button.dart';
+import '../../widgets/role_switch.dart';
 import '../pages/cashier_cash_payments_page.dart';
 import '../pages/cashier_send_page.dart';
 import '../pages/cashier_transfers_page.dart';
@@ -39,6 +40,7 @@ class CashierHomeScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text(l10n.cashierAppBarTitle),
         actions: [
+          const RoleSwitchButton(toCashier: false),
           const LanguageButton(),
           IconButton(
             tooltip: l10n.logout,
