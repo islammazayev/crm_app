@@ -116,11 +116,11 @@ class _OfficeListState extends State<OfficeList> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(l10n.balanceValue(balancesText)),
+                      // Alla managers som är kopplade till kontoret.
                       StreamBuilder<QuerySnapshot>(
                         stream: usersRef
                             .where('officeId', isEqualTo: officeId)
                             .where('role', isEqualTo: 'manager')
-                            .limit(1)
                             .snapshots(),
                         builder: (context, snapshot) {
                           if (snapshot.connectionState ==
@@ -131,33 +131,35 @@ class _OfficeListState extends State<OfficeList> {
                               snapshot.data!.docs.isEmpty) {
                             return Text(l10n.managerNone);
                           }
-                          final doc = snapshot.data!.docs.first;
-                          final data = doc.data() as Map<String, dynamic>;
-                          final firstName = (data['firstName'] ?? '')
-                              .toString();
-                          final lastName = (data['lastName'] ?? '').toString();
-                          final email = (data['email'] ?? '').toString();
-                          final phone = (data['phone'] ?? '').toString();
-                          final fullName = [
-                            firstName,
-                            lastName,
+                          String nameOf(Map<String, dynamic> d) => [
+                            '${d['firstName'] ?? ''}',
+                            '${d['lastName'] ?? ''}',
                           ].where((s) => s.isNotEmpty).join(' ');
-                          final managerLine = fullName.isNotEmpty
-                              ? l10n.managerValue(fullName)
-                              : l10n.managerUnknown;
-                          final contactParts = <String>[];
-                          if (email.isNotEmpty) {
-                            contactParts.add(l10n.emailValue(email));
-                          }
-                          if (phone.isNotEmpty) {
-                            contactParts.add(l10n.phoneValue(phone));
-                          }
-                          final contactLine = contactParts.join(' · ');
+                          final managers =
+                              snapshot.data!.docs
+                                  .map((d) => d.data() as Map<String, dynamic>)
+                                  .toList()
+                                ..sort((a, b) => nameOf(a).compareTo(nameOf(b)));
                           return Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(managerLine),
-                              if (contactLine.isNotEmpty) Text(contactLine),
+                              for (final data in managers) ...[
+                                Text(
+                                  nameOf(data).isNotEmpty
+                                      ? l10n.managerValue(nameOf(data))
+                                      : l10n.managerUnknown,
+                                ),
+                                if ('${data['email'] ?? ''}'.isNotEmpty ||
+                                    '${data['phone'] ?? ''}'.isNotEmpty)
+                                  Text(
+                                    [
+                                      if ('${data['email'] ?? ''}'.isNotEmpty)
+                                        l10n.emailValue('${data['email']}'),
+                                      if ('${data['phone'] ?? ''}'.isNotEmpty)
+                                        l10n.phoneValue('${data['phone']}'),
+                                    ].join(' · '),
+                                  ),
+                              ],
                             ],
                           );
                         },
