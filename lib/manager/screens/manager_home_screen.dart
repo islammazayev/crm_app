@@ -7,7 +7,9 @@ import '../../screens/auth_gate.dart';
 import '../../services/partner_service.dart';
 import '../../theme/app_theme.dart';
 import '../../widgets/action_card.dart';
+import '../../widgets/chat.dart';
 import '../../widgets/language_button.dart';
+import '../../widgets/role_switch.dart';
 import '../../utils/balances.dart';
 import '../pages/manager_balances_page.dart';
 import '../pages/manager_cashiers_page.dart';
@@ -112,6 +114,7 @@ class _ManagerHomeScreenState extends State<ManagerHomeScreen> {
               : l10n.managerAppBarTitleWithOffice(_officeLabel),
         ),
         actions: [
+          const RoleSwitchButton(toCashier: true),
           const LanguageButton(),
           IconButton(
             tooltip: l10n.logout,
@@ -283,6 +286,7 @@ class _ManagerHomeScreenState extends State<ManagerHomeScreen> {
                           ),
                         ),
                       ),
+                      const MessagesCard(),
                       // Växlingar med partner; siffran visar öppna.
                       StreamBuilder<
                         List<QueryDocumentSnapshot<Map<String, dynamic>>>

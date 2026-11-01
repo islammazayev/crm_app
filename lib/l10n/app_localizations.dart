@@ -3737,6 +3737,120 @@ abstract class AppLocalizations {
   /// In sv, this message translates to:
   /// **'Kolla med en partner om du kan växla till dig {currency}.'**
   String lowBalancePartnerHint(Object currency);
+
+  /// No description provided for @chat.
+  ///
+  /// In sv, this message translates to:
+  /// **'Chatt'**
+  String get chat;
+
+  /// No description provided for @chatEmpty.
+  ///
+  /// In sv, this message translates to:
+  /// **'Inga meddelanden än. Skriv här om ärendet till de andra på kontoret.'**
+  String get chatEmpty;
+
+  /// No description provided for @attachFile.
+  ///
+  /// In sv, this message translates to:
+  /// **'Bifoga bild eller PDF'**
+  String get attachFile;
+
+  /// No description provided for @writeMessage.
+  ///
+  /// In sv, this message translates to:
+  /// **'Skriv ett meddelande…'**
+  String get writeMessage;
+
+  /// No description provided for @messagesTitle.
+  ///
+  /// In sv, this message translates to:
+  /// **'Meddelanden'**
+  String get messagesTitle;
+
+  /// No description provided for @noMessagesYet.
+  ///
+  /// In sv, this message translates to:
+  /// **'Inga meddelanden än. Öppna ett ärende och tryck på chattknappen för att skriva.'**
+  String get noMessagesYet;
+
+  /// No description provided for @unreadChats.
+  ///
+  /// In sv, this message translates to:
+  /// **'{count} chattar med olästa meddelanden'**
+  String unreadChats(Object count);
+
+  /// No description provided for @messagesCardSubtitle.
+  ///
+  /// In sv, this message translates to:
+  /// **'Chatta om ärenden med manager, kassörer och partner.'**
+  String get messagesCardSubtitle;
+
+  /// No description provided for @alsoCashier.
+  ///
+  /// In sv, this message translates to:
+  /// **'Även kassör'**
+  String get alsoCashier;
+
+  /// No description provided for @alsoCashierHint.
+  ///
+  /// In sv, this message translates to:
+  /// **'Managern får också en egen kassa på kontoret och kan byta mellan manager och kassör i appen.'**
+  String get alsoCashierHint;
+
+  /// No description provided for @alsoCashierBadge.
+  ///
+  /// In sv, this message translates to:
+  /// **'💵 Även kassör'**
+  String get alsoCashierBadge;
+
+  /// No description provided for @chooseRoleTitle.
+  ///
+  /// In sv, this message translates to:
+  /// **'Välj meny'**
+  String get chooseRoleTitle;
+
+  /// No description provided for @chooseRoleIntro.
+  ///
+  /// In sv, this message translates to:
+  /// **'Du är både manager och kassör. Välj vilken meny du vill använda. Du kan byta senare med knappen ⇄ uppe till höger.'**
+  String get chooseRoleIntro;
+
+  /// No description provided for @roleManager.
+  ///
+  /// In sv, this message translates to:
+  /// **'Manager'**
+  String get roleManager;
+
+  /// No description provided for @roleManagerSubtitle.
+  ///
+  /// In sv, this message translates to:
+  /// **'Kontorets transaktioner, saldo, partner och kassörer.'**
+  String get roleManagerSubtitle;
+
+  /// No description provided for @roleCashier.
+  ///
+  /// In sv, this message translates to:
+  /// **'Kassör'**
+  String get roleCashier;
+
+  /// No description provided for @roleCashierSubtitle.
+  ///
+  /// In sv, this message translates to:
+  /// **'Din egen kassa, överföringar och kontanta inbetalningar.'**
+  String get roleCashierSubtitle;
+
+  /// No description provided for @switchToCashier.
+  ///
+  /// In sv, this message translates to:
+  /// **'Byt till kassör'**
+  String get switchToCashier;
+
+  /// No description provided for @switchToManager.
+  ///
+  /// In sv, this message translates to:
+  /// **'Byt till manager'**
+  String get switchToManager;
 }
 
 class _AppLocalizationsDelegate

@@ -2212,4 +2212,69 @@ class AppLocalizationsRu extends AppLocalizations {
   String lowBalancePartnerHint(Object currency) {
     return 'Уточните у партнёра, можно ли обменять на $currency.';
   }
+
+  @override
+  String get chat => 'Чат';
+
+  @override
+  String get chatEmpty =>
+      'Сообщений пока нет. Напишите здесь остальным об этом деле.';
+
+  @override
+  String get attachFile => 'Прикрепить фото или PDF';
+
+  @override
+  String get writeMessage => 'Напишите сообщение…';
+
+  @override
+  String get messagesTitle => 'Сообщения';
+
+  @override
+  String get noMessagesYet =>
+      'Сообщений пока нет. Откройте дело и нажмите кнопку чата, чтобы написать.';
+
+  @override
+  String unreadChats(Object count) {
+    return 'Чатов с непрочитанными: $count';
+  }
+
+  @override
+  String get messagesCardSubtitle =>
+      'Чат по делам с менеджером, кассирами и партнёрами.';
+
+  @override
+  String get alsoCashier => 'Также кассир';
+
+  @override
+  String get alsoCashierHint =>
+      'Менеджер также получает свою кассу в офисе и может переключаться между менеджером и кассиром в приложении.';
+
+  @override
+  String get alsoCashierBadge => '💵 Также кассир';
+
+  @override
+  String get chooseRoleTitle => 'Выберите меню';
+
+  @override
+  String get chooseRoleIntro =>
+      'Вы и менеджер, и кассир. Выберите меню. Переключиться можно позже кнопкой ⇄ вверху справа.';
+
+  @override
+  String get roleManager => 'Менеджер';
+
+  @override
+  String get roleManagerSubtitle =>
+      'Переводы офиса, баланс, партнёры и кассиры.';
+
+  @override
+  String get roleCashier => 'Кассир';
+
+  @override
+  String get roleCashierSubtitle => 'Ваша касса, переводы и оплаты наличными.';
+
+  @override
+  String get switchToCashier => 'Переключиться на кассира';
+
+  @override
+  String get switchToManager => 'Переключиться на менеджера';
 }

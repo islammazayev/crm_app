@@ -3,11 +3,13 @@ import 'package:flutter/material.dart';
 
 import '../l10n/app_localizations.dart';
 import '../l10n/locale_controller.dart';
+import '../services/chat_service.dart';
 import '../services/exchange_rate_service.dart';
 import '../services/partner_service.dart';
 import '../services/receipt_service.dart';
 import '../theme/app_theme.dart';
 import '../utils/currencies.dart';
+import 'chat.dart';
 import 'rate_field.dart';
 import 'receipt_button.dart';
 
@@ -275,6 +277,15 @@ class _ExchangeCardState extends State<_ExchangeCard> {
                   style: const TextStyle(
                     color: AppColors.textMuted,
                     fontSize: 13,
+                  ),
+                ),
+                // Chatt mellan kontoret och partnern om växlingen.
+                ChatButton(
+                  chatRef: ChatRef.exchange(
+                    widget.doc.id,
+                    d,
+                    title:
+                        '${d['partnerName'] ?? ''} ↔ ${d['officeLabel'] ?? ''}',
                   ),
                 ),
               ],

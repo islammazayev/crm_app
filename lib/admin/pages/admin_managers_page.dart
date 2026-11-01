@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 
 import '../../forms/create_manager_form.dart';
 import '../../l10n/locale_controller.dart';
+import '../../services/cashier_service.dart';
 import '../../theme/app_theme.dart';
 import '../../utils/search_match.dart';
 import '../../widgets/confirm_delete.dart';
@@ -39,6 +40,8 @@ class _AdminManagersPageState extends State<AdminManagersPage> {
     if (officeId != null && !officeDocs.any((o) => o.id == officeId)) {
       officeId = null;
     }
+    final wasCashier = d['alsoCashier'] == true;
+    bool alsoCashier = wasCashier;
 
     final saved = await showDialog<bool>(
       context: context,
@@ -93,6 +96,14 @@ class _AdminManagersPageState extends State<AdminManagersPage> {
                   ],
                   onChanged: (v) => setLocal(() => officeId = v),
                 ),
+                CheckboxListTile(
+                  contentPadding: EdgeInsets.zero,
+                  controlAffinity: ListTileControlAffinity.leading,
+                  value: alsoCashier,
+                  onChanged: (v) => setLocal(() => alsoCashier = v ?? false),
+                  title: Text(l10n.alsoCashier),
+                  subtitle: Text(l10n.alsoCashierHint),
+                ),
               ],
             ),
           ),
@@ -118,6 +129,17 @@ class _AdminManagersPageState extends State<AdminManagersPage> {
           'phone': phoneCtrl.text.trim(),
           'officeId': officeId ?? FieldValue.delete(),
         });
+        // Kassan följer managerns namn och kontor; slås av om bocken tas bort.
+        if (alsoCashier || wasCashier) {
+          await CashierService.setManagerAlsoCashier(
+            uid: doc.id,
+            enabled: alsoCashier,
+            firstName: firstCtrl.text.trim(),
+            lastName: lastCtrl.text.trim(),
+            officeId: officeId,
+            officeLabel: officeLabelOf(officeDocs, officeId),
+          );
+        }
         _snack(l10n.managerUpdated);
       } catch (e) {
         _snack(l10n.errorWithDetails('$e'));
@@ -273,6 +295,8 @@ class _AdminManagersPageState extends State<AdminManagersPage> {
                                   subtitle: Text(
                                     [
                                       l10n.officeValue(office),
+                                      if (d['alsoCashier'] == true)
+                                        l10n.alsoCashierBadge,
                                       if (email.isNotEmpty)
                                         l10n.emailValue(email),
                                       if (phone.isNotEmpty)

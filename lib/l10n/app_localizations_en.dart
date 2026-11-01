@@ -2204,4 +2204,70 @@ class AppLocalizationsEn extends AppLocalizations {
   String lowBalancePartnerHint(Object currency) {
     return 'Check with a partner whether you can exchange for $currency.';
   }
+
+  @override
+  String get chat => 'Chat';
+
+  @override
+  String get chatEmpty =>
+      'No messages yet. Write here about this case to the others.';
+
+  @override
+  String get attachFile => 'Attach picture or PDF';
+
+  @override
+  String get writeMessage => 'Write a message…';
+
+  @override
+  String get messagesTitle => 'Messages';
+
+  @override
+  String get noMessagesYet =>
+      'No messages yet. Open a case and tap the chat button to write.';
+
+  @override
+  String unreadChats(Object count) {
+    return '$count chats with unread messages';
+  }
+
+  @override
+  String get messagesCardSubtitle =>
+      'Chat about cases with managers, cashiers and partners.';
+
+  @override
+  String get alsoCashier => 'Also cashier';
+
+  @override
+  String get alsoCashierHint =>
+      'The manager also gets their own cash desk at the office and can switch between manager and cashier in the app.';
+
+  @override
+  String get alsoCashierBadge => '💵 Also cashier';
+
+  @override
+  String get chooseRoleTitle => 'Choose menu';
+
+  @override
+  String get chooseRoleIntro =>
+      'You are both manager and cashier. Choose which menu to use. You can switch later with the ⇄ button at the top right.';
+
+  @override
+  String get roleManager => 'Manager';
+
+  @override
+  String get roleManagerSubtitle =>
+      'The office\'s transactions, balance, partners and cashiers.';
+
+  @override
+  String get roleCashier => 'Cashier';
+
+  @override
+  String get roleCashierSubtitle =>
+      'Your own cash desk, transfers and cash payments.';
+
+  @override
+  String get switchToCashier => 'Switch to cashier';
+
+  @override
+  String get switchToManager => 'Switch to manager';
 }

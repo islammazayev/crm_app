@@ -3,9 +3,11 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 import '../../l10n/locale_controller.dart';
+import '../../services/chat_service.dart';
 import '../../theme/app_theme.dart';
 import '../../utils/pickup_code.dart';
 import '../../utils/transaction_no.dart';
+import '../../widgets/chat.dart';
 
 /// Kontanta inbetalningar på kassörens kontor: kunder som har accepterat
 /// och ska betala kontant. Kassören bekräftar när pengarna är lämnade, och
@@ -117,12 +119,34 @@ class CashierCashPaymentsPage extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          [
-                            formatTransactionNo(doc.data()['transactionNo']),
-                            '${doc.data()['customerName'] ?? ''}',
-                          ].where((t) => t.isNotEmpty).join('  ·  '),
-                          style: const TextStyle(fontWeight: FontWeight.w600),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                [
+                                  formatTransactionNo(
+                                    doc.data()['transactionNo'],
+                                  ),
+                                  '${doc.data()['customerName'] ?? ''}',
+                                ].where((t) => t.isNotEmpty).join('  ·  '),
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ),
+                            ChatButton(
+                              chatRef: ChatRef.transaction(
+                                doc.id,
+                                doc.data(),
+                                title: [
+                                  formatTransactionNo(
+                                    doc.data()['transactionNo'],
+                                  ),
+                                  '${doc.data()['customerName'] ?? ''}',
+                                ].where((t) => t.isNotEmpty).join(' · '),
+                              ),
+                            ),
+                          ],
                         ),
                         const SizedBox(height: 6),
                         Text(

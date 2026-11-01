@@ -1602,5 +1602,31 @@
         "type": "Object"
       }
     }
-  }
+  },
+  "chat": "Chatt",
+  "chatEmpty": "Inga meddelanden än. Skriv här om ärendet till de andra på kontoret.",
+  "attachFile": "Bifoga bild eller PDF",
+  "writeMessage": "Skriv ett meddelande…",
+  "messagesTitle": "Meddelanden",
+  "noMessagesYet": "Inga meddelanden än. Öppna ett ärende och tryck på chattknappen för att skriva.",
+  "unreadChats": "{count} chattar med olästa meddelanden",
+  "@unreadChats": {
+    "placeholders": {
+      "count": {
+        "type": "Object"
+      }
+    }
+  },
+  "messagesCardSubtitle": "Chatta om ärenden med manager, kassörer och partner.",
+  "alsoCashier": "Även kassör",
+  "alsoCashierHint": "Managern får också en egen kassa på kontoret och kan byta mellan manager och kassör i appen.",
+  "alsoCashierBadge": "💵 Även kassör",
+  "chooseRoleTitle": "Välj meny",
+  "chooseRoleIntro": "Du är både manager och kassör. Välj vilken meny du vill använda. Du kan byta senare med knappen ⇄ uppe till höger.",
+  "roleManager": "Manager",
+  "roleManagerSubtitle": "Kontorets transaktioner, saldo, partner och kassörer.",
+  "roleCashier": "Kassör",
+  "roleCashierSubtitle": "Din egen kassa, överföringar och kontanta inbetalningar.",
+  "switchToCashier": "Byt till kassör",
+  "switchToManager": "Byt till manager"
 }

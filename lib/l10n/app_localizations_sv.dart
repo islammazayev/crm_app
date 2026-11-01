@@ -2209,4 +2209,70 @@ class AppLocalizationsSv extends AppLocalizations {
   String lowBalancePartnerHint(Object currency) {
     return 'Kolla med en partner om du kan växla till dig $currency.';
   }
+
+  @override
+  String get chat => 'Chatt';
+
+  @override
+  String get chatEmpty =>
+      'Inga meddelanden än. Skriv här om ärendet till de andra på kontoret.';
+
+  @override
+  String get attachFile => 'Bifoga bild eller PDF';
+
+  @override
+  String get writeMessage => 'Skriv ett meddelande…';
+
+  @override
+  String get messagesTitle => 'Meddelanden';
+
+  @override
+  String get noMessagesYet =>
+      'Inga meddelanden än. Öppna ett ärende och tryck på chattknappen för att skriva.';
+
+  @override
+  String unreadChats(Object count) {
+    return '$count chattar med olästa meddelanden';
+  }
+
+  @override
+  String get messagesCardSubtitle =>
+      'Chatta om ärenden med manager, kassörer och partner.';
+
+  @override
+  String get alsoCashier => 'Även kassör';
+
+  @override
+  String get alsoCashierHint =>
+      'Managern får också en egen kassa på kontoret och kan byta mellan manager och kassör i appen.';
+
+  @override
+  String get alsoCashierBadge => '💵 Även kassör';
+
+  @override
+  String get chooseRoleTitle => 'Välj meny';
+
+  @override
+  String get chooseRoleIntro =>
+      'Du är både manager och kassör. Välj vilken meny du vill använda. Du kan byta senare med knappen ⇄ uppe till höger.';
+
+  @override
+  String get roleManager => 'Manager';
+
+  @override
+  String get roleManagerSubtitle =>
+      'Kontorets transaktioner, saldo, partner och kassörer.';
+
+  @override
+  String get roleCashier => 'Kassör';
+
+  @override
+  String get roleCashierSubtitle =>
+      'Din egen kassa, överföringar och kontanta inbetalningar.';
+
+  @override
+  String get switchToCashier => 'Byt till kassör';
+
+  @override
+  String get switchToManager => 'Byt till manager';
 }

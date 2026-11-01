@@ -4,7 +4,9 @@ import 'package:flutter/material.dart';
 import '../../l10n/app_localizations.dart';
 import '../../l10n/locale_controller.dart';
 import '../../services/cashier_service.dart';
+import '../../services/chat_service.dart';
 import '../../theme/app_theme.dart';
+import '../../widgets/chat.dart';
 import '../../widgets/confirm_delete.dart';
 
 /// Överföringens status i klartext.
@@ -180,6 +182,15 @@ class _TransferTileState extends State<_TransferTile> {
                   style: TextStyle(
                     fontWeight: FontWeight.w700,
                     color: incoming ? AppColors.success : AppColors.textPrimary,
+                  ),
+                ),
+                // Chatt mellan kassörerna (och deras managers).
+                ChatButton(
+                  chatRef: ChatRef.transfer(
+                    widget.doc.id,
+                    d,
+                    title:
+                        '${d['fromName'] ?? ''} → ${d['toName'] ?? ''} · $amount $currency',
                   ),
                 ),
               ],

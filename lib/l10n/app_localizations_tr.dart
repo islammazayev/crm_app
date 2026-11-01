@@ -2194,4 +2194,70 @@ class AppLocalizationsTr extends AppLocalizations {
   String lowBalancePartnerHint(Object currency) {
     return 'Bir ortakla $currency bozdurup bozduramayacağınızı kontrol edin.';
   }
+
+  @override
+  String get chat => 'Sohbet';
+
+  @override
+  String get chatEmpty =>
+      'Henüz mesaj yok. Bu iş hakkında diğerlerine buradan yazın.';
+
+  @override
+  String get attachFile => 'Resim veya PDF ekle';
+
+  @override
+  String get writeMessage => 'Bir mesaj yazın…';
+
+  @override
+  String get messagesTitle => 'Mesajlar';
+
+  @override
+  String get noMessagesYet =>
+      'Henüz mesaj yok. Yazmak için bir iş açın ve sohbet düğmesine dokunun.';
+
+  @override
+  String unreadChats(Object count) {
+    return 'Okunmamış mesajlı $count sohbet';
+  }
+
+  @override
+  String get messagesCardSubtitle =>
+      'Yönetici, kasiyerler ve ortaklarla işler hakkında sohbet edin.';
+
+  @override
+  String get alsoCashier => 'Aynı zamanda kasiyer';
+
+  @override
+  String get alsoCashierHint =>
+      'Yönetici ofiste kendi kasasını da alır ve uygulamada yönetici ile kasiyer arasında geçiş yapabilir.';
+
+  @override
+  String get alsoCashierBadge => '💵 Aynı zamanda kasiyer';
+
+  @override
+  String get chooseRoleTitle => 'Menü seçin';
+
+  @override
+  String get chooseRoleIntro =>
+      'Hem yönetici hem kasiyersiniz. Hangi menüyü kullanacağınızı seçin. Daha sonra sağ üstteki ⇄ düğmesiyle geçiş yapabilirsiniz.';
+
+  @override
+  String get roleManager => 'Yönetici';
+
+  @override
+  String get roleManagerSubtitle =>
+      'Ofisin işlemleri, bakiyesi, ortakları ve kasiyerleri.';
+
+  @override
+  String get roleCashier => 'Kasiyer';
+
+  @override
+  String get roleCashierSubtitle =>
+      'Kendi kasanız, transferler ve nakit ödemeler.';
+
+  @override
+  String get switchToCashier => 'Kasiyere geç';
+
+  @override
+  String get switchToManager => 'Yöneticiye geç';
 }

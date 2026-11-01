@@ -9,6 +9,7 @@ import '../../services/partner_service.dart';
 import '../../theme/app_theme.dart';
 import '../../utils/balances.dart';
 import '../../utils/currencies.dart';
+import '../../widgets/chat.dart';
 import '../../widgets/language_button.dart';
 import '../../widgets/partner_exchanges.dart';
 
@@ -195,6 +196,8 @@ class PartnerHomeScreen extends StatelessWidget {
                   ),
                 ),
               ),
+              const SizedBox(height: 16),
+              const MessagesCard(),
               const SizedBox(height: 24),
               SectionHeader(title: l10n.exchangesTitle),
               const SizedBox(height: 10),
