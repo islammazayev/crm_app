@@ -3851,6 +3851,42 @@ abstract class AppLocalizations {
   /// In sv, this message translates to:
   /// **'Byt till manager'**
   String get switchToManager;
+
+  /// No description provided for @confirmEmail.
+  ///
+  /// In sv, this message translates to:
+  /// **'Bekräfta e-post'**
+  String get confirmEmail;
+
+  /// No description provided for @emailsDoNotMatch.
+  ///
+  /// In sv, this message translates to:
+  /// **'E-postadresserna är inte lika.'**
+  String get emailsDoNotMatch;
+
+  /// No description provided for @confirmPassword.
+  ///
+  /// In sv, this message translates to:
+  /// **'Bekräfta lösenord'**
+  String get confirmPassword;
+
+  /// No description provided for @passwordsDoNotMatch.
+  ///
+  /// In sv, this message translates to:
+  /// **'Lösenorden är inte lika.'**
+  String get passwordsDoNotMatch;
+
+  /// No description provided for @showPassword.
+  ///
+  /// In sv, this message translates to:
+  /// **'Visa lösenord'**
+  String get showPassword;
+
+  /// No description provided for @hidePassword.
+  ///
+  /// In sv, this message translates to:
+  /// **'Dölj lösenord'**
+  String get hidePassword;
 }
 
 class _AppLocalizationsDelegate

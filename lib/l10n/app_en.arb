@@ -623,5 +623,11 @@
   "roleCashier": "Cashier",
   "roleCashierSubtitle": "Your own cash desk, transfers and cash payments.",
   "switchToCashier": "Switch to cashier",
-  "switchToManager": "Switch to manager"
+  "switchToManager": "Switch to manager",
+  "confirmEmail": "Confirm email",
+  "emailsDoNotMatch": "The email addresses do not match.",
+  "confirmPassword": "Confirm password",
+  "passwordsDoNotMatch": "The passwords do not match.",
+  "showPassword": "Show password",
+  "hidePassword": "Hide password"
 }

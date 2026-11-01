@@ -26,6 +26,15 @@ class _CustomerRegisterScreenState extends State<CustomerRegisterScreen> {
   final _emailCtrl = TextEditingController();
   final _phoneCtrl = TextEditingController();
   final _passwordCtrl = TextEditingController();
+
+  /// E-post och lösenord skrivs två gånger, så att kunden inte råkar
+  /// registrera sig med ett felstavat värde.
+  final _emailConfirmCtrl = TextEditingController();
+  final _passwordConfirmCtrl = TextEditingController();
+
+  /// Ögat i lösenordsfälten visar eller döljer det man skrivit.
+  bool _hidePassword = true;
+  bool _hidePasswordConfirm = true;
   bool _loading = false;
 
   /// Den inbjudna kundposten (läses med ID:t i länken).
@@ -69,6 +78,8 @@ class _CustomerRegisterScreenState extends State<CustomerRegisterScreen> {
     _emailCtrl.dispose();
     _phoneCtrl.dispose();
     _passwordCtrl.dispose();
+    _emailConfirmCtrl.dispose();
+    _passwordConfirmCtrl.dispose();
     super.dispose();
   }
 
@@ -183,6 +194,15 @@ class _CustomerRegisterScreenState extends State<CustomerRegisterScreen> {
     }
   }
 
+  /// Knapp som visar (öga) eller döljer (överstruket öga) lösenordet.
+  Widget _eye(bool hidden, VoidCallback onPressed) => IconButton(
+    tooltip: hidden ? context.l10n.showPassword : context.l10n.hidePassword,
+    icon: Icon(
+      hidden ? Icons.visibility_outlined : Icons.visibility_off_outlined,
+    ),
+    onPressed: onPressed,
+  );
+
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
@@ -240,8 +260,19 @@ class _CustomerRegisterScreenState extends State<CustomerRegisterScreen> {
               TextFormField(
                 controller: _emailCtrl,
                 decoration: InputDecoration(labelText: l10n.email),
+                keyboardType: TextInputType.emailAddress,
                 validator: (v) =>
                     v == null || !v.contains('@') ? l10n.enterValidEmail : null,
+              ),
+              const SizedBox(height: 14),
+              TextFormField(
+                controller: _emailConfirmCtrl,
+                decoration: InputDecoration(labelText: l10n.confirmEmail),
+                keyboardType: TextInputType.emailAddress,
+                // Måste vara exakt likadan, även stora och små bokstäver.
+                validator: (v) => (v ?? '').trim() != _emailCtrl.text.trim()
+                    ? l10n.emailsDoNotMatch
+                    : null,
               ),
               const SizedBox(height: 14),
               TextFormField(
@@ -251,10 +282,33 @@ class _CustomerRegisterScreenState extends State<CustomerRegisterScreen> {
               const SizedBox(height: 14),
               TextFormField(
                 controller: _passwordCtrl,
-                decoration: InputDecoration(labelText: l10n.password),
-                obscureText: true,
+                decoration: InputDecoration(
+                  labelText: l10n.password,
+                  suffixIcon: _eye(
+                    _hidePassword,
+                    () => setState(() => _hidePassword = !_hidePassword),
+                  ),
+                ),
+                obscureText: _hidePassword,
                 validator: (v) =>
                     v == null || v.length < 6 ? l10n.passwordMinLength : null,
+              ),
+              const SizedBox(height: 14),
+              TextFormField(
+                controller: _passwordConfirmCtrl,
+                decoration: InputDecoration(
+                  labelText: l10n.confirmPassword,
+                  suffixIcon: _eye(
+                    _hidePasswordConfirm,
+                    () => setState(
+                      () => _hidePasswordConfirm = !_hidePasswordConfirm,
+                    ),
+                  ),
+                ),
+                obscureText: _hidePasswordConfirm,
+                validator: (v) => (v ?? '').trim() != _passwordCtrl.text.trim()
+                    ? l10n.passwordsDoNotMatch
+                    : null,
               ),
               const SizedBox(height: 16),
               SizedBox(

@@ -2260,4 +2260,22 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get switchToManager => 'Yöneticiye geç';
+
+  @override
+  String get confirmEmail => 'E-postayı onaylayın';
+
+  @override
+  String get emailsDoNotMatch => 'E-posta adresleri eşleşmiyor.';
+
+  @override
+  String get confirmPassword => 'Şifreyi onaylayın';
+
+  @override
+  String get passwordsDoNotMatch => 'Şifreler eşleşmiyor.';
+
+  @override
+  String get showPassword => 'Şifreyi göster';
+
+  @override
+  String get hidePassword => 'Şifreyi gizle';
 }

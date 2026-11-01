@@ -2270,4 +2270,22 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get switchToManager => 'Switch to manager';
+
+  @override
+  String get confirmEmail => 'Confirm email';
+
+  @override
+  String get emailsDoNotMatch => 'The email addresses do not match.';
+
+  @override
+  String get confirmPassword => 'Confirm password';
+
+  @override
+  String get passwordsDoNotMatch => 'The passwords do not match.';
+
+  @override
+  String get showPassword => 'Show password';
+
+  @override
+  String get hidePassword => 'Hide password';
 }

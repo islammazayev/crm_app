@@ -623,5 +623,11 @@
   "roleCashier": "Кассир",
   "roleCashierSubtitle": "Ваша касса, переводы и оплаты наличными.",
   "switchToCashier": "Переключиться на кассира",
-  "switchToManager": "Переключиться на менеджера"
+  "switchToManager": "Переключиться на менеджера",
+  "confirmEmail": "Подтвердите e-mail",
+  "emailsDoNotMatch": "Адреса e-mail не совпадают.",
+  "confirmPassword": "Подтвердите пароль",
+  "passwordsDoNotMatch": "Пароли не совпадают.",
+  "showPassword": "Показать пароль",
+  "hidePassword": "Скрыть пароль"
 }

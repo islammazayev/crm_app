@@ -623,5 +623,11 @@
   "roleCashier": "Kasiyer",
   "roleCashierSubtitle": "Kendi kasanız, transferler ve nakit ödemeler.",
   "switchToCashier": "Kasiyere geç",
-  "switchToManager": "Yöneticiye geç"
+  "switchToManager": "Yöneticiye geç",
+  "confirmEmail": "E-postayı onaylayın",
+  "emailsDoNotMatch": "E-posta adresleri eşleşmiyor.",
+  "confirmPassword": "Şifreyi onaylayın",
+  "passwordsDoNotMatch": "Şifreler eşleşmiyor.",
+  "showPassword": "Şifreyi göster",
+  "hidePassword": "Şifreyi gizle"
 }
