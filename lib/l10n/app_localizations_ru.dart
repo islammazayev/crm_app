@@ -2277,4 +2277,16 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get switchToManager => 'Переключиться на менеджера';
+
+  @override
+  String get confirmEmail => 'Подтвердите e-mail';
+
+  @override
+  String get emailsDoNotMatch => 'Адреса e-mail не совпадают.';
+
+  @override
+  String get confirmPassword => 'Подтвердите пароль';
+
+  @override
+  String get passwordsDoNotMatch => 'Пароли не совпадают.';
 }

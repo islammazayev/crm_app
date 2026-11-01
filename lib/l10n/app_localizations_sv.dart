@@ -2275,4 +2275,16 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String get switchToManager => 'Byt till manager';
+
+  @override
+  String get confirmEmail => 'Bekräfta e-post';
+
+  @override
+  String get emailsDoNotMatch => 'E-postadresserna är inte lika.';
+
+  @override
+  String get confirmPassword => 'Bekräfta lösenord';
+
+  @override
+  String get passwordsDoNotMatch => 'Lösenorden är inte lika.';
 }

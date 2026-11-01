@@ -26,6 +26,11 @@ class _CustomerRegisterScreenState extends State<CustomerRegisterScreen> {
   final _emailCtrl = TextEditingController();
   final _phoneCtrl = TextEditingController();
   final _passwordCtrl = TextEditingController();
+
+  /// E-post och lösenord skrivs två gånger, så att kunden inte råkar
+  /// registrera sig med ett felstavat värde.
+  final _emailConfirmCtrl = TextEditingController();
+  final _passwordConfirmCtrl = TextEditingController();
   bool _loading = false;
 
   /// Den inbjudna kundposten (läses med ID:t i länken).
@@ -69,6 +74,8 @@ class _CustomerRegisterScreenState extends State<CustomerRegisterScreen> {
     _emailCtrl.dispose();
     _phoneCtrl.dispose();
     _passwordCtrl.dispose();
+    _emailConfirmCtrl.dispose();
+    _passwordConfirmCtrl.dispose();
     super.dispose();
   }
 
@@ -240,8 +247,20 @@ class _CustomerRegisterScreenState extends State<CustomerRegisterScreen> {
               TextFormField(
                 controller: _emailCtrl,
                 decoration: InputDecoration(labelText: l10n.email),
+                keyboardType: TextInputType.emailAddress,
                 validator: (v) =>
                     v == null || !v.contains('@') ? l10n.enterValidEmail : null,
+              ),
+              const SizedBox(height: 14),
+              TextFormField(
+                controller: _emailConfirmCtrl,
+                decoration: InputDecoration(labelText: l10n.confirmEmail),
+                keyboardType: TextInputType.emailAddress,
+                validator: (v) =>
+                    (v ?? '').trim().toLowerCase() !=
+                        _emailCtrl.text.trim().toLowerCase()
+                    ? l10n.emailsDoNotMatch
+                    : null,
               ),
               const SizedBox(height: 14),
               TextFormField(
@@ -255,6 +274,15 @@ class _CustomerRegisterScreenState extends State<CustomerRegisterScreen> {
                 obscureText: true,
                 validator: (v) =>
                     v == null || v.length < 6 ? l10n.passwordMinLength : null,
+              ),
+              const SizedBox(height: 14),
+              TextFormField(
+                controller: _passwordConfirmCtrl,
+                decoration: InputDecoration(labelText: l10n.confirmPassword),
+                obscureText: true,
+                validator: (v) => (v ?? '').trim() != _passwordCtrl.text.trim()
+                    ? l10n.passwordsDoNotMatch
+                    : null,
               ),
               const SizedBox(height: 16),
               SizedBox(

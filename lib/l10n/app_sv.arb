@@ -1628,5 +1628,9 @@
   "roleCashier": "Kassör",
   "roleCashierSubtitle": "Din egen kassa, överföringar och kontanta inbetalningar.",
   "switchToCashier": "Byt till kassör",
-  "switchToManager": "Byt till manager"
+  "switchToManager": "Byt till manager",
+  "confirmEmail": "Bekräfta e-post",
+  "emailsDoNotMatch": "E-postadresserna är inte lika.",
+  "confirmPassword": "Bekräfta lösenord",
+  "passwordsDoNotMatch": "Lösenorden är inte lika."
 }
