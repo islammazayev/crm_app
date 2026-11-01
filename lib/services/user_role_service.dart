@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-enum UserRole { admin, manager, customer, cashier }
+enum UserRole { admin, manager, customer, cashier, partner }
 
 class UserRoleService {
   static Future<UserRole?> getCurrentUserRole() async {
@@ -23,6 +23,8 @@ class UserRoleService {
         return UserRole.customer;
       case 'cashier':
         return UserRole.cashier;
+      case 'partner':
+        return UserRole.partner;
       default:
         return null;
     }

@@ -1858,4 +1858,174 @@ class AppLocalizationsTr extends AppLocalizations {
   String sellSummary(Object amount, Object from, Object to) {
     return '$to karşılığında $amount $from satış';
   }
+
+  @override
+  String get partners => 'Ortaklar';
+
+  @override
+  String get partnersCardSubtitle => 'Ortaklarınızla döviz bozdurun.';
+
+  @override
+  String get partnersAdminCardSubtitle =>
+      'Ortak oluşturun ve bir ofise veya yöneticiye bağlayın.';
+
+  @override
+  String get editPartnerTitle => 'Ortağı düzenle';
+
+  @override
+  String get partnerUpdated => 'Ortak güncellendi.';
+
+  @override
+  String get deletePartnerTitle => 'Ortak silinsin mi?';
+
+  @override
+  String deletePartnerConfirm(Object name) {
+    return '$name artık uygulamaya erişemeyecek ve bakiye silinecek. Giriş hesabı kalır ve Firebase konsolunda Authentication altından silinebilir.';
+  }
+
+  @override
+  String get partnerDeleted => 'Ortak silindi.';
+
+  @override
+  String get existingPartners => 'Ortaklar';
+
+  @override
+  String get searchPartnersLabel => 'Ortak ara (ad, ofis, yönetici)';
+
+  @override
+  String get createNewPartner => 'Yeni ortak oluştur';
+
+  @override
+  String get createPartner => 'Ortak oluştur';
+
+  @override
+  String get partnerCreated => 'Ortak oluşturuldu.';
+
+  @override
+  String couldNotCreatePartner(Object error) {
+    return 'Ortak oluşturulamadı: $error';
+  }
+
+  @override
+  String get partnerAppBarTitle => 'CRM – Ortak';
+
+  @override
+  String get partnerNotSetUp =>
+      'Ortak hesabınız henüz bir ofise bağlı değil. Yöneticiyle iletişime geçin.';
+
+  @override
+  String get newExchange => 'Yeni bozdurma teklifi';
+
+  @override
+  String get exchangesTitle => 'Bozdurmalar';
+
+  @override
+  String get partnerBalancesTitle => 'Ortak bakiyeleri';
+
+  @override
+  String get noPartnersLinked => 'Size veya ofisinize bağlı ortak yok.';
+
+  @override
+  String get exchangeProposed => 'Teklif';
+
+  @override
+  String get exchangeAccepted => 'Kabul edildi';
+
+  @override
+  String get exchangeRejected => 'Reddedildi';
+
+  @override
+  String get exchangeCancelled => 'İptal edildi';
+
+  @override
+  String get exchangeCompleted => 'Tamamlandı';
+
+  @override
+  String get noExchangesYet => 'Henüz bozdurma yok.';
+
+  @override
+  String exchangeOfficeGives(Object amount) {
+    return 'Ofis verir: $amount';
+  }
+
+  @override
+  String exchangePartnerGives(Object amount) {
+    return 'Ortak verir: $amount';
+  }
+
+  @override
+  String exchangeYouGive(Object amount) {
+    return 'Verdiğiniz: $amount';
+  }
+
+  @override
+  String exchangeYouGet(Object amount) {
+    return 'Aldığınız: $amount';
+  }
+
+  @override
+  String exchangeRateLine(Object from, Object rate, Object to) {
+    return 'Kur: 1 $from = $rate $to';
+  }
+
+  @override
+  String get exchangeOfficeSentDone => '✓ Ofis gönderdi';
+
+  @override
+  String get exchangeOfficeSentWaiting => '… Ofis henüz göndermedi';
+
+  @override
+  String get exchangePartnerSentDone => '✓ Ortak gönderdi';
+
+  @override
+  String get exchangePartnerSentWaiting => '… Ortak henüz göndermedi';
+
+  @override
+  String get counterProposal => 'Karşı teklif';
+
+  @override
+  String get waitingForAnswer => 'Yanıt bekleniyor';
+
+  @override
+  String markExchangeSent(Object amount) {
+    return '$amount gönderdim';
+  }
+
+  @override
+  String get confirmExchangeSent =>
+      'Parayı gönderdiğinizi onaylayın. Diğer taraf bunu görür ve geldiğinde onaylayabilir.';
+
+  @override
+  String markExchangeReceived(Object amount) {
+    return '$amount aldım';
+  }
+
+  @override
+  String get confirmExchangeReceived =>
+      'Paranın geldiğini onaylayın. İki taraf da onayladığında bozdurma tamamlanır ve bakiyeler güncellenir.';
+
+  @override
+  String get waitingForOtherReceived =>
+      'Diğer tarafın paranın geldiğini onaylaması bekleniyor.';
+
+  @override
+  String get youGiveLabel => 'Verdiğiniz tutar';
+
+  @override
+  String get youGetLabel => 'Aldığınız tutar';
+
+  @override
+  String get currencyYouGive => 'Verdiğiniz döviz';
+
+  @override
+  String get currencyYouGet => 'Aldığınız döviz';
+
+  @override
+  String get exchangeProposalSent => 'Teklif gönderildi.';
+
+  @override
+  String get choosePartner => 'Ortak';
+
+  @override
+  String get sendProposal => 'Teklif gönder';
 }

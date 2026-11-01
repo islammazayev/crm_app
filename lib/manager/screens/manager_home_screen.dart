@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 import '../../l10n/locale_controller.dart';
 import '../../screens/auth_gate.dart';
+import '../../services/partner_service.dart';
 import '../../theme/app_theme.dart';
 import '../../widgets/action_card.dart';
 import '../../widgets/language_button.dart';
@@ -11,6 +12,7 @@ import '../../utils/balances.dart';
 import '../pages/manager_balances_page.dart';
 import '../pages/manager_cashiers_page.dart';
 import '../pages/manager_create_transaction_screen.dart';
+import '../pages/manager_partners_page.dart';
 import '../pages/manager_transactions_detail_screen.dart';
 import '../pages/manager_transactions_page.dart';
 import '../pages/pickup_scanner_page.dart';
@@ -257,6 +259,41 @@ class _ManagerHomeScreenState extends State<ManagerHomeScreen> {
                             ),
                           ),
                         ),
+                      ),
+                      // Växlingar med partner; siffran visar öppna.
+                      StreamBuilder<
+                        List<QueryDocumentSnapshot<Map<String, dynamic>>>
+                      >(
+                        stream: PartnerService.exchangesForOffice(officeId),
+                        builder: (context, exSnap) {
+                          final open = (exSnap.data ?? const [])
+                              .where(
+                                (d) => const [
+                                  'proposed',
+                                  'accepted',
+                                ].contains(d.data()['status']),
+                              )
+                              .length;
+                          return ActionCard(
+                            icon: Icons.handshake_outlined,
+                            iconColor: AppColors.warning,
+                            title: l10n.partners,
+                            subtitle: l10n.partnersCardSubtitle,
+                            badge: exSnap.hasData ? '$open' : '…',
+                            onTap: () => Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => ManagerPartnersPage(
+                                  managerId:
+                                      FirebaseAuth.instance.currentUser?.uid ??
+                                      '',
+                                  officeId: officeId,
+                                  officeLabel: _officeLabel,
+                                ),
+                              ),
+                            ),
+                          );
+                        },
                       ),
                       ActionCard(
                         icon: Icons.qr_code_scanner,

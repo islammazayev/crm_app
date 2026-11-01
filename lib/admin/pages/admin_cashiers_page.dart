@@ -5,29 +5,101 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 import '../../cashier/pages/cashier_overview_page.dart';
+import '../../l10n/app_localizations.dart';
 import '../../l10n/auth_error_text.dart';
 import '../../l10n/locale_controller.dart';
 import '../../services/account_creator.dart';
 import '../../services/cashier_service.dart';
+import '../../services/partner_service.dart';
 import '../../theme/app_theme.dart';
 import '../../utils/balances.dart';
 import '../../utils/currencies.dart';
 import '../../utils/merged_query.dart';
 import '../../utils/search_match.dart';
 import '../../widgets/confirm_delete.dart';
+import '../../widgets/partner_exchanges.dart';
 import '../../widgets/search_summary.dart';
 
-/// Kontor och managers att koppla kassörer till.
+/// Kassörer och partner skapas, kopplas och får saldo på samma sätt.
+enum StaffType { cashier, partner }
+
+/// Texterna som skiljer sig mellan kassörer och partner.
+class _StaffTexts {
+  final String title;
+  final String editTitle;
+  final String updated;
+  final String deleteTitle;
+  final String Function(String name) deleteConfirm;
+  final String deleted;
+  final String existing;
+  final String searchLabel;
+  final String createNew;
+  final String create;
+  final String created;
+  final String Function(String error) couldNotCreate;
+
+  const _StaffTexts({
+    required this.title,
+    required this.editTitle,
+    required this.updated,
+    required this.deleteTitle,
+    required this.deleteConfirm,
+    required this.deleted,
+    required this.existing,
+    required this.searchLabel,
+    required this.createNew,
+    required this.create,
+    required this.created,
+    required this.couldNotCreate,
+  });
+
+  factory _StaffTexts.of(StaffType type, AppLocalizations l10n) =>
+      type == StaffType.cashier
+      ? _StaffTexts(
+          title: l10n.cashiers,
+          editTitle: l10n.editCashierTitle,
+          updated: l10n.cashierUpdated,
+          deleteTitle: l10n.deleteCashierTitle,
+          deleteConfirm: l10n.deleteCashierConfirm,
+          deleted: l10n.cashierDeleted,
+          existing: l10n.existingCashiers,
+          searchLabel: l10n.searchCashiersLabel,
+          createNew: l10n.createNewCashier,
+          create: l10n.createCashier,
+          created: l10n.cashierCreated,
+          couldNotCreate: l10n.couldNotCreateCashier,
+        )
+      : _StaffTexts(
+          title: l10n.partners,
+          editTitle: l10n.editPartnerTitle,
+          updated: l10n.partnerUpdated,
+          deleteTitle: l10n.deletePartnerTitle,
+          deleteConfirm: l10n.deletePartnerConfirm,
+          deleted: l10n.partnerDeleted,
+          existing: l10n.existingPartners,
+          searchLabel: l10n.searchPartnersLabel,
+          createNew: l10n.createNewPartner,
+          create: l10n.createPartner,
+          created: l10n.partnerCreated,
+          couldNotCreate: l10n.couldNotCreatePartner,
+        );
+}
+
+/// Kontor och managers att koppla kassörer och partner till.
 class _Links {
   final Map<String, String> offices; // id → "Land – Stad"
   final Map<String, String> managers; // uid → namn
-  const _Links(this.offices, this.managers);
+  final Map<String, String> managerOffices; // uid → managerns kontor
+  const _Links(this.offices, this.managers, this.managerOffices);
 }
 
-/// Admin: skapa kassörer, koppla dem till kontor och/eller manager, fyll på
-/// saldo, ta bort och se deras överföringar.
+/// Admin: skapa kassörer (eller partner), koppla dem till kontor
+/// och/eller manager, fyll på saldo, ta bort och se deras överföringar
+/// (eller växlingar).
 class AdminCashiersPage extends StatefulWidget {
-  const AdminCashiersPage({super.key});
+  final StaffType type;
+
+  const AdminCashiersPage({super.key, this.type = StaffType.cashier});
 
   @override
   State<AdminCashiersPage> createState() => _AdminCashiersPageState();
@@ -37,6 +109,11 @@ class _AdminCashiersPageState extends State<AdminCashiersPage> {
   final _db = FirebaseFirestore.instance;
   final _searchController = TextEditingController();
   String _query = '';
+
+  bool get _isPartner => widget.type == StaffType.partner;
+
+  CollectionReference<Map<String, dynamic>> get _collection =>
+      _db.collection(_isPartner ? 'partners' : 'cashiers');
 
   @override
   void dispose() {
@@ -64,6 +141,10 @@ class _AdminCashiersPageState extends State<AdminCashiersPage> {
               d.id:
                   '${d.data()['firstName'] ?? ''} ${d.data()['lastName'] ?? ''}'
                       .trim(),
+          },
+          {
+            for (final d in managers!.docs)
+              if (d.data()['officeId'] != null) d.id: '${d.data()['officeId']}',
           },
         ),
       );
@@ -121,6 +202,25 @@ class _AdminCashiersPageState extends State<AdminCashiersPage> {
       'lastName': lastName,
       'phone': phone,
     });
+    if (_isPartner) {
+      // Växlingarna går mot det kopplade kontoret, annars mot den kopplade
+      // managerns kontor.
+      final exchangeOfficeId =
+          officeId ??
+          (managerId == null ? null : links.managerOffices[managerId]);
+      batch.update(PartnerService.partner(uid), {
+        'firstName': firstName,
+        'lastName': lastName,
+        'officeId': officeId ?? FieldValue.delete(),
+        'managerId': managerId ?? FieldValue.delete(),
+        'exchangeOfficeId': exchangeOfficeId ?? FieldValue.delete(),
+        'exchangeOfficeLabel': exchangeOfficeId == null
+            ? FieldValue.delete()
+            : (links.offices[exchangeOfficeId] ?? ''),
+      });
+      await batch.commit();
+      return;
+    }
     batch.update(CashierService.cashier(uid), {
       'firstName': firstName,
       'lastName': lastName,
@@ -159,7 +259,7 @@ class _AdminCashiersPageState extends State<AdminCashiersPage> {
       context: context,
       builder: (ctx) => StatefulBuilder(
         builder: (ctx, setLocal) => AlertDialog(
-          title: Text(l10n.editCashierTitle),
+          title: Text(_StaffTexts.of(widget.type, l10n).editTitle),
           content: SingleChildScrollView(
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -213,7 +313,7 @@ class _AdminCashiersPageState extends State<AdminCashiersPage> {
           managerId: managerId,
           links: links,
         );
-        _snack(l10n.cashierUpdated);
+        _snack(_StaffTexts.of(widget.type, l10n).updated);
       } catch (e) {
         _snack(l10n.errorWithDetails('$e'));
       }
@@ -303,19 +403,20 @@ class _AdminCashiersPageState extends State<AdminCashiersPage> {
     String name,
   ) async {
     final l10n = context.l10n;
+    final texts = _StaffTexts.of(widget.type, l10n);
     final ok = await confirmDelete(
       context,
-      title: l10n.deleteCashierTitle,
-      message: l10n.deleteCashierConfirm(name),
+      title: texts.deleteTitle,
+      message: texts.deleteConfirm(name),
     );
     if (!ok) return;
     try {
       final batch = _db.batch();
       batch.delete(_db.collection('users').doc(doc.id));
       batch.delete(doc.reference);
-      batch.delete(CashierService.directory(doc.id));
+      if (!_isPartner) batch.delete(CashierService.directory(doc.id));
       await batch.commit();
-      _snack(l10n.cashierDeleted);
+      _snack(texts.deleted);
     } catch (e) {
       _snack(l10n.errorWithDetails('$e'));
     }
@@ -324,8 +425,9 @@ class _AdminCashiersPageState extends State<AdminCashiersPage> {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
+    final texts = _StaffTexts.of(widget.type, l10n);
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.cashiers)),
+      appBar: AppBar(title: Text(texts.title)),
       body: StreamBuilder<_Links>(
         stream: _linksStream,
         builder: (context, linkSnap) {
@@ -343,10 +445,14 @@ class _AdminCashiersPageState extends State<AdminCashiersPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _CreateCashierForm(links: links, saveLinks: _saveLinks),
+                _CreateCashierForm(
+                  type: widget.type,
+                  links: links,
+                  saveLinks: _saveLinks,
+                ),
                 const SizedBox(height: 32),
                 Text(
-                  l10n.existingCashiers,
+                  texts.existing,
                   style: const TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
@@ -357,12 +463,12 @@ class _AdminCashiersPageState extends State<AdminCashiersPage> {
                   controller: _searchController,
                   onChanged: (v) => setState(() => _query = v),
                   decoration: InputDecoration(
-                    labelText: l10n.searchCashiersLabel,
+                    labelText: texts.searchLabel,
                     prefixIcon: const Icon(Icons.search),
                   ),
                 ),
                 StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
-                  stream: _db.collection('cashiers').snapshots(),
+                  stream: _collection.snapshots(),
                   builder: (context, snap) {
                     if (snap.hasError) {
                       return Text(l10n.errorWithDetails('${snap.error}'));
@@ -402,6 +508,9 @@ class _AdminCashiersPageState extends State<AdminCashiersPage> {
                         ),
                         for (final doc in shown)
                           _CashierTile(
+                            icon: _isPartner
+                                ? Icons.handshake_outlined
+                                : Icons.point_of_sale,
                             doc: doc,
                             name: nameOf(doc.data()),
                             office: links.offices[doc.data()['officeId']] ?? '',
@@ -410,20 +519,25 @@ class _AdminCashiersPageState extends State<AdminCashiersPage> {
                             onOpen: () => Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (_) => CashierOverviewPage(
-                                  cashierId: doc.id,
-                                  name: nameOf(doc.data()),
-                                  transfers: mergedQuery([
-                                    CashierService.transfers.where(
-                                      'fromId',
-                                      isEqualTo: doc.id,
-                                    ),
-                                    CashierService.transfers.where(
-                                      'toId',
-                                      isEqualTo: doc.id,
-                                    ),
-                                  ]),
-                                ),
+                                builder: (_) => _isPartner
+                                    ? _PartnerExchangesPage(
+                                        partnerId: doc.id,
+                                        name: nameOf(doc.data()),
+                                      )
+                                    : CashierOverviewPage(
+                                        cashierId: doc.id,
+                                        name: nameOf(doc.data()),
+                                        transfers: mergedQuery([
+                                          CashierService.transfers.where(
+                                            'fromId',
+                                            isEqualTo: doc.id,
+                                          ),
+                                          CashierService.transfers.where(
+                                            'toId',
+                                            isEqualTo: doc.id,
+                                          ),
+                                        ]),
+                                      ),
                               ),
                             ),
                             onEdit: () => _edit(doc, links),
@@ -443,7 +557,32 @@ class _AdminCashiersPageState extends State<AdminCashiersPage> {
   }
 }
 
+/// Admin: alla växlingar för en partner (bara läsa).
+class _PartnerExchangesPage extends StatelessWidget {
+  final String partnerId;
+  final String name;
+
+  const _PartnerExchangesPage({required this.partnerId, required this.name});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text(name)),
+      body: ListView(
+        padding: const EdgeInsets.all(16),
+        children: [
+          PartnerExchangeList(
+            stream: PartnerService.exchangesForPartner(partnerId),
+            side: null,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 class _CashierTile extends StatelessWidget {
+  final IconData icon;
   final QueryDocumentSnapshot<Map<String, dynamic>> doc;
   final String name;
   final String office;
@@ -454,6 +593,7 @@ class _CashierTile extends StatelessWidget {
   final VoidCallback onDelete;
 
   const _CashierTile({
+    required this.icon,
     required this.doc,
     required this.name,
     required this.office,
@@ -476,7 +616,7 @@ class _CashierTile extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 10),
       child: ListTile(
         onTap: onOpen,
-        leading: const Icon(Icons.point_of_sale, color: AppColors.primary),
+        leading: Icon(icon, color: AppColors.primary),
         title: Text(name),
         subtitle: Text(
           [
@@ -570,6 +710,7 @@ class _LinkDropdowns extends StatelessWidget {
 }
 
 class _CreateCashierForm extends StatefulWidget {
+  final StaffType type;
   final _Links links;
   final Future<void> Function({
     required String uid,
@@ -582,7 +723,11 @@ class _CreateCashierForm extends StatefulWidget {
   })
   saveLinks;
 
-  const _CreateCashierForm({required this.links, required this.saveLinks});
+  const _CreateCashierForm({
+    required this.type,
+    required this.links,
+    required this.saveLinks,
+  });
 
   @override
   State<_CreateCashierForm> createState() => _CreateCashierFormState();
@@ -609,6 +754,8 @@ class _CreateCashierFormState extends State<_CreateCashierForm> {
 
   Future<void> _create() async {
     final l10n = context.l10n;
+    final texts = _StaffTexts.of(widget.type, l10n);
+    final isPartner = widget.type == StaffType.partner;
     if (!_formKey.currentState!.validate()) return;
     setState(() => _creating = true);
     final db = FirebaseFirestore.instance;
@@ -620,18 +767,23 @@ class _CreateCashierFormState extends State<_CreateCashierForm> {
           final batch = db.batch();
           batch.set(db.collection('users').doc(uid), {
             'email': _email.text.trim(),
-            'role': 'cashier',
+            'role': widget.type.name,
             'firstName': _first.text.trim(),
             'lastName': _last.text.trim(),
             'phone': _phone.text.trim(),
             'createAt': FieldValue.serverTimestamp(),
           });
-          batch.set(CashierService.cashier(uid), {
-            'firstName': _first.text.trim(),
-            'lastName': _last.text.trim(),
-            'balances': <String, double>{},
-            'createdAt': FieldValue.serverTimestamp(),
-          });
+          batch.set(
+            isPartner
+                ? PartnerService.partner(uid)
+                : CashierService.cashier(uid),
+            {
+              'firstName': _first.text.trim(),
+              'lastName': _last.text.trim(),
+              'balances': <String, double>{},
+              'createdAt': FieldValue.serverTimestamp(),
+            },
+          );
           await batch.commit();
           await widget.saveLinks(
             uid: uid,
@@ -647,7 +799,7 @@ class _CreateCashierFormState extends State<_CreateCashierForm> {
       if (!mounted) return;
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(SnackBar(content: Text(l10n.cashierCreated)));
+      ).showSnackBar(SnackBar(content: Text(texts.created)));
       _formKey.currentState!.reset();
       for (final c in [_first, _last, _email, _phone, _password]) {
         c.clear();
@@ -659,9 +811,7 @@ class _CreateCashierFormState extends State<_CreateCashierForm> {
     } on FirebaseAuthException catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(l10n.couldNotCreateCashier(authErrorText(l10n, e))),
-        ),
+        SnackBar(content: Text(texts.couldNotCreate(authErrorText(l10n, e)))),
       );
     } catch (e) {
       if (!mounted) return;
@@ -676,6 +826,7 @@ class _CreateCashierFormState extends State<_CreateCashierForm> {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
+    final texts = _StaffTexts.of(widget.type, l10n);
     String? required(String? v) =>
         (v == null || v.trim().isEmpty) ? l10n.requiredField : null;
     return Form(
@@ -684,7 +835,7 @@ class _CreateCashierFormState extends State<_CreateCashierForm> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            l10n.createNewCashier,
+            texts.createNew,
             style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 14),
@@ -746,7 +897,7 @@ class _CreateCashierFormState extends State<_CreateCashierForm> {
                     child: CircularProgressIndicator(strokeWidth: 2),
                   )
                 : const Icon(Icons.person_add),
-            label: Text(l10n.createCashier),
+            label: Text(texts.create),
           ),
         ],
       ),

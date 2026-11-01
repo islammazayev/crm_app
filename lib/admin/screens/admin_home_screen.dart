@@ -133,6 +133,15 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                   onTap: () => _open(const AdminCashiersPage()),
                 ),
                 _CountCard(
+                  query: db.collection('partners'),
+                  icon: Icons.handshake_outlined,
+                  iconColor: AppColors.warning,
+                  title: l10n.partners,
+                  subtitle: l10n.partnersAdminCardSubtitle,
+                  onTap: () =>
+                      _open(const AdminCashiersPage(type: StaffType.partner)),
+                ),
+                _CountCard(
                   query: db.collection('transactions'),
                   icon: Icons.receipt_long_outlined,
                   iconColor: AppColors.success,

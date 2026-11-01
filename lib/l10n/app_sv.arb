@@ -1376,5 +1376,123 @@
         "type": "Object"
       }
     }
-  }
+  },
+  "partners": "Partner",
+  "partnersCardSubtitle": "Växla valuta med dina partner.",
+  "partnersAdminCardSubtitle": "Skapa partner och koppla dem till kontor eller manager.",
+  "editPartnerTitle": "Ändra partner",
+  "partnerUpdated": "Partnern är uppdaterad.",
+  "deletePartnerTitle": "Ta bort partnern?",
+  "deletePartnerConfirm": "{name} kommer inte längre åt appen och saldot tas bort. Inloggningskontot finns kvar och kan tas bort under Authentication i Firebase-konsolen.",
+  "@deletePartnerConfirm": {
+    "placeholders": {
+      "name": {
+        "type": "Object"
+      }
+    }
+  },
+  "partnerDeleted": "Partnern är borttagen.",
+  "existingPartners": "Partner",
+  "searchPartnersLabel": "Sök partner (namn, kontor, manager)",
+  "createNewPartner": "Skapa ny partner",
+  "createPartner": "Skapa partner",
+  "partnerCreated": "Partnern är skapad.",
+  "couldNotCreatePartner": "Kunde inte skapa partner: {error}",
+  "@couldNotCreatePartner": {
+    "placeholders": {
+      "error": {
+        "type": "Object"
+      }
+    }
+  },
+  "partnerAppBarTitle": "CRM – Partner",
+  "partnerNotSetUp": "Ditt partnerkonto är inte kopplat till något kontor än. Kontakta admin.",
+  "newExchange": "Nytt växlingsförslag",
+  "exchangesTitle": "Växlingar",
+  "partnerBalancesTitle": "Partnernas saldo",
+  "noPartnersLinked": "Inga partner är kopplade till dig eller ditt kontor.",
+  "exchangeProposed": "Förslag",
+  "exchangeAccepted": "Accepterad",
+  "exchangeRejected": "Avböjd",
+  "exchangeCancelled": "Avbruten",
+  "exchangeCompleted": "Genomförd",
+  "noExchangesYet": "Inga växlingar än.",
+  "exchangeOfficeGives": "Kontoret ger: {amount}",
+  "@exchangeOfficeGives": {
+    "placeholders": {
+      "amount": {
+        "type": "Object"
+      }
+    }
+  },
+  "exchangePartnerGives": "Partnern ger: {amount}",
+  "@exchangePartnerGives": {
+    "placeholders": {
+      "amount": {
+        "type": "Object"
+      }
+    }
+  },
+  "exchangeYouGive": "Du ger: {amount}",
+  "@exchangeYouGive": {
+    "placeholders": {
+      "amount": {
+        "type": "Object"
+      }
+    }
+  },
+  "exchangeYouGet": "Du får: {amount}",
+  "@exchangeYouGet": {
+    "placeholders": {
+      "amount": {
+        "type": "Object"
+      }
+    }
+  },
+  "exchangeRateLine": "Kurs: 1 {from} = {rate} {to}",
+  "@exchangeRateLine": {
+    "placeholders": {
+      "from": {
+        "type": "Object"
+      },
+      "rate": {
+        "type": "Object"
+      },
+      "to": {
+        "type": "Object"
+      }
+    }
+  },
+  "exchangeOfficeSentDone": "✓ Kontoret har skickat",
+  "exchangeOfficeSentWaiting": "… Kontoret har inte skickat än",
+  "exchangePartnerSentDone": "✓ Partnern har skickat",
+  "exchangePartnerSentWaiting": "… Partnern har inte skickat än",
+  "counterProposal": "Motförslag",
+  "waitingForAnswer": "Väntar på svar",
+  "markExchangeSent": "Jag har skickat {amount}",
+  "@markExchangeSent": {
+    "placeholders": {
+      "amount": {
+        "type": "Object"
+      }
+    }
+  },
+  "confirmExchangeSent": "Bekräfta att du har skickat pengarna. Den andra sidan ser det och kan bekräfta när de har kommit.",
+  "markExchangeReceived": "Jag har tagit emot {amount}",
+  "@markExchangeReceived": {
+    "placeholders": {
+      "amount": {
+        "type": "Object"
+      }
+    }
+  },
+  "confirmExchangeReceived": "Bekräfta att pengarna har kommit. När båda har bekräftat blir växlingen genomförd och saldona uppdateras.",
+  "waitingForOtherReceived": "Väntar på att den andra sidan bekräftar att pengarna har kommit.",
+  "youGiveLabel": "Belopp du ger",
+  "youGetLabel": "Belopp du får",
+  "currencyYouGive": "Valuta du ger",
+  "currencyYouGet": "Valuta du får",
+  "exchangeProposalSent": "Förslaget är skickat.",
+  "choosePartner": "Partner",
+  "sendProposal": "Skicka förslag"
 }
