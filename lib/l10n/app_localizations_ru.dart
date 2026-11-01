@@ -1845,7 +1845,8 @@ class AppLocalizationsRu extends AppLocalizations {
   String get cashierBalancesTitle => 'Балансы кассиров';
 
   @override
-  String get balancesCardSubtitle => 'Баланс офиса и кассиров, отдельно.';
+  String get balancesCardSubtitle =>
+      'Баланс офиса и кассиров, общий и по отдельности.';
 
   @override
   String get noBalance => 'Нет баланса.';
@@ -2044,4 +2045,171 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get sendProposal => 'Отправить предложение';
+
+  @override
+  String get searchExistingCustomer => 'Найти существующего клиента';
+
+  @override
+  String get noCustomerFoundNew =>
+      'Клиент не найден. Введите нового клиента ниже.';
+
+  @override
+  String get orNewCustomer => 'Или новый клиент:';
+
+  @override
+  String get hasAppAccount => 'Есть аккаунт в приложении';
+
+  @override
+  String get noAppAccount => 'Нет аккаунта в приложении';
+
+  @override
+  String get changeCustomer => 'Сменить';
+
+  @override
+  String get inviteCustomerQuestion => 'Клиент хочет стать нашим клиентом?';
+
+  @override
+  String get inviteCustomerHint =>
+      'Клиент будет сохранён в базе клиентов и получит ссылку по SMS для создания аккаунта в приложении.';
+
+  @override
+  String get invitePhoneRequired =>
+      'Введите номер телефона клиента, чтобы отправить ссылку.';
+
+  @override
+  String inviteSmsText(Object name, Object link) {
+    return 'Здравствуйте, $name! Добро пожаловать к нам. Создайте аккаунт здесь: $link';
+  }
+
+  @override
+  String inviteWelcome(Object clientId) {
+    return 'Добро пожаловать! Вы уже наш клиент с ID $clientId. Создайте аккаунт ниже, чтобы видеть свои переводы в приложении.';
+  }
+
+  @override
+  String get inviteInvalid =>
+      'Ссылка больше не действует. Вы всё равно можете создать аккаунт ниже.';
+
+  @override
+  String get alreadyHaveAccountLogin => 'Уже есть аккаунт? Войти';
+
+  @override
+  String get attachReceiptOptional => 'Прикрепить квитанцию (необязательно)';
+
+  @override
+  String get officeReceipt => 'Квитанция офиса';
+
+  @override
+  String get partnerReceipt => 'Квитанция партнёра';
+
+  @override
+  String get totalBalanceTitle => 'Общий баланс';
+
+  @override
+  String get totalBalanceSubtitle => 'Офис + кассиры (без партнёров)';
+
+  @override
+  String get officeAddressLabel => 'Адрес (для клиентов, платящих наличными)';
+
+  @override
+  String get officeMapUrlLabel => 'Ссылка на карту';
+
+  @override
+  String get officeMapUrlHelper =>
+      'Откройте офис в Google Maps, нажмите «Поделиться» и вставьте ссылку сюда.';
+
+  @override
+  String get howDoYouPay => 'Как вы платите?';
+
+  @override
+  String get howDoesCustomerPay => 'Как платит клиент?';
+
+  @override
+  String get payCashAtOffice => 'Наличными в офисе';
+
+  @override
+  String get payViaBank => 'Через банк';
+
+  @override
+  String get payCashHint =>
+      'Вы получите адрес офиса со ссылкой на карту и сдадите деньги там. Офис подтвердит оплату.';
+
+  @override
+  String get payBankHint =>
+      'Офис отправит вам платёжные реквизиты, как раньше.';
+
+  @override
+  String get walkInCashHint =>
+      'Клиент платит здесь, в офисе. Оплата подтверждается сразу, и клиент получает код выдачи.';
+
+  @override
+  String get walkInBankHint =>
+      'Вы отправляете клиенту платёжные реквизиты и подтверждаете, когда деньги придут, как раньше.';
+
+  @override
+  String get officeAddressMissing =>
+      'У офиса пока нет адреса. Уточните в офисе.';
+
+  @override
+  String get openMap => 'Открыть карту';
+
+  @override
+  String payCashAtOfficeAmount(Object amount, Object currency) {
+    return 'Оплатите $amount $currency наличными в офисе';
+  }
+
+  @override
+  String get payCashConfirmHint =>
+      'Офис подтвердит, когда вы сдадите деньги. Тогда вы получите код выдачи.';
+
+  @override
+  String get customerPaysCashAtOffice => '💵 Клиент платит наличными в офисе';
+
+  @override
+  String get cashPaymentReceived => 'Оплата получена (наличные)';
+
+  @override
+  String get cashPaymentsTitle => 'Оплаты наличными';
+
+  @override
+  String get cashPaymentsSubtitle =>
+      'Клиенты, которые будут платить наличными в офисе.';
+
+  @override
+  String get noCashPaymentsWaiting => 'Сейчас нет ожидающих оплат наличными.';
+
+  @override
+  String confirmCashReceived(Object amount, Object name) {
+    return 'Вы получили $amount наличными от $name? Тогда клиент получит код выдачи.';
+  }
+
+  @override
+  String customerPaysCashAmount(Object amount, Object currency) {
+    return 'Клиент платит $amount $currency';
+  }
+
+  @override
+  String get pickUpAtOfficeTitle => 'Адрес офиса';
+
+  @override
+  String get youPayCashAtOffice => 'Вы платите наличными в офисе';
+
+  @override
+  String lowBalanceTitle(Object currency) {
+    return 'Недостаточно $currency';
+  }
+
+  @override
+  String get lowBalanceHas => 'В офисе есть:';
+
+  @override
+  String get lowBalanceToPay => 'Нужно выплатить:';
+
+  @override
+  String get lowBalanceMissing => 'Не хватает:';
+
+  @override
+  String lowBalancePartnerHint(Object currency) {
+    return 'Уточните у партнёра, можно ли обменять на $currency.';
+  }
 }

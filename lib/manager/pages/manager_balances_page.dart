@@ -6,8 +6,9 @@ import '../../theme/app_theme.dart';
 import '../../utils/balances.dart';
 import 'manager_cashiers_page.dart';
 
-/// Managerns saldon: kontorets saldo och varje kopplad kassörs saldo, var
-/// för sig. De läggs inte ihop, eftersom pengarna finns på olika ställen.
+/// Managerns saldon: totalen för kontoret och de kopplade kassörerna, och
+/// därunder kontorets och varje kassörs saldo var för sig. Partnernas saldo
+/// räknas inte med; det är inte kontorets pengar.
 class ManagerBalancesPage extends StatelessWidget {
   final String managerId;
   final String officeId;
@@ -27,73 +28,80 @@ class ManagerBalancesPage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(title: Text(l10n.balancesTitle)),
-      body: ListView(
-        padding: const EdgeInsets.all(20),
-        children: [
-          SectionHeader(title: l10n.officeBalanceTitle),
-          const SizedBox(height: 10),
-          StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
-            stream: db.collection('offices').doc(officeId).snapshots(),
-            builder: (context, snap) {
-              if (snap.hasError) {
-                return Text(l10n.errorWithDetails('${snap.error}'));
-              }
-              if (!snap.hasData) {
-                return const Center(child: CircularProgressIndicator());
-              }
-              return BalanceCard(
-                icon: Icons.storefront_outlined,
-                color: AppColors.info,
-                title: officeLabel.isEmpty ? l10n.office : officeLabel,
-                balances: parseBalances(
-                  snap.data!.data()?['balances'],
-                  officeId: officeId,
-                ),
-              );
-            },
-          ),
-          const SizedBox(height: 28),
-          SectionHeader(title: l10n.cashierBalancesTitle),
-          const SizedBox(height: 10),
-          StreamBuilder<List<QueryDocumentSnapshot<Map<String, dynamic>>>>(
+      body: StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+        stream: db.collection('offices').doc(officeId).snapshots(),
+        builder: (context, officeSnap) {
+          return StreamBuilder<
+            List<QueryDocumentSnapshot<Map<String, dynamic>>>
+          >(
             stream: ManagerCashiersPage.cashiers(managerId, officeId),
-            builder: (context, snap) {
-              if (snap.hasError) {
-                return Text(l10n.errorWithDetails('${snap.error}'));
+            builder: (context, cashSnap) {
+              final error = officeSnap.error ?? cashSnap.error;
+              if (error != null) {
+                return Center(child: Text(l10n.errorWithDetails('$error')));
               }
-              if (!snap.hasData) {
+              if (!officeSnap.hasData || !cashSnap.hasData) {
                 return const Center(child: CircularProgressIndicator());
               }
               String nameOf(Map<String, dynamic> d) =>
                   '${d['firstName'] ?? ''} ${d['lastName'] ?? ''}'.trim();
-              final docs = snap.data!
+              final office = parseBalances(
+                officeSnap.data!.data()?['balances'],
+                officeId: officeId,
+              );
+              final cashiers = cashSnap.data!
                 ..sort((a, b) => nameOf(a.data()).compareTo(nameOf(b.data())));
-              if (docs.isEmpty) {
-                return Text(
-                  l10n.noCashiersLinked,
-                  style: const TextStyle(color: AppColors.textMuted),
-                );
-              }
-              return Column(
+              final cashierBalances = [
+                for (final c in cashiers)
+                  parseBalances(c.data()['balances'], officeId: c.id),
+              ];
+
+              return ListView(
+                padding: const EdgeInsets.all(20),
                 children: [
-                  for (final doc in docs)
+                  // Totalen visas bara när det finns kassörer att lägga ihop.
+                  if (cashiers.isNotEmpty) ...[
+                    SectionHeader(title: l10n.totalBalanceTitle),
+                    const SizedBox(height: 10),
+                    BalanceCard(
+                      icon: Icons.account_balance_wallet_outlined,
+                      color: AppColors.success,
+                      title: l10n.totalBalanceSubtitle,
+                      balances: sumBalances([office, ...cashierBalances]),
+                    ),
+                    const SizedBox(height: 28),
+                  ],
+                  SectionHeader(title: l10n.officeBalanceTitle),
+                  const SizedBox(height: 10),
+                  BalanceCard(
+                    icon: Icons.storefront_outlined,
+                    color: AppColors.info,
+                    title: officeLabel.isEmpty ? l10n.office : officeLabel,
+                    balances: office,
+                  ),
+                  const SizedBox(height: 28),
+                  SectionHeader(title: l10n.cashierBalancesTitle),
+                  const SizedBox(height: 10),
+                  if (cashiers.isEmpty)
+                    Text(
+                      l10n.noCashiersLinked,
+                      style: const TextStyle(color: AppColors.textMuted),
+                    ),
+                  for (var i = 0; i < cashiers.length; i++)
                     Padding(
                       padding: const EdgeInsets.only(bottom: 12),
                       child: BalanceCard(
                         icon: Icons.point_of_sale,
                         color: AppColors.primary,
-                        title: nameOf(doc.data()),
-                        balances: parseBalances(
-                          doc.data()['balances'],
-                          officeId: doc.id,
-                        ),
+                        title: nameOf(cashiers[i].data()),
+                        balances: cashierBalances[i],
                       ),
                     ),
                 ],
               );
             },
-          ),
-        ],
+          );
+        },
       ),
     );
   }

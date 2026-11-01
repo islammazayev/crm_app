@@ -6,6 +6,7 @@ import '../../l10n/app_localizations.dart';
 import '../../l10n/locale_controller.dart';
 import '../../services/transaction_number_service.dart';
 import '../../utils/customer_tiers.dart';
+import '../../widgets/pay_method.dart';
 import 'office_listing.dart';
 
 /// Skicka-flödet: kunden väljer först vilken valuta hen vill skicka. Därefter
@@ -22,6 +23,7 @@ class _SendSectionState extends State<SendSection> {
   String? _selectedFromCurrency;
   String? _selectedOfficeId;
   String? _selectedToCurrency;
+  PayMethod _payMethod = PayMethod.bank;
   final _amountCtrl = TextEditingController();
 
   bool _loadingOffices = true;
@@ -156,6 +158,7 @@ class _SendSectionState extends State<SendSection> {
         'feePercent': null,
         'feeAmount': null,
         'paymentMethod': null,
+        'payMethod': _payMethod.name,
         'status': 'customer_requested',
         'createAt': FieldValue.serverTimestamp(),
         ...?tier?.toTransactionFields(),
@@ -265,6 +268,13 @@ class _SendSectionState extends State<SendSection> {
                 : (value) => setState(() => _selectedToCurrency = value),
           ),
 
+          const SizedBox(height: 16),
+
+          // Kontant på kontoret eller via bank.
+          PayMethodPicker(
+            value: _payMethod,
+            onChanged: (v) => setState(() => _payMethod = v),
+          ),
           const SizedBox(height: 16),
 
           // 4. Belopp

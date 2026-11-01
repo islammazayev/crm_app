@@ -1837,7 +1837,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get balancesCardSubtitle =>
-      'The office\'s and the cashiers\' balances, separately.';
+      'The office\'s and the cashiers\' balances, in total and separately.';
 
   @override
   String get noBalance => 'No balance.';
@@ -2036,4 +2036,172 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get sendProposal => 'Send proposal';
+
+  @override
+  String get searchExistingCustomer => 'Search existing customer';
+
+  @override
+  String get noCustomerFoundNew =>
+      'No customer found. Enter a new customer below.';
+
+  @override
+  String get orNewCustomer => 'Or a new customer:';
+
+  @override
+  String get hasAppAccount => 'Has an app account';
+
+  @override
+  String get noAppAccount => 'No app account';
+
+  @override
+  String get changeCustomer => 'Change';
+
+  @override
+  String get inviteCustomerQuestion =>
+      'Does the customer want to become our customer?';
+
+  @override
+  String get inviteCustomerHint =>
+      'The customer is saved in the customer register and gets a link by SMS to create an app account.';
+
+  @override
+  String get invitePhoneRequired =>
+      'Enter the customer\'s phone number to send the link.';
+
+  @override
+  String inviteSmsText(Object name, Object link) {
+    return 'Hi $name! Welcome as our customer. Create your account here: $link';
+  }
+
+  @override
+  String inviteWelcome(Object clientId) {
+    return 'Welcome! You are already our customer with client ID $clientId. Create your account below to see your transactions in the app.';
+  }
+
+  @override
+  String get inviteInvalid =>
+      'The link no longer works. You can still create an account below.';
+
+  @override
+  String get alreadyHaveAccountLogin => 'Already have an account? Log in';
+
+  @override
+  String get attachReceiptOptional => 'Attach receipt (optional)';
+
+  @override
+  String get officeReceipt => 'Office receipt';
+
+  @override
+  String get partnerReceipt => 'Partner receipt';
+
+  @override
+  String get totalBalanceTitle => 'Total balance';
+
+  @override
+  String get totalBalanceSubtitle => 'Office + cashiers (excluding partners)';
+
+  @override
+  String get officeAddressLabel => 'Address (for customers paying cash)';
+
+  @override
+  String get officeMapUrlLabel => 'Map link';
+
+  @override
+  String get officeMapUrlHelper =>
+      'Open the office in Google Maps, tap Share and paste the link here.';
+
+  @override
+  String get howDoYouPay => 'How do you pay?';
+
+  @override
+  String get howDoesCustomerPay => 'How does the customer pay?';
+
+  @override
+  String get payCashAtOffice => 'Cash at the office';
+
+  @override
+  String get payViaBank => 'Via bank';
+
+  @override
+  String get payCashHint =>
+      'You get the office address with a map link and hand in the money there. The office confirms the payment.';
+
+  @override
+  String get payBankHint => 'The office sends you payment details, as before.';
+
+  @override
+  String get walkInCashHint =>
+      'The customer pays here at the office. The payment is confirmed right away and the customer gets a pickup code.';
+
+  @override
+  String get walkInBankHint =>
+      'You send payment details to the customer and confirm when the money has arrived, as before.';
+
+  @override
+  String get officeAddressMissing =>
+      'The office has no address yet. Ask the office.';
+
+  @override
+  String get openMap => 'Open map';
+
+  @override
+  String payCashAtOfficeAmount(Object amount, Object currency) {
+    return 'Pay $amount $currency in cash at the office';
+  }
+
+  @override
+  String get payCashConfirmHint =>
+      'The office confirms when you have handed in the money. You then get your pickup code.';
+
+  @override
+  String get customerPaysCashAtOffice =>
+      '💵 The customer pays cash at the office';
+
+  @override
+  String get cashPaymentReceived => 'Payment received (cash)';
+
+  @override
+  String get cashPaymentsTitle => 'Cash payments';
+
+  @override
+  String get cashPaymentsSubtitle =>
+      'Customers who will pay cash at the office.';
+
+  @override
+  String get noCashPaymentsWaiting => 'No cash payments are waiting right now.';
+
+  @override
+  String confirmCashReceived(Object amount, Object name) {
+    return 'Have you received $amount in cash from $name? The customer then gets their pickup code.';
+  }
+
+  @override
+  String customerPaysCashAmount(Object amount, Object currency) {
+    return 'The customer pays $amount $currency';
+  }
+
+  @override
+  String get pickUpAtOfficeTitle => 'Office address';
+
+  @override
+  String get youPayCashAtOffice => 'You pay cash at the office';
+
+  @override
+  String lowBalanceTitle(Object currency) {
+    return 'Not enough $currency';
+  }
+
+  @override
+  String get lowBalanceHas => 'The office has:';
+
+  @override
+  String get lowBalanceToPay => 'To pay out:';
+
+  @override
+  String get lowBalanceMissing => 'Missing:';
+
+  @override
+  String lowBalancePartnerHint(Object currency) {
+    return 'Check with a partner whether you can exchange for $currency.';
+  }
 }

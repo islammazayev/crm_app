@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../utils/merged_query.dart';
+import 'receipt_service.dart';
 
 /// Vilken sida av en växling den inloggade står på.
 enum ExchangeSide { office, partner }
@@ -122,11 +123,31 @@ class PartnerService {
   static Future<void> decide(DocumentReference ref, String status) =>
       ref.update({'status': status, 'decidedAt': FieldValue.serverTimestamp()});
 
-  static Future<void> markSent(DocumentReference ref, ExchangeSide side) =>
-      ref.update({
-        '${side.name}Sent': true,
-        '${side.name}SentAt': FieldValue.serverTimestamp(),
-      });
+  /// Markerar att de egna pengarna är skickade, med ett valfritt kvitto
+  /// som bevis (Storage: exchangeReceipts/{id}/{sida}/).
+  static Future<void> markSent(
+    DocumentReference ref,
+    ExchangeSide side, {
+    PickedReceipt? receipt,
+  }) async {
+    final s = side.name;
+    String? path;
+    if (receipt != null) {
+      path = await ReceiptService.uploadTo(
+        'exchangeReceipts/${ref.id}/$s',
+        receipt,
+      );
+    }
+    await ref.update({
+      '${s}Sent': true,
+      '${s}SentAt': FieldValue.serverTimestamp(),
+      if (path != null) ...{
+        '${s}ReceiptPath': path,
+        '${s}ReceiptName': receipt!.name,
+        '${s}ReceiptContentType': receipt.contentType,
+      },
+    });
+  }
 
   /// Markerar att den andra sidans pengar har kommit. Har den andra redan
   /// gjort samma sak blir växlingen genomförd och båda saldona bokförs.

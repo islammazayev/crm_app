@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
@@ -7,6 +8,7 @@ import '../../services/receipt_service.dart';
 import '../../theme/app_theme.dart';
 import '../../utils/pickup_code.dart';
 import '../../utils/transaction_kind.dart';
+import '../../widgets/pay_method.dart';
 import '../../widgets/receipt_button.dart';
 import '../../utils/transaction_no.dart';
 import 'customer_transactions_screen.dart' show customerStatusText;
@@ -59,6 +61,10 @@ class CustomerTransactionDetailScreen extends StatelessWidget {
               .toDouble();
 
           final String status = (data['status'] ?? '').toString();
+          // Transaktioner som managern skapat på kontoret (innan kunden hade
+          // konto) visas, men kunden har inget att göra i dem.
+          final bool mine =
+              data['customerId'] == FirebaseAuth.instance.currentUser?.uid;
           final bool isBuy = isBuyTransaction(data);
           final bool toBank = isBankPayout(data);
           final String paymentLabel = (data['paymentMethodLabel'] ?? '')
@@ -148,7 +154,38 @@ class CustomerTransactionDetailScreen extends StatelessWidget {
                       Text(
                         l10n.orderStatusLine(customerStatusText(l10n, status)),
                       ),
-                      if (paymentLabel.isNotEmpty &&
+                      // Kontant: kunden går till kontoret och betalar där;
+                      // managern eller kassören bekräftar inbetalningen.
+                      // Kontant: adressen syns redan innan kunden har
+                      // accepterat, så att kunden vet vart hen ska.
+                      if (payMethodOf(data) == PayMethod.cash &&
+                          const [
+                            'customer_requested',
+                            'manager_proposed',
+                            'customer_countered',
+                          ].contains(status)) ...[
+                        const SizedBox(height: 16),
+                        OfficeAddressCard(
+                          officeId: '${data['officeId'] ?? ''}',
+                          title: l10n.youPayCashAtOffice,
+                        ),
+                      ],
+                      if (payMethodOf(data) == PayMethod.cash &&
+                          status == 'customer_accepted') ...[
+                        const SizedBox(height: 16),
+                        OfficeAddressCard(
+                          officeId: '${data['officeId'] ?? ''}',
+                          title: l10n.payCashAtOfficeAmount(
+                            amountFrom.toStringAsFixed(2),
+                            fromCurrency,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          l10n.payCashConfirmHint,
+                          style: const TextStyle(color: Colors.grey),
+                        ),
+                      ] else if (paymentLabel.isNotEmpty &&
                           const [
                             'customer_accepted',
                             'customer_paid',
@@ -239,6 +276,12 @@ class CustomerTransactionDetailScreen extends StatelessWidget {
                           amount: _num(data['amountToNet']).toStringAsFixed(2),
                           currency: toCurrency,
                         ),
+                        // Var kunden hämtar ut pengarna.
+                        const SizedBox(height: 12),
+                        OfficeAddressCard(
+                          officeId: '${data['officeId'] ?? ''}',
+                          title: l10n.pickUpAtOfficeTitle,
+                        ),
                       ],
 
                       if (status == 'completed') ...[
@@ -255,7 +298,8 @@ class CustomerTransactionDetailScreen extends StatelessWidget {
 
                       const Spacer(),
 
-                      if (status == 'customer_accepted' &&
+                      if (mine &&
+                          status == 'customer_accepted' &&
                           paymentLabel.isNotEmpty)
                         SizedBox(
                           width: double.infinity,
@@ -269,7 +313,7 @@ class CustomerTransactionDetailScreen extends StatelessWidget {
 
                       // Svar på managerns förslag: acceptera, avböj eller (en gång)
                       // motförslag med lägre avgift.
-                      if (status == 'manager_proposed') ...[
+                      if (mine && status == 'manager_proposed') ...[
                         Row(
                           children: [
                             Expanded(

@@ -49,10 +49,13 @@ class ReceiptService {
   }
 
   /// Laddar upp kvittot och returnerar sökvägen i Storage.
-  static Future<String> upload(String transactionId, PickedReceipt r) async {
+  static Future<String> upload(String transactionId, PickedReceipt r) =>
+      uploadTo('receipts/$transactionId', r);
+
+  /// Laddar upp kvittot i [folder] (se storage.rules för vem som får).
+  static Future<String> uploadTo(String folder, PickedReceipt r) async {
     final safeName = r.name.replaceAll(RegExp(r'[^A-Za-z0-9._-]'), '_');
-    final path =
-        'receipts/$transactionId/${DateTime.now().millisecondsSinceEpoch}_$safeName';
+    final path = '$folder/${DateTime.now().millisecondsSinceEpoch}_$safeName';
     await FirebaseStorage.instance
         .ref(path)
         .putData(r.bytes, SettableMetadata(contentType: r.contentType));

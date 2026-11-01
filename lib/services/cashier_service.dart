@@ -52,6 +52,25 @@ class CashierService {
   static DocumentReference<Map<String, dynamic>> directory(String uid) =>
       _db.collection('cashierDirectory').doc(uid);
 
+  /// Kassörer som bara är kopplade till en manager får managerns kontor som
+  /// cashOfficeId (för kontanta inbetalningar). Körs av admin-appen.
+  static Future<void> backfillCashOffice() async {
+    final cashiers = await _db.collection('cashiers').get();
+    final batch = _db.batch();
+    var writes = 0;
+    for (final c in cashiers.docs) {
+      final d = c.data();
+      final managerId = d['managerId'] as String?;
+      if (d['officeId'] != null || managerId == null) continue;
+      final manager = await _db.collection('users').doc(managerId).get();
+      final officeId = manager.data()?['officeId'] as String?;
+      if (officeId == null || d['cashOfficeId'] == officeId) continue;
+      batch.update(c.reference, {'cashOfficeId': officeId});
+      writes++;
+    }
+    if (writes > 0) await batch.commit();
+  }
+
   /// Alla kassörer i katalogen (för listan över mottagare).
   static Stream<List<CashierEntry>> directoryStream() => _db
       .collection('cashierDirectory')

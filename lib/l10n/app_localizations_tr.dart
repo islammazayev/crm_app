@@ -1830,7 +1830,7 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get balancesCardSubtitle =>
-      'Ofisin ve kasiyerlerin bakiyeleri, ayrı ayrı.';
+      'Ofisin ve kasiyerlerin bakiyeleri, toplam ve ayrı ayrı.';
 
   @override
   String get noBalance => 'Bakiye yok.';
@@ -2028,4 +2028,170 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get sendProposal => 'Teklif gönder';
+
+  @override
+  String get searchExistingCustomer => 'Mevcut müşteri ara';
+
+  @override
+  String get noCustomerFoundNew =>
+      'Müşteri bulunamadı. Aşağıya yeni müşteri girin.';
+
+  @override
+  String get orNewCustomer => 'Veya yeni müşteri:';
+
+  @override
+  String get hasAppAccount => 'Uygulamada hesabı var';
+
+  @override
+  String get noAppAccount => 'Uygulamada hesabı yok';
+
+  @override
+  String get changeCustomer => 'Değiştir';
+
+  @override
+  String get inviteCustomerQuestion =>
+      'Müşteri bizim müşterimiz olmak istiyor mu?';
+
+  @override
+  String get inviteCustomerHint =>
+      'Müşteri müşteri kaydına eklenir ve uygulamada hesap oluşturmak için SMS ile bir bağlantı alır.';
+
+  @override
+  String get invitePhoneRequired =>
+      'Bağlantıyı göndermek için müşterinin telefon numarasını girin.';
+
+  @override
+  String inviteSmsText(Object name, Object link) {
+    return 'Merhaba $name! Müşterimiz olarak hoş geldiniz. Hesabınızı buradan oluşturun: $link';
+  }
+
+  @override
+  String inviteWelcome(Object clientId) {
+    return 'Hoş geldiniz! $clientId müşteri numarasıyla zaten müşterimizsiniz. İşlemlerinizi uygulamada görmek için aşağıdan hesabınızı oluşturun.';
+  }
+
+  @override
+  String get inviteInvalid =>
+      'Bağlantı artık geçerli değil. Yine de aşağıdan hesap oluşturabilirsiniz.';
+
+  @override
+  String get alreadyHaveAccountLogin => 'Zaten hesabınız var mı? Giriş yapın';
+
+  @override
+  String get attachReceiptOptional => 'Makbuz ekle (isteğe bağlı)';
+
+  @override
+  String get officeReceipt => 'Ofis makbuzu';
+
+  @override
+  String get partnerReceipt => 'Ortak makbuzu';
+
+  @override
+  String get totalBalanceTitle => 'Toplam bakiye';
+
+  @override
+  String get totalBalanceSubtitle => 'Ofis + kasiyerler (ortaklar hariç)';
+
+  @override
+  String get officeAddressLabel => 'Adres (nakit ödeyen müşteriler için)';
+
+  @override
+  String get officeMapUrlLabel => 'Harita bağlantısı';
+
+  @override
+  String get officeMapUrlHelper =>
+      'Ofisi Google Haritalar\'da açın, Paylaş\'a dokunun ve bağlantıyı buraya yapıştırın.';
+
+  @override
+  String get howDoYouPay => 'Nasıl ödüyorsunuz?';
+
+  @override
+  String get howDoesCustomerPay => 'Müşteri nasıl ödüyor?';
+
+  @override
+  String get payCashAtOffice => 'Ofiste nakit';
+
+  @override
+  String get payViaBank => 'Banka ile';
+
+  @override
+  String get payCashHint =>
+      'Harita bağlantısıyla ofis adresini alırsınız ve parayı orada teslim edersiniz. Ofis ödemeyi onaylar.';
+
+  @override
+  String get payBankHint =>
+      'Ofis size ödeme bilgilerini gönderir, eskisi gibi.';
+
+  @override
+  String get walkInCashHint =>
+      'Müşteri burada, ofiste öder. Ödeme hemen onaylanır ve müşteri teslim kodunu alır.';
+
+  @override
+  String get walkInBankHint =>
+      'Müşteriye ödeme bilgilerini gönderir ve para geldiğinde onaylarsınız, eskisi gibi.';
+
+  @override
+  String get officeAddressMissing => 'Ofisin henüz adresi yok. Ofise sorun.';
+
+  @override
+  String get openMap => 'Haritayı aç';
+
+  @override
+  String payCashAtOfficeAmount(Object amount, Object currency) {
+    return 'Ofiste $amount $currency nakit ödeyin';
+  }
+
+  @override
+  String get payCashConfirmHint =>
+      'Parayı teslim ettiğinizde ofis onaylar. Ardından teslim kodunuzu alırsınız.';
+
+  @override
+  String get customerPaysCashAtOffice => '💵 Müşteri ofiste nakit ödüyor';
+
+  @override
+  String get cashPaymentReceived => 'Ödeme alındı (nakit)';
+
+  @override
+  String get cashPaymentsTitle => 'Nakit ödemeler';
+
+  @override
+  String get cashPaymentsSubtitle => 'Ofiste nakit ödeyecek müşteriler.';
+
+  @override
+  String get noCashPaymentsWaiting => 'Şu anda bekleyen nakit ödeme yok.';
+
+  @override
+  String confirmCashReceived(Object amount, Object name) {
+    return '$name kişisinden $amount nakit aldınız mı? Müşteri ardından teslim kodunu alır.';
+  }
+
+  @override
+  String customerPaysCashAmount(Object amount, Object currency) {
+    return 'Müşteri $amount $currency öder';
+  }
+
+  @override
+  String get pickUpAtOfficeTitle => 'Ofis adresi';
+
+  @override
+  String get youPayCashAtOffice => 'Ofiste nakit ödüyorsunuz';
+
+  @override
+  String lowBalanceTitle(Object currency) {
+    return 'Yeterli $currency yok';
+  }
+
+  @override
+  String get lowBalanceHas => 'Ofiste olan:';
+
+  @override
+  String get lowBalanceToPay => 'Ödenecek:';
+
+  @override
+  String get lowBalanceMissing => 'Eksik:';
+
+  @override
+  String lowBalancePartnerHint(Object currency) {
+    return 'Bir ortakla $currency bozdurup bozduramayacağınızı kontrol edin.';
+  }
 }

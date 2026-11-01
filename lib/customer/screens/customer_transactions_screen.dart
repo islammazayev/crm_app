@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 import '../../l10n/app_localizations.dart';
 import '../../l10n/locale_controller.dart';
+import '../../utils/customer_transactions.dart';
 import '../../utils/transaction_kind.dart';
 import '../../utils/transaction_no.dart';
 import '../screens/customer_transaction_detail_screen.dart';
@@ -39,16 +40,12 @@ class CustomerTransactionsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final currentUserId = FirebaseAuth.instance.currentUser!.uid;
 
-    final query = FirebaseFirestore.instance
-        .collection('transactions')
-        .where('customerId', isEqualTo: currentUserId);
-
     final l10n = context.l10n;
 
     return Scaffold(
       appBar: AppBar(title: Text(l10n.myTransactions)),
-      body: StreamBuilder<QuerySnapshot>(
-        stream: query.snapshots(),
+      body: StreamBuilder<List<QueryDocumentSnapshot<Map<String, dynamic>>>>(
+        stream: customerTransactions(currentUserId),
         builder: (context, snapshot) {
           if (snapshot.hasError) {
             return Center(
@@ -58,7 +55,7 @@ class CustomerTransactionsScreen extends StatelessWidget {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           }
-          if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+          if (!snapshot.hasData || snapshot.data!.isEmpty) {
             return Center(child: Text(l10n.noTransactionsYet));
           }
 
@@ -66,12 +63,7 @@ class CustomerTransactionsScreen extends StatelessWidget {
           // Firestore inte kräver ett extra index för customerId + createAt.
           // Arkiverade (av admin) visas inte.
           final docs =
-              snapshot.data!.docs
-                  .where(
-                    (d) =>
-                        (d.data() as Map<String, dynamic>)['archived'] != true,
-                  )
-                  .toList()
+              snapshot.data!.where((d) => d.data()['archived'] != true).toList()
                 ..sort((a, b) {
                   DateTime? at(QueryDocumentSnapshot d) =>
                       ((d.data() as Map<String, dynamic>)['createAt']
@@ -92,7 +84,7 @@ class CustomerTransactionsScreen extends StatelessWidget {
             itemCount: docs.length,
             itemBuilder: (context, index) {
               final doc = docs[index];
-              final data = doc.data() as Map<String, dynamic>;
+              final data = doc.data();
 
               final status = data['status']?.toString() ?? '';
               final createdAt = (data['createAt'] as Timestamp?)?.toDate();

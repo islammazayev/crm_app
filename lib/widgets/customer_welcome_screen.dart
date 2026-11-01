@@ -11,6 +11,7 @@ import '../screens/auth_gate.dart';
 import '../theme/app_theme.dart';
 import '../utils/client_id.dart';
 import '../utils/customer_tiers.dart';
+import '../utils/customer_transactions.dart';
 import 'action_card.dart';
 import 'language_button.dart';
 
@@ -89,23 +90,16 @@ class CustomerWelcomeScreen extends StatelessWidget {
                   onTap: () => _open(context, const CustomerSendPage()),
                 ),
                 // Siffran visar förslag från managern som väntar på svar.
-                StreamBuilder<QuerySnapshot>(
-                  stream: FirebaseFirestore.instance
-                      .collection('transactions')
-                      .where('customerId', isEqualTo: uid)
-                      .snapshots(),
+                StreamBuilder<
+                  List<QueryDocumentSnapshot<Map<String, dynamic>>>
+                >(
+                  stream: customerTransactions(uid),
                   builder: (context, snapshot) {
-                    final docs = (snapshot.data?.docs ?? const [])
-                        .where(
-                          (d) =>
-                              (d.data() as Map<String, dynamic>)['archived'] !=
-                              true,
-                        )
+                    final docs = (snapshot.data ?? const [])
+                        .where((d) => d.data()['archived'] != true)
                         .toList();
-                    int countStatus(String status) => docs.where((d) {
-                      final data = d.data() as Map<String, dynamic>;
-                      return data['status'] == status;
-                    }).length;
+                    int countStatus(String status) =>
+                        docs.where((d) => d.data()['status'] == status).length;
                     final waiting = countStatus('manager_proposed');
                     final ready = countStatus('payment_confirmed');
                     return ActionCard(

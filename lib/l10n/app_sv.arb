@@ -1355,7 +1355,7 @@
   "balancesTitle": "Saldo",
   "officeBalanceTitle": "Kontorets saldo",
   "cashierBalancesTitle": "Kassörernas saldo",
-  "balancesCardSubtitle": "Kontorets och kassörernas saldo, var för sig.",
+  "balancesCardSubtitle": "Kontorets och kassörernas saldo, totalt och var för sig.",
   "noBalance": "Inget saldo.",
   "sellCardSubtitle": "Sälj valuta och få pengarna kontant eller till din bank.",
   "currencyToSell": "Valuta du vill sälja",
@@ -1494,5 +1494,113 @@
   "currencyYouGet": "Valuta du får",
   "exchangeProposalSent": "Förslaget är skickat.",
   "choosePartner": "Partner",
-  "sendProposal": "Skicka förslag"
+  "sendProposal": "Skicka förslag",
+  "searchExistingCustomer": "Sök befintlig kund",
+  "noCustomerFoundNew": "Ingen kund hittades. Skriv in en ny kund nedan.",
+  "orNewCustomer": "Eller ny kund:",
+  "hasAppAccount": "Har konto i appen",
+  "noAppAccount": "Inget konto i appen",
+  "changeCustomer": "Byt",
+  "inviteCustomerQuestion": "Vill kunden bli kund hos oss?",
+  "inviteCustomerHint": "Kunden sparas i kundregistret och får en länk via SMS för att skapa konto i appen.",
+  "invitePhoneRequired": "Skriv kundens telefonnummer för att kunna skicka länken.",
+  "inviteSmsText": "Hej {name}! Välkommen som kund hos oss. Skapa ditt konto här: {link}",
+  "@inviteSmsText": {
+    "placeholders": {
+      "name": {
+        "type": "Object"
+      },
+      "link": {
+        "type": "Object"
+      }
+    }
+  },
+  "inviteWelcome": "Välkommen! Du är redan kund hos oss med klient-ID {clientId}. Skapa ditt konto nedan, så ser du dina transaktioner i appen.",
+  "@inviteWelcome": {
+    "placeholders": {
+      "clientId": {
+        "type": "Object"
+      }
+    }
+  },
+  "inviteInvalid": "Länken fungerar inte längre. Du kan ändå skapa ett konto nedan.",
+  "alreadyHaveAccountLogin": "Har du redan ett konto? Logga in",
+  "attachReceiptOptional": "Bifoga kvitto (valfritt)",
+  "officeReceipt": "Kontorets kvitto",
+  "partnerReceipt": "Partnerns kvitto",
+  "totalBalanceTitle": "Totalt saldo",
+  "totalBalanceSubtitle": "Kontoret + kassörer (utan partner)",
+  "officeAddressLabel": "Adress (för kunder som betalar kontant)",
+  "officeMapUrlLabel": "Kartlänk",
+  "officeMapUrlHelper": "Öppna kontoret i Google Maps, tryck Dela och klistra in länken här.",
+  "howDoYouPay": "Hur betalar du?",
+  "howDoesCustomerPay": "Hur betalar kunden?",
+  "payCashAtOffice": "Kontant på kontoret",
+  "payViaBank": "Via bank",
+  "payCashHint": "Du får kontorets adress med kartlänk och lämnar pengarna där. Kontoret bekräftar inbetalningen.",
+  "payBankHint": "Kontoret skickar betalningsuppgifter till dig, som förut.",
+  "walkInCashHint": "Kunden betalar här på kontoret. Betalningen bekräftas direkt och kunden får sin uthämtningskod.",
+  "walkInBankHint": "Du skickar betalningsuppgifter till kunden och bekräftar när pengarna har kommit, som förut.",
+  "officeAddressMissing": "Kontoret har ingen adress än. Fråga kontoret.",
+  "openMap": "Öppna karta",
+  "payCashAtOfficeAmount": "Betala {amount} {currency} kontant på kontoret",
+  "@payCashAtOfficeAmount": {
+    "placeholders": {
+      "amount": {
+        "type": "Object"
+      },
+      "currency": {
+        "type": "Object"
+      }
+    }
+  },
+  "payCashConfirmHint": "Kontoret bekräftar när du har lämnat pengarna. Då får du din uthämtningskod.",
+  "customerPaysCashAtOffice": "💵 Kunden betalar kontant på kontoret",
+  "cashPaymentReceived": "Betalning mottagen (kontant)",
+  "cashPaymentsTitle": "Kontanta inbetalningar",
+  "cashPaymentsSubtitle": "Kunder som ska betala kontant på kontoret.",
+  "noCashPaymentsWaiting": "Inga kontanta inbetalningar väntar just nu.",
+  "confirmCashReceived": "Har du tagit emot {amount} kontant från {name}? Kunden får då sin uthämtningskod.",
+  "@confirmCashReceived": {
+    "placeholders": {
+      "amount": {
+        "type": "Object"
+      },
+      "name": {
+        "type": "Object"
+      }
+    }
+  },
+  "customerPaysCashAmount": "Kunden betalar {amount} {currency}",
+  "@customerPaysCashAmount": {
+    "placeholders": {
+      "amount": {
+        "type": "Object"
+      },
+      "currency": {
+        "type": "Object"
+      }
+    }
+  },
+  "pickUpAtOfficeTitle": "Kontorets adress",
+  "youPayCashAtOffice": "Du betalar kontant på kontoret",
+  "lowBalanceTitle": "Inte tillräckligt med {currency}",
+  "@lowBalanceTitle": {
+    "placeholders": {
+      "currency": {
+        "type": "Object"
+      }
+    }
+  },
+  "lowBalanceHas": "Kontoret har:",
+  "lowBalanceToPay": "Ska betalas ut:",
+  "lowBalanceMissing": "Saknas:",
+  "lowBalancePartnerHint": "Kolla med en partner om du kan växla till dig {currency}.",
+  "@lowBalancePartnerHint": {
+    "placeholders": {
+      "currency": {
+        "type": "Object"
+      }
+    }
+  }
 }

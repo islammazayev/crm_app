@@ -1,8 +1,14 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
+import '../customer/screens/customer_register_screen.dart';
+import '../services/customer_invite_service.dart';
 import 'home_screen.dart';
 import 'login_screen.dart';
+
+/// Sätts när inbjudan i adressen har använts (eller man valt att logga in),
+/// så att registreringen inte visas igen efter utloggning.
+bool inviteHandled = false;
 
 /// Appens startpunkt: inloggningen om ingen är inloggad, annars rätt
 /// startsida för användarens roll.
@@ -21,6 +27,11 @@ class AuthGate extends StatelessWidget {
         }
         if (snapshot.hasData) {
           return const HomeScreen();
+        }
+        // Länk från managern via SMS: registrera med inbjudan.
+        final invite = CustomerInviteService.inviteFromUrl();
+        if (invite != null && !inviteHandled) {
+          return CustomerRegisterScreen(invite: invite);
         }
         return const LoginScreen();
       },

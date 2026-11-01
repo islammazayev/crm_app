@@ -191,46 +191,69 @@ class _ManagerHomeScreenState extends State<ManagerHomeScreen> {
 
                   return ActionCardGrid(
                     children: [
-                      // Kontorets saldo (kassörernas visas separat på sidan).
+                      // Totalt saldo: kontoret och kopplade kassörer (inte
+                      // partner). Var för sig visas på Saldo-sidan.
                       StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
                         stream: FirebaseFirestore.instance
                             .collection('offices')
                             .doc(officeId)
                             .snapshots(),
-                        builder: (context, officeSnap) {
-                          final b =
-                              parseBalances(
-                                  officeSnap.data?.data()?['balances'],
-                                  officeId: officeId,
-                                ).entries.where((e) => e.value != 0).toList()
-                                ..sort((a, b) => a.key.compareTo(b.key));
-                          return ActionCard(
-                            icon: Icons.account_balance_wallet_outlined,
-                            iconColor: AppColors.info,
-                            title: l10n.balancesTitle,
-                            subtitle: b.isEmpty
-                                ? l10n.balancesCardSubtitle
-                                : b
-                                      .map(
-                                        (e) =>
-                                            '${e.value.toStringAsFixed(2)} ${e.key}',
-                                      )
-                                      .join(' · '),
-                            badge: '${b.length}',
-                            onTap: () => Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => ManagerBalancesPage(
-                                  managerId:
-                                      FirebaseAuth.instance.currentUser?.uid ??
-                                      '',
-                                  officeId: officeId,
-                                  officeLabel: _officeLabel,
-                                ),
+                        builder: (context, officeSnap) =>
+                            StreamBuilder<
+                              List<QueryDocumentSnapshot<Map<String, dynamic>>>
+                            >(
+                              stream: ManagerCashiersPage.cashiers(
+                                FirebaseAuth.instance.currentUser?.uid ?? '',
+                                officeId,
                               ),
+                              builder: (context, cashSnap) {
+                                final total = sumBalances([
+                                  parseBalances(
+                                    officeSnap.data?.data()?['balances'],
+                                    officeId: officeId,
+                                  ),
+                                  for (final c in cashSnap.data ?? const [])
+                                    parseBalances(
+                                      c.data()['balances'],
+                                      officeId: c.id,
+                                    ),
+                                ]);
+                                final b =
+                                    total.entries
+                                        .where((e) => e.value != 0)
+                                        .toList()
+                                      ..sort((a, b) => a.key.compareTo(b.key));
+                                return ActionCard(
+                                  icon: Icons.account_balance_wallet_outlined,
+                                  iconColor: AppColors.info,
+                                  title: l10n.balancesTitle,
+                                  subtitle: b.isEmpty
+                                      ? l10n.balancesCardSubtitle
+                                      : b
+                                            .map(
+                                              (e) =>
+                                                  '${e.value.toStringAsFixed(2)} ${e.key}',
+                                            )
+                                            .join(' · '),
+                                  badge: '${b.length}',
+                                  onTap: () => Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (_) => ManagerBalancesPage(
+                                        managerId:
+                                            FirebaseAuth
+                                                .instance
+                                                .currentUser
+                                                ?.uid ??
+                                            '',
+                                        officeId: officeId,
+                                        officeLabel: _officeLabel,
+                                      ),
+                                    ),
+                                  ),
+                                );
+                              },
                             ),
-                          );
-                        },
                       ),
                       StreamBuilder<
                         List<QueryDocumentSnapshot<Map<String, dynamic>>>

@@ -129,6 +129,16 @@ describe('skickat och mottaget', () => {
     await assertFails(updateDoc(doc(as('M'), 'partnerExchanges', 'acc'), { partnerSent: true }));
   });
 
+  test('kvitto kan bifogas, men bara under egen sida', async () => {
+    await assertSucceeds(updateDoc(doc(as('M'), 'partnerExchanges', 'acc'), {
+      officeSent: true, officeReceiptPath: 'exchangeReceipts/acc/office/1_kvitto.pdf',
+      officeReceiptName: 'kvitto.pdf', officeReceiptContentType: 'application/pdf',
+    }));
+    await assertFails(updateDoc(doc(as('P'), 'partnerExchanges', 'acc'), {
+      partnerSent: true, partnerReceiptPath: 'exchangeReceipts/acc/office/1_x.pdf',
+    }));
+  });
+
   test('mottaget först när den andra har skickat', async () => {
     await assertFails(updateDoc(doc(as('M'), 'partnerExchanges', 'acc'), { officeReceived: true }));
   });

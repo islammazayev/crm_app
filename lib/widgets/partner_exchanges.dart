@@ -5,9 +5,11 @@ import '../l10n/app_localizations.dart';
 import '../l10n/locale_controller.dart';
 import '../services/exchange_rate_service.dart';
 import '../services/partner_service.dart';
+import '../services/receipt_service.dart';
 import '../theme/app_theme.dart';
 import '../utils/currencies.dart';
 import 'rate_field.dart';
+import 'receipt_button.dart';
 
 String _money(double v, String c) => '${v.toStringAsFixed(2)} $c';
 
@@ -127,6 +129,61 @@ class _ExchangeCardState extends State<_ExchangeCard> {
     }
   }
 
+  /// Bekräfta "jag har skickat", med ett valfritt kvitto som bevis.
+  /// Null om man avbröt.
+  Future<({PickedReceipt? receipt})?> _confirmSent(String title) {
+    final l10n = context.l10n;
+    PickedReceipt? receipt;
+    return showDialog<({PickedReceipt? receipt})>(
+      context: context,
+      builder: (ctx) => StatefulBuilder(
+        builder: (ctx, setLocal) => AlertDialog(
+          title: Text(title),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(l10n.confirmExchangeSent),
+              const SizedBox(height: 14),
+              OutlinedButton.icon(
+                icon: Icon(
+                  receipt == null ? Icons.attach_file : Icons.check_circle,
+                ),
+                label: Text(
+                  receipt == null ? l10n.attachReceiptOptional : receipt!.name,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                onPressed: () async {
+                  final picked = await ReceiptService.pick();
+                  if (picked == null) return;
+                  if (picked.bytes.length > ReceiptService.maxBytes) {
+                    if (ctx.mounted) {
+                      ScaffoldMessenger.of(ctx).showSnackBar(
+                        SnackBar(content: Text(l10n.receiptTooLarge)),
+                      );
+                    }
+                    return;
+                  }
+                  setLocal(() => receipt = picked);
+                },
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx),
+              child: Text(l10n.cancel),
+            ),
+            ElevatedButton(
+              onPressed: () => Navigator.pop(ctx, (receipt: receipt)),
+              child: Text(l10n.confirm),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   Future<bool> _confirm(String title, String message) async {
     final l10n = context.l10n;
     final ok = await showDialog<bool>(
@@ -224,6 +281,24 @@ class _ExchangeCardState extends State<_ExchangeCard> {
             ),
             const SizedBox(height: 8),
             Text(lines.join('\n'), style: const TextStyle(height: 1.5)),
+            // Kvitton som bevis på att pengarna är skickade.
+            if ('${d['officeReceiptPath'] ?? ''}'.isNotEmpty ||
+                '${d['partnerReceiptPath'] ?? ''}'.isNotEmpty)
+              Wrap(
+                spacing: 4,
+                children: [
+                  if ('${d['officeReceiptPath'] ?? ''}'.isNotEmpty)
+                    ReceiptButton(
+                      path: '${d['officeReceiptPath']}',
+                      label: l10n.officeReceipt,
+                    ),
+                  if ('${d['partnerReceiptPath'] ?? ''}'.isNotEmpty)
+                    ReceiptButton(
+                      path: '${d['partnerReceiptPath']}',
+                      label: l10n.partnerReceipt,
+                    ),
+                ],
+              ),
             if (note.isNotEmpty) ...[
               const SizedBox(height: 6),
               Text('"$note"', style: const TextStyle(color: Colors.grey)),
@@ -286,12 +361,17 @@ class _ExchangeCardState extends State<_ExchangeCard> {
                         l10n.markExchangeSent(_money(v.give, v.giveCur)),
                       ),
                       onPressed: () async {
-                        if (await _confirm(
+                        final result = await _confirmSent(
                           l10n.markExchangeSent(_money(v.give, v.giveCur)),
-                          l10n.confirmExchangeSent,
-                        )) {
-                          await _run(() => PartnerService.markSent(ref, side));
-                        }
+                        );
+                        if (result == null) return;
+                        await _run(
+                          () => PartnerService.markSent(
+                            ref,
+                            side,
+                            receipt: result.receipt,
+                          ),
+                        );
                       },
                     ),
                   if (status == 'accepted' &&

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 
 import '../../l10n/locale_controller.dart';
 import '../../screens/auth_gate.dart';
+import '../../services/cashier_service.dart';
 import '../../services/currency_migration_service.dart';
 import '../../services/customer_counter_service.dart';
 import '../../services/office_listing_service.dart';
@@ -51,6 +52,11 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
       await CustomerCounterService.ensureAtLeastMax();
     } catch (e) {
       debugPrint('Självläkning (kundräknare) misslyckades: $e');
+    }
+    try {
+      await CashierService.backfillCashOffice();
+    } catch (e) {
+      debugPrint('Självläkning (kassörernas kontor) misslyckades: $e');
     }
     try {
       await TransactionNumberService.backfill();
