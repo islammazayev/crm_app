@@ -256,9 +256,8 @@ class _CustomerRegisterScreenState extends State<CustomerRegisterScreen> {
                 controller: _emailConfirmCtrl,
                 decoration: InputDecoration(labelText: l10n.confirmEmail),
                 keyboardType: TextInputType.emailAddress,
-                validator: (v) =>
-                    (v ?? '').trim().toLowerCase() !=
-                        _emailCtrl.text.trim().toLowerCase()
+                // Måste vara exakt likadan, även stora och små bokstäver.
+                validator: (v) => (v ?? '').trim() != _emailCtrl.text.trim()
                     ? l10n.emailsDoNotMatch
                     : null,
               ),

@@ -37,10 +37,15 @@ void main() {
     expect(find.text('Lösenorden är inte lika.'), findsOneWidget);
   });
 
-  testWidgets('lika värden (oavsett stora bokstäver i e-post) godtas', (
+  testWidgets('e-post med andra stora bokstäver räknas som olika', (
     tester,
   ) async {
     await fill(tester, email2: 'Islam@Gmail.com', password2: 'hemligt1');
+    expect(find.text('E-postadresserna är inte lika.'), findsOneWidget);
+  });
+
+  testWidgets('exakt lika värden godtas', (tester) async {
+    await fill(tester, email2: 'islam@gmail.com', password2: 'hemligt1');
     expect(find.text('E-postadresserna är inte lika.'), findsNothing);
     expect(find.text('Lösenorden är inte lika.'), findsNothing);
   });
