@@ -627,5 +627,7 @@
   "confirmEmail": "Подтвердите e-mail",
   "emailsDoNotMatch": "Адреса e-mail не совпадают.",
   "confirmPassword": "Подтвердите пароль",
-  "passwordsDoNotMatch": "Пароли не совпадают."
+  "passwordsDoNotMatch": "Пароли не совпадают.",
+  "showPassword": "Показать пароль",
+  "hidePassword": "Скрыть пароль"
 }

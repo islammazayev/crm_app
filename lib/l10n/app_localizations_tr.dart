@@ -2272,4 +2272,10 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get passwordsDoNotMatch => 'Şifreler eşleşmiyor.';
+
+  @override
+  String get showPassword => 'Şifreyi göster';
+
+  @override
+  String get hidePassword => 'Şifreyi gizle';
 }

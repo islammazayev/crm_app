@@ -1632,5 +1632,7 @@
   "confirmEmail": "Bekräfta e-post",
   "emailsDoNotMatch": "E-postadresserna är inte lika.",
   "confirmPassword": "Bekräfta lösenord",
-  "passwordsDoNotMatch": "Lösenorden är inte lika."
+  "passwordsDoNotMatch": "Lösenorden är inte lika.",
+  "showPassword": "Visa lösenord",
+  "hidePassword": "Dölj lösenord"
 }

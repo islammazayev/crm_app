@@ -627,5 +627,7 @@
   "confirmEmail": "Confirm email",
   "emailsDoNotMatch": "The email addresses do not match.",
   "confirmPassword": "Confirm password",
-  "passwordsDoNotMatch": "The passwords do not match."
+  "passwordsDoNotMatch": "The passwords do not match.",
+  "showPassword": "Show password",
+  "hidePassword": "Hide password"
 }

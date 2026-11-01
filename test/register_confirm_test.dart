@@ -49,4 +49,22 @@ void main() {
     expect(find.text('E-postadresserna är inte lika.'), findsNothing);
     expect(find.text('Lösenorden är inte lika.'), findsNothing);
   });
+
+  testWidgets('ögat visar och döljer lösenordet', (tester) async {
+    await fill(tester, email2: 'islam@gmail.com', password2: 'hemligt1');
+    bool hidden(int i) => tester
+        .widget<EditableText>(
+          find.descendant(
+            of: find.byType(TextFormField).at(i),
+            matching: find.byType(EditableText),
+          ),
+        )
+        .obscureText;
+    expect(hidden(5), isTrue);
+    expect(hidden(6), isTrue);
+    await tester.tap(find.byTooltip('Visa lösenord').first);
+    await tester.pump();
+    expect(hidden(5), isFalse);
+    expect(hidden(6), isTrue);
+  });
 }

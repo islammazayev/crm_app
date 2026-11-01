@@ -2289,4 +2289,10 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get passwordsDoNotMatch => 'Пароли не совпадают.';
+
+  @override
+  String get showPassword => 'Показать пароль';
+
+  @override
+  String get hidePassword => 'Скрыть пароль';
 }

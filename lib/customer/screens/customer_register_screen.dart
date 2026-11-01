@@ -31,6 +31,10 @@ class _CustomerRegisterScreenState extends State<CustomerRegisterScreen> {
   /// registrera sig med ett felstavat värde.
   final _emailConfirmCtrl = TextEditingController();
   final _passwordConfirmCtrl = TextEditingController();
+
+  /// Ögat i lösenordsfälten visar eller döljer det man skrivit.
+  bool _hidePassword = true;
+  bool _hidePasswordConfirm = true;
   bool _loading = false;
 
   /// Den inbjudna kundposten (läses med ID:t i länken).
@@ -190,6 +194,15 @@ class _CustomerRegisterScreenState extends State<CustomerRegisterScreen> {
     }
   }
 
+  /// Knapp som visar (öga) eller döljer (överstruket öga) lösenordet.
+  Widget _eye(bool hidden, VoidCallback onPressed) => IconButton(
+    tooltip: hidden ? context.l10n.showPassword : context.l10n.hidePassword,
+    icon: Icon(
+      hidden ? Icons.visibility_outlined : Icons.visibility_off_outlined,
+    ),
+    onPressed: onPressed,
+  );
+
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
@@ -269,16 +282,30 @@ class _CustomerRegisterScreenState extends State<CustomerRegisterScreen> {
               const SizedBox(height: 14),
               TextFormField(
                 controller: _passwordCtrl,
-                decoration: InputDecoration(labelText: l10n.password),
-                obscureText: true,
+                decoration: InputDecoration(
+                  labelText: l10n.password,
+                  suffixIcon: _eye(
+                    _hidePassword,
+                    () => setState(() => _hidePassword = !_hidePassword),
+                  ),
+                ),
+                obscureText: _hidePassword,
                 validator: (v) =>
                     v == null || v.length < 6 ? l10n.passwordMinLength : null,
               ),
               const SizedBox(height: 14),
               TextFormField(
                 controller: _passwordConfirmCtrl,
-                decoration: InputDecoration(labelText: l10n.confirmPassword),
-                obscureText: true,
+                decoration: InputDecoration(
+                  labelText: l10n.confirmPassword,
+                  suffixIcon: _eye(
+                    _hidePasswordConfirm,
+                    () => setState(
+                      () => _hidePasswordConfirm = !_hidePasswordConfirm,
+                    ),
+                  ),
+                ),
+                obscureText: _hidePasswordConfirm,
                 validator: (v) => (v ?? '').trim() != _passwordCtrl.text.trim()
                     ? l10n.passwordsDoNotMatch
                     : null,

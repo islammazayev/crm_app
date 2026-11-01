@@ -627,5 +627,7 @@
   "confirmEmail": "E-postayı onaylayın",
   "emailsDoNotMatch": "E-posta adresleri eşleşmiyor.",
   "confirmPassword": "Şifreyi onaylayın",
-  "passwordsDoNotMatch": "Şifreler eşleşmiyor."
+  "passwordsDoNotMatch": "Şifreler eşleşmiyor.",
+  "showPassword": "Şifreyi göster",
+  "hidePassword": "Şifreyi gizle"
 }

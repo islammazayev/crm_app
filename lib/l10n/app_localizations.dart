@@ -3875,6 +3875,18 @@ abstract class AppLocalizations {
   /// In sv, this message translates to:
   /// **'Lösenorden är inte lika.'**
   String get passwordsDoNotMatch;
+
+  /// No description provided for @showPassword.
+  ///
+  /// In sv, this message translates to:
+  /// **'Visa lösenord'**
+  String get showPassword;
+
+  /// No description provided for @hidePassword.
+  ///
+  /// In sv, this message translates to:
+  /// **'Dölj lösenord'**
+  String get hidePassword;
 }
 
 class _AppLocalizationsDelegate
