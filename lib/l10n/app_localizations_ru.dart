@@ -2295,4 +2295,106 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get hidePassword => 'Скрыть пароль';
+
+  @override
+  String get settingsTitle => 'Настройки';
+
+  @override
+  String get settingsAccount => 'Аккаунт';
+
+  @override
+  String get settingsGeneral => 'Общие';
+
+  @override
+  String get settingsLanguage => 'Язык';
+
+  @override
+  String get settingsSecurity => 'Безопасность';
+
+  @override
+  String get settingsChangePassword => 'Сменить пароль';
+
+  @override
+  String settingsChangePasswordConfirm(Object email) {
+    return 'Мы отправим на $email ссылку, где вы сможете выбрать новый пароль.';
+  }
+
+  @override
+  String settingsChangePasswordSent(Object email) {
+    return 'Ссылка отправлена на $email.';
+  }
+
+  @override
+  String get settingsAbout => 'О приложении';
+
+  @override
+  String settingsVersion(Object version) {
+    return 'Версия $version';
+  }
+
+  @override
+  String get roleAdmin => 'Администратор';
+
+  @override
+  String get rolePartner => 'Партнёр';
+
+  @override
+  String get roleCustomer => 'Клиент';
+
+  @override
+  String get more => 'Ещё';
+
+  @override
+  String get overview => 'Обзор';
+
+  @override
+  String get statNew => 'Новые';
+
+  @override
+  String get statOngoing => 'В работе';
+
+  @override
+  String get statDone => 'Завершённые';
+
+  @override
+  String get needsYouNow => 'Ждут вас';
+
+  @override
+  String get nothingNeedsYou => 'Сейчас ничего не ждёт вашего действия.';
+
+  @override
+  String greetingMorning(Object name) {
+    return 'Доброе утро, $name';
+  }
+
+  @override
+  String greetingDay(Object name) {
+    return 'Добрый день, $name';
+  }
+
+  @override
+  String greetingEvening(Object name) {
+    return 'Добрый вечер, $name';
+  }
+
+  @override
+  String get newTransactionShort => 'Новый перевод';
+
+  @override
+  String get adminOverviewSubtitle => 'Всё в одном месте.';
+
+  @override
+  String get adminTotalBalance => 'Общий баланс всех офисов и кассиров';
+
+  @override
+  String get recentTransactions => 'Последние переводы';
+
+  @override
+  String get statWaitingForYou => 'Ждут ответа';
+
+  @override
+  String get statReadyForPickup => 'Готовы к выдаче';
+
+  @override
+  String get statAll => 'Все';
 }

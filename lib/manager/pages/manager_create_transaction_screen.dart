@@ -1,3 +1,4 @@
+import '../../widgets/form_width.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -268,106 +269,110 @@ class _ManagerCreateTransactionScreenState
           ? const Center(child: CircularProgressIndicator())
           : _error != null
           ? Center(child: Text(_error!(l10n)))
-          : ListView(
-              padding: const EdgeInsets.all(16),
-              children: [
-                _customerSection(l10n),
-                if (!_selectedHasAccount)
-                  SwitchListTile(
-                    contentPadding: EdgeInsets.zero,
-                    value: _invite,
-                    onChanged: (v) => setState(() => _invite = v),
-                    title: Text(l10n.inviteCustomerQuestion),
-                    subtitle: Text(
-                      l10n.inviteCustomerHint,
-                      style: const TextStyle(
-                        color: AppColors.textMuted,
-                        fontSize: 13,
+          : FormWidth(
+              child: ListView(
+                padding: const EdgeInsets.all(16),
+                children: [
+                  _customerSection(l10n),
+                  if (!_selectedHasAccount)
+                    SwitchListTile(
+                      contentPadding: EdgeInsets.zero,
+                      value: _invite,
+                      onChanged: (v) => setState(() => _invite = v),
+                      title: Text(l10n.inviteCustomerQuestion),
+                      subtitle: Text(
+                        l10n.inviteCustomerHint,
+                        style: const TextStyle(
+                          color: AppColors.textMuted,
+                          fontSize: 13,
+                        ),
                       ),
                     ),
-                  ),
-                const SizedBox(height: 14),
-                DropdownButtonFormField<String>(
-                  initialValue: _from,
-                  decoration: InputDecoration(
-                    labelText: l10n.customerGivesCurrency,
-                    border: const OutlineInputBorder(),
-                  ),
-                  items: _currencies
-                      .map((c) => DropdownMenuItem(value: c, child: Text(c)))
-                      .toList(),
-                  onChanged: (v) {
-                    _from = v;
-                    if (_to == v) _to = null;
-                    _loadRate();
-                  },
-                ),
-                const SizedBox(height: 14),
-                DropdownButtonFormField<String>(
-                  initialValue: _to,
-                  decoration: InputDecoration(
-                    labelText: l10n.customerGetsCurrency,
-                    border: const OutlineInputBorder(),
-                  ),
-                  items: _currencies
-                      .where((c) => c != _from)
-                      .map((c) => DropdownMenuItem(value: c, child: Text(c)))
-                      .toList(),
-                  onChanged: (v) {
-                    _to = v;
-                    _loadRate();
-                  },
-                ),
-                if (_loadingRate) ...[
                   const SizedBox(height: 14),
-                  Text(l10n.calculating),
-                ] else if (_from != null && _to != null) ...[
+                  DropdownButtonFormField<String>(
+                    initialValue: _from,
+                    decoration: InputDecoration(
+                      labelText: l10n.customerGivesCurrency,
+                      border: const OutlineInputBorder(),
+                    ),
+                    items: _currencies
+                        .map((c) => DropdownMenuItem(value: c, child: Text(c)))
+                        .toList(),
+                    onChanged: (v) {
+                      _from = v;
+                      if (_to == v) _to = null;
+                      _loadRate();
+                    },
+                  ),
                   const SizedBox(height: 14),
-                  RateField(
-                    controller: _rateCtrl,
-                    fromCurrency: _from!,
-                    toCurrency: _to!,
-                    marketRate: _marketRate,
+                  DropdownButtonFormField<String>(
+                    initialValue: _to,
+                    decoration: InputDecoration(
+                      labelText: l10n.customerGetsCurrency,
+                      border: const OutlineInputBorder(),
+                    ),
+                    items: _currencies
+                        .where((c) => c != _from)
+                        .map((c) => DropdownMenuItem(value: c, child: Text(c)))
+                        .toList(),
+                    onChanged: (v) {
+                      _to = v;
+                      _loadRate();
+                    },
+                  ),
+                  if (_loadingRate) ...[
+                    const SizedBox(height: 14),
+                    Text(l10n.calculating),
+                  ] else if (_from != null && _to != null) ...[
+                    const SizedBox(height: 14),
+                    RateField(
+                      controller: _rateCtrl,
+                      fromCurrency: _from!,
+                      toCurrency: _to!,
+                      marketRate: _marketRate,
+                      onChanged: (_) => setState(() {}),
+                    ),
+                  ],
+                  const SizedBox(height: 14),
+                  TextField(
+                    controller: _amountCtrl,
+                    keyboardType: const TextInputType.numberWithOptions(
+                      decimal: true,
+                    ),
                     onChanged: (_) => setState(() {}),
+                    decoration: InputDecoration(
+                      labelText: l10n.amountCustomerGives,
+                      border: const OutlineInputBorder(),
+                    ),
+                  ),
+                  const SizedBox(height: 14),
+                  TextField(
+                    controller: _feeCtrl,
+                    keyboardType: const TextInputType.numberWithOptions(
+                      decimal: true,
+                    ),
+                    onChanged: (_) => setState(() {}),
+                    decoration: InputDecoration(
+                      labelText: l10n.feePercentLabel,
+                      border: const OutlineInputBorder(),
+                    ),
+                  ),
+                  ..._resultLines(l10n),
+                  const SizedBox(height: 20),
+                  PayMethodPicker(
+                    forManager: true,
+                    value: _payMethod,
+                    onChanged: (v) => setState(() => _payMethod = v),
+                  ),
+                  const SizedBox(height: 20),
+                  ElevatedButton(
+                    onPressed: _saving ? null : _create,
+                    child: Text(
+                      _saving ? l10n.creating : l10n.createTransaction,
+                    ),
                   ),
                 ],
-                const SizedBox(height: 14),
-                TextField(
-                  controller: _amountCtrl,
-                  keyboardType: const TextInputType.numberWithOptions(
-                    decimal: true,
-                  ),
-                  onChanged: (_) => setState(() {}),
-                  decoration: InputDecoration(
-                    labelText: l10n.amountCustomerGives,
-                    border: const OutlineInputBorder(),
-                  ),
-                ),
-                const SizedBox(height: 14),
-                TextField(
-                  controller: _feeCtrl,
-                  keyboardType: const TextInputType.numberWithOptions(
-                    decimal: true,
-                  ),
-                  onChanged: (_) => setState(() {}),
-                  decoration: InputDecoration(
-                    labelText: l10n.feePercentLabel,
-                    border: const OutlineInputBorder(),
-                  ),
-                ),
-                ..._resultLines(l10n),
-                const SizedBox(height: 20),
-                PayMethodPicker(
-                  forManager: true,
-                  value: _payMethod,
-                  onChanged: (v) => setState(() => _payMethod = v),
-                ),
-                const SizedBox(height: 20),
-                ElevatedButton(
-                  onPressed: _saving ? null : _create,
-                  child: Text(_saving ? l10n.creating : l10n.createTransaction),
-                ),
-              ],
+              ),
             ),
     );
   }

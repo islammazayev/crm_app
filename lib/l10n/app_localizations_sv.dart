@@ -2293,4 +2293,106 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String get hidePassword => 'Dölj lösenord';
+
+  @override
+  String get settingsTitle => 'Inställningar';
+
+  @override
+  String get settingsAccount => 'Konto';
+
+  @override
+  String get settingsGeneral => 'Allmänt';
+
+  @override
+  String get settingsLanguage => 'Språk';
+
+  @override
+  String get settingsSecurity => 'Säkerhet';
+
+  @override
+  String get settingsChangePassword => 'Byt lösenord';
+
+  @override
+  String settingsChangePasswordConfirm(Object email) {
+    return 'Vi skickar en länk till $email där du väljer ett nytt lösenord.';
+  }
+
+  @override
+  String settingsChangePasswordSent(Object email) {
+    return 'Länken är skickad till $email.';
+  }
+
+  @override
+  String get settingsAbout => 'Om appen';
+
+  @override
+  String settingsVersion(Object version) {
+    return 'Version $version';
+  }
+
+  @override
+  String get roleAdmin => 'Admin';
+
+  @override
+  String get rolePartner => 'Partner';
+
+  @override
+  String get roleCustomer => 'Kund';
+
+  @override
+  String get more => 'Mer';
+
+  @override
+  String get overview => 'Översikt';
+
+  @override
+  String get statNew => 'Nya';
+
+  @override
+  String get statOngoing => 'Pågående';
+
+  @override
+  String get statDone => 'Färdiga';
+
+  @override
+  String get needsYouNow => 'Behöver dig nu';
+
+  @override
+  String get nothingNeedsYou => 'Inget väntar på dig just nu.';
+
+  @override
+  String greetingMorning(Object name) {
+    return 'God morgon, $name';
+  }
+
+  @override
+  String greetingDay(Object name) {
+    return 'God dag, $name';
+  }
+
+  @override
+  String greetingEvening(Object name) {
+    return 'God kväll, $name';
+  }
+
+  @override
+  String get newTransactionShort => 'Ny transaktion';
+
+  @override
+  String get adminOverviewSubtitle => 'Allt på ett ställe.';
+
+  @override
+  String get adminTotalBalance => 'Totalt saldo, alla kontor och kassörer';
+
+  @override
+  String get recentTransactions => 'Senaste transaktioner';
+
+  @override
+  String get statWaitingForYou => 'Väntar på svar';
+
+  @override
+  String get statReadyForPickup => 'Klara att hämta';
+
+  @override
+  String get statAll => 'Alla';
 }

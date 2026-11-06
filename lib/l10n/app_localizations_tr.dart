@@ -2278,4 +2278,106 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get hidePassword => 'Şifreyi gizle';
+
+  @override
+  String get settingsTitle => 'Ayarlar';
+
+  @override
+  String get settingsAccount => 'Hesap';
+
+  @override
+  String get settingsGeneral => 'Genel';
+
+  @override
+  String get settingsLanguage => 'Dil';
+
+  @override
+  String get settingsSecurity => 'Güvenlik';
+
+  @override
+  String get settingsChangePassword => 'Şifreyi değiştir';
+
+  @override
+  String settingsChangePasswordConfirm(Object email) {
+    return 'Yeni şifrenizi seçebileceğiniz bir bağlantıyı $email adresine göndereceğiz.';
+  }
+
+  @override
+  String settingsChangePasswordSent(Object email) {
+    return 'Bağlantı $email adresine gönderildi.';
+  }
+
+  @override
+  String get settingsAbout => 'Uygulama hakkında';
+
+  @override
+  String settingsVersion(Object version) {
+    return 'Sürüm $version';
+  }
+
+  @override
+  String get roleAdmin => 'Yönetici (admin)';
+
+  @override
+  String get rolePartner => 'Ortak';
+
+  @override
+  String get roleCustomer => 'Müşteri';
+
+  @override
+  String get more => 'Daha fazla';
+
+  @override
+  String get overview => 'Genel bakış';
+
+  @override
+  String get statNew => 'Yeni';
+
+  @override
+  String get statOngoing => 'Devam eden';
+
+  @override
+  String get statDone => 'Biten';
+
+  @override
+  String get needsYouNow => 'Sizi bekleyenler';
+
+  @override
+  String get nothingNeedsYou => 'Şu anda sizi bekleyen bir şey yok.';
+
+  @override
+  String greetingMorning(Object name) {
+    return 'Günaydın, $name';
+  }
+
+  @override
+  String greetingDay(Object name) {
+    return 'İyi günler, $name';
+  }
+
+  @override
+  String greetingEvening(Object name) {
+    return 'İyi akşamlar, $name';
+  }
+
+  @override
+  String get newTransactionShort => 'Yeni işlem';
+
+  @override
+  String get adminOverviewSubtitle => 'Her şey tek yerde.';
+
+  @override
+  String get adminTotalBalance => 'Toplam bakiye, tüm ofisler ve kasiyerler';
+
+  @override
+  String get recentTransactions => 'Son işlemler';
+
+  @override
+  String get statWaitingForYou => 'Yanıt bekliyor';
+
+  @override
+  String get statReadyForPickup => 'Alınmaya hazır';
+
+  @override
+  String get statAll => 'Tümü';
 }

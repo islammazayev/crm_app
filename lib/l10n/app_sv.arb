@@ -1634,5 +1634,77 @@
   "confirmPassword": "Bekräfta lösenord",
   "passwordsDoNotMatch": "Lösenorden är inte lika.",
   "showPassword": "Visa lösenord",
-  "hidePassword": "Dölj lösenord"
+  "hidePassword": "Dölj lösenord",
+  "settingsTitle": "Inställningar",
+  "settingsAccount": "Konto",
+  "settingsGeneral": "Allmänt",
+  "settingsLanguage": "Språk",
+  "settingsSecurity": "Säkerhet",
+  "settingsChangePassword": "Byt lösenord",
+  "settingsChangePasswordConfirm": "Vi skickar en länk till {email} där du väljer ett nytt lösenord.",
+  "@settingsChangePasswordConfirm": {
+    "placeholders": {
+      "email": {
+        "type": "Object"
+      }
+    }
+  },
+  "settingsChangePasswordSent": "Länken är skickad till {email}.",
+  "@settingsChangePasswordSent": {
+    "placeholders": {
+      "email": {
+        "type": "Object"
+      }
+    }
+  },
+  "settingsAbout": "Om appen",
+  "settingsVersion": "Version {version}",
+  "@settingsVersion": {
+    "placeholders": {
+      "version": {
+        "type": "Object"
+      }
+    }
+  },
+  "roleAdmin": "Admin",
+  "rolePartner": "Partner",
+  "roleCustomer": "Kund",
+  "more": "Mer",
+  "overview": "Översikt",
+  "statNew": "Nya",
+  "statOngoing": "Pågående",
+  "statDone": "Färdiga",
+  "needsYouNow": "Behöver dig nu",
+  "nothingNeedsYou": "Inget väntar på dig just nu.",
+  "greetingMorning": "God morgon, {name}",
+  "@greetingMorning": {
+    "placeholders": {
+      "name": {
+        "type": "Object"
+      }
+    }
+  },
+  "greetingDay": "God dag, {name}",
+  "@greetingDay": {
+    "placeholders": {
+      "name": {
+        "type": "Object"
+      }
+    }
+  },
+  "greetingEvening": "God kväll, {name}",
+  "@greetingEvening": {
+    "placeholders": {
+      "name": {
+        "type": "Object"
+      }
+    }
+  },
+  "newTransactionShort": "Ny transaktion",
+  "adminOverviewSubtitle": "Allt på ett ställe.",
+  "adminTotalBalance": "Totalt saldo, alla kontor och kassörer",
+  "recentTransactions": "Senaste transaktioner",
+  "statWaitingForYou": "Väntar på svar",
+  "statReadyForPickup": "Klara att hämta",
+  "statAll": "Alla"
 }
