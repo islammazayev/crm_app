@@ -83,6 +83,17 @@ void main() {
     });
   }
 
+  testWidgets('översikten fyller hela skärmen bredvid menyn', (tester) async {
+    tester.view.physicalSize = const Size(2000, 1000);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+    await tester.pumpWidget(app(const Locale('sv')));
+    await tester.pumpAndSettle();
+    // Skärm 2000, sidomeny 232, marginaler 2 x 20.
+    expect(tester.getSize(find.byType(BalanceHero)).width, 2000 - 232 - 40);
+    expect(tester.getTopLeft(find.byType(BalanceHero)).dx, 232 + 20);
+  });
+
   test('hälsningen följer tiden på dygnet', () async {
     final l10n = await AppLocalizations.delegate.load(const Locale('sv'));
     expect(

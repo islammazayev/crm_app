@@ -1,3 +1,4 @@
+import '../../widgets/form_width.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -212,125 +213,132 @@ class _CustomerRegisterScreenState extends State<CustomerRegisterScreen> {
         title: Text(l10n.registerTitle),
         actions: const [LanguageButton()],
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(24),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            children: [
-              if (widget.invite != null) ...[
-                Text(
-                  _inviteInvalid
-                      ? l10n.inviteInvalid
-                      : l10n.inviteWelcome(
-                          _invited == null ? '' : '${_invited!['clientId']}',
-                        ),
-                  style: const TextStyle(fontSize: 15, height: 1.4),
-                ),
-                const SizedBox(height: 8),
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: TextButton(
-                    onPressed: () {
-                      inviteHandled = true;
-                      Navigator.of(context).pushAndRemoveUntil(
-                        MaterialPageRoute(builder: (_) => const LoginScreen()),
-                        (route) => false,
-                      );
-                    },
-                    child: Text(l10n.alreadyHaveAccountLogin),
+      body: FormWidth(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(24),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              children: [
+                if (widget.invite != null) ...[
+                  Text(
+                    _inviteInvalid
+                        ? l10n.inviteInvalid
+                        : l10n.inviteWelcome(
+                            _invited == null ? '' : '${_invited!['clientId']}',
+                          ),
+                    style: const TextStyle(fontSize: 15, height: 1.4),
                   ),
-                ),
-                const SizedBox(height: 14),
-              ],
-              TextFormField(
-                controller: _firstNameCtrl,
-                decoration: InputDecoration(labelText: l10n.firstName),
-                validator: (v) =>
-                    v == null || v.trim().isEmpty ? l10n.enterFirstName : null,
-              ),
-              const SizedBox(height: 14),
-              TextFormField(
-                controller: _lastNameCtrl,
-                decoration: InputDecoration(labelText: l10n.lastName),
-                validator: (v) =>
-                    v == null || v.trim().isEmpty ? l10n.enterLastName : null,
-              ),
-              const SizedBox(height: 14),
-              TextFormField(
-                controller: _emailCtrl,
-                decoration: InputDecoration(labelText: l10n.email),
-                keyboardType: TextInputType.emailAddress,
-                validator: (v) =>
-                    v == null || !v.contains('@') ? l10n.enterValidEmail : null,
-              ),
-              const SizedBox(height: 14),
-              TextFormField(
-                controller: _emailConfirmCtrl,
-                decoration: InputDecoration(labelText: l10n.confirmEmail),
-                keyboardType: TextInputType.emailAddress,
-                // Måste vara exakt likadan, även stora och små bokstäver.
-                validator: (v) => (v ?? '').trim() != _emailCtrl.text.trim()
-                    ? l10n.emailsDoNotMatch
-                    : null,
-              ),
-              const SizedBox(height: 14),
-              TextFormField(
-                controller: _phoneCtrl,
-                decoration: InputDecoration(labelText: l10n.phone),
-              ),
-              const SizedBox(height: 14),
-              TextFormField(
-                controller: _passwordCtrl,
-                decoration: InputDecoration(
-                  labelText: l10n.password,
-                  suffixIcon: _eye(
-                    _hidePassword,
-                    () => setState(() => _hidePassword = !_hidePassword),
-                  ),
-                ),
-                obscureText: _hidePassword,
-                validator: (v) =>
-                    v == null || v.length < 6 ? l10n.passwordMinLength : null,
-              ),
-              const SizedBox(height: 14),
-              TextFormField(
-                controller: _passwordConfirmCtrl,
-                decoration: InputDecoration(
-                  labelText: l10n.confirmPassword,
-                  suffixIcon: _eye(
-                    _hidePasswordConfirm,
-                    () => setState(
-                      () => _hidePasswordConfirm = !_hidePasswordConfirm,
+                  const SizedBox(height: 8),
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: TextButton(
+                      onPressed: () {
+                        inviteHandled = true;
+                        Navigator.of(context).pushAndRemoveUntil(
+                          MaterialPageRoute(
+                            builder: (_) => const LoginScreen(),
+                          ),
+                          (route) => false,
+                        );
+                      },
+                      child: Text(l10n.alreadyHaveAccountLogin),
                     ),
                   ),
+                  const SizedBox(height: 14),
+                ],
+                TextFormField(
+                  controller: _firstNameCtrl,
+                  decoration: InputDecoration(labelText: l10n.firstName),
+                  validator: (v) => v == null || v.trim().isEmpty
+                      ? l10n.enterFirstName
+                      : null,
                 ),
-                obscureText: _hidePasswordConfirm,
-                validator: (v) => (v ?? '').trim() != _passwordCtrl.text.trim()
-                    ? l10n.passwordsDoNotMatch
-                    : null,
-              ),
-              const SizedBox(height: 16),
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed:
-                      _loading ||
-                          (widget.invite != null &&
-                              _invited == null &&
-                              !_inviteInvalid)
-                      ? null
-                      : _registerCustomer,
-                  child: _loading
-                      ? const SizedBox(
-                          width: 20,
-                          height: 20,
-                          child: CircularProgressIndicator(strokeWidth: 2),
-                        )
-                      : Text(l10n.register),
+                const SizedBox(height: 14),
+                TextFormField(
+                  controller: _lastNameCtrl,
+                  decoration: InputDecoration(labelText: l10n.lastName),
+                  validator: (v) =>
+                      v == null || v.trim().isEmpty ? l10n.enterLastName : null,
                 ),
-              ),
-            ],
+                const SizedBox(height: 14),
+                TextFormField(
+                  controller: _emailCtrl,
+                  decoration: InputDecoration(labelText: l10n.email),
+                  keyboardType: TextInputType.emailAddress,
+                  validator: (v) => v == null || !v.contains('@')
+                      ? l10n.enterValidEmail
+                      : null,
+                ),
+                const SizedBox(height: 14),
+                TextFormField(
+                  controller: _emailConfirmCtrl,
+                  decoration: InputDecoration(labelText: l10n.confirmEmail),
+                  keyboardType: TextInputType.emailAddress,
+                  // Måste vara exakt likadan, även stora och små bokstäver.
+                  validator: (v) => (v ?? '').trim() != _emailCtrl.text.trim()
+                      ? l10n.emailsDoNotMatch
+                      : null,
+                ),
+                const SizedBox(height: 14),
+                TextFormField(
+                  controller: _phoneCtrl,
+                  decoration: InputDecoration(labelText: l10n.phone),
+                ),
+                const SizedBox(height: 14),
+                TextFormField(
+                  controller: _passwordCtrl,
+                  decoration: InputDecoration(
+                    labelText: l10n.password,
+                    suffixIcon: _eye(
+                      _hidePassword,
+                      () => setState(() => _hidePassword = !_hidePassword),
+                    ),
+                  ),
+                  obscureText: _hidePassword,
+                  validator: (v) =>
+                      v == null || v.length < 6 ? l10n.passwordMinLength : null,
+                ),
+                const SizedBox(height: 14),
+                TextFormField(
+                  controller: _passwordConfirmCtrl,
+                  decoration: InputDecoration(
+                    labelText: l10n.confirmPassword,
+                    suffixIcon: _eye(
+                      _hidePasswordConfirm,
+                      () => setState(
+                        () => _hidePasswordConfirm = !_hidePasswordConfirm,
+                      ),
+                    ),
+                  ),
+                  obscureText: _hidePasswordConfirm,
+                  validator: (v) =>
+                      (v ?? '').trim() != _passwordCtrl.text.trim()
+                      ? l10n.passwordsDoNotMatch
+                      : null,
+                ),
+                const SizedBox(height: 16),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed:
+                        _loading ||
+                            (widget.invite != null &&
+                                _invited == null &&
+                                !_inviteInvalid)
+                        ? null
+                        : _registerCustomer,
+                    child: _loading
+                        ? const SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          )
+                        : Text(l10n.register),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),

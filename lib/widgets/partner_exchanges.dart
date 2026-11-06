@@ -1,3 +1,4 @@
+import 'form_width.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
@@ -590,72 +591,79 @@ class _NewExchangePageState extends State<NewExchangePage> {
       appBar: AppBar(
         title: Text(_isCounter ? l10n.counterProposal : l10n.newExchange),
       ),
-      body: ListView(
-        padding: const EdgeInsets.all(16),
-        children: [
-          if (widget.side == ExchangeSide.office && !_isCounter) ...[
-            DropdownButtonFormField<String>(
-              initialValue: _partnerId,
-              decoration: InputDecoration(labelText: l10n.choosePartner),
-              items: [
-                for (final e in widget.partnerChoices.entries)
-                  DropdownMenuItem(value: e.key, child: Text(e.value)),
-              ],
-              onChanged: (v) => setState(() => _partnerId = v),
-            ),
-            const SizedBox(height: 16),
-          ],
-          currency(_giveCur, l10n.currencyYouGive, (v) {
-            _giveCur = v;
-            _loadMarketRate();
-          }),
-          const SizedBox(height: 12),
-          TextField(
-            controller: _give,
-            onChanged: (_) => setState(() {}),
-            keyboardType: const TextInputType.numberWithOptions(decimal: true),
-            decoration: InputDecoration(
-              labelText: l10n.youGiveLabel,
-              suffixText: _giveCur,
-            ),
-          ),
-          const SizedBox(height: 20),
-          currency(_getCur, l10n.currencyYouGet, (v) {
-            _getCur = v;
-            _loadMarketRate();
-          }),
-          if (_giveCur != null && _getCur != null && _giveCur != _getCur) ...[
-            const SizedBox(height: 16),
-            if (_loadingRate && _rate.text.isEmpty)
-              Text(l10n.calculating)
-            else
-              RateField(
-                controller: _rate,
-                fromCurrency: _giveCur!,
-                toCurrency: _getCur!,
-                marketRate: _marketRate,
-                onChanged: (_) => setState(() {}),
+      body: FormWidth(
+        child: ListView(
+          padding: const EdgeInsets.all(16),
+          children: [
+            if (widget.side == ExchangeSide.office && !_isCounter) ...[
+              DropdownButtonFormField<String>(
+                initialValue: _partnerId,
+                decoration: InputDecoration(labelText: l10n.choosePartner),
+                items: [
+                  for (final e in widget.partnerChoices.entries)
+                    DropdownMenuItem(value: e.key, child: Text(e.value)),
+                ],
+                onChanged: (v) => setState(() => _partnerId = v),
               ),
-          ],
-          if (get != null && _getCur != null) ...[
+              const SizedBox(height: 16),
+            ],
+            currency(_giveCur, l10n.currencyYouGive, (v) {
+              _giveCur = v;
+              _loadMarketRate();
+            }),
+            const SizedBox(height: 12),
+            TextField(
+              controller: _give,
+              onChanged: (_) => setState(() {}),
+              keyboardType: const TextInputType.numberWithOptions(
+                decimal: true,
+              ),
+              decoration: InputDecoration(
+                labelText: l10n.youGiveLabel,
+                suffixText: _giveCur,
+              ),
+            ),
+            const SizedBox(height: 20),
+            currency(_getCur, l10n.currencyYouGet, (v) {
+              _getCur = v;
+              _loadMarketRate();
+            }),
+            if (_giveCur != null && _getCur != null && _giveCur != _getCur) ...[
+              const SizedBox(height: 16),
+              if (_loadingRate && _rate.text.isEmpty)
+                Text(l10n.calculating)
+              else
+                RateField(
+                  controller: _rate,
+                  fromCurrency: _giveCur!,
+                  toCurrency: _getCur!,
+                  marketRate: _marketRate,
+                  onChanged: (_) => setState(() {}),
+                ),
+            ],
+            if (get != null && _getCur != null) ...[
+              const SizedBox(height: 16),
+              Text(
+                l10n.exchangeYouGet(_money(get, _getCur!)),
+                style: const TextStyle(
+                  fontWeight: FontWeight.w700,
+                  fontSize: 16,
+                ),
+              ),
+            ],
             const SizedBox(height: 16),
-            Text(
-              l10n.exchangeYouGet(_money(get, _getCur!)),
-              style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 16),
+            TextField(
+              controller: _note,
+              maxLength: 500,
+              decoration: InputDecoration(labelText: l10n.messageOptional),
+            ),
+            const SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: _sending ? null : _submit,
+              child: Text(_isCounter ? l10n.send : l10n.sendProposal),
             ),
           ],
-          const SizedBox(height: 16),
-          TextField(
-            controller: _note,
-            maxLength: 500,
-            decoration: InputDecoration(labelText: l10n.messageOptional),
-          ),
-          const SizedBox(height: 16),
-          ElevatedButton(
-            onPressed: _sending ? null : _submit,
-            child: Text(_isCounter ? l10n.send : l10n.sendProposal),
-          ),
-        ],
+        ),
       ),
     );
   }

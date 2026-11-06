@@ -52,42 +52,34 @@ class OverviewPage extends StatelessWidget {
     );
     return Scaffold(
       body: SafeArea(
-        child: Align(
-          alignment: Alignment.topCenter,
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 960),
-            child: ListView(
-              padding: const EdgeInsets.all(20),
-              children: [
-                if (narrow) ...[
-                  Row(
-                    children: [
-                      IconButton(
-                        tooltip: context.l10n.more,
-                        icon: const Icon(Icons.menu),
-                        onPressed: () => AppShell.of(context).openMenu(),
-                      ),
-                      const Expanded(
-                        child: Center(child: GreenTexLogo(size: 18)),
-                      ),
-                      const SizedBox(width: 48),
-                    ],
+        child: ListView(
+          padding: const EdgeInsets.all(20),
+          children: [
+            if (narrow) ...[
+              Row(
+                children: [
+                  IconButton(
+                    tooltip: context.l10n.more,
+                    icon: const Icon(Icons.menu),
+                    onPressed: () => AppShell.of(context).openMenu(),
                   ),
-                  const SizedBox(height: 12),
-                  header,
-                  if (action != null) ...[const SizedBox(height: 14), action!],
-                ] else
-                  Row(
-                    children: [
-                      Expanded(child: header),
-                      ?action,
-                    ],
-                  ),
-                const SizedBox(height: 20),
-                ...children,
-              ],
-            ),
-          ),
+                  const Expanded(child: Center(child: GreenTexLogo(size: 18))),
+                  const SizedBox(width: 48),
+                ],
+              ),
+              const SizedBox(height: 12),
+              header,
+              if (action != null) ...[const SizedBox(height: 14), action!],
+            ] else
+              Row(
+                children: [
+                  Expanded(child: header),
+                  ?action,
+                ],
+              ),
+            const SizedBox(height: 20),
+            ...children,
+          ],
         ),
       ),
     );

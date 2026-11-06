@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../l10n/locale_controller.dart';
+import '../../widgets/form_width.dart';
 import '../widgets/trade_section.dart';
 
 /// Kunden köper eller säljer valuta via ett kontor, kontant eller via banken.
@@ -16,7 +17,7 @@ class CustomerTradePage extends StatelessWidget {
       appBar: AppBar(
         title: Text(kind == TradeKind.buy ? l10n.tabBuy : l10n.tabSell),
       ),
-      body: TradeSection(kind: kind),
+      body: FormWidth(child: TradeSection(kind: kind)),
     );
   }
 }
