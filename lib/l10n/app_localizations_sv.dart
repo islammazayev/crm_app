@@ -2293,4 +2293,75 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String get hidePassword => 'Dölj lösenord';
+
+  @override
+  String get settingsTitle => 'Inställningar';
+
+  @override
+  String get settingsAccount => 'Konto';
+
+  @override
+  String get settingsGeneral => 'Allmänt';
+
+  @override
+  String get settingsLanguage => 'Språk';
+
+  @override
+  String get settingsSecurity => 'Säkerhet';
+
+  @override
+  String get settingsChangePassword => 'Byt lösenord';
+
+  @override
+  String settingsChangePasswordConfirm(Object email) {
+    return 'Vi skickar en länk till $email där du väljer ett nytt lösenord.';
+  }
+
+  @override
+  String settingsChangePasswordSent(Object email) {
+    return 'Länken är skickad till $email.';
+  }
+
+  @override
+  String get settingsAbout => 'Om appen';
+
+  @override
+  String settingsVersion(Object version) {
+    return 'Version $version';
+  }
+
+  @override
+  String get roleAdmin => 'Admin';
+
+  @override
+  String get rolePartner => 'Partner';
+
+  @override
+  String get roleCustomer => 'Kund';
+
+  @override
+  String get more => 'Mer';
+
+  @override
+  String get overview => 'Översikt';
+
+  @override
+  String greeting(Object name) {
+    return 'Hej, $name';
+  }
+
+  @override
+  String get statNew => 'Nya';
+
+  @override
+  String get statOngoing => 'Pågående';
+
+  @override
+  String get statDone => 'Färdiga';
+
+  @override
+  String get needsYouNow => 'Behöver dig nu';
+
+  @override
+  String get nothingNeedsYou => 'Inget väntar på dig just nu.';
 }

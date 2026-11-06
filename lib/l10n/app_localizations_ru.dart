@@ -2295,4 +2295,75 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get hidePassword => 'Скрыть пароль';
+
+  @override
+  String get settingsTitle => 'Настройки';
+
+  @override
+  String get settingsAccount => 'Аккаунт';
+
+  @override
+  String get settingsGeneral => 'Общие';
+
+  @override
+  String get settingsLanguage => 'Язык';
+
+  @override
+  String get settingsSecurity => 'Безопасность';
+
+  @override
+  String get settingsChangePassword => 'Сменить пароль';
+
+  @override
+  String settingsChangePasswordConfirm(Object email) {
+    return 'Мы отправим на $email ссылку, где вы сможете выбрать новый пароль.';
+  }
+
+  @override
+  String settingsChangePasswordSent(Object email) {
+    return 'Ссылка отправлена на $email.';
+  }
+
+  @override
+  String get settingsAbout => 'О приложении';
+
+  @override
+  String settingsVersion(Object version) {
+    return 'Версия $version';
+  }
+
+  @override
+  String get roleAdmin => 'Администратор';
+
+  @override
+  String get rolePartner => 'Партнёр';
+
+  @override
+  String get roleCustomer => 'Клиент';
+
+  @override
+  String get more => 'Ещё';
+
+  @override
+  String get overview => 'Обзор';
+
+  @override
+  String greeting(Object name) {
+    return 'Здравствуйте, $name';
+  }
+
+  @override
+  String get statNew => 'Новые';
+
+  @override
+  String get statOngoing => 'В работе';
+
+  @override
+  String get statDone => 'Завершённые';
+
+  @override
+  String get needsYouNow => 'Ждут вас';
+
+  @override
+  String get nothingNeedsYou => 'Сейчас ничего не ждёт вашего действия.';
 }

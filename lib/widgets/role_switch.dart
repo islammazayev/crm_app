@@ -17,7 +17,7 @@ Stream<DocumentSnapshot<Map<String, dynamic>>> _me() => FirebaseFirestore
     .snapshots();
 
 void _open(BuildContext context, Widget home) {
-  Navigator.of(context).pushAndRemoveUntil(
+  Navigator.of(context, rootNavigator: true).pushAndRemoveUntil(
     MaterialPageRoute(builder: (_) => home),
     (route) => false,
   );

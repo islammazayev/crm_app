@@ -1634,5 +1634,54 @@
   "confirmPassword": "Bekräfta lösenord",
   "passwordsDoNotMatch": "Lösenorden är inte lika.",
   "showPassword": "Visa lösenord",
-  "hidePassword": "Dölj lösenord"
+  "hidePassword": "Dölj lösenord",
+  "settingsTitle": "Inställningar",
+  "settingsAccount": "Konto",
+  "settingsGeneral": "Allmänt",
+  "settingsLanguage": "Språk",
+  "settingsSecurity": "Säkerhet",
+  "settingsChangePassword": "Byt lösenord",
+  "settingsChangePasswordConfirm": "Vi skickar en länk till {email} där du väljer ett nytt lösenord.",
+  "@settingsChangePasswordConfirm": {
+    "placeholders": {
+      "email": {
+        "type": "Object"
+      }
+    }
+  },
+  "settingsChangePasswordSent": "Länken är skickad till {email}.",
+  "@settingsChangePasswordSent": {
+    "placeholders": {
+      "email": {
+        "type": "Object"
+      }
+    }
+  },
+  "settingsAbout": "Om appen",
+  "settingsVersion": "Version {version}",
+  "@settingsVersion": {
+    "placeholders": {
+      "version": {
+        "type": "Object"
+      }
+    }
+  },
+  "roleAdmin": "Admin",
+  "rolePartner": "Partner",
+  "roleCustomer": "Kund",
+  "more": "Mer",
+  "overview": "Översikt",
+  "greeting": "Hej, {name}",
+  "@greeting": {
+    "placeholders": {
+      "name": {
+        "type": "Object"
+      }
+    }
+  },
+  "statNew": "Nya",
+  "statOngoing": "Pågående",
+  "statDone": "Färdiga",
+  "needsYouNow": "Behöver dig nu",
+  "nothingNeedsYou": "Inget väntar på dig just nu."
 }

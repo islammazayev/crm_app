@@ -3887,6 +3887,132 @@ abstract class AppLocalizations {
   /// In sv, this message translates to:
   /// **'Dölj lösenord'**
   String get hidePassword;
+
+  /// No description provided for @settingsTitle.
+  ///
+  /// In sv, this message translates to:
+  /// **'Inställningar'**
+  String get settingsTitle;
+
+  /// No description provided for @settingsAccount.
+  ///
+  /// In sv, this message translates to:
+  /// **'Konto'**
+  String get settingsAccount;
+
+  /// No description provided for @settingsGeneral.
+  ///
+  /// In sv, this message translates to:
+  /// **'Allmänt'**
+  String get settingsGeneral;
+
+  /// No description provided for @settingsLanguage.
+  ///
+  /// In sv, this message translates to:
+  /// **'Språk'**
+  String get settingsLanguage;
+
+  /// No description provided for @settingsSecurity.
+  ///
+  /// In sv, this message translates to:
+  /// **'Säkerhet'**
+  String get settingsSecurity;
+
+  /// No description provided for @settingsChangePassword.
+  ///
+  /// In sv, this message translates to:
+  /// **'Byt lösenord'**
+  String get settingsChangePassword;
+
+  /// No description provided for @settingsChangePasswordConfirm.
+  ///
+  /// In sv, this message translates to:
+  /// **'Vi skickar en länk till {email} där du väljer ett nytt lösenord.'**
+  String settingsChangePasswordConfirm(Object email);
+
+  /// No description provided for @settingsChangePasswordSent.
+  ///
+  /// In sv, this message translates to:
+  /// **'Länken är skickad till {email}.'**
+  String settingsChangePasswordSent(Object email);
+
+  /// No description provided for @settingsAbout.
+  ///
+  /// In sv, this message translates to:
+  /// **'Om appen'**
+  String get settingsAbout;
+
+  /// No description provided for @settingsVersion.
+  ///
+  /// In sv, this message translates to:
+  /// **'Version {version}'**
+  String settingsVersion(Object version);
+
+  /// No description provided for @roleAdmin.
+  ///
+  /// In sv, this message translates to:
+  /// **'Admin'**
+  String get roleAdmin;
+
+  /// No description provided for @rolePartner.
+  ///
+  /// In sv, this message translates to:
+  /// **'Partner'**
+  String get rolePartner;
+
+  /// No description provided for @roleCustomer.
+  ///
+  /// In sv, this message translates to:
+  /// **'Kund'**
+  String get roleCustomer;
+
+  /// No description provided for @more.
+  ///
+  /// In sv, this message translates to:
+  /// **'Mer'**
+  String get more;
+
+  /// No description provided for @overview.
+  ///
+  /// In sv, this message translates to:
+  /// **'Översikt'**
+  String get overview;
+
+  /// No description provided for @greeting.
+  ///
+  /// In sv, this message translates to:
+  /// **'Hej, {name}'**
+  String greeting(Object name);
+
+  /// No description provided for @statNew.
+  ///
+  /// In sv, this message translates to:
+  /// **'Nya'**
+  String get statNew;
+
+  /// No description provided for @statOngoing.
+  ///
+  /// In sv, this message translates to:
+  /// **'Pågående'**
+  String get statOngoing;
+
+  /// No description provided for @statDone.
+  ///
+  /// In sv, this message translates to:
+  /// **'Färdiga'**
+  String get statDone;
+
+  /// No description provided for @needsYouNow.
+  ///
+  /// In sv, this message translates to:
+  /// **'Behöver dig nu'**
+  String get needsYouNow;
+
+  /// No description provided for @nothingNeedsYou.
+  ///
+  /// In sv, this message translates to:
+  /// **'Inget väntar på dig just nu.'**
+  String get nothingNeedsYou;
 }
 
 class _AppLocalizationsDelegate

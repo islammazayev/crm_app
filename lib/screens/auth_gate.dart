@@ -44,7 +44,8 @@ class AuthGate extends StatelessWidget {
 /// Används efter registrering och vid utloggning, så att appen alltid
 /// hamnar på rätt startsida även om man har navigerat bort från den.
 void restartFromAuthGate(BuildContext context) {
-  Navigator.of(context).pushAndRemoveUntil(
+  // Roten: anropet kan komma från en sida inne i appens meny.
+  Navigator.of(context, rootNavigator: true).pushAndRemoveUntil(
     MaterialPageRoute(builder: (_) => const AuthGate()),
     (route) => false,
   );

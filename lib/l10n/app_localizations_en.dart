@@ -2288,4 +2288,75 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hidePassword => 'Hide password';
+
+  @override
+  String get settingsTitle => 'Settings';
+
+  @override
+  String get settingsAccount => 'Account';
+
+  @override
+  String get settingsGeneral => 'General';
+
+  @override
+  String get settingsLanguage => 'Language';
+
+  @override
+  String get settingsSecurity => 'Security';
+
+  @override
+  String get settingsChangePassword => 'Change password';
+
+  @override
+  String settingsChangePasswordConfirm(Object email) {
+    return 'We\'ll send a link to $email where you choose a new password.';
+  }
+
+  @override
+  String settingsChangePasswordSent(Object email) {
+    return 'The link was sent to $email.';
+  }
+
+  @override
+  String get settingsAbout => 'About the app';
+
+  @override
+  String settingsVersion(Object version) {
+    return 'Version $version';
+  }
+
+  @override
+  String get roleAdmin => 'Admin';
+
+  @override
+  String get rolePartner => 'Partner';
+
+  @override
+  String get roleCustomer => 'Customer';
+
+  @override
+  String get more => 'More';
+
+  @override
+  String get overview => 'Overview';
+
+  @override
+  String greeting(Object name) {
+    return 'Hi, $name';
+  }
+
+  @override
+  String get statNew => 'New';
+
+  @override
+  String get statOngoing => 'Ongoing';
+
+  @override
+  String get statDone => 'Finished';
+
+  @override
+  String get needsYouNow => 'Needs you now';
+
+  @override
+  String get nothingNeedsYou => 'Nothing is waiting for you right now.';
 }

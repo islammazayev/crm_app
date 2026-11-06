@@ -16,11 +16,15 @@ class ManagerTransactionsPage extends StatelessWidget {
   /// Rubrik i appbaren. Utan rubrik visas "Transaktioner".
   final String? title;
 
+  /// Utan egen appbar, inuti [ManagerTransactionTabs].
+  final bool embedded;
+
   const ManagerTransactionsPage({
     super.key,
     required this.officeId,
     this.statuses,
     this.title,
+    this.embedded = false,
   });
 
   @override
@@ -33,7 +37,7 @@ class ManagerTransactionsPage extends StatelessWidget {
     final l10n = context.l10n;
 
     return Scaffold(
-      appBar: AppBar(title: Text(title ?? l10n.transactions)),
+      appBar: embedded ? null : AppBar(title: Text(title ?? l10n.transactions)),
       body: StreamBuilder<QuerySnapshot>(
         stream: query.snapshots(),
         builder: (context, snapshot) {
@@ -138,6 +142,89 @@ class ManagerTransactionsPage extends StatelessWidget {
             },
           );
         },
+      ),
+    );
+  }
+}
+
+/// Transaktioner på tre flikar: nya, pågående och färdiga. [tab] byter flik
+/// utifrån, t.ex. när man trycker på en siffra i översikten.
+class ManagerTransactionTabs extends StatefulWidget {
+  final String officeId;
+  final ValueNotifier<int> tab;
+
+  static const newStatuses = ['customer_requested'];
+  static const ongoingStatuses = [
+    'manager_proposed',
+    'customer_countered',
+    'customer_accepted',
+    'customer_paid',
+    'payment_confirmed',
+  ];
+  static const doneStatuses = ['completed', 'customer_rejected'];
+
+  const ManagerTransactionTabs({
+    super.key,
+    required this.officeId,
+    required this.tab,
+  });
+
+  @override
+  State<ManagerTransactionTabs> createState() => _ManagerTransactionTabsState();
+}
+
+class _ManagerTransactionTabsState extends State<ManagerTransactionTabs>
+    with SingleTickerProviderStateMixin {
+  late final _controller = TabController(
+    length: 3,
+    vsync: this,
+    initialIndex: widget.tab.value,
+  );
+
+  void _onTab() => _controller.animateTo(widget.tab.value);
+
+  @override
+  void initState() {
+    super.initState();
+    widget.tab.addListener(_onTab);
+  }
+
+  @override
+  void dispose() {
+    widget.tab.removeListener(_onTab);
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(l10n.transactions),
+        bottom: TabBar(
+          controller: _controller,
+          tabs: [
+            Tab(text: l10n.statNew),
+            Tab(text: l10n.statOngoing),
+            Tab(text: l10n.statDone),
+          ],
+        ),
+      ),
+      body: TabBarView(
+        controller: _controller,
+        children: [
+          for (final statuses in const [
+            ManagerTransactionTabs.newStatuses,
+            ManagerTransactionTabs.ongoingStatuses,
+            ManagerTransactionTabs.doneStatuses,
+          ])
+            ManagerTransactionsPage(
+              officeId: widget.officeId,
+              statuses: statuses,
+              embedded: true,
+            ),
+        ],
       ),
     );
   }

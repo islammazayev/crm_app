@@ -4,21 +4,19 @@ import 'package:flutter/material.dart';
 
 import '../../l10n/locale_controller.dart';
 import '../../screens/auth_gate.dart';
+import '../../screens/settings_page.dart';
+import '../../services/chat_service.dart';
 import '../../services/partner_service.dart';
-import '../../theme/app_theme.dart';
-import '../../widgets/action_card.dart';
+import '../../widgets/app_shell.dart';
 import '../../widgets/chat.dart';
-import '../../widgets/language_button.dart';
-import '../../widgets/role_switch.dart';
-import '../../utils/balances.dart';
 import '../pages/manager_balances_page.dart';
 import '../pages/manager_cashiers_page.dart';
-import '../pages/manager_create_transaction_screen.dart';
+import '../pages/manager_overview_page.dart';
 import '../pages/manager_partners_page.dart';
-import '../pages/manager_transactions_detail_screen.dart';
 import '../pages/manager_transactions_page.dart';
-import '../pages/pickup_scanner_page.dart';
 
+/// Managerns app: meny (sidomeny eller bottenmeny) med översikt,
+/// transaktioner, saldo, meddelanden, kassörer, partner och inställningar.
 class ManagerHomeScreen extends StatefulWidget {
   const ManagerHomeScreen({super.key});
 
@@ -27,360 +25,189 @@ class ManagerHomeScreen extends StatefulWidget {
 }
 
 class _ManagerHomeScreenState extends State<ManagerHomeScreen> {
+  final _shell = GlobalKey<AppShellState>();
+  final _transactionTab = ValueNotifier<int>(0);
+  final _uid = FirebaseAuth.instance.currentUser?.uid ?? '';
+
+  bool _loading = true;
+  String _name = '';
   String _officeLabel = '';
   String? _officeId;
+
+  Stream<QuerySnapshot<Map<String, dynamic>>>? _transactions;
+  Stream<List<QueryDocumentSnapshot<Map<String, dynamic>>>>? _exchanges;
+  final _chats = ChatService.myChats();
+
+  // Menyns ordning; de fyra första syns i bottenmenyn på mobil.
+  static const _transactionsIndex = 1;
+  static const _balancesIndex = 2;
 
   @override
   void initState() {
     super.initState();
-    _loadOfficeLabel();
+    _load();
   }
 
-  /// Hämtar land och stad för managerns kontor till rubriken.
-  Future<void> _loadOfficeLabel() async {
-    try {
-      final user = FirebaseAuth.instance.currentUser;
-      if (user == null) return;
-      final db = FirebaseFirestore.instance;
-
-      final userSnap = await db.collection('users').doc(user.uid).get();
-      final officeId = userSnap.data()?['officeId']?.toString();
-      if (officeId == null || officeId.isEmpty) return;
-      if (mounted) setState(() => _officeId = officeId);
-
-      final listing = await db.collection('officeListings').doc(officeId).get();
-      final data = listing.data();
-      if (data == null) return;
-
-      final label = [
-        data['country'],
-        data['city'],
-      ].map((e) => (e ?? '').toString()).where((e) => e.isNotEmpty).join(' – ');
-      if (mounted) setState(() => _officeLabel = label);
-    } catch (_) {
-      // Rubriken är bara en bekvämlighet, fel här ska inte störa något.
-    }
+  @override
+  void dispose() {
+    _transactionTab.dispose();
+    super.dispose();
   }
 
-  /// Skannar kundens QR-kod och öppnar transaktionen, som själv kontrollerar
-  /// nyckeln och frågar om utbetalning. Transaktioner från andra kontor går
-  /// inte att läsa (reglerna) och stoppas här.
-  Future<void> _scanPickup(BuildContext context) async {
-    final l10n = context.l10n;
-    final result = await Navigator.push<({String transactionId, String token})>(
-      context,
-      MaterialPageRoute(builder: (_) => const PickupScannerPage()),
-    );
-    if (result == null || !context.mounted) return;
+  Future<void> _load() async {
+    final db = FirebaseFirestore.instance;
     try {
-      final snap = await FirebaseFirestore.instance
-          .collection('transactions')
-          .doc(result.transactionId)
-          .get();
-      final status = snap.data()?['status'];
-      if (!context.mounted) return;
-      if (!snap.exists || status != 'payment_confirmed') {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(l10n.qrNotReadyForPayout)));
-        return;
+      final user = (await db.collection('users').doc(_uid).get()).data();
+      _name = '${user?['firstName'] ?? ''}'.trim();
+      _officeId = user?['officeId']?.toString();
+      final officeId = _officeId;
+      if (officeId != null && officeId.isNotEmpty) {
+        final listing =
+            (await db.collection('officeListings').doc(officeId).get()).data();
+        _officeLabel = [
+          listing?['country'],
+          listing?['city'],
+        ].map((e) => '${e ?? ''}').where((e) => e.isNotEmpty).join(' – ');
+        _transactions = db
+            .collection('transactions')
+            .where('officeId', isEqualTo: officeId)
+            .snapshots();
+        _exchanges = PartnerService.exchangesForOffice(officeId);
       }
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (_) => ManagerTransactionDetailScreen(
-            transactionId: result.transactionId,
-            scannedToken: result.token,
-          ),
-        ),
-      );
-    } catch (_) {
-      if (!context.mounted) return;
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(l10n.qrOtherOffice)));
+    } catch (e) {
+      debugPrint('Kunde inte läsa managerns kontor: $e');
     }
+    if (mounted) setState(() => _loading = false);
   }
 
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          _officeLabel.isEmpty
-              ? l10n.managerAppBarTitle
-              : l10n.managerAppBarTitleWithOffice(_officeLabel),
-        ),
-        actions: [
-          const RoleSwitchButton(toCashier: true),
-          const LanguageButton(),
-          IconButton(
-            tooltip: l10n.logout,
-            icon: const Icon(Icons.logout),
-            onPressed: () => signOutToLogin(context),
-          ),
-        ],
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            SectionHeader(title: l10n.managerPanel),
-            const SizedBox(height: 8),
-            Text(
-              l10n.managerPanelIntro,
-              style: const TextStyle(
-                color: AppColors.textMuted,
-                fontSize: 14,
-                height: 1.5,
-              ),
+    final officeId = _officeId;
+    if (_loading || officeId == null || officeId.isEmpty) {
+      return Scaffold(
+        appBar: AppBar(
+          title: Text(l10n.managerAppBarTitle),
+          actions: [
+            IconButton(
+              tooltip: l10n.logout,
+              icon: const Icon(Icons.logout),
+              onPressed: () => signOutToLogin(context),
             ),
-            const SizedBox(height: 20),
-            if (_officeId == null)
-              const Padding(
-                padding: EdgeInsets.all(24),
-                child: Center(child: CircularProgressIndicator()),
-              )
-            else
-              StreamBuilder<QuerySnapshot>(
-                stream: FirebaseFirestore.instance
-                    .collection('transactions')
-                    .where('officeId', isEqualTo: _officeId)
-                    .snapshots(),
-                builder: (context, snapshot) {
-                  final counts = <String, int>{};
-                  for (final d in snapshot.data?.docs ?? const []) {
-                    if ((d.data() as Map<String, dynamic>)['archived'] ==
-                        true) {
-                      continue;
-                    }
-                    final status =
-                        (d.data() as Map<String, dynamic>)['status']
-                            ?.toString() ??
-                        '';
-                    counts[status] = (counts[status] ?? 0) + 1;
-                  }
-                  int count(List<String> statuses) => statuses.fold(
-                    0,
-                    (total, st) => total + (counts[st] ?? 0),
-                  );
-
-                  const newStatuses = ['customer_requested'];
-                  const ongoingStatuses = [
-                    'manager_proposed',
-                    'customer_countered',
-                    'customer_accepted',
-                    'customer_paid',
-                    'payment_confirmed',
-                  ];
-                  const doneStatuses = ['completed', 'customer_rejected'];
-                  final officeId = _officeId!;
-
-                  void open(String title, List<String> statuses) {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => ManagerTransactionsPage(
-                          officeId: officeId,
-                          statuses: statuses,
-                          title: title,
-                        ),
-                      ),
-                    );
-                  }
-
-                  return ActionCardGrid(
-                    children: [
-                      // Totalt saldo: kontoret och kopplade kassörer (inte
-                      // partner). Var för sig visas på Saldo-sidan.
-                      StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
-                        stream: FirebaseFirestore.instance
-                            .collection('offices')
-                            .doc(officeId)
-                            .snapshots(),
-                        builder: (context, officeSnap) =>
-                            StreamBuilder<
-                              List<QueryDocumentSnapshot<Map<String, dynamic>>>
-                            >(
-                              stream: ManagerCashiersPage.cashiers(
-                                FirebaseAuth.instance.currentUser?.uid ?? '',
-                                officeId,
-                              ),
-                              builder: (context, cashSnap) {
-                                final total = sumBalances([
-                                  parseBalances(
-                                    officeSnap.data?.data()?['balances'],
-                                    officeId: officeId,
-                                  ),
-                                  for (final c in cashSnap.data ?? const [])
-                                    parseBalances(
-                                      c.data()['balances'],
-                                      officeId: c.id,
-                                    ),
-                                ]);
-                                final b =
-                                    total.entries
-                                        .where((e) => e.value != 0)
-                                        .toList()
-                                      ..sort((a, b) => a.key.compareTo(b.key));
-                                return ActionCard(
-                                  icon: Icons.account_balance_wallet_outlined,
-                                  iconColor: AppColors.info,
-                                  title: l10n.balancesTitle,
-                                  subtitle: b.isEmpty
-                                      ? l10n.balancesCardSubtitle
-                                      : b
-                                            .map(
-                                              (e) =>
-                                                  '${e.value.toStringAsFixed(2)} ${e.key}',
-                                            )
-                                            .join(' · '),
-                                  badge: '${b.length}',
-                                  onTap: () => Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (_) => ManagerBalancesPage(
-                                        managerId:
-                                            FirebaseAuth
-                                                .instance
-                                                .currentUser
-                                                ?.uid ??
-                                            '',
-                                        officeId: officeId,
-                                        officeLabel: _officeLabel,
-                                      ),
-                                    ),
-                                  ),
-                                );
-                              },
-                            ),
-                      ),
-                      StreamBuilder<
-                        List<QueryDocumentSnapshot<Map<String, dynamic>>>
-                      >(
-                        stream: ManagerCashiersPage.cashiers(
-                          FirebaseAuth.instance.currentUser?.uid ?? '',
-                          officeId,
-                        ),
-                        builder: (context, cashSnap) => ActionCard(
-                          icon: Icons.point_of_sale,
-                          iconColor: AppColors.primary,
-                          title: l10n.myCashiers,
-                          subtitle: l10n.myCashiersSubtitle,
-                          badge: cashSnap.hasData
-                              ? '${cashSnap.data!.length}'
-                              : '…',
-                          onTap: () => Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => ManagerCashiersPage(
-                                managerId:
-                                    FirebaseAuth.instance.currentUser?.uid ??
-                                    '',
-                                officeId: officeId,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                      const MessagesCard(),
-                      // Växlingar med partner; siffran visar öppna.
-                      StreamBuilder<
-                        List<QueryDocumentSnapshot<Map<String, dynamic>>>
-                      >(
-                        stream: PartnerService.exchangesForOffice(officeId),
-                        builder: (context, exSnap) {
-                          final open = (exSnap.data ?? const [])
-                              .where(
-                                (d) => const [
-                                  'proposed',
-                                  'accepted',
-                                ].contains(d.data()['status']),
-                              )
-                              .length;
-                          return ActionCard(
-                            icon: Icons.handshake_outlined,
-                            iconColor: AppColors.warning,
-                            title: l10n.partners,
-                            subtitle: l10n.partnersCardSubtitle,
-                            badge: exSnap.hasData ? '$open' : '…',
-                            onTap: () => Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => ManagerPartnersPage(
-                                  managerId:
-                                      FirebaseAuth.instance.currentUser?.uid ??
-                                      '',
-                                  officeId: officeId,
-                                  officeLabel: _officeLabel,
-                                ),
-                              ),
-                            ),
-                          );
-                        },
-                      ),
-                      ActionCard(
-                        icon: Icons.qr_code_scanner,
-                        iconColor: AppColors.success,
-                        title: l10n.scanPickup,
-                        subtitle: l10n.scanPickupSubtitle,
-                        badge: 'QR',
-                        onTap: () => _scanPickup(context),
-                      ),
-                      ActionCard(
-                        icon: Icons.add_circle_outline,
-                        iconColor: AppColors.primary,
-                        title: l10n.createNewTransaction,
-                        subtitle: l10n.createTransactionCardSubtitle,
-                        badge: '+',
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => ManagerCreateTransactionScreen(
-                                officeId: officeId,
-                              ),
-                            ),
-                          );
-                        },
-                      ),
-                      ActionCard(
-                        icon: Icons.mark_email_unread_outlined,
-                        iconColor: AppColors.warning,
-                        title: l10n.newCustomerTransactions,
-                        subtitle: l10n.newCustomerTransactionsSubtitle,
-                        badge: '${count(newStatuses)}',
-                        onTap: () =>
-                            open(l10n.newCustomerTransactions, newStatuses),
-                      ),
-                      ActionCard(
-                        icon: Icons.sync_alt,
-                        iconColor: AppColors.info,
-                        title: l10n.ongoingTransactions,
-                        subtitle: l10n.ongoingTransactionsSubtitle,
-                        badge: '${count(ongoingStatuses)}',
-                        onTap: () =>
-                            open(l10n.ongoingTransactions, ongoingStatuses),
-                      ),
-                      ActionCard(
-                        icon: Icons.task_alt,
-                        iconColor: AppColors.success,
-                        title: l10n.finishedTransactions,
-                        subtitle: l10n.finishedTransactionsSubtitle,
-                        badge: '${count(doneStatuses)}',
-                        onTap: () =>
-                            open(l10n.finishedTransactions, doneStatuses),
-                      ),
-                    ],
-                  );
-                },
-              ),
           ],
         ),
-      ),
+        body: Center(
+          child: _loading
+              ? const CircularProgressIndicator()
+              : Text(l10n.noOfficeAssigned),
+        ),
+      );
+    }
+
+    return StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
+      stream: _transactions,
+      builder: (context, txSnap) {
+        final newCount = (txSnap.data?.docs ?? const [])
+            .where(
+              (d) =>
+                  d.data()['archived'] != true &&
+                  ManagerTransactionTabs.newStatuses.contains(
+                    d.data()['status'],
+                  ),
+            )
+            .length;
+        return StreamBuilder<List<QueryDocumentSnapshot<Map<String, dynamic>>>>(
+          stream: _chats,
+          builder: (context, chatSnap) {
+            final unread = (chatSnap.data ?? const [])
+                .where((d) => ChatService.isUnread(d.data()))
+                .length;
+            return StreamBuilder<
+              List<QueryDocumentSnapshot<Map<String, dynamic>>>
+            >(
+              stream: _exchanges,
+              builder: (context, exSnap) {
+                final openExchanges = (exSnap.data ?? const [])
+                    .where(
+                      (d) => const [
+                        'proposed',
+                        'accepted',
+                      ].contains(d.data()['status']),
+                    )
+                    .length;
+                return AppShell(
+                  key: _shell,
+                  destinations: [
+                    ShellDestination(
+                      icon: Icons.home_outlined,
+                      label: l10n.overview,
+                      builder: (_) => ManagerOverviewPage(
+                        managerId: _uid,
+                        managerName: _name,
+                        officeId: officeId,
+                        officeLabel: _officeLabel,
+                        onOpenTransactions: (tab) {
+                          _transactionTab.value = tab;
+                          _shell.currentState?.select(_transactionsIndex);
+                        },
+                        onOpenBalances: () =>
+                            _shell.currentState?.select(_balancesIndex),
+                      ),
+                    ),
+                    ShellDestination(
+                      icon: Icons.sync_alt,
+                      label: l10n.transactions,
+                      badge: newCount,
+                      builder: (_) => ManagerTransactionTabs(
+                        officeId: officeId,
+                        tab: _transactionTab,
+                      ),
+                    ),
+                    ShellDestination(
+                      icon: Icons.account_balance_wallet_outlined,
+                      label: l10n.balancesTitle,
+                      builder: (_) => ManagerBalancesPage(
+                        managerId: _uid,
+                        officeId: officeId,
+                        officeLabel: _officeLabel,
+                      ),
+                    ),
+                    ShellDestination(
+                      icon: Icons.forum_outlined,
+                      label: l10n.messagesTitle,
+                      badge: unread,
+                      builder: (_) => const MessagesPage(),
+                    ),
+                    ShellDestination(
+                      icon: Icons.point_of_sale,
+                      label: l10n.myCashiers,
+                      builder: (_) => ManagerCashiersPage(
+                        managerId: _uid,
+                        officeId: officeId,
+                      ),
+                    ),
+                    ShellDestination(
+                      icon: Icons.handshake_outlined,
+                      label: l10n.partners,
+                      badge: openExchanges,
+                      builder: (_) => ManagerPartnersPage(
+                        managerId: _uid,
+                        officeId: officeId,
+                        officeLabel: _officeLabel,
+                      ),
+                    ),
+                    ShellDestination(
+                      icon: Icons.settings_outlined,
+                      label: l10n.settingsTitle,
+                      builder: (_) => const SettingsPage(),
+                    ),
+                  ],
+                );
+              },
+            );
+          },
+        );
+      },
     );
   }
 }

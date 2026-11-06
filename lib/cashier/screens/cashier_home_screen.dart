@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 import '../../l10n/locale_controller.dart';
 import '../../screens/auth_gate.dart';
+import '../../screens/settings_page.dart';
 import '../../services/cashier_service.dart';
 import '../../theme/app_theme.dart';
 import '../../utils/balances.dart';
@@ -42,6 +43,7 @@ class CashierHomeScreen extends StatelessWidget {
         actions: [
           const RoleSwitchButton(toCashier: false),
           const LanguageButton(),
+          const SettingsButton(),
           IconButton(
             tooltip: l10n.logout,
             icon: const Icon(Icons.logout),

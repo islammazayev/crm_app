@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 
 import '../../l10n/locale_controller.dart';
 import '../../screens/auth_gate.dart';
+import '../../screens/settings_page.dart';
 import '../../services/cashier_service.dart';
 import '../../services/currency_migration_service.dart';
 import '../../services/customer_counter_service.dart';
@@ -79,6 +80,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
         title: Text(l10n.adminAppBarTitle),
         actions: [
           const LanguageButton(),
+          const SettingsButton(),
           IconButton(
             tooltip: l10n.logout,
             icon: const Icon(Icons.logout),

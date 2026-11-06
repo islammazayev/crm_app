@@ -8,6 +8,7 @@ import '../customer/screens/customer_transactions_screen.dart';
 import '../customer/widgets/trade_section.dart';
 import '../l10n/locale_controller.dart';
 import '../screens/auth_gate.dart';
+import '../screens/settings_page.dart';
 import '../theme/app_theme.dart';
 import '../utils/client_id.dart';
 import '../utils/customer_tiers.dart';
@@ -49,6 +50,7 @@ class CustomerWelcomeScreen extends StatelessWidget {
         title: Text(l10n.customerAppBarTitle),
         actions: [
           const LanguageButton(),
+          const SettingsButton(),
           IconButton(
             tooltip: l10n.logout,
             icon: const Icon(Icons.logout),

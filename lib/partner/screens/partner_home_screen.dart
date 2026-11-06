@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import '../../cashier/widgets/transfer_list.dart' show BalancesCard;
 import '../../l10n/locale_controller.dart';
 import '../../screens/auth_gate.dart';
+import '../../screens/settings_page.dart';
 import '../../services/partner_service.dart';
 import '../../theme/app_theme.dart';
 import '../../utils/balances.dart';
@@ -107,6 +108,7 @@ class PartnerHomeScreen extends StatelessWidget {
         title: Text(l10n.partnerAppBarTitle),
         actions: [
           const LanguageButton(),
+          const SettingsButton(),
           IconButton(
             tooltip: l10n.logout,
             icon: const Icon(Icons.logout),
