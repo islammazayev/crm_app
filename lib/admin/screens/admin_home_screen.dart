@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 import '../../l10n/locale_controller.dart';
-import '../../screens/auth_gate.dart';
+import '../../l10n/status_text.dart';
 import '../../screens/settings_page.dart';
 import '../../services/cashier_service.dart';
 import '../../services/currency_migration_service.dart';
@@ -10,8 +10,12 @@ import '../../services/customer_counter_service.dart';
 import '../../services/office_listing_service.dart';
 import '../../services/transaction_number_service.dart';
 import '../../theme/app_theme.dart';
-import '../../widgets/action_card.dart';
-import '../../widgets/language_button.dart';
+import '../../utils/balances.dart';
+import '../../utils/client_id.dart';
+import '../../utils/transaction_kind.dart';
+import '../../utils/transaction_no.dart';
+import '../../widgets/app_shell.dart';
+import '../../widgets/overview_widgets.dart';
 import '../pages/admin_cashiers_page.dart';
 import '../pages/admin_customers_page.dart';
 import '../pages/admin_managers_page.dart';
@@ -19,7 +23,7 @@ import '../pages/admin_offices_page.dart';
 import '../pages/admin_orders_page.dart';
 import '../pages/admin_tiers_page.dart';
 
-/// Adminens startsida: ett kort per område, som på managerns startsida.
+/// Adminens app: meny med översikt och alla områden.
 class AdminHomeScreen extends StatefulWidget {
   const AdminHomeScreen({super.key});
 
@@ -28,6 +32,8 @@ class AdminHomeScreen extends StatefulWidget {
 }
 
 class _AdminHomeScreenState extends State<AdminHomeScreen> {
+  final _shell = GlobalKey<AppShellState>();
+
   @override
   void initState() {
     super.initState();
@@ -66,150 +72,190 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
     }
   }
 
-  void _open(Widget page) {
-    Navigator.push(context, MaterialPageRoute(builder: (_) => page));
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    return AppShell(
+      key: _shell,
+      destinations: [
+        ShellDestination(
+          icon: Icons.home_outlined,
+          label: l10n.overview,
+          builder: (_) => _AdminOverview(onSelect: _select),
+        ),
+        ShellDestination(
+          icon: Icons.receipt_long_outlined,
+          label: l10n.orderHistory,
+          builder: (_) => const AdminOrdersPage(),
+        ),
+        ShellDestination(
+          icon: Icons.people_outline,
+          label: l10n.customers,
+          builder: (_) => const AdminCustomersPage(),
+        ),
+        ShellDestination(
+          icon: Icons.storefront_outlined,
+          label: l10n.offices,
+          builder: (_) => const AdminOfficesPage(),
+        ),
+        ShellDestination(
+          icon: Icons.badge_outlined,
+          label: l10n.managers,
+          builder: (_) => const AdminManagersPage(),
+        ),
+        ShellDestination(
+          icon: Icons.point_of_sale,
+          label: l10n.cashiers,
+          builder: (_) => const AdminCashiersPage(),
+        ),
+        ShellDestination(
+          icon: Icons.handshake_outlined,
+          label: l10n.partners,
+          builder: (_) => const AdminCashiersPage(type: StaffType.partner),
+        ),
+        ShellDestination(
+          icon: Icons.workspace_premium_outlined,
+          label: l10n.customerTiers,
+          builder: (_) => const AdminTiersPage(),
+        ),
+        ShellDestination(
+          icon: Icons.settings_outlined,
+          label: l10n.settingsTitle,
+          builder: (_) => const SettingsPage(),
+        ),
+      ],
+    );
   }
+
+  void _select(int index) => _shell.currentState?.select(index);
+}
+
+/// Adminens översikt: allt saldo, antal och de senaste transaktionerna.
+class _AdminOverview extends StatefulWidget {
+  final ValueChanged<int> onSelect;
+
+  const _AdminOverview({required this.onSelect});
+
+  @override
+  State<_AdminOverview> createState() => _AdminOverviewState();
+}
+
+class _AdminOverviewState extends State<_AdminOverview> {
+  final _db = FirebaseFirestore.instance;
+  late final _offices = _db.collection('offices').snapshots();
+  late final _officeCount = _db.collection('offices').snapshots();
+  late final _cashiers = _db.collection('cashiers').snapshots();
+  late final _customers = _db.collection('customers').snapshots();
+  late final _transactions = _db.collection('transactions').snapshots();
+
+  // Platser i menyn (se AdminHomeScreen).
+  static const _ordersIndex = 1;
+  static const _customersIndex = 2;
+  static const _officesIndex = 3;
 
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final db = FirebaseFirestore.instance;
-
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(l10n.adminAppBarTitle),
-        actions: [
-          const LanguageButton(),
-          const SettingsButton(),
-          IconButton(
-            tooltip: l10n.logout,
-            icon: const Icon(Icons.logout),
-            onPressed: () => signOutToLogin(context),
-          ),
-        ],
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            SectionHeader(title: l10n.adminPanel),
-            const SizedBox(height: 8),
-            Text(
-              l10n.adminPanelIntro,
-              style: const TextStyle(
-                color: AppColors.textMuted,
-                fontSize: 14,
-                height: 1.5,
+    return OverviewPage(
+      title: l10n.adminPanel,
+      subtitle: l10n.adminOverviewSubtitle,
+      children: [
+        StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
+          stream: _offices,
+          builder: (context, officeSnap) =>
+              StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
+                stream: _cashiers,
+                builder: (context, cashSnap) => BalanceHero(
+                  title: l10n.adminTotalBalance,
+                  onTap: () => widget.onSelect(_officesIndex),
+                  balances: sumBalances([
+                    for (final d in [
+                      ...?officeSnap.data?.docs,
+                      ...?cashSnap.data?.docs,
+                    ])
+                      parseBalances(d.data()['balances'], officeId: d.id),
+                  ]),
+                ),
               ),
-            ),
-            const SizedBox(height: 20),
-            ActionCardGrid(
+        ),
+        const SizedBox(height: 12),
+        StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
+          stream: _transactions,
+          builder: (context, txSnap) {
+            if (txSnap.hasError) {
+              return Text(l10n.errorWithDetails('${txSnap.error}'));
+            }
+            final docs = (txSnap.data?.docs ?? const [])
+                .where((d) => d.data()['archived'] != true)
+                .toList();
+            DateTime at(Map<String, dynamic> d) =>
+                (d['createAt'] as Timestamp?)?.toDate() ?? DateTime.now();
+            docs.sort((a, b) => at(b.data()).compareTo(at(a.data())));
+            final open = docs
+                .where(
+                  (d) => !const [
+                    'completed',
+                    'customer_rejected',
+                  ].contains(d.data()['status']),
+                )
+                .length;
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                _CountCard(
-                  query: db.collection('customers'),
-                  icon: Icons.people_outline,
-                  iconColor: AppColors.primary,
-                  title: l10n.customers,
-                  subtitle: l10n.customersCardSubtitle,
-                  onTap: () => _open(const AdminCustomersPage()),
+                StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
+                  stream: _customers,
+                  builder: (context, custSnap) =>
+                      StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
+                        stream: _officeCount,
+                        builder: (context, officeSnap) => StatRow(
+                          stats: [
+                            StatData(
+                              l10n.customers,
+                              '${custSnap.data?.docs.length ?? '…'}',
+                              AppColors.primary,
+                              onTap: () => widget.onSelect(_customersIndex),
+                            ),
+                            StatData(
+                              l10n.offices,
+                              '${officeSnap.data?.docs.length ?? '…'}',
+                              AppColors.info,
+                              onTap: () => widget.onSelect(_officesIndex),
+                            ),
+                            StatData(
+                              l10n.statOngoing,
+                              '$open',
+                              AppColors.warning,
+                              onTap: () => widget.onSelect(_ordersIndex),
+                            ),
+                          ],
+                        ),
+                      ),
                 ),
-                _CountCard(
-                  query: db.collection('offices'),
-                  icon: Icons.storefront_outlined,
-                  iconColor: AppColors.info,
-                  title: l10n.offices,
-                  subtitle: l10n.officesCardSubtitle,
-                  onTap: () => _open(const AdminOfficesPage()),
-                ),
-                _CountCard(
-                  query: db
-                      .collection('users')
-                      .where('role', isEqualTo: 'manager'),
-                  icon: Icons.badge_outlined,
-                  iconColor: AppColors.warning,
-                  title: l10n.managers,
-                  subtitle: l10n.managersCardSubtitle,
-                  onTap: () => _open(const AdminManagersPage()),
-                ),
-                _CountCard(
-                  query: db.collection('cashiers'),
-                  icon: Icons.point_of_sale,
-                  iconColor: AppColors.primary,
-                  title: l10n.cashiers,
-                  subtitle: l10n.cashiersCardSubtitle,
-                  onTap: () => _open(const AdminCashiersPage()),
-                ),
-                _CountCard(
-                  query: db.collection('partners'),
-                  icon: Icons.handshake_outlined,
-                  iconColor: AppColors.warning,
-                  title: l10n.partners,
-                  subtitle: l10n.partnersAdminCardSubtitle,
-                  onTap: () =>
-                      _open(const AdminCashiersPage(type: StaffType.partner)),
-                ),
-                _CountCard(
-                  query: db.collection('transactions'),
-                  icon: Icons.receipt_long_outlined,
-                  iconColor: AppColors.success,
-                  title: l10n.orderHistory,
-                  subtitle: l10n.ordersCardSubtitle,
-                  onTap: () => _open(const AdminOrdersPage()),
-                ),
-                // Siffran visar hur många kunder som har en nivå.
-                _CountCard(
-                  query: db
-                      .collection('customers')
-                      .where('tier', whereIn: ['silver', 'gold', 'diamond']),
-                  icon: Icons.workspace_premium_outlined,
-                  iconColor: AppColors.warning,
-                  title: l10n.customerTiers,
-                  subtitle: l10n.customerTiersCardSubtitle,
-                  onTap: () => _open(const AdminTiersPage()),
+                const SizedBox(height: 12),
+                ListPanel(
+                  title: l10n.recentTransactions,
+                  emptyText: txSnap.hasData ? l10n.noTransactionsYet : '',
+                  rows: [
+                    for (final d in docs.take(8))
+                      StatusRow(
+                        title: [
+                          formatTransactionNo(d.data()['transactionNo']),
+                          if ('${d.data()['clientId'] ?? ''}'.isNotEmpty)
+                            formatClientId(d.data()['clientId']),
+                          '${d.data()['customerName'] ?? ''}'.trim(),
+                        ].where((t) => t.isNotEmpty).join(' · '),
+                        subtitle: transactionSummary(l10n, d.data()),
+                        status: statusText(l10n, '${d.data()['status']}'),
+                        color: statusColor('${d.data()['status']}'),
+                        onTap: () => widget.onSelect(_ordersIndex),
+                      ),
+                  ],
                 ),
               ],
-            ),
-          ],
+            );
+          },
         ),
-      ),
-    );
-  }
-}
-
-/// [ActionCard] med antalet dokument i [query] som etikett.
-class _CountCard extends StatelessWidget {
-  final Query query;
-  final IconData icon;
-  final Color iconColor;
-  final String title;
-  final String subtitle;
-  final VoidCallback onTap;
-
-  const _CountCard({
-    required this.query,
-    required this.icon,
-    required this.iconColor,
-    required this.title,
-    required this.subtitle,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return StreamBuilder<QuerySnapshot>(
-      stream: query.snapshots(),
-      builder: (context, snapshot) {
-        final count = snapshot.data?.docs.length;
-        return ActionCard(
-          icon: icon,
-          iconColor: iconColor,
-          title: title,
-          subtitle: subtitle,
-          badge: count == null ? '…' : '$count',
-          onTap: onTap,
-        );
-      },
+      ],
     );
   }
 }

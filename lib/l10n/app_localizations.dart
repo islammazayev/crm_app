@@ -3978,12 +3978,6 @@ abstract class AppLocalizations {
   /// **'Översikt'**
   String get overview;
 
-  /// No description provided for @greeting.
-  ///
-  /// In sv, this message translates to:
-  /// **'Hej, {name}'**
-  String greeting(Object name);
-
   /// No description provided for @statNew.
   ///
   /// In sv, this message translates to:
@@ -4013,6 +4007,66 @@ abstract class AppLocalizations {
   /// In sv, this message translates to:
   /// **'Inget väntar på dig just nu.'**
   String get nothingNeedsYou;
+
+  /// No description provided for @greetingMorning.
+  ///
+  /// In sv, this message translates to:
+  /// **'God morgon, {name}'**
+  String greetingMorning(Object name);
+
+  /// No description provided for @greetingDay.
+  ///
+  /// In sv, this message translates to:
+  /// **'God dag, {name}'**
+  String greetingDay(Object name);
+
+  /// No description provided for @greetingEvening.
+  ///
+  /// In sv, this message translates to:
+  /// **'God kväll, {name}'**
+  String greetingEvening(Object name);
+
+  /// No description provided for @newTransactionShort.
+  ///
+  /// In sv, this message translates to:
+  /// **'Ny transaktion'**
+  String get newTransactionShort;
+
+  /// No description provided for @adminOverviewSubtitle.
+  ///
+  /// In sv, this message translates to:
+  /// **'Allt på ett ställe.'**
+  String get adminOverviewSubtitle;
+
+  /// No description provided for @adminTotalBalance.
+  ///
+  /// In sv, this message translates to:
+  /// **'Totalt saldo, alla kontor och kassörer'**
+  String get adminTotalBalance;
+
+  /// No description provided for @recentTransactions.
+  ///
+  /// In sv, this message translates to:
+  /// **'Senaste transaktioner'**
+  String get recentTransactions;
+
+  /// No description provided for @statWaitingForYou.
+  ///
+  /// In sv, this message translates to:
+  /// **'Väntar på svar'**
+  String get statWaitingForYou;
+
+  /// No description provided for @statReadyForPickup.
+  ///
+  /// In sv, this message translates to:
+  /// **'Klara att hämta'**
+  String get statReadyForPickup;
+
+  /// No description provided for @statAll.
+  ///
+  /// In sv, this message translates to:
+  /// **'Alla'**
+  String get statAll;
 }
 
 class _AppLocalizationsDelegate

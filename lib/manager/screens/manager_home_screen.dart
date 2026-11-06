@@ -9,8 +9,10 @@ import '../../services/chat_service.dart';
 import '../../services/partner_service.dart';
 import '../../widgets/app_shell.dart';
 import '../../widgets/chat.dart';
+import '../../widgets/role_switch.dart';
 import '../pages/manager_balances_page.dart';
 import '../pages/manager_cashiers_page.dart';
+import '../pages/manager_create_transaction_screen.dart';
 import '../pages/manager_overview_page.dart';
 import '../pages/manager_partners_page.dart';
 import '../pages/manager_transactions_page.dart';
@@ -31,6 +33,7 @@ class _ManagerHomeScreenState extends State<ManagerHomeScreen> {
 
   bool _loading = true;
   String _name = '';
+  bool _alsoCashier = false;
   String _officeLabel = '';
   String? _officeId;
 
@@ -59,6 +62,7 @@ class _ManagerHomeScreenState extends State<ManagerHomeScreen> {
     try {
       final user = (await db.collection('users').doc(_uid).get()).data();
       _name = '${user?['firstName'] ?? ''}'.trim();
+      _alsoCashier = user?['alsoCashier'] == true;
       _officeId = user?['officeId']?.toString();
       final officeId = _officeId;
       if (officeId != null && officeId.isNotEmpty) {
@@ -137,6 +141,21 @@ class _ManagerHomeScreenState extends State<ManagerHomeScreen> {
                     .length;
                 return AppShell(
                   key: _shell,
+                  primaryAction: ShellAction(
+                    icon: Icons.add,
+                    label: l10n.newTransactionShort,
+                    onTap: () => _shell.currentState?.push(
+                      ManagerCreateTransactionScreen(officeId: officeId),
+                    ),
+                  ),
+                  extraActions: [
+                    if (_alsoCashier)
+                      ShellAction(
+                        icon: Icons.swap_horiz,
+                        label: l10n.switchToCashier,
+                        onTap: () => switchRole(context, toCashier: true),
+                      ),
+                  ],
                   destinations: [
                     ShellDestination(
                       icon: Icons.home_outlined,

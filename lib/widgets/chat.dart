@@ -6,7 +6,6 @@ import '../l10n/locale_controller.dart';
 import '../services/chat_service.dart';
 import '../services/receipt_service.dart';
 import '../theme/app_theme.dart';
-import 'action_card.dart';
 import 'receipt_button.dart';
 
 /// Knapp till ärendets chatt, med en prick när det finns olästa meddelanden.
@@ -351,46 +350,6 @@ class _MessagesPageState extends State<MessagesPage> {
           );
         },
       ),
-    );
-  }
-}
-
-/// Kort på startsidan med antalet chattar som har olästa meddelanden.
-class MessagesCard extends StatefulWidget {
-  const MessagesCard({super.key});
-
-  @override
-  State<MessagesCard> createState() => _MessagesCardState();
-}
-
-class _MessagesCardState extends State<MessagesCard> {
-  // Skapas en gång, så att startsidan inte prenumererar på nytt vid
-  // varje omritning.
-  late final _chats = ChatService.myChats();
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = context.l10n;
-    return StreamBuilder<List<QueryDocumentSnapshot<Map<String, dynamic>>>>(
-      stream: _chats,
-      builder: (context, snap) {
-        final unread = (snap.data ?? const [])
-            .where((d) => ChatService.isUnread(d.data()))
-            .length;
-        return ActionCard(
-          icon: Icons.forum_outlined,
-          iconColor: AppColors.info,
-          title: l10n.messagesTitle,
-          subtitle: unread > 0
-              ? l10n.unreadChats(unread)
-              : l10n.messagesCardSubtitle,
-          badge: snap.hasData ? '$unread' : '…',
-          onTap: () => Navigator.push(
-            context,
-            MaterialPageRoute(builder: (_) => const MessagesPage()),
-          ),
-        );
-      },
     );
   }
 }

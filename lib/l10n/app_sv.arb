@@ -1671,17 +1671,40 @@
   "roleCustomer": "Kund",
   "more": "Mer",
   "overview": "Översikt",
-  "greeting": "Hej, {name}",
-  "@greeting": {
+  "statNew": "Nya",
+  "statOngoing": "Pågående",
+  "statDone": "Färdiga",
+  "needsYouNow": "Behöver dig nu",
+  "nothingNeedsYou": "Inget väntar på dig just nu.",
+  "greetingMorning": "God morgon, {name}",
+  "@greetingMorning": {
     "placeholders": {
       "name": {
         "type": "Object"
       }
     }
   },
-  "statNew": "Nya",
-  "statOngoing": "Pågående",
-  "statDone": "Färdiga",
-  "needsYouNow": "Behöver dig nu",
-  "nothingNeedsYou": "Inget väntar på dig just nu."
+  "greetingDay": "God dag, {name}",
+  "@greetingDay": {
+    "placeholders": {
+      "name": {
+        "type": "Object"
+      }
+    }
+  },
+  "greetingEvening": "God kväll, {name}",
+  "@greetingEvening": {
+    "placeholders": {
+      "name": {
+        "type": "Object"
+      }
+    }
+  },
+  "newTransactionShort": "Ny transaktion",
+  "adminOverviewSubtitle": "Allt på ett ställe.",
+  "adminTotalBalance": "Totalt saldo, alla kontor och kassörer",
+  "recentTransactions": "Senaste transaktioner",
+  "statWaitingForYou": "Väntar på svar",
+  "statReadyForPickup": "Klara att hämta",
+  "statAll": "Alla"
 }

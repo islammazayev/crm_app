@@ -645,10 +645,19 @@
   "roleCustomer": "Customer",
   "more": "More",
   "overview": "Overview",
-  "greeting": "Hi, {name}",
   "statNew": "New",
   "statOngoing": "Ongoing",
   "statDone": "Finished",
   "needsYouNow": "Needs you now",
-  "nothingNeedsYou": "Nothing is waiting for you right now."
+  "nothingNeedsYou": "Nothing is waiting for you right now.",
+  "greetingMorning": "Good morning, {name}",
+  "greetingDay": "Good afternoon, {name}",
+  "greetingEvening": "Good evening, {name}",
+  "newTransactionShort": "New transaction",
+  "adminOverviewSubtitle": "Everything in one place.",
+  "adminTotalBalance": "Total balance, all offices and cashiers",
+  "recentTransactions": "Recent transactions",
+  "statWaitingForYou": "Waiting for reply",
+  "statReadyForPickup": "Ready for pickup",
+  "statAll": "All"
 }

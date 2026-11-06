@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../l10n/locale_controller.dart';
+import '../screens/auth_gate.dart';
 import '../theme/app_theme.dart';
 
 /// Ett val i appens meny.
@@ -18,18 +19,46 @@ class ShellDestination {
   });
 }
 
-/// Appens ram: sidomeny på bred skärm, bottenmeny på mobil. På mobil visas
-/// de [mobileCount] första valen, och resten finns under "Mer".
+/// En knapp i menyn som gör något i stället för att visa en sida.
+class ShellAction {
+  final IconData icon;
+  final String label;
+  final VoidCallback onTap;
+
+  const ShellAction({
+    required this.icon,
+    required this.label,
+    required this.onTap,
+  });
+}
+
+/// Appens ram: sidomeny på bred skärm, bottenmeny med ikoner på mobil. På
+/// mobil visas de [mobileCount] första valen, [primaryAction] som en grön
+/// knapp i mitten, och resten finns under menyknappen.
 ///
 /// Varje val har en egen navigator, så menyn finns kvar när man öppnar en
 /// undersida och varje val minns var man var.
 class AppShell extends StatefulWidget {
   final List<ShellDestination> destinations;
   final int mobileCount;
+  final ShellAction? primaryAction;
 
-  const AppShell({super.key, required this.destinations, this.mobileCount = 4});
+  /// Visas längst ner i sidomenyn och i menyn på mobil, t.ex. byt roll.
+  final List<ShellAction> extraActions;
+
+  const AppShell({
+    super.key,
+    required this.destinations,
+    this.mobileCount = 4,
+    this.primaryAction,
+    this.extraActions = const [],
+  });
 
   static const wideBreakpoint = 840.0;
+
+  /// Ramen runt [context], för att byta val eller öppna menyn.
+  static AppShellState of(BuildContext context) =>
+      context.findAncestorStateOfType<AppShellState>()!;
 
   @override
   State<AppShell> createState() => AppShellState();
@@ -38,14 +67,19 @@ class AppShell extends StatefulWidget {
 class AppShellState extends State<AppShell> {
   int _index = 0;
   final Set<int> _opened = {0};
-  late final List<GlobalKey<NavigatorState>> _navigators = [
-    for (final _ in widget.destinations) GlobalKey<NavigatorState>(),
-  ];
+  final List<GlobalKey<NavigatorState>> _navigators = [];
+
+  GlobalKey<NavigatorState> _navigator(int i) {
+    while (_navigators.length <= i) {
+      _navigators.add(GlobalKey<NavigatorState>());
+    }
+    return _navigators[i];
+  }
 
   /// Byter val. Trycker man på valet man redan är på går man till dess början.
   void select(int index) {
     if (index == _index) {
-      _navigators[index].currentState?.popUntil((r) => r.isFirst);
+      _navigator(index).currentState?.popUntil((r) => r.isFirst);
       return;
     }
     setState(() {
@@ -54,27 +88,50 @@ class AppShellState extends State<AppShell> {
     });
   }
 
-  Future<void> _showMore(BuildContext context) async {
+  /// Öppnar en sida inne i valet man är på, så att menyn finns kvar.
+  void push(Widget page) {
+    _navigator(
+      _index,
+    ).currentState?.push(MaterialPageRoute(builder: (_) => page));
+  }
+
+  /// Menyn på mobil: valen som inte får plats, extra knappar och logga ut.
+  Future<void> openMenu() async {
     final d = widget.destinations;
-    final chosen = await showModalBottomSheet<int>(
+    final l10n = context.l10n;
+    final chosen = await showModalBottomSheet<VoidCallback>(
       context: context,
+      isScrollControlled: true,
       backgroundColor: AppColors.surface,
       builder: (ctx) => SafeArea(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            for (var i = widget.mobileCount; i < d.length; i++)
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              for (var i = widget.mobileCount; i < d.length; i++)
+                ListTile(
+                  leading: _BadgeIcon(icon: d[i].icon, badge: d[i].badge),
+                  title: Text(d[i].label),
+                  selected: i == _index,
+                  onTap: () => Navigator.pop(ctx, () => select(i)),
+                ),
+              for (final a in widget.extraActions)
+                ListTile(
+                  leading: Icon(a.icon),
+                  title: Text(a.label),
+                  onTap: () => Navigator.pop(ctx, a.onTap),
+                ),
               ListTile(
-                leading: _BadgeIcon(icon: d[i].icon, badge: d[i].badge),
-                title: Text(d[i].label),
-                selected: i == _index,
-                onTap: () => Navigator.pop(ctx, i),
+                leading: const Icon(Icons.logout, color: AppColors.error),
+                title: Text(l10n.logout),
+                onTap: () => Navigator.pop(ctx, () => signOutToLogin(context)),
               ),
-          ],
+            ],
+          ),
         ),
       ),
     );
-    if (chosen != null) select(chosen);
+    chosen?.call();
   }
 
   @override
@@ -87,7 +144,7 @@ class AppShellState extends State<AppShell> {
           // Sidor öppnas först när man går till dem.
           _opened.contains(i)
               ? Navigator(
-                  key: _navigators[i],
+                  key: _navigator(i),
                   onGenerateRoute: (settings) => MaterialPageRoute(
                     settings: settings,
                     builder: d[i].builder,
@@ -103,37 +160,28 @@ class AppShellState extends State<AppShell> {
           return Scaffold(
             body: Row(
               children: [
-                _SideMenu(destinations: d, index: _index, onSelect: select),
+                _SideMenu(
+                  destinations: d,
+                  extraActions: widget.extraActions,
+                  index: _index,
+                  onSelect: select,
+                ),
                 Expanded(child: body),
               ],
             ),
           );
         }
-        final moreBadge = d
-            .skip(widget.mobileCount)
-            .fold<int>(0, (sum, e) => sum + e.badge);
         return Scaffold(
           body: body,
-          bottomNavigationBar: NavigationBar(
-            backgroundColor: AppColors.surface,
-            indicatorColor: AppColors.primaryDim,
-            height: 64,
-            selectedIndex: _index < widget.mobileCount
-                ? _index
-                : widget.mobileCount,
-            onDestinationSelected: (i) =>
-                i < widget.mobileCount ? select(i) : _showMore(context),
-            destinations: [
-              for (final e in d.take(widget.mobileCount))
-                NavigationDestination(
-                  icon: _BadgeIcon(icon: e.icon, badge: e.badge),
-                  label: e.label,
-                ),
-              NavigationDestination(
-                icon: _BadgeIcon(icon: Icons.menu, badge: moreBadge),
-                label: context.l10n.more,
-              ),
-            ],
+          bottomNavigationBar: _BottomMenu(
+            destinations: d.take(widget.mobileCount).toList(),
+            moreBadge: d
+                .skip(widget.mobileCount)
+                .fold<int>(0, (sum, e) => sum + e.badge),
+            index: _index,
+            primaryAction: widget.primaryAction,
+            onSelect: select,
+            onMore: openMenu,
           ),
         );
       },
@@ -144,26 +192,142 @@ class AppShellState extends State<AppShell> {
 class _BadgeIcon extends StatelessWidget {
   final IconData icon;
   final int badge;
+  final Color? color;
 
-  const _BadgeIcon({required this.icon, required this.badge});
+  const _BadgeIcon({required this.icon, required this.badge, this.color});
 
   @override
   Widget build(BuildContext context) {
     return Badge(
       isLabelVisible: badge > 0,
       label: Text('$badge'),
-      child: Icon(icon),
+      child: Icon(icon, color: color),
+    );
+  }
+}
+
+/// Bottenmeny med bara ikoner och en grön knapp i mitten. Namnen finns som
+/// tooltip och för skärmläsare.
+class _BottomMenu extends StatelessWidget {
+  final List<ShellDestination> destinations;
+  final int moreBadge;
+  final int index;
+  final ShellAction? primaryAction;
+  final ValueChanged<int> onSelect;
+  final VoidCallback onMore;
+
+  const _BottomMenu({
+    required this.destinations,
+    required this.moreBadge,
+    required this.index,
+    required this.primaryAction,
+    required this.onSelect,
+    required this.onMore,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final items = <Widget>[
+      for (var i = 0; i < destinations.length; i++)
+        IconButton(
+          tooltip: destinations[i].label,
+          onPressed: () => onSelect(i),
+          icon: _BadgeIcon(
+            icon: destinations[i].icon,
+            badge: destinations[i].badge,
+            color: i == index ? AppColors.primary : AppColors.textMuted,
+          ),
+        ),
+    ];
+    final action = primaryAction;
+    if (action != null) {
+      items.insert(
+        (items.length / 2).ceil(),
+        Tooltip(
+          message: action.label,
+          child: Material(
+            color: AppColors.primary,
+            shape: const CircleBorder(),
+            child: InkWell(
+              customBorder: const CircleBorder(),
+              onTap: action.onTap,
+              child: Padding(
+                padding: const EdgeInsets.all(10),
+                child: Icon(action.icon, color: const Color(0xFF003300)),
+              ),
+            ),
+          ),
+        ),
+      );
+    }
+    items.add(
+      IconButton(
+        tooltip: context.l10n.more,
+        onPressed: onMore,
+        icon: _BadgeIcon(
+          icon: Icons.menu,
+          badge: moreBadge,
+          color: index >= destinations.length
+              ? AppColors.primary
+              : AppColors.textMuted,
+        ),
+      ),
+    );
+    return Container(
+      decoration: const BoxDecoration(
+        color: AppColors.surface,
+        border: Border(top: BorderSide(color: AppColors.surfaceBorder)),
+      ),
+      child: SafeArea(
+        top: false,
+        child: SizedBox(
+          height: 64,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: items,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Appens namn, som i logotypen.
+class GreenTexLogo extends StatelessWidget {
+  final double size;
+
+  const GreenTexLogo({super.key, this.size = 22});
+
+  @override
+  Widget build(BuildContext context) {
+    return Text.rich(
+      const TextSpan(
+        text: 'Green',
+        children: [
+          TextSpan(
+            text: 'Tex',
+            style: TextStyle(color: AppColors.primary),
+          ),
+        ],
+      ),
+      style: TextStyle(
+        color: AppColors.textPrimary,
+        fontSize: size,
+        fontWeight: FontWeight.w700,
+      ),
     );
   }
 }
 
 class _SideMenu extends StatelessWidget {
   final List<ShellDestination> destinations;
+  final List<ShellAction> extraActions;
   final int index;
   final ValueChanged<int> onSelect;
 
   const _SideMenu({
     required this.destinations,
+    required this.extraActions,
     required this.index,
     required this.onSelect,
   });
@@ -177,75 +341,107 @@ class _SideMenu extends StatelessWidget {
         border: Border(right: BorderSide(color: AppColors.surfaceBorder)),
       ),
       child: SafeArea(
-        child: ListView(
-          padding: const EdgeInsets.all(12),
+        child: Column(
           children: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(10, 8, 10, 20),
-              child: Text.rich(
-                const TextSpan(
-                  text: 'Green',
-                  children: [
-                    TextSpan(
-                      text: 'Tex',
-                      style: TextStyle(color: AppColors.primary),
+            Expanded(
+              child: ListView(
+                padding: const EdgeInsets.all(12),
+                children: [
+                  const Padding(
+                    padding: EdgeInsets.fromLTRB(10, 8, 10, 20),
+                    child: GreenTexLogo(),
+                  ),
+                  for (var i = 0; i < destinations.length; i++)
+                    _SideItem(
+                      icon: destinations[i].icon,
+                      label: destinations[i].label,
+                      badge: destinations[i].badge,
+                      selected: i == index,
+                      onTap: () => onSelect(i),
                     ),
-                  ],
-                ),
-                style: const TextStyle(
-                  color: AppColors.textPrimary,
-                  fontSize: 22,
-                  fontWeight: FontWeight.w700,
-                ),
+                ],
               ),
             ),
-            for (var i = 0; i < destinations.length; i++)
-              Padding(
-                padding: const EdgeInsets.only(bottom: 4),
-                child: Material(
-                  color: i == index ? AppColors.primaryDim : Colors.transparent,
-                  borderRadius: BorderRadius.circular(10),
-                  child: InkWell(
-                    borderRadius: BorderRadius.circular(10),
-                    onTap: () => onSelect(i),
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 11,
-                      ),
-                      child: Row(
-                        children: [
-                          Icon(
-                            destinations[i].icon,
-                            size: 20,
-                            color: i == index
-                                ? AppColors.primary
-                                : AppColors.textMuted,
-                          ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: Text(
-                              destinations[i].label,
-                              overflow: TextOverflow.ellipsis,
-                              style: TextStyle(
-                                color: i == index
-                                    ? AppColors.primary
-                                    : AppColors.textPrimary,
-                                fontWeight: i == index
-                                    ? FontWeight.w600
-                                    : FontWeight.w400,
-                              ),
-                            ),
-                          ),
-                          if (destinations[i].badge > 0)
-                            Badge(label: Text('${destinations[i].badge}')),
-                        ],
-                      ),
+            const Divider(height: 1, color: AppColors.surfaceBorder),
+            Padding(
+              padding: const EdgeInsets.all(12),
+              child: Column(
+                children: [
+                  for (final a in extraActions)
+                    _SideItem(icon: a.icon, label: a.label, onTap: a.onTap),
+                  _SideItem(
+                    icon: Icons.logout,
+                    label: context.l10n.logout,
+                    onTap: () => signOutToLogin(context),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _SideItem extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final int badge;
+  final bool selected;
+  final VoidCallback onTap;
+
+  const _SideItem({
+    required this.icon,
+    required this.label,
+    required this.onTap,
+    this.badge = 0,
+    this.selected = false,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 4),
+      child: Material(
+        color: selected ? AppColors.primaryDim : Colors.transparent,
+        borderRadius: BorderRadius.circular(10),
+        child: InkWell(
+          borderRadius: BorderRadius.circular(10),
+          onTap: onTap,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 11),
+            child: Row(
+              children: [
+                Icon(
+                  icon,
+                  size: 20,
+                  color: selected ? AppColors.primary : AppColors.textMuted,
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    label,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      color: selected
+                          ? AppColors.primary
+                          : AppColors.textPrimary,
+                      fontWeight: selected ? FontWeight.w600 : FontWeight.w400,
                     ),
                   ),
                 ),
-              ),
-          ],
+                if (badge > 0)
+                  Text(
+                    '$badge',
+                    style: const TextStyle(
+                      color: AppColors.warning,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+              ],
+            ),
+          ),
         ),
       ),
     );

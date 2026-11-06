@@ -5,6 +5,8 @@ import 'package:flutter_test/flutter_test.dart';
 
 /// Menyn: sidomeny på bred skärm, bottenmeny med "Mer" på mobil.
 void main() {
+  var tappedAction = false;
+
   Widget page(String name) => Scaffold(
     appBar: AppBar(title: Text('Sida $name')),
     body: Builder(
@@ -32,6 +34,11 @@ void main() {
         supportedLocales: AppLocalizations.supportedLocales,
         home: AppShell(
           mobileCount: 2,
+          primaryAction: ShellAction(
+            icon: Icons.add,
+            label: 'Ny',
+            onTap: () => tappedAction = true,
+          ),
           destinations: [
             for (final (i, name) in const ['Ett', 'Två', 'Tre', 'Fyra'].indexed)
               ShellDestination(
@@ -54,7 +61,7 @@ void main() {
     for (final name in ['Ett', 'Två', 'Tre', 'Fyra']) {
       expect(find.text(name), findsOneWidget);
     }
-    expect(find.byType(NavigationBar), findsNothing);
+    expect(find.byTooltip('Mer'), findsNothing);
 
     await tester.tap(find.text('Tre'));
     await tester.pumpAndSettle();
@@ -63,10 +70,14 @@ void main() {
 
   testWidgets('mobil: bottenmeny, och resten under Mer', (tester) async {
     await pump(tester, 375);
-    expect(find.byType(NavigationBar), findsOneWidget);
-    expect(find.text('Tre'), findsNothing);
+    expect(find.byTooltip('Ett'), findsOneWidget);
+    expect(find.byTooltip('Tre'), findsNothing);
+    expect(find.byTooltip('Ny'), findsOneWidget);
 
-    await tester.tap(find.text('Mer'));
+    await tester.tap(find.byTooltip('Ny'));
+    expect(tappedAction, isTrue);
+
+    await tester.tap(find.byTooltip('Mer'));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Fyra'));
     await tester.pumpAndSettle();

@@ -645,10 +645,19 @@
   "roleCustomer": "Клиент",
   "more": "Ещё",
   "overview": "Обзор",
-  "greeting": "Здравствуйте, {name}",
   "statNew": "Новые",
   "statOngoing": "В работе",
   "statDone": "Завершённые",
   "needsYouNow": "Ждут вас",
-  "nothingNeedsYou": "Сейчас ничего не ждёт вашего действия."
+  "nothingNeedsYou": "Сейчас ничего не ждёт вашего действия.",
+  "greetingMorning": "Доброе утро, {name}",
+  "greetingDay": "Добрый день, {name}",
+  "greetingEvening": "Добрый вечер, {name}",
+  "newTransactionShort": "Новый перевод",
+  "adminOverviewSubtitle": "Всё в одном месте.",
+  "adminTotalBalance": "Общий баланс всех офисов и кассиров",
+  "recentTransactions": "Последние переводы",
+  "statWaitingForYou": "Ждут ответа",
+  "statReadyForPickup": "Готовы к выдаче",
+  "statAll": "Все"
 }

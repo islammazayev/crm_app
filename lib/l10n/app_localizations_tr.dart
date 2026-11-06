@@ -2331,11 +2331,6 @@ class AppLocalizationsTr extends AppLocalizations {
   String get overview => 'Genel bakış';
 
   @override
-  String greeting(Object name) {
-    return 'Merhaba, $name';
-  }
-
-  @override
   String get statNew => 'Yeni';
 
   @override
@@ -2349,4 +2344,40 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get nothingNeedsYou => 'Şu anda sizi bekleyen bir şey yok.';
+
+  @override
+  String greetingMorning(Object name) {
+    return 'Günaydın, $name';
+  }
+
+  @override
+  String greetingDay(Object name) {
+    return 'İyi günler, $name';
+  }
+
+  @override
+  String greetingEvening(Object name) {
+    return 'İyi akşamlar, $name';
+  }
+
+  @override
+  String get newTransactionShort => 'Yeni işlem';
+
+  @override
+  String get adminOverviewSubtitle => 'Her şey tek yerde.';
+
+  @override
+  String get adminTotalBalance => 'Toplam bakiye, tüm ofisler ve kasiyerler';
+
+  @override
+  String get recentTransactions => 'Son işlemler';
+
+  @override
+  String get statWaitingForYou => 'Yanıt bekliyor';
+
+  @override
+  String get statReadyForPickup => 'Alınmaya hazır';
+
+  @override
+  String get statAll => 'Tümü';
 }

@@ -238,20 +238,3 @@ class _Section extends StatelessWidget {
     );
   }
 }
-
-/// Knapp i appbaren som öppnar inställningarna.
-class SettingsButton extends StatelessWidget {
-  const SettingsButton({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return IconButton(
-      tooltip: context.l10n.settingsTitle,
-      icon: const Icon(Icons.settings_outlined),
-      onPressed: () => Navigator.push(
-        context,
-        MaterialPageRoute(builder: (_) => const SettingsPage()),
-      ),
-    );
-  }
-}

@@ -2341,11 +2341,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get overview => 'Overview';
 
   @override
-  String greeting(Object name) {
-    return 'Hi, $name';
-  }
-
-  @override
   String get statNew => 'New';
 
   @override
@@ -2359,4 +2354,40 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get nothingNeedsYou => 'Nothing is waiting for you right now.';
+
+  @override
+  String greetingMorning(Object name) {
+    return 'Good morning, $name';
+  }
+
+  @override
+  String greetingDay(Object name) {
+    return 'Good afternoon, $name';
+  }
+
+  @override
+  String greetingEvening(Object name) {
+    return 'Good evening, $name';
+  }
+
+  @override
+  String get newTransactionShort => 'New transaction';
+
+  @override
+  String get adminOverviewSubtitle => 'Everything in one place.';
+
+  @override
+  String get adminTotalBalance => 'Total balance, all offices and cashiers';
+
+  @override
+  String get recentTransactions => 'Recent transactions';
+
+  @override
+  String get statWaitingForYou => 'Waiting for reply';
+
+  @override
+  String get statReadyForPickup => 'Ready for pickup';
+
+  @override
+  String get statAll => 'All';
 }

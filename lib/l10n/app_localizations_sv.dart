@@ -2346,11 +2346,6 @@ class AppLocalizationsSv extends AppLocalizations {
   String get overview => 'Översikt';
 
   @override
-  String greeting(Object name) {
-    return 'Hej, $name';
-  }
-
-  @override
   String get statNew => 'Nya';
 
   @override
@@ -2364,4 +2359,40 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String get nothingNeedsYou => 'Inget väntar på dig just nu.';
+
+  @override
+  String greetingMorning(Object name) {
+    return 'God morgon, $name';
+  }
+
+  @override
+  String greetingDay(Object name) {
+    return 'God dag, $name';
+  }
+
+  @override
+  String greetingEvening(Object name) {
+    return 'God kväll, $name';
+  }
+
+  @override
+  String get newTransactionShort => 'Ny transaktion';
+
+  @override
+  String get adminOverviewSubtitle => 'Allt på ett ställe.';
+
+  @override
+  String get adminTotalBalance => 'Totalt saldo, alla kontor och kassörer';
+
+  @override
+  String get recentTransactions => 'Senaste transaktioner';
+
+  @override
+  String get statWaitingForYou => 'Väntar på svar';
+
+  @override
+  String get statReadyForPickup => 'Klara att hämta';
+
+  @override
+  String get statAll => 'Alla';
 }

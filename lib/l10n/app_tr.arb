@@ -645,10 +645,19 @@
   "roleCustomer": "Müşteri",
   "more": "Daha fazla",
   "overview": "Genel bakış",
-  "greeting": "Merhaba, {name}",
   "statNew": "Yeni",
   "statOngoing": "Devam eden",
   "statDone": "Biten",
   "needsYouNow": "Sizi bekleyenler",
-  "nothingNeedsYou": "Şu anda sizi bekleyen bir şey yok."
+  "nothingNeedsYou": "Şu anda sizi bekleyen bir şey yok.",
+  "greetingMorning": "Günaydın, {name}",
+  "greetingDay": "İyi günler, {name}",
+  "greetingEvening": "İyi akşamlar, {name}",
+  "newTransactionShort": "Yeni işlem",
+  "adminOverviewSubtitle": "Her şey tek yerde.",
+  "adminTotalBalance": "Toplam bakiye, tüm ofisler ve kasiyerler",
+  "recentTransactions": "Son işlemler",
+  "statWaitingForYou": "Yanıt bekliyor",
+  "statReadyForPickup": "Alınmaya hazır",
+  "statAll": "Tümü"
 }

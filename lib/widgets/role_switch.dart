@@ -16,6 +16,12 @@ Stream<DocumentSnapshot<Map<String, dynamic>>> _me() => FirebaseFirestore
     .doc(FirebaseAuth.instance.currentUser?.uid ?? '')
     .snapshots();
 
+/// Byter mellan manager- och kassörsmenyn.
+void switchRole(BuildContext context, {required bool toCashier}) => _open(
+  context,
+  toCashier ? const CashierHomeScreen() : const ManagerHomeScreen(),
+);
+
 void _open(BuildContext context, Widget home) {
   Navigator.of(context, rootNavigator: true).pushAndRemoveUntil(
     MaterialPageRoute(builder: (_) => home),
@@ -98,37 +104,6 @@ class RoleChooserScreen extends StatelessWidget {
           ],
         ),
       ),
-    );
-  }
-}
-
-/// Knapp i startsidans meny som byter mellan manager och kassör. Syns bara
-/// för en manager som också är kassör.
-class RoleSwitchButton extends StatelessWidget {
-  /// Sant på managerns startsida (byter till kassör), falskt på kassörens.
-  final bool toCashier;
-
-  const RoleSwitchButton({super.key, required this.toCashier});
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = context.l10n;
-    return StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
-      stream: _me(),
-      builder: (context, snap) {
-        final d = snap.data?.data();
-        if (d?['role'] != 'manager' || d?['alsoCashier'] != true) {
-          return const SizedBox.shrink();
-        }
-        return IconButton(
-          tooltip: toCashier ? l10n.switchToCashier : l10n.switchToManager,
-          icon: const Icon(Icons.swap_horiz),
-          onPressed: () => _open(
-            context,
-            toCashier ? const CashierHomeScreen() : const ManagerHomeScreen(),
-          ),
-        );
-      },
     );
   }
 }

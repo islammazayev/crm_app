@@ -2348,11 +2348,6 @@ class AppLocalizationsRu extends AppLocalizations {
   String get overview => 'Обзор';
 
   @override
-  String greeting(Object name) {
-    return 'Здравствуйте, $name';
-  }
-
-  @override
   String get statNew => 'Новые';
 
   @override
@@ -2366,4 +2361,40 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get nothingNeedsYou => 'Сейчас ничего не ждёт вашего действия.';
+
+  @override
+  String greetingMorning(Object name) {
+    return 'Доброе утро, $name';
+  }
+
+  @override
+  String greetingDay(Object name) {
+    return 'Добрый день, $name';
+  }
+
+  @override
+  String greetingEvening(Object name) {
+    return 'Добрый вечер, $name';
+  }
+
+  @override
+  String get newTransactionShort => 'Новый перевод';
+
+  @override
+  String get adminOverviewSubtitle => 'Всё в одном месте.';
+
+  @override
+  String get adminTotalBalance => 'Общий баланс всех офисов и кассиров';
+
+  @override
+  String get recentTransactions => 'Последние переводы';
+
+  @override
+  String get statWaitingForYou => 'Ждут ответа';
+
+  @override
+  String get statReadyForPickup => 'Готовы к выдаче';
+
+  @override
+  String get statAll => 'Все';
 }
