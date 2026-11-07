@@ -6,6 +6,7 @@ import 'package:flutter_test/flutter_test.dart';
 /// SMS-valet visas bara när admin skriver klient-ID och telefon.
 void main() {
   bool? sent;
+  bool? sentEmail;
 
   Future<void> pump(WidgetTester tester) => tester.pumpWidget(
     MaterialApp(
@@ -23,8 +24,10 @@ void main() {
                   required String phone,
                   String email = '',
                   bool sendInvite = false,
+                  bool sendEmailInvite = false,
                 }) async {
                   sent = sendInvite;
+                  sentEmail = sendEmailInvite;
                 },
           ),
         ),
@@ -60,5 +63,20 @@ void main() {
     await tester.tap(find.text('Spara kund'));
     await tester.pump();
     expect(sent, isTrue);
+  });
+
+  testWidgets('klient-ID och e-post visar e-postvalet', (tester) async {
+    sentEmail = null;
+    await pump(tester);
+    await tester.enterText(field('Klient-ID (valfritt)'), '9');
+    await tester.enterText(field('E-post'), 'ali@example.com');
+    await tester.enterText(field('Förnamn'), 'Ali');
+    await tester.enterText(field('Efternamn'), 'K');
+    await tester.pump();
+    expect(find.text('Skicka länk till appen (e-post)'), findsOneWidget);
+    expect(find.text('Skicka länk till appen (SMS)'), findsNothing);
+    await tester.tap(find.text('Spara kund'));
+    await tester.pump();
+    expect(sentEmail, isTrue);
   });
 }

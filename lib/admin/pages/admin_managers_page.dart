@@ -9,6 +9,7 @@ import '../../utils/search_match.dart';
 import '../../widgets/admin_list.dart';
 import '../../widgets/confirm_delete.dart';
 import '../../widgets/overview_widgets.dart';
+import '../../widgets/phone_field.dart';
 
 /// Admin: skapa managers och se vilka som finns och vilket kontor de har.
 class AdminManagersPage extends StatefulWidget {
@@ -54,9 +55,8 @@ class _AdminManagersPageState extends State<AdminManagersPage> {
                   decoration: InputDecoration(labelText: l10n.lastName),
                 ),
                 const SizedBox(height: 14),
-                TextField(
+                PhoneField(
                   controller: phoneCtrl,
-                  keyboardType: TextInputType.phone,
                   decoration: InputDecoration(labelText: l10n.phone),
                 ),
                 const SizedBox(height: 8),

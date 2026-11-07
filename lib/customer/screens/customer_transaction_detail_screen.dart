@@ -12,6 +12,7 @@ import '../../widgets/pay_method.dart';
 import '../../widgets/receipt_button.dart';
 import '../../utils/transaction_no.dart';
 import 'customer_transactions_screen.dart' show customerStatusText;
+import '../../widgets/phone_field.dart';
 
 class CustomerTransactionDetailScreen extends StatelessWidget {
   final String transactionId;
@@ -682,9 +683,8 @@ class _BankDetailsCardState extends State<_BankDetailsCard> {
               decoration: InputDecoration(labelText: l10n.bankNameLabel),
             ),
             const SizedBox(height: 12),
-            TextField(
+            PhoneField(
               controller: _phone,
-              keyboardType: TextInputType.phone,
               decoration: InputDecoration(labelText: l10n.bankPhoneLabel),
             ),
             const SizedBox(height: 12),

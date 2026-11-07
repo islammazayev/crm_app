@@ -12,6 +12,7 @@ import '../../utils/customer_filter.dart';
 import '../../utils/customer_tiers.dart';
 import '../../widgets/admin_list.dart';
 import '../../widgets/overview_widgets.dart';
+import '../../widgets/phone_field.dart';
 
 class AdminCustomersSection extends StatefulWidget {
   /// Nivå att filtrera på från början (t.ex. från Kundnivåer).
@@ -238,17 +239,22 @@ class _AdminCustomersSectionState extends State<AdminCustomersSection> {
     return ref.id;
   }
 
-  /// Skickar en länk via SMS så att kunden kan skapa konto i appen och
-  /// behålla sitt klient-ID (samma inbjudan som kontoret använder).
-  Future<void> _sendInvite(String docId) async {
+  /// Skickar en länk via SMS eller e-post så att kunden kan skapa konto i
+  /// appen och behålla sitt klient-ID. Kunden skapar bara lösenord.
+  Future<void> _sendInvite(String docId, {bool email = false}) async {
     final l10n = context.l10n;
     try {
       final snap = await customersRef.doc(docId).get();
       final d = snap.data() as Map<String, dynamic>?;
       if (d == null || d['userId'] != null) return;
       final phone = '${d['phone'] ?? ''}'.trim();
-      if (phone.isEmpty) {
+      final address = '${d['email'] ?? ''}'.trim();
+      if (!email && phone.isEmpty) {
         _snack(l10n.invitePhoneRequired);
+        return;
+      }
+      if (email && !address.contains('@')) {
+        _snack(l10n.inviteEmailRequired);
         return;
       }
       // Admins inbjudan: kunden har redan sina uppgifter och skapar bara
@@ -258,13 +264,19 @@ class _AdminCustomersSectionState extends State<AdminCustomersSection> {
         docId,
         d['inviteCode'] as String?,
       );
-      await CustomerInviteService.openSms(
-        phone,
-        l10n.inviteSmsText(
-          '${d['firstName'] ?? ''}'.trim(),
-          CustomerInviteService.inviteLink(docId, code),
-        ),
+      final message = l10n.inviteSmsText(
+        '${d['firstName'] ?? ''}'.trim(),
+        CustomerInviteService.inviteLink(docId, code),
       );
+      if (email) {
+        await CustomerInviteService.openEmail(
+          address,
+          l10n.inviteEmailSubject,
+          message,
+        );
+      } else {
+        await CustomerInviteService.openSms(phone, message);
+      }
     } catch (e) {
       _snack(l10n.errorWithDetails('$e'));
     }
@@ -301,10 +313,9 @@ class _AdminCustomersSectionState extends State<AdminCustomersSection> {
                 decoration: InputDecoration(labelText: l10n.lastName),
               ),
               const SizedBox(height: 14),
-              TextField(
+              PhoneField(
                 controller: phoneCtrl,
                 decoration: InputDecoration(labelText: l10n.phone),
-                keyboardType: TextInputType.phone,
               ),
               const SizedBox(height: 14),
               TextField(
@@ -472,6 +483,7 @@ class _AdminCustomersSectionState extends State<AdminCustomersSection> {
             required String phone,
             String email = '',
             bool sendInvite = false,
+            bool sendEmailInvite = false,
           }) async {
             final docId = await _addCustomer(
               clientId: clientId,
@@ -483,6 +495,9 @@ class _AdminCustomersSectionState extends State<AdminCustomersSection> {
             close();
             // Bara när admin själv gav klient-ID:t och bockade i SMS.
             if (clientId != null && sendInvite) await _sendInvite(docId);
+            if (clientId != null && sendEmailInvite) {
+              await _sendInvite(docId, email: true);
+            }
           },
     ),
   );
@@ -896,6 +911,12 @@ class _AdminCustomersSectionState extends State<AdminCustomersSection> {
             l10n.sendAppInvite,
             Icons.sms_outlined,
             () => _sendInvite(c.docId),
+          ),
+        if (!c.hasAccount && c.email.contains('@'))
+          AdminAction(
+            l10n.sendAppInviteEmail,
+            Icons.email_outlined,
+            () => _sendInvite(c.docId, email: true),
           ),
         AdminAction(
           l10n.tierLabel,

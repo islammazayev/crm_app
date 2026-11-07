@@ -1915,5 +1915,11 @@
   },
   "createPasswordAction": "Skapa konto",
   "adminInviteHint": "Kunden får en länk, skapar bara lösenord och behåller klient-ID:t. SMS-appen öppnas när du sparar.",
-  "adminInvitePhoneHint": "Skriv kundens telefon om du vill skicka en länk till appen via SMS."
+  "adminInvitePhoneHint": "Skriv kundens telefon om du vill skicka en länk till appen via SMS.",
+  "chooseCountryCode": "Välj landskod",
+  "searchCountry": "Sök land eller landsnummer",
+  "sendAppInviteEmail": "Skicka länk till appen (e-post)",
+  "adminInviteEmailHint": "Samma länk via e-post. E-postappen öppnas när du sparar.",
+  "inviteEmailRequired": "Skriv kundens e-post för att kunna skicka länken.",
+  "inviteEmailSubject": "Skapa ditt konto i appen"
 }

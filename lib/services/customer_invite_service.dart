@@ -71,6 +71,15 @@ class CustomerInviteService {
     return code;
   }
 
+  /// Öppnar e-postappen med mottagare, ämne och meddelande ifyllda.
+  static Future<bool> openEmail(String email, String subject, String body) =>
+      launchUrl(
+        Uri.parse(
+          'mailto:${email.trim()}?subject=${Uri.encodeComponent(subject)}'
+          '&body=${Uri.encodeComponent(body)}',
+        ),
+      );
+
   /// Öppnar SMS-appen på telefonen med numret och meddelandet ifyllda.
   /// "?&body=" fungerar både på iPhone och Android.
   static Future<bool> openSms(String phone, String message) => launchUrl(

@@ -2682,4 +2682,24 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get adminInvitePhoneHint =>
       'Enter the customer\'s phone to send a link to the app by SMS.';
+
+  @override
+  String get chooseCountryCode => 'Choose country code';
+
+  @override
+  String get searchCountry => 'Search country or code';
+
+  @override
+  String get sendAppInviteEmail => 'Send app link (email)';
+
+  @override
+  String get adminInviteEmailHint =>
+      'The same link by email. Your email app opens when you save.';
+
+  @override
+  String get inviteEmailRequired =>
+      'Enter the customer\'s email to send the link.';
+
+  @override
+  String get inviteEmailSubject => 'Create your account in the app';
 }

@@ -4595,6 +4595,42 @@ abstract class AppLocalizations {
   /// In sv, this message translates to:
   /// **'Skriv kundens telefon om du vill skicka en länk till appen via SMS.'**
   String get adminInvitePhoneHint;
+
+  /// No description provided for @chooseCountryCode.
+  ///
+  /// In sv, this message translates to:
+  /// **'Välj landskod'**
+  String get chooseCountryCode;
+
+  /// No description provided for @searchCountry.
+  ///
+  /// In sv, this message translates to:
+  /// **'Sök land eller landsnummer'**
+  String get searchCountry;
+
+  /// No description provided for @sendAppInviteEmail.
+  ///
+  /// In sv, this message translates to:
+  /// **'Skicka länk till appen (e-post)'**
+  String get sendAppInviteEmail;
+
+  /// No description provided for @adminInviteEmailHint.
+  ///
+  /// In sv, this message translates to:
+  /// **'Samma länk via e-post. E-postappen öppnas när du sparar.'**
+  String get adminInviteEmailHint;
+
+  /// No description provided for @inviteEmailRequired.
+  ///
+  /// In sv, this message translates to:
+  /// **'Skriv kundens e-post för att kunna skicka länken.'**
+  String get inviteEmailRequired;
+
+  /// No description provided for @inviteEmailSubject.
+  ///
+  /// In sv, this message translates to:
+  /// **'Skapa ditt konto i appen'**
+  String get inviteEmailSubject;
 }
 
 class _AppLocalizationsDelegate

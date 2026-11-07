@@ -16,6 +16,7 @@ import '../../utils/pickup_code.dart';
 import '../../widgets/pay_method.dart';
 import '../../widgets/rate_field.dart';
 import 'manager_transactions_detail_screen.dart';
+import '../../widgets/phone_field.dart';
 
 /// Manager registrerar en kund som kommer in på kontoret. Managern väljer en
 /// befintlig kund ur kundregistret eller skriver in en ny, och kan bjuda in
@@ -521,9 +522,8 @@ class _ManagerCreateTransactionScreenState
           ),
         ),
         const SizedBox(height: 14),
-        TextField(
+        PhoneField(
           controller: _phoneCtrl,
-          keyboardType: TextInputType.phone,
           decoration: InputDecoration(
             labelText: l10n.phoneOptional,
             border: const OutlineInputBorder(),

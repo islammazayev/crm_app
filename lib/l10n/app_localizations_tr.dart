@@ -2672,4 +2672,24 @@ class AppLocalizationsTr extends AppLocalizations {
   @override
   String get adminInvitePhoneHint =>
       'Uygulama bağlantısını SMS ile göndermek için müşterinin telefonunu yazın.';
+
+  @override
+  String get chooseCountryCode => 'Ülke kodunu seçin';
+
+  @override
+  String get searchCountry => 'Ülke veya kod ara';
+
+  @override
+  String get sendAppInviteEmail => 'Uygulama bağlantısı gönder (e-posta)';
+
+  @override
+  String get adminInviteEmailHint =>
+      'Aynı bağlantı e-postayla. Kaydettiğinizde e-posta uygulaması açılır.';
+
+  @override
+  String get inviteEmailRequired =>
+      'Bağlantıyı göndermek için müşterinin e-postasını yazın.';
+
+  @override
+  String get inviteEmailSubject => 'Uygulamada hesabınızı oluşturun';
 }

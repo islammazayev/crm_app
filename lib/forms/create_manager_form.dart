@@ -6,6 +6,7 @@ import '../l10n/auth_error_text.dart';
 import '../services/account_creator.dart';
 import '../services/cashier_service.dart';
 import '../l10n/locale_controller.dart';
+import '../widgets/phone_field.dart';
 
 class CreateManagerForm extends StatefulWidget {
   final List<QueryDocumentSnapshot> officeDocs;
@@ -175,10 +176,9 @@ class _CreateManagerFormState extends State<CreateManagerForm> {
                 (v == null || v.trim().isEmpty) ? l10n.enterEmail : null,
           ),
           const SizedBox(height: 14),
-          TextFormField(
+          PhoneField(
             controller: _phoneController,
             decoration: InputDecoration(labelText: l10n.phone),
-            keyboardType: TextInputType.phone,
           ),
           const SizedBox(height: 14),
           TextFormField(
