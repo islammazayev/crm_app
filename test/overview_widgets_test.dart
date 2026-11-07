@@ -53,6 +53,7 @@ void main() {
                     subtitle: 'Köp 100000 EUR med RUB · Till min bank',
                     status: 'Betalning bekräftad av kontoret',
                     color: statusColor('payment_confirmed'),
+                    date: DateTime(2026, 11, 7, 14, 32),
                     onTap: () {},
                   ),
                 ],
@@ -80,6 +81,7 @@ void main() {
       expect(tester.takeException(), isNull);
       expect(find.text('Totalt saldo'), findsOneWidget);
       expect(find.textContaining('571 682 EUR'), findsOneWidget);
+      expect(find.text('7 nov. 2026 14:32'), findsOneWidget);
     });
   }
 

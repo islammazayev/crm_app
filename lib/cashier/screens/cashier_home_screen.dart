@@ -300,6 +300,8 @@ class _CashierOverviewState extends State<_CashierOverview> {
                       rows: [
                         for (final d in incoming)
                           StatusRow(
+                            date: (d.data()['createdAt'] as Timestamp?)
+                                ?.toDate(),
                             title: l10n.transferFrom(
                               '${d.data()['fromName'] ?? ''}',
                             ),
@@ -319,6 +321,8 @@ class _CashierOverviewState extends State<_CashierOverview> {
                           ),
                         for (final d in cash)
                           StatusRow(
+                            date: (d.data()['createAt'] as Timestamp?)
+                                ?.toDate(),
                             title: '${d.data()['customerName'] ?? ''}',
                             subtitle: l10n.customerPaysCashAmount(
                               ((d.data()['amountFrom'] ?? 0) as num)

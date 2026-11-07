@@ -272,6 +272,7 @@ class _CustomerOverviewState extends State<_CustomerOverview> {
                   rows: [
                     for (final d in docs.take(5))
                       StatusRow(
+                        date: (d.data()['createAt'] as Timestamp?)?.toDate(),
                         title: [
                           formatTransactionNo(d.data()['transactionNo']),
                           transactionSummary(l10n, d.data()),

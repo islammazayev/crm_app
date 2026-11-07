@@ -238,6 +238,7 @@ class _AdminOverviewState extends State<_AdminOverview> {
                   rows: [
                     for (final d in docs.take(8))
                       StatusRow(
+                        date: (d.data()['createAt'] as Timestamp?)?.toDate(),
                         title: [
                           formatTransactionNo(d.data()['transactionNo']),
                           if ('${d.data()['clientId'] ?? ''}'.isNotEmpty)
