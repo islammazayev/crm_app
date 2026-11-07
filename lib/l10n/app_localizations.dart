@@ -4307,6 +4307,72 @@ abstract class AppLocalizations {
   /// In sv, this message translates to:
   /// **'Fler val'**
   String get moreActions;
+
+  /// No description provided for @filterWithOffice.
+  ///
+  /// In sv, this message translates to:
+  /// **'Med kontor'**
+  String get filterWithOffice;
+
+  /// No description provided for @filterWithoutOffice.
+  ///
+  /// In sv, this message translates to:
+  /// **'Utan kontor'**
+  String get filterWithoutOffice;
+
+  /// No description provided for @filterWithBalance.
+  ///
+  /// In sv, this message translates to:
+  /// **'Med saldo'**
+  String get filterWithBalance;
+
+  /// No description provided for @filterWithManager.
+  ///
+  /// In sv, this message translates to:
+  /// **'Med manager'**
+  String get filterWithManager;
+
+  /// No description provided for @filterWithoutManager.
+  ///
+  /// In sv, this message translates to:
+  /// **'Utan manager'**
+  String get filterWithoutManager;
+
+  /// No description provided for @managersSummary.
+  ///
+  /// In sv, this message translates to:
+  /// **'{total} managers · {withOffice} med kontor'**
+  String managersSummary(Object total, Object withOffice);
+
+  /// No description provided for @cashiersSummary.
+  ///
+  /// In sv, this message translates to:
+  /// **'{total} kassörer · {withOffice} med kontor'**
+  String cashiersSummary(Object total, Object withOffice);
+
+  /// No description provided for @partnersSummary.
+  ///
+  /// In sv, this message translates to:
+  /// **'{total} partner · {withOffice} med kontor'**
+  String partnersSummary(Object total, Object withOffice);
+
+  /// No description provided for @officesSummary.
+  ///
+  /// In sv, this message translates to:
+  /// **'{total} kontor · {withoutManager} utan manager'**
+  String officesSummary(Object total, Object withoutManager);
+
+  /// No description provided for @showExchanges.
+  ///
+  /// In sv, this message translates to:
+  /// **'Visa växlingar'**
+  String get showExchanges;
+
+  /// No description provided for @showTransfers.
+  ///
+  /// In sv, this message translates to:
+  /// **'Visa överföringar'**
+  String get showTransfers;
 }
 
 class _AppLocalizationsDelegate

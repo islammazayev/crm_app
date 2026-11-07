@@ -699,5 +699,16 @@
   "previousPage": "Предыдущая страница",
   "nextPage": "Следующая страница",
   "lastActivityValue": "последний {date}",
-  "moreActions": "Ещё"
+  "moreActions": "Ещё",
+  "filterWithOffice": "С офисом",
+  "filterWithoutOffice": "Без офиса",
+  "filterWithBalance": "С балансом",
+  "filterWithManager": "С менеджером",
+  "filterWithoutManager": "Без менеджера",
+  "managersSummary": "Менеджеров: {total} · с офисом: {withOffice}",
+  "cashiersSummary": "Кассиров: {total} · с офисом: {withOffice}",
+  "partnersSummary": "Партнёров: {total} · с офисом: {withOffice}",
+  "officesSummary": "Офисов: {total} · без менеджера: {withoutManager}",
+  "showExchanges": "Показать обмены",
+  "showTransfers": "Показать переводы"
 }

@@ -699,5 +699,16 @@
   "previousPage": "Önceki sayfa",
   "nextPage": "Sonraki sayfa",
   "lastActivityValue": "son {date}",
-  "moreActions": "Diğer işlemler"
+  "moreActions": "Diğer işlemler",
+  "filterWithOffice": "Ofisi olan",
+  "filterWithoutOffice": "Ofisi olmayan",
+  "filterWithBalance": "Bakiyesi olan",
+  "filterWithManager": "Müdürü olan",
+  "filterWithoutManager": "Müdürü olmayan",
+  "managersSummary": "{total} müdür · {withOffice} ofisli",
+  "cashiersSummary": "{total} kasiyer · {withOffice} ofisli",
+  "partnersSummary": "{total} ortak · {withOffice} ofisli",
+  "officesSummary": "{total} ofis · {withoutManager} müdürsüz",
+  "showExchanges": "Döviz işlemlerini göster",
+  "showTransfers": "Transferleri göster"
 }

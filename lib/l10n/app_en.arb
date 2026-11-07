@@ -699,5 +699,16 @@
   "previousPage": "Previous page",
   "nextPage": "Next page",
   "lastActivityValue": "last {date}",
-  "moreActions": "More actions"
+  "moreActions": "More actions",
+  "filterWithOffice": "With office",
+  "filterWithoutOffice": "Without office",
+  "filterWithBalance": "With balance",
+  "filterWithManager": "With manager",
+  "filterWithoutManager": "Without manager",
+  "managersSummary": "{total} managers · {withOffice} with an office",
+  "cashiersSummary": "{total} cashiers · {withOffice} with an office",
+  "partnersSummary": "{total} partners · {withOffice} with an office",
+  "officesSummary": "{total} offices · {withoutManager} without a manager",
+  "showExchanges": "Show exchanges",
+  "showTransfers": "Show transfers"
 }

@@ -2523,4 +2523,45 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String get moreActions => 'Fler val';
+
+  @override
+  String get filterWithOffice => 'Med kontor';
+
+  @override
+  String get filterWithoutOffice => 'Utan kontor';
+
+  @override
+  String get filterWithBalance => 'Med saldo';
+
+  @override
+  String get filterWithManager => 'Med manager';
+
+  @override
+  String get filterWithoutManager => 'Utan manager';
+
+  @override
+  String managersSummary(Object total, Object withOffice) {
+    return '$total managers · $withOffice med kontor';
+  }
+
+  @override
+  String cashiersSummary(Object total, Object withOffice) {
+    return '$total kassörer · $withOffice med kontor';
+  }
+
+  @override
+  String partnersSummary(Object total, Object withOffice) {
+    return '$total partner · $withOffice med kontor';
+  }
+
+  @override
+  String officesSummary(Object total, Object withoutManager) {
+    return '$total kontor · $withoutManager utan manager';
+  }
+
+  @override
+  String get showExchanges => 'Visa växlingar';
+
+  @override
+  String get showTransfers => 'Visa överföringar';
 }

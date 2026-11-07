@@ -15,11 +15,12 @@ import '../../theme/app_theme.dart';
 import '../../utils/balances.dart';
 import '../../utils/currencies.dart';
 import '../../utils/merged_query.dart';
+import '../../utils/money_format.dart';
 import '../../utils/search_match.dart';
-import '../../widgets/add_panel.dart';
+import '../../widgets/admin_list.dart';
 import '../../widgets/confirm_delete.dart';
 import '../../widgets/partner_exchanges.dart';
-import '../../widgets/search_summary.dart';
+import '../../widgets/overview_widgets.dart';
 
 /// Kassörer och partner skapas, kopplas och får saldo på samma sätt.
 enum StaffType { cashier, partner }
@@ -112,19 +113,16 @@ class AdminCashiersPage extends StatefulWidget {
 
 class _AdminCashiersPageState extends State<AdminCashiersPage> {
   final _db = FirebaseFirestore.instance;
-  final _searchController = TextEditingController();
-  String _query = '';
+
+  /// Valt snabbfilter (index), null = alla.
+  int? _filter;
 
   bool get _isPartner => widget.type == StaffType.partner;
 
   CollectionReference<Map<String, dynamic>> get _collection =>
       _db.collection(_isPartner ? 'partners' : 'cashiers');
 
-  @override
-  void dispose() {
-    _searchController.dispose();
-    super.dispose();
-  }
+  late final _staffStream = _collection.snapshots();
 
   /// Kontor och managers, uppdateras när någon av listorna ändras.
   Stream<_Links> _links() {
@@ -467,122 +465,187 @@ class _AdminCashiersPageState extends State<AdminCashiersPage> {
             return const Center(child: CircularProgressIndicator());
           }
           final links = linkSnap.data!;
-          return SingleChildScrollView(
-            padding: const EdgeInsets.all(24),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                AddPanel(
-                  label: texts.add,
-                  builder: (context, close) => _CreateCashierForm(
-                    type: widget.type,
-                    links: links,
-                    saveLinks: _saveLinks,
-                    onCreated: close,
-                  ),
-                ),
-                const SizedBox(height: 32),
-                Text(
-                  texts.existing,
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 14),
-                TextField(
-                  controller: _searchController,
-                  onChanged: (v) => setState(() => _query = v),
-                  decoration: InputDecoration(
-                    labelText: texts.searchLabel,
-                    prefixIcon: const Icon(Icons.search),
-                  ),
-                ),
-                StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
-                  stream: _collection.snapshots(),
-                  builder: (context, snap) {
-                    if (snap.hasError) {
-                      return Text(l10n.errorWithDetails('${snap.error}'));
-                    }
-                    if (!snap.hasData) {
-                      return const Padding(
-                        padding: EdgeInsets.all(16),
-                        child: Center(child: CircularProgressIndicator()),
-                      );
-                    }
-                    final all = snap.data!.docs;
-                    String nameOf(Map<String, dynamic> d) =>
-                        '${d['firstName'] ?? ''} ${d['lastName'] ?? ''}'.trim();
-                    final empty = isEmptySearch(_query);
-                    final matches = empty
-                        ? <QueryDocumentSnapshot<Map<String, dynamic>>>[]
-                        : all.where((doc) {
-                            final d = doc.data();
-                            return matchesSearch(
-                              _query,
-                              texts: [
-                                nameOf(d),
-                                links.offices[d['officeId']] ?? '',
-                                links.managers[d['managerId']] ?? '',
-                              ],
-                            );
-                          }).toList();
-                    final shown = matches.take(maxSearchResults).toList();
-                    return Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        SearchSummary(
-                          empty: empty,
-                          total: all.length,
-                          matches: matches.length,
-                          shown: shown.length,
-                        ),
-                        for (final doc in shown)
-                          _CashierTile(
-                            icon: _isPartner
-                                ? Icons.handshake_outlined
-                                : Icons.point_of_sale,
-                            doc: doc,
-                            name: nameOf(doc.data()),
-                            office: links.offices[doc.data()['officeId']] ?? '',
-                            manager:
-                                links.managers[doc.data()['managerId']] ?? '',
-                            onOpen: () => Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => _isPartner
-                                    ? _PartnerExchangesPage(
-                                        partnerId: doc.id,
-                                        name: nameOf(doc.data()),
-                                      )
-                                    : CashierOverviewPage(
-                                        cashierId: doc.id,
-                                        name: nameOf(doc.data()),
-                                        transfers: mergedQuery([
-                                          CashierService.transfers.where(
-                                            'fromId',
-                                            isEqualTo: doc.id,
-                                          ),
-                                          CashierService.transfers.where(
-                                            'toId',
-                                            isEqualTo: doc.id,
-                                          ),
-                                        ]),
-                                      ),
-                              ),
-                            ),
-                            onEdit: () => _edit(doc, links),
-                            onAdjust: () => _adjust(doc),
-                            onDelete: () => _delete(doc, nameOf(doc.data())),
-                          ),
-                      ],
-                    );
-                  },
-                ),
-              ],
-            ),
+          return StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
+            stream: _staffStream,
+            builder: (context, snap) {
+              if (snap.hasError) {
+                return Center(
+                  child: Text(l10n.errorWithDetails('${snap.error}')),
+                );
+              }
+              if (!snap.hasData) {
+                return const Center(child: CircularProgressIndicator());
+              }
+              return _content(snap.data!.docs, links, texts);
+            },
           );
         },
+      ),
+    );
+  }
+
+  Widget _content(
+    List<QueryDocumentSnapshot<Map<String, dynamic>>> docs,
+    _Links links,
+    _StaffTexts texts,
+  ) {
+    final l10n = context.l10n;
+    String nameOf(Map<String, dynamic> d) =>
+        '${d['firstName'] ?? ''} ${d['lastName'] ?? ''}'.trim();
+    String? officeOf(Map<String, dynamic> d) => links.offices[d['officeId']];
+    Map<String, double> balancesOf(
+      QueryDocumentSnapshot<Map<String, dynamic>> doc,
+    ) => parseBalances(doc.data()['balances'], officeId: doc.id);
+
+    final all = List<QueryDocumentSnapshot<Map<String, dynamic>>>.from(docs)
+      ..sort(
+        (a, b) => nameOf(
+          a.data(),
+        ).toLowerCase().compareTo(nameOf(b.data()).toLowerCase()),
+      );
+    final filters = [
+      AdminFilter<QueryDocumentSnapshot<Map<String, dynamic>>>(
+        l10n.filterWithOffice,
+        (d) => officeOf(d.data()) != null,
+      ),
+      AdminFilter<QueryDocumentSnapshot<Map<String, dynamic>>>(
+        l10n.filterWithoutOffice,
+        (d) => officeOf(d.data()) == null,
+      ),
+      AdminFilter<QueryDocumentSnapshot<Map<String, dynamic>>>(
+        l10n.filterWithBalance,
+        (d) => balancesOf(d).values.any((v) => v != 0),
+      ),
+    ];
+    int count(int i) => all.where(filters[i].test).length;
+
+    void open(
+      QueryDocumentSnapshot<Map<String, dynamic>> doc,
+    ) => Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => _isPartner
+            ? _PartnerExchangesPage(partnerId: doc.id, name: nameOf(doc.data()))
+            : CashierOverviewPage(
+                cashierId: doc.id,
+                name: nameOf(doc.data()),
+                transfers: mergedQuery([
+                  CashierService.transfers.where('fromId', isEqualTo: doc.id),
+                  CashierService.transfers.where('toId', isEqualTo: doc.id),
+                ]),
+              ),
+      ),
+    );
+
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(24),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          AdminListHeader(
+            summary: _isPartner
+                ? l10n.partnersSummary(all.length, count(0))
+                : l10n.cashiersSummary(all.length, count(0)),
+            addLabel: texts.add,
+            onAdd: () => showFormDialog(
+              context,
+              (ctx, close) => _CreateCashierForm(
+                type: widget.type,
+                links: links,
+                saveLinks: _saveLinks,
+                onCreated: close,
+              ),
+            ),
+          ),
+          const SizedBox(height: 16),
+          StatRow(
+            stats: [
+              StatData(
+                l10n.statAll,
+                '${all.length}',
+                AppColors.textPrimary,
+                onTap: () => setState(() => _filter = null),
+              ),
+              for (final (i, color) in [
+                AppColors.primary,
+                AppColors.warning,
+                AppColors.info,
+              ].indexed)
+                StatData(
+                  filters[i].label,
+                  '${count(i)}',
+                  color,
+                  onTap: () => setState(() => _filter = i),
+                ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          AdminList<QueryDocumentSnapshot<Map<String, dynamic>>>(
+            items: all,
+            searchHint: texts.searchLabel,
+            filters: filters,
+            filter: _filter,
+            onFilter: (i) => setState(() => _filter = i),
+            emptyText: l10n.noSearchMatches,
+            matches: (doc, q) {
+              final d = doc.data();
+              return matchesSearch(
+                q,
+                texts: [
+                  nameOf(d),
+                  officeOf(d) ?? '',
+                  links.managers[d['managerId']] ?? '',
+                ],
+              );
+            },
+            rowBuilder: (doc) {
+              final d = doc.data();
+              final name = nameOf(d);
+              final office = officeOf(d);
+              final manager = links.managers[d['managerId']] ?? '';
+              final balanceText = balancesOf(doc).entries
+                  .where((e) => e.value != 0)
+                  .map((e) => '${formatMoney(e.value)} ${e.key}')
+                  .join(', ');
+              return AdminRow(
+                avatar: AdminAvatar(name: name),
+                title: name,
+                subtitle: [
+                  office ?? l10n.noOfficeAssigned,
+                  if (manager.isNotEmpty) manager,
+                ].join(' · '),
+                columns: [balanceText.isEmpty ? '0' : balanceText],
+                pill: office == null
+                    ? AdminPill(l10n.noOfficeAssigned, AppColors.warning)
+                    : null,
+                onTap: () => open(doc),
+                actions: [
+                  AdminAction(
+                    _isPartner ? l10n.showExchanges : l10n.showTransfers,
+                    Icons.receipt_long_outlined,
+                    () => open(doc),
+                  ),
+                  AdminAction(
+                    l10n.edit,
+                    Icons.edit_outlined,
+                    () => _edit(doc, links),
+                  ),
+                  AdminAction(
+                    l10n.adjustBalance,
+                    Icons.add_card,
+                    () => _adjust(doc),
+                  ),
+                  AdminAction(
+                    l10n.deleteAction,
+                    Icons.delete_outline,
+                    () => _delete(doc, name),
+                    danger: true,
+                  ),
+                ],
+              );
+            },
+          ),
+        ],
       ),
     );
   }
@@ -607,76 +670,6 @@ class _PartnerExchangesPage extends StatelessWidget {
             side: null,
           ),
         ],
-      ),
-    );
-  }
-}
-
-class _CashierTile extends StatelessWidget {
-  final IconData icon;
-  final QueryDocumentSnapshot<Map<String, dynamic>> doc;
-  final String name;
-  final String office;
-  final String manager;
-  final VoidCallback onOpen;
-  final VoidCallback onEdit;
-  final VoidCallback onAdjust;
-  final VoidCallback onDelete;
-
-  const _CashierTile({
-    required this.icon,
-    required this.doc,
-    required this.name,
-    required this.office,
-    required this.manager,
-    required this.onOpen,
-    required this.onEdit,
-    required this.onAdjust,
-    required this.onDelete,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = context.l10n;
-    final balances = parseBalances(doc.data()['balances'], officeId: doc.id);
-    final balanceText = balances.entries
-        .where((e) => e.value != 0)
-        .map((e) => '${e.value.toStringAsFixed(2)} ${e.key}')
-        .join(', ');
-    return Card(
-      margin: const EdgeInsets.only(bottom: 10),
-      child: ListTile(
-        onTap: onOpen,
-        leading: Icon(icon, color: AppColors.primary),
-        title: Text(name),
-        subtitle: Text(
-          [
-            l10n.officeValue(office.isEmpty ? l10n.noOfficeAssigned : office),
-            l10n.managerValue(manager.isEmpty ? '–' : manager),
-            l10n.balanceValue(balanceText.isEmpty ? '0' : balanceText),
-          ].join('\n'),
-        ),
-        isThreeLine: true,
-        trailing: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            IconButton(
-              tooltip: l10n.edit,
-              icon: const Icon(Icons.edit, color: Colors.blue),
-              onPressed: onEdit,
-            ),
-            IconButton(
-              tooltip: l10n.adjustBalance,
-              icon: const Icon(Icons.add_card),
-              onPressed: onAdjust,
-            ),
-            IconButton(
-              tooltip: l10n.deleteAction,
-              icon: const Icon(Icons.delete, color: Colors.red),
-              onPressed: onDelete,
-            ),
-          ],
-        ),
       ),
     );
   }

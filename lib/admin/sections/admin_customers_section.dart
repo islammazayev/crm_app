@@ -9,6 +9,7 @@ import '../../theme/app_theme.dart';
 import '../../utils/customer_search.dart';
 import '../../utils/customer_filter.dart';
 import '../../utils/customer_tiers.dart';
+import '../../widgets/admin_list.dart';
 import '../../widgets/overview_widgets.dart';
 
 class AdminCustomersSection extends StatefulWidget {
@@ -417,38 +418,28 @@ class _AdminCustomersSectionState extends State<AdminCustomersSection> {
   });
 
   /// "Lägg till kund" i en ruta mitt på skärmen.
-  Future<void> _openAddDialog() async {
-    await showDialog<void>(
-      context: context,
-      builder: (ctx) => Dialog(
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 560),
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(24),
-            child: CustomerForm(
-              onSubmit:
-                  ({
-                    int? clientId,
-                    required String firstName,
-                    required String lastName,
-                    required String phone,
-                    String email = '',
-                  }) async {
-                    await _addCustomer(
-                      clientId: clientId,
-                      firstName: firstName,
-                      lastName: lastName,
-                      phone: phone,
-                      email: email,
-                    );
-                    if (ctx.mounted) Navigator.pop(ctx);
-                  },
-            ),
-          ),
-        ),
-      ),
-    );
-  }
+  Future<void> _openAddDialog() => showFormDialog(
+    context,
+    (ctx, close) => CustomerForm(
+      onSubmit:
+          ({
+            int? clientId,
+            required String firstName,
+            required String lastName,
+            required String phone,
+            String email = '',
+          }) async {
+            await _addCustomer(
+              clientId: clientId,
+              firstName: firstName,
+              lastName: lastName,
+              phone: phone,
+              email: email,
+            );
+            close();
+          },
+    ),
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -502,22 +493,10 @@ class _AdminCustomersSectionState extends State<AdminCustomersSection> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Wrap(
-          spacing: 12,
-          runSpacing: 12,
-          crossAxisAlignment: WrapCrossAlignment.center,
-          alignment: WrapAlignment.spaceBetween,
-          children: [
-            Text(
-              l10n.customersSummary(all.length, withAccount),
-              style: TextStyle(color: AppColors.textMuted),
-            ),
-            ElevatedButton.icon(
-              icon: const Icon(Icons.add),
-              label: Text(l10n.addCustomer),
-              onPressed: _openAddDialog,
-            ),
-          ],
+        AdminListHeader(
+          summary: l10n.customersSummary(all.length, withAccount),
+          addLabel: l10n.addCustomer,
+          onAdd: _openAddDialog,
         ),
         const SizedBox(height: 16),
         StatRow(
@@ -580,7 +559,13 @@ class _AdminCustomersSectionState extends State<AdminCustomersSection> {
                   ),
                 ),
               for (final c in shown) _row(c),
-              if (results.isNotEmpty) _pager(page, pages, results.length),
+              if (results.isNotEmpty)
+                AdminPager(
+                  page: page,
+                  pageSize: _pageSize,
+                  total: results.length,
+                  onPage: (p) => setState(() => _page = p),
+                ),
             ],
           ),
         ),
@@ -678,8 +663,7 @@ class _AdminCustomersSectionState extends State<AdminCustomersSection> {
   Widget _advancedPanel(List<String> places) {
     final l10n = context.l10n;
     final f = _filter;
-    String day(DateTime d) =>
-        formatDateTime(context, d).split(' ').take(3).join(' ');
+    String day(DateTime d) => formatDay(context, d);
     final created = f.createdFrom == null && f.createdTo == null
         ? l10n.filterAnyDate
         : '${f.createdFrom == null ? '…' : day(f.createdFrom!)} – '
@@ -833,191 +817,46 @@ class _AdminCustomersSectionState extends State<AdminCustomersSection> {
     );
   }
 
-  Widget _pager(int page, int pages, int total) {
-    final l10n = context.l10n;
-    final from = page * _pageSize + 1;
-    final to = (from + _pageSize - 1).clamp(1, total);
-    return Container(
-      decoration: BoxDecoration(
-        border: Border(top: BorderSide(color: AppColors.surfaceBorder)),
-      ),
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-      child: Row(
-        children: [
-          Expanded(
-            child: Text(
-              l10n.showingRange(from, to, total),
-              style: TextStyle(color: AppColors.textMuted, fontSize: 13),
-            ),
-          ),
-          IconButton(
-            tooltip: l10n.previousPage,
-            icon: const Icon(Icons.chevron_left),
-            onPressed: page == 0
-                ? null
-                : () => setState(() => _page = page - 1),
-          ),
-          Text('${page + 1} / $pages'),
-          IconButton(
-            tooltip: l10n.nextPage,
-            icon: const Icon(Icons.chevron_right),
-            onPressed: page >= pages - 1
-                ? null
-                : () => setState(() => _page = page + 1),
-          ),
-        ],
-      ),
-    );
-  }
-
-  /// En kund i listan: tabellrad på bred skärm, kompakt rad på mobil.
+  /// En kund i listan.
   Widget _row(CustomerSearchEntry c) {
     final l10n = context.l10n;
     final tierInfo = _tiers.forCustomer({
       'tier': c.tier,
       'tierDiscount': c.tierDiscount,
     });
-    final initials = [c.firstName, c.lastName]
-        .where((s) => s.trim().isNotEmpty)
-        .map((s) => s.trim()[0].toUpperCase())
-        .join();
-    final (label, color) = tierInfo != null
-        ? (
+    final pill = tierInfo != null
+        ? AdminPill(
             '${tierInfo.tier.emoji} ${tierInfo.tier.label(l10n)}',
             AppColors.warning,
           )
         : c.hasAccount
-        ? (l10n.hasAppAccount, AppColors.primary)
-        : (l10n.noAppAccount, AppColors.textMuted);
-    final detail = [
-      'ID ${c.formattedClientId}',
-      if (c.lastActivity != null)
-        l10n.lastActivityValue(
-          formatDateTime(context, c.lastActivity!).split(' ').take(3).join(' '),
-        ),
-    ].join(' · ');
-    final menu = PopupMenuButton<String>(
-      tooltip: l10n.moreActions,
-      icon: Icon(Icons.more_vert, color: AppColors.textMuted),
-      onSelected: (v) => switch (v) {
-        'edit' => _openEditDialog(c),
-        'tier' => _openTierDialog(c),
-        _ => _deleteCustomer(c),
-      },
-      itemBuilder: (_) => [
-        PopupMenuItem(
-          value: 'edit',
-          child: ListTile(
-            leading: const Icon(Icons.edit_outlined),
-            title: Text(l10n.edit),
-          ),
-        ),
-        PopupMenuItem(
-          value: 'tier',
-          child: ListTile(
-            leading: const Icon(Icons.workspace_premium_outlined),
-            title: Text(l10n.tierLabel),
-          ),
-        ),
-        PopupMenuItem(
-          value: 'delete',
-          child: ListTile(
-            leading: Icon(Icons.delete_outline, color: AppColors.error),
-            title: Text(l10n.delete, style: TextStyle(color: AppColors.error)),
-          ),
-        ),
-      ],
-    );
-    final avatar = CircleAvatar(
-      radius: 18,
-      backgroundColor: AppColors.primaryDim,
-      child: Text(
-        initials.isEmpty ? '?' : initials,
-        style: TextStyle(
-          color: AppColors.primary,
-          fontSize: 13,
-          fontWeight: FontWeight.w700,
-        ),
-      ),
-    );
-    final name = Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          c.fullName.isEmpty ? l10n.unknownClient : c.fullName,
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-          style: TextStyle(
-            color: AppColors.textPrimary,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-        Text(
-          detail,
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-          style: TextStyle(color: AppColors.textMuted, fontSize: 12),
-        ),
-      ],
-    );
-    final pill = Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-      decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.14),
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: Text(
-        label,
-        maxLines: 1,
-        overflow: TextOverflow.ellipsis,
-        style: TextStyle(color: color, fontSize: 12),
-      ),
-    );
-    return InkWell(
+        ? AdminPill(l10n.hasAppAccount, AppColors.primary)
+        : AdminPill(l10n.noAppAccount, AppColors.textMuted);
+    return AdminRow(
+      avatar: AdminAvatar(name: c.fullName),
+      title: c.fullName.isEmpty ? l10n.unknownClient : c.fullName,
+      subtitle: [
+        'ID ${c.formattedClientId}',
+        if (c.lastActivity != null)
+          l10n.lastActivityValue(formatDay(context, c.lastActivity!)),
+      ].join(' · '),
+      columns: [c.phone, c.places.join(', ')],
+      pill: pill,
       onTap: () => _openEditDialog(c),
-      child: Container(
-        decoration: BoxDecoration(
-          border: Border(bottom: BorderSide(color: AppColors.surfaceBorder)),
+      actions: [
+        AdminAction(l10n.edit, Icons.edit_outlined, () => _openEditDialog(c)),
+        AdminAction(
+          l10n.tierLabel,
+          Icons.workspace_premium_outlined,
+          () => _openTierDialog(c),
         ),
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-        child: LayoutBuilder(
-          builder: (context, box) {
-            final wide = box.maxWidth >= 700;
-            return Row(
-              children: [
-                avatar,
-                const SizedBox(width: 12),
-                Expanded(flex: 3, child: name),
-                if (wide) ...[
-                  Expanded(
-                    flex: 2,
-                    child: Text(
-                      c.phone,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-                  Expanded(
-                    flex: 2,
-                    child: Text(
-                      c.places.join(', '),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(color: AppColors.textMuted),
-                    ),
-                  ),
-                ],
-                const SizedBox(width: 8),
-                ConstrainedBox(
-                  constraints: const BoxConstraints(maxWidth: 140),
-                  child: pill,
-                ),
-                menu,
-              ],
-            );
-          },
+        AdminAction(
+          l10n.delete,
+          Icons.delete_outline,
+          () => _deleteCustomer(c),
+          danger: true,
         ),
-      ),
+      ],
     );
   }
 }

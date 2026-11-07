@@ -1783,5 +1783,56 @@
       }
     }
   },
-  "moreActions": "Fler val"
+  "moreActions": "Fler val",
+  "filterWithOffice": "Med kontor",
+  "filterWithoutOffice": "Utan kontor",
+  "filterWithBalance": "Med saldo",
+  "filterWithManager": "Med manager",
+  "filterWithoutManager": "Utan manager",
+  "managersSummary": "{total} managers · {withOffice} med kontor",
+  "@managersSummary": {
+    "placeholders": {
+      "total": {
+        "type": "Object"
+      },
+      "withOffice": {
+        "type": "Object"
+      }
+    }
+  },
+  "cashiersSummary": "{total} kassörer · {withOffice} med kontor",
+  "@cashiersSummary": {
+    "placeholders": {
+      "total": {
+        "type": "Object"
+      },
+      "withOffice": {
+        "type": "Object"
+      }
+    }
+  },
+  "partnersSummary": "{total} partner · {withOffice} med kontor",
+  "@partnersSummary": {
+    "placeholders": {
+      "total": {
+        "type": "Object"
+      },
+      "withOffice": {
+        "type": "Object"
+      }
+    }
+  },
+  "officesSummary": "{total} kontor · {withoutManager} utan manager",
+  "@officesSummary": {
+    "placeholders": {
+      "total": {
+        "type": "Object"
+      },
+      "withoutManager": {
+        "type": "Object"
+      }
+    }
+  },
+  "showExchanges": "Visa växlingar",
+  "showTransfers": "Visa överföringar"
 }
