@@ -25,8 +25,17 @@ bool matchesSearch(
   for (final term in terms) {
     if (_digits.hasMatch(term)) {
       final idMatch = idList.any((i) => i.startsWith(term));
+      // "070…" ska hitta "+4670…": utan inledande nolla jämförs också.
+      final national = term.replaceFirst(RegExp(r'^0+'), '');
       final phoneMatch =
-          term.length >= 4 && phoneDigits.any((p) => p.contains(term));
+          term.length >= 4 &&
+          phoneDigits.any(
+            (p) =>
+                p.contains(term) ||
+                (national.length >= 3 &&
+                    national != term &&
+                    p.contains(national)),
+          );
       if (!idMatch && !phoneMatch) return false;
     } else if (!haystack.contains(term)) {
       return false;

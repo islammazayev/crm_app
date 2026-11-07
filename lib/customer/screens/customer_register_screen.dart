@@ -10,6 +10,7 @@ import '../../screens/login_screen.dart';
 import '../../theme/app_theme.dart';
 import '../../utils/client_id.dart';
 import '../../widgets/language_button.dart';
+import '../../widgets/phone_field.dart';
 
 class CustomerRegisterScreen extends StatefulWidget {
   /// Inbjudan från managern (länk via SMS). Kunden tar då över sin
@@ -362,7 +363,7 @@ class _CustomerRegisterScreenState extends State<CustomerRegisterScreen> {
                   const SizedBox(height: 14),
                 ],
                 if (!_locked) ...[
-                  TextFormField(
+                  PhoneField(
                     controller: _phoneCtrl,
                     decoration: InputDecoration(labelText: l10n.phone),
                   ),

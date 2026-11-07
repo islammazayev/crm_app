@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../l10n/locale_controller.dart';
+import '../widgets/phone_field.dart';
 
 class CustomerForm extends StatefulWidget {
   final Future<void> Function({
@@ -10,6 +11,7 @@ class CustomerForm extends StatefulWidget {
     required String phone,
     String email,
     bool sendInvite,
+    bool sendEmailInvite,
   }) onSubmit;
 
   const CustomerForm({super.key, required this.onSubmit});
@@ -29,6 +31,11 @@ class _CustomerFormState extends State<CustomerForm> {
   /// Skicka länk till appen via SMS (bara när admin själv ger klient-ID
   /// och kunden har telefon).
   bool _sendInvite = true;
+  bool _sendEmailInvite = true;
+
+  bool get _canEmailInvite =>
+      _clientIdController.text.trim().isNotEmpty &&
+      _emailController.text.trim().contains('@');
 
   bool get _canInvite =>
       _clientIdController.text.trim().isNotEmpty &&
@@ -65,6 +72,7 @@ class _CustomerFormState extends State<CustomerForm> {
       phone: _phoneController.text.trim(),
       email: _emailController.text.trim(),
       sendInvite: _canInvite && _sendInvite,
+      sendEmailInvite: _canEmailInvite && _sendEmailInvite,
     );
 
     // Formuläret kan redan vara stängt (rutan stängs efter sparat).
@@ -130,10 +138,9 @@ class _CustomerFormState extends State<CustomerForm> {
             ],
           ),
           const SizedBox(height: 14),
-          TextFormField(
+          PhoneField(
             controller: _phoneController,
             decoration: InputDecoration(labelText: l10n.phone),
-            keyboardType: TextInputType.phone,
             onChanged: (_) => setState(() {}),
           ),
           const SizedBox(height: 14),
@@ -141,6 +148,7 @@ class _CustomerFormState extends State<CustomerForm> {
             controller: _emailController,
             decoration: InputDecoration(labelText: l10n.email),
             keyboardType: TextInputType.emailAddress,
+            onChanged: (_) => setState(() {}),
           ),
           const SizedBox(height: 4),
           // Admin gav klient-ID: kunden kan få en länk och bara skapa
@@ -154,8 +162,20 @@ class _CustomerFormState extends State<CustomerForm> {
               secondary: const Icon(Icons.sms_outlined),
               title: Text(l10n.sendAppInvite),
               subtitle: Text(l10n.adminInviteHint),
-            )
-          else if (_clientIdController.text.trim().isNotEmpty)
+            ),
+          if (_canEmailInvite)
+            CheckboxListTile(
+              contentPadding: EdgeInsets.zero,
+              controlAffinity: ListTileControlAffinity.leading,
+              value: _sendEmailInvite,
+              onChanged: (v) => setState(() => _sendEmailInvite = v ?? false),
+              secondary: const Icon(Icons.email_outlined),
+              title: Text(l10n.sendAppInviteEmail),
+              subtitle: Text(l10n.adminInviteEmailHint),
+            ),
+          if (!_canInvite &&
+              !_canEmailInvite &&
+              _clientIdController.text.trim().isNotEmpty)
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 8),
               child: Text(

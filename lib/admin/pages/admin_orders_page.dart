@@ -23,6 +23,7 @@ import '../../utils/money_format.dart';
 import '../../widgets/admin_list.dart';
 import '../../widgets/order_report.dart';
 import '../../widgets/overview_widgets.dart';
+import '../../widgets/phone_field.dart';
 
 /// Admin: orderhistorik med filter på kontor och datum, rapport och export.
 class AdminOrdersPage extends StatefulWidget {
@@ -123,9 +124,8 @@ class _AdminOrdersPageState extends State<AdminOrdersPage> {
                   decoration: InputDecoration(labelText: l10n.customerName),
                 ),
                 const SizedBox(height: 14),
-                TextField(
+                PhoneField(
                   controller: phoneCtrl,
-                  keyboardType: TextInputType.phone,
                   decoration: InputDecoration(labelText: l10n.phone),
                 ),
                 const SizedBox(height: 14),

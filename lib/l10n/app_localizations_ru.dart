@@ -2689,4 +2689,24 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String get adminInvitePhoneHint =>
       'Укажите телефон клиента, чтобы отправить ссылку на приложение по SMS.';
+
+  @override
+  String get chooseCountryCode => 'Выберите код страны';
+
+  @override
+  String get searchCountry => 'Поиск страны или кода';
+
+  @override
+  String get sendAppInviteEmail => 'Отправить ссылку (e-mail)';
+
+  @override
+  String get adminInviteEmailHint =>
+      'Та же ссылка по e-mail. Почтовое приложение откроется после сохранения.';
+
+  @override
+  String get inviteEmailRequired =>
+      'Укажите e-mail клиента, чтобы отправить ссылку.';
+
+  @override
+  String get inviteEmailSubject => 'Создайте аккаунт в приложении';
 }

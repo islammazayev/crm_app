@@ -2687,4 +2687,24 @@ class AppLocalizationsSv extends AppLocalizations {
   @override
   String get adminInvitePhoneHint =>
       'Skriv kundens telefon om du vill skicka en länk till appen via SMS.';
+
+  @override
+  String get chooseCountryCode => 'Välj landskod';
+
+  @override
+  String get searchCountry => 'Sök land eller landsnummer';
+
+  @override
+  String get sendAppInviteEmail => 'Skicka länk till appen (e-post)';
+
+  @override
+  String get adminInviteEmailHint =>
+      'Samma länk via e-post. E-postappen öppnas när du sparar.';
+
+  @override
+  String get inviteEmailRequired =>
+      'Skriv kundens e-post för att kunna skicka länken.';
+
+  @override
+  String get inviteEmailSubject => 'Skapa ditt konto i appen';
 }

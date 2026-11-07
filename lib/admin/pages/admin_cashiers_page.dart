@@ -21,6 +21,7 @@ import '../../widgets/admin_list.dart';
 import '../../widgets/confirm_delete.dart';
 import '../../widgets/partner_exchanges.dart';
 import '../../widgets/overview_widgets.dart';
+import '../../widgets/phone_field.dart';
 
 /// Kassörer och partner skapas, kopplas och får saldo på samma sätt.
 enum StaffType { cashier, partner }
@@ -292,7 +293,7 @@ class _AdminCashiersPageState extends State<AdminCashiersPage> {
                   decoration: InputDecoration(labelText: l10n.lastName),
                 ),
                 const SizedBox(height: 14),
-                TextField(
+                PhoneField(
                   controller: phoneCtrl,
                   decoration: InputDecoration(labelText: l10n.phone),
                 ),
@@ -986,9 +987,8 @@ class _CreateCashierFormState extends State<_CreateCashierForm> {
             validator: required,
           ),
           const SizedBox(height: 14),
-          TextFormField(
+          PhoneField(
             controller: _phone,
-            keyboardType: TextInputType.phone,
             decoration: InputDecoration(labelText: l10n.phone),
           ),
           const SizedBox(height: 14),
