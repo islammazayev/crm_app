@@ -4067,6 +4067,48 @@ abstract class AppLocalizations {
   /// In sv, this message translates to:
   /// **'Alla'**
   String get statAll;
+
+  /// No description provided for @settingsAppearance.
+  ///
+  /// In sv, this message translates to:
+  /// **'Utseende'**
+  String get settingsAppearance;
+
+  /// No description provided for @settingsTheme.
+  ///
+  /// In sv, this message translates to:
+  /// **'Tema'**
+  String get settingsTheme;
+
+  /// No description provided for @themeGreentex.
+  ///
+  /// In sv, this message translates to:
+  /// **'GreenTex (mörkt grönt)'**
+  String get themeGreentex;
+
+  /// No description provided for @themeOcean.
+  ///
+  /// In sv, this message translates to:
+  /// **'Ocean (mörkblått)'**
+  String get themeOcean;
+
+  /// No description provided for @themeGold.
+  ///
+  /// In sv, this message translates to:
+  /// **'Guld (mörkt med guld)'**
+  String get themeGold;
+
+  /// No description provided for @themeViolet.
+  ///
+  /// In sv, this message translates to:
+  /// **'Violett (mörkt lila)'**
+  String get themeViolet;
+
+  /// No description provided for @themeLight.
+  ///
+  /// In sv, this message translates to:
+  /// **'Ljust'**
+  String get themeLight;
 }
 
 class _AppLocalizationsDelegate

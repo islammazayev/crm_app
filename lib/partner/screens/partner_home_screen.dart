@@ -326,7 +326,7 @@ class _PartnerOverviewState extends State<_PartnerOverview> {
         const SizedBox(height: 4),
         Text(
           l10n.needsYouNow,
-          style: const TextStyle(
+          style: TextStyle(
             color: AppColors.textPrimary,
             fontWeight: FontWeight.w600,
           ),

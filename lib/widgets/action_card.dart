@@ -69,7 +69,7 @@ class ActionCard extends StatelessWidget {
                           Expanded(
                             child: Text(
                               title,
-                              style: const TextStyle(
+                              style: TextStyle(
                                 color: AppColors.textPrimary,
                                 fontSize: 18,
                                 fontWeight: FontWeight.w700,
@@ -92,7 +92,7 @@ class ActionCard extends StatelessWidget {
                             ),
                             child: Text(
                               badge,
-                              style: const TextStyle(
+                              style: TextStyle(
                                 color: AppColors.primary,
                                 fontWeight: FontWeight.w700,
                                 fontSize: 12,
@@ -104,7 +104,7 @@ class ActionCard extends StatelessWidget {
                       const SizedBox(height: 8),
                       Text(
                         subtitle,
-                        style: const TextStyle(
+                        style: TextStyle(
                           color: AppColors.textMuted,
                           fontSize: 13,
                           height: 1.45,
@@ -114,7 +114,7 @@ class ActionCard extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(width: 12),
-                const Icon(
+                Icon(
                   Icons.arrow_forward_ios_rounded,
                   color: AppColors.textFaint,
                   size: 18,

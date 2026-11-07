@@ -758,7 +758,7 @@ class _PickupCodeCard extends StatelessWidget {
             const SizedBox(height: 12),
             Text(
               l10n.showQrAtOffice,
-              style: const TextStyle(color: AppColors.textMuted),
+              style: TextStyle(color: AppColors.textMuted),
             ),
             const SizedBox(height: 8),
             // Vit bakgrund så att kameran läser koden även i mörkt läge.
@@ -778,12 +778,12 @@ class _PickupCodeCard extends StatelessWidget {
           const SizedBox(height: 12),
           Text(
             qrData != null ? l10n.orUseCode : l10n.yourPickupCode,
-            style: const TextStyle(color: AppColors.textMuted),
+            style: TextStyle(color: AppColors.textMuted),
           ),
           const SizedBox(height: 4),
           SelectableText(
             code,
-            style: const TextStyle(
+            style: TextStyle(
               color: AppColors.primary,
               fontSize: 26,
               fontWeight: FontWeight.w800,
@@ -850,7 +850,7 @@ Future<void> _showMarkPaidDialog(
                   padding: const EdgeInsets.only(top: 4),
                   child: Text(
                     receipt!.name,
-                    style: const TextStyle(color: AppColors.textMuted),
+                    style: TextStyle(color: AppColors.textMuted),
                   ),
                 ),
               const SizedBox(height: 14),
@@ -862,7 +862,7 @@ Future<void> _showMarkPaidDialog(
                 decoration: InputDecoration(labelText: l10n.messageOptional),
               ),
               if (error != null)
-                Text(error!, style: const TextStyle(color: AppColors.error)),
+                Text(error!, style: TextStyle(color: AppColors.error)),
             ],
           ),
         ),

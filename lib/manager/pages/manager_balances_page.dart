@@ -85,7 +85,7 @@ class ManagerBalancesPage extends StatelessWidget {
                   if (cashiers.isEmpty)
                     Text(
                       l10n.noCashiersLinked,
-                      style: const TextStyle(color: AppColors.textMuted),
+                      style: TextStyle(color: AppColors.textMuted),
                     ),
                   for (var i = 0; i < cashiers.length; i++)
                     Padding(
@@ -152,10 +152,7 @@ class BalanceCard extends StatelessWidget {
             ),
             const SizedBox(height: 12),
             if (entries.isEmpty)
-              Text(
-                l10n.noBalance,
-                style: const TextStyle(color: AppColors.textMuted),
-              )
+              Text(l10n.noBalance, style: TextStyle(color: AppColors.textMuted))
             else
               Wrap(
                 spacing: 8,

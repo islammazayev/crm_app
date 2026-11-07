@@ -10,7 +10,7 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   Widget app(Locale locale) => MaterialApp(
     locale: locale,
-    theme: AppTheme.dark,
+    theme: AppTheme.current,
     localizationsDelegates: AppLocalizations.localizationsDelegates,
     supportedLocales: AppLocalizations.supportedLocales,
     home: AppShell(

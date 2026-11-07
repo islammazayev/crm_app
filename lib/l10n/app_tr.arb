@@ -659,5 +659,12 @@
   "recentTransactions": "Son işlemler",
   "statWaitingForYou": "Yanıt bekliyor",
   "statReadyForPickup": "Alınmaya hazır",
-  "statAll": "Tümü"
+  "statAll": "Tümü",
+  "settingsAppearance": "Görünüm",
+  "settingsTheme": "Tema",
+  "themeGreentex": "GreenTex (koyu yeşil)",
+  "themeOcean": "Okyanus (koyu mavi)",
+  "themeGold": "Altın (koyu, altın)",
+  "themeViolet": "Mor (koyu mor)",
+  "themeLight": "Açık"
 }

@@ -2390,4 +2390,25 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get statAll => 'All';
+
+  @override
+  String get settingsAppearance => 'Appearance';
+
+  @override
+  String get settingsTheme => 'Theme';
+
+  @override
+  String get themeGreentex => 'GreenTex (dark green)';
+
+  @override
+  String get themeOcean => 'Ocean (dark blue)';
+
+  @override
+  String get themeGold => 'Gold (dark with gold)';
+
+  @override
+  String get themeViolet => 'Violet (dark purple)';
+
+  @override
+  String get themeLight => 'Light';
 }

@@ -209,7 +209,7 @@ class _CustomerOverviewState extends State<_CustomerOverview> {
                                 label,
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
-                                style: const TextStyle(
+                                style: TextStyle(
                                   color: AppColors.textPrimary,
                                   fontWeight: FontWeight.w600,
                                 ),
@@ -343,7 +343,7 @@ class _TierBadge extends StatelessWidget {
                     '${info.tier.emoji} ${info.tier.label(l10n)}',
                     formatPercent(info.discount),
                   ),
-                  style: const TextStyle(
+                  style: TextStyle(
                     color: AppColors.textPrimary,
                     fontWeight: FontWeight.w600,
                   ),

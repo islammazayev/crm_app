@@ -282,7 +282,7 @@ class _ManagerCreateTransactionScreenState
                       title: Text(l10n.inviteCustomerQuestion),
                       subtitle: Text(
                         l10n.inviteCustomerHint,
-                        style: const TextStyle(
+                        style: TextStyle(
                           color: AppColors.textMuted,
                           fontSize: 13,
                         ),
@@ -425,7 +425,7 @@ class _ManagerCreateTransactionScreenState
       return Card(
         margin: const EdgeInsets.only(bottom: 8),
         child: ListTile(
-          leading: const Icon(Icons.person, color: AppColors.primary),
+          leading: Icon(Icons.person, color: AppColors.primary),
           title: Text(entry.fullName),
           subtitle: Text(
             [
@@ -477,7 +477,7 @@ class _ManagerCreateTransactionScreenState
                   padding: const EdgeInsets.symmetric(vertical: 8),
                   child: Text(
                     l10n.noCustomerFoundNew,
-                    style: const TextStyle(color: AppColors.textMuted),
+                    style: TextStyle(color: AppColors.textMuted),
                   ),
                 );
               }
@@ -488,7 +488,7 @@ class _ManagerCreateTransactionScreenState
                       contentPadding: EdgeInsets.zero,
                       leading: Text(
                         e.formattedClientId,
-                        style: const TextStyle(
+                        style: TextStyle(
                           color: AppColors.primary,
                           fontWeight: FontWeight.w700,
                         ),
@@ -511,10 +511,7 @@ class _ManagerCreateTransactionScreenState
             },
           ),
         const SizedBox(height: 14),
-        Text(
-          l10n.orNewCustomer,
-          style: const TextStyle(color: AppColors.textMuted),
-        ),
+        Text(l10n.orNewCustomer, style: TextStyle(color: AppColors.textMuted)),
         const SizedBox(height: 8),
         TextField(
           controller: _nameCtrl,

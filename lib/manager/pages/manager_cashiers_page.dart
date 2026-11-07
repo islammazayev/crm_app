@@ -79,7 +79,7 @@ class ManagerCashiersPage extends StatelessWidget {
                 Card(
                   margin: const EdgeInsets.only(bottom: 10),
                   child: ListTile(
-                    leading: const Icon(
+                    leading: Icon(
                       Icons.point_of_sale,
                       color: AppColors.primary,
                     ),

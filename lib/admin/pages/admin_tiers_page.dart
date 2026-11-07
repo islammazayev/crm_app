@@ -114,7 +114,7 @@ class _AdminTiersPageState extends State<AdminTiersPage> {
                 children: [
                   Text(
                     l10n.customerTiersIntro,
-                    style: const TextStyle(
+                    style: TextStyle(
                       color: AppColors.textMuted,
                       fontSize: 14,
                       height: 1.5,

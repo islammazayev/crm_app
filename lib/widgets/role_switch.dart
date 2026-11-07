@@ -78,7 +78,7 @@ class RoleChooserScreen extends StatelessWidget {
           children: [
             Text(
               l10n.chooseRoleIntro,
-              style: const TextStyle(color: AppColors.textMuted, height: 1.5),
+              style: TextStyle(color: AppColors.textMuted, height: 1.5),
             ),
             const SizedBox(height: 20),
             ActionCardGrid(

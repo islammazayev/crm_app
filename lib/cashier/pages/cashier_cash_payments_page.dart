@@ -155,7 +155,7 @@ class CashierCashPaymentsPage extends StatelessWidget {
                                 .toStringAsFixed(2),
                             '${doc.data()['fromCurrency'] ?? ''}',
                           ),
-                          style: const TextStyle(
+                          style: TextStyle(
                             color: AppColors.primary,
                             fontSize: 18,
                             fontWeight: FontWeight.w700,

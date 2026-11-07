@@ -86,7 +86,7 @@ class ManagerPartnersPage extends StatelessWidget {
               if (partners.isEmpty)
                 Text(
                   l10n.noPartnersLinked,
-                  style: const TextStyle(color: AppColors.textMuted),
+                  style: TextStyle(color: AppColors.textMuted),
                 ),
               for (final p in partners)
                 Padding(

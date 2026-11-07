@@ -659,5 +659,12 @@
   "recentTransactions": "Последние переводы",
   "statWaitingForYou": "Ждут ответа",
   "statReadyForPickup": "Готовы к выдаче",
-  "statAll": "Все"
+  "statAll": "Все",
+  "settingsAppearance": "Оформление",
+  "settingsTheme": "Тема",
+  "themeGreentex": "GreenTex (тёмно-зелёная)",
+  "themeOcean": "Океан (тёмно-синяя)",
+  "themeGold": "Золото (тёмная с золотом)",
+  "themeViolet": "Фиолетовая (тёмная)",
+  "themeLight": "Светлая"
 }
