@@ -2441,4 +2441,81 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get addPartner => 'Add partner';
+
+  @override
+  String customersSummary(Object total, Object withAccount) {
+    return '$total customers · $withAccount with an app account';
+  }
+
+  @override
+  String get filterWithAccount => 'With account';
+
+  @override
+  String get filterWithoutAccount => 'Without account';
+
+  @override
+  String get filterWithTier => 'With tier';
+
+  @override
+  String get newThisMonth => 'New this month';
+
+  @override
+  String get advancedFilters => 'Advanced filters';
+
+  @override
+  String get filterTier => 'Tier';
+
+  @override
+  String get filterPlace => 'Place';
+
+  @override
+  String get filterLastTransaction => 'Last transaction';
+
+  @override
+  String get filterAnyDate => 'Any time';
+
+  @override
+  String filterWithinDays(Object days) {
+    return 'Last $days days';
+  }
+
+  @override
+  String get filterNever => 'Never';
+
+  @override
+  String get filterCreated => 'Created';
+
+  @override
+  String get sortBy => 'Sort';
+
+  @override
+  String get sortNewest => 'Newest first';
+
+  @override
+  String get sortName => 'Name A–Z';
+
+  @override
+  String get sortClientId => 'Client ID';
+
+  @override
+  String get clearFilters => 'Clear filters';
+
+  @override
+  String showingRange(Object from, Object to, Object total) {
+    return 'Showing $from–$to of $total';
+  }
+
+  @override
+  String get previousPage => 'Previous page';
+
+  @override
+  String get nextPage => 'Next page';
+
+  @override
+  String lastActivityValue(Object date) {
+    return 'last $date';
+  }
+
+  @override
+  String get moreActions => 'More actions';
 }

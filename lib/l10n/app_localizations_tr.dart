@@ -2431,4 +2431,81 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get addPartner => 'Ortak ekle';
+
+  @override
+  String customersSummary(Object total, Object withAccount) {
+    return '$total müşteri · $withAccount uygulama hesabıyla';
+  }
+
+  @override
+  String get filterWithAccount => 'Hesabı olan';
+
+  @override
+  String get filterWithoutAccount => 'Hesabı olmayan';
+
+  @override
+  String get filterWithTier => 'Seviyeli';
+
+  @override
+  String get newThisMonth => 'Bu ay yeni';
+
+  @override
+  String get advancedFilters => 'Gelişmiş filtreler';
+
+  @override
+  String get filterTier => 'Seviye';
+
+  @override
+  String get filterPlace => 'Şehir';
+
+  @override
+  String get filterLastTransaction => 'Son işlem';
+
+  @override
+  String get filterAnyDate => 'Herhangi bir zaman';
+
+  @override
+  String filterWithinDays(Object days) {
+    return 'Son $days gün';
+  }
+
+  @override
+  String get filterNever => 'Hiç';
+
+  @override
+  String get filterCreated => 'Oluşturulma';
+
+  @override
+  String get sortBy => 'Sırala';
+
+  @override
+  String get sortNewest => 'Önce en yeni';
+
+  @override
+  String get sortName => 'Ad A–Z';
+
+  @override
+  String get sortClientId => 'Müşteri no';
+
+  @override
+  String get clearFilters => 'Filtreleri temizle';
+
+  @override
+  String showingRange(Object from, Object to, Object total) {
+    return '$total içinden $from–$to gösteriliyor';
+  }
+
+  @override
+  String get previousPage => 'Önceki sayfa';
+
+  @override
+  String get nextPage => 'Sonraki sayfa';
+
+  @override
+  String lastActivityValue(Object date) {
+    return 'son $date';
+  }
+
+  @override
+  String get moreActions => 'Diğer işlemler';
 }

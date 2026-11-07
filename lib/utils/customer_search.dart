@@ -20,6 +20,10 @@ class CustomerSearchEntry {
   /// Kunden har ett konto i appen (bara då gäller nivån för förfrågningar).
   final bool hasAccount;
 
+  /// När kunden skapades och kundens senaste transaktion (för filter).
+  final DateTime? createdAt;
+  final DateTime? lastActivity;
+
   const CustomerSearchEntry({
     required this.docId,
     required this.clientId,
@@ -31,6 +35,8 @@ class CustomerSearchEntry {
     this.tier,
     this.tierDiscount,
     this.hasAccount = false,
+    this.createdAt,
+    this.lastActivity,
   });
 
   String get formattedClientId => formatClientId(clientId);

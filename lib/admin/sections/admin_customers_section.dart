@@ -4,11 +4,12 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 import '../../forms/customer_form.dart';
-import '../../widgets/add_panel.dart';
 import '../../l10n/locale_controller.dart';
 import '../../theme/app_theme.dart';
 import '../../utils/customer_search.dart';
+import '../../utils/customer_filter.dart';
 import '../../utils/customer_tiers.dart';
+import '../../widgets/overview_widgets.dart';
 
 class AdminCustomersSection extends StatefulWidget {
   const AdminCustomersSection({super.key});
@@ -20,9 +21,17 @@ class AdminCustomersSection extends StatefulWidget {
 class _AdminCustomersSectionState extends State<AdminCustomersSection> {
   final TextEditingController _searchController = TextEditingController();
   String _query = '';
+  CustomerFilter _filter = const CustomerFilter();
+  bool _showAdvanced = false;
+  int _page = 0;
 
-  /// Fler träffar än så visas inte; admin får skriva mer för att begränsa.
-  static const _maxResults = 50;
+  /// Så många kunder per sida i listan.
+  static const _pageSize = 20;
+
+  final _db = FirebaseFirestore.instance;
+  late final _customerStream = _db.collection('customers').snapshots();
+  late final _transactionStream = _db.collection('transactions').snapshots();
+  late final _officeStream = _db.collection('offices').snapshots();
 
   CollectionReference get customersRef =>
       FirebaseFirestore.instance.collection('customers');
@@ -329,9 +338,9 @@ class _AdminCustomersSectionState extends State<AdminCustomersSection> {
     }
   }
 
-  /// Bygger söklistan. Land och stad hämtas från de kontor kunden har gjort
-  /// transaktioner via (kopplas på kundens userId, som transaktionen sparar
-  /// som customerId). Kunder som admin skapat utan konto saknar sådana.
+  /// Bygger kundlistan. Ort och senaste transaktion kommer från kundens
+  /// transaktioner: de kunden skickat själv (customerId = kundens userId)
+  /// och de managern skapat på kontoret med kundens klient-ID.
   List<CustomerSearchEntry> _entries(
     List<QueryDocumentSnapshot> customerDocs,
     List<QueryDocumentSnapshot> transactionDocs,
@@ -345,18 +354,42 @@ class _AdminCustomersSectionState extends State<AdminCustomersSection> {
         }(),
     };
 
-    final placesByUser = <String, Set<String>>{};
+    final places = <String, Set<String>>{};
+    final last = <String, DateTime>{};
+    void note(String key, String? place, DateTime? at) {
+      if (key.isEmpty) return;
+      if (place != null && place.isNotEmpty) {
+        places.putIfAbsent(key, () => <String>{}).add(place);
+      }
+      if (at != null && (last[key] == null || at.isAfter(last[key]!))) {
+        last[key] = at;
+      }
+    }
+
     for (final d in transactionDocs) {
       final t = d.data() as Map<String, dynamic>;
-      final userId = (t['customerId'] ?? '').toString();
-      final place = officePlace[(t['officeId'] ?? '').toString()];
-      if (userId.isEmpty || place == null || place.isEmpty) continue;
-      placesByUser.putIfAbsent(userId, () => <String>{}).add(place);
+      final place = officePlace['${t['officeId'] ?? ''}'];
+      final at = (t['createAt'] as Timestamp?)?.toDate();
+      note(
+        'u:${t['customerId'] ?? ''}'.replaceAll(RegExp(r'^u:$'), ''),
+        place,
+        at,
+      );
+      if ('${t['customerId'] ?? ''}'.isEmpty) {
+        note(
+          'c:${t['clientId'] ?? ''}'.replaceAll(RegExp(r'^c:$'), ''),
+          place,
+          at,
+        );
+      }
     }
 
     return customerDocs.map((d) {
       final c = d.data() as Map<String, dynamic>;
-      final userId = (c['userId'] ?? d.id).toString();
+      final userKey = 'u:${c['userId'] ?? d.id}';
+      final clientKey = 'c:${c['clientId'] ?? ''}';
+      final userLast = last[userKey];
+      final clientLast = last[clientKey];
       return CustomerSearchEntry(
         docId: d.id,
         clientId: c['clientId'],
@@ -364,201 +397,625 @@ class _AdminCustomersSectionState extends State<AdminCustomersSection> {
         lastName: (c['lastName'] ?? '').toString(),
         phone: (c['phone'] ?? '').toString(),
         email: (c['email'] ?? '').toString(),
-        places: (placesByUser[userId] ?? const <String>{}).toList()..sort(),
+        places: {...?places[userKey], ...?places[clientKey]}.toList()..sort(),
         tier: c['tier'] as String?,
         tierDiscount: (c['tierDiscount'] as num?)?.toDouble(),
         hasAccount: c['userId'] != null,
+        createdAt: ((c['createdAt'] ?? c['createAt']) as Timestamp?)?.toDate(),
+        lastActivity: userLast == null
+            ? clientLast
+            : clientLast == null || userLast.isAfter(clientLast)
+            ? userLast
+            : clientLast,
       );
     }).toList();
+  }
+
+  void _setFilter(CustomerFilter f) => setState(() {
+    _filter = f;
+    _page = 0;
+  });
+
+  /// "Lägg till kund" i en ruta mitt på skärmen.
+  Future<void> _openAddDialog() async {
+    await showDialog<void>(
+      context: context,
+      builder: (ctx) => Dialog(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 560),
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(24),
+            child: CustomerForm(
+              onSubmit:
+                  ({
+                    int? clientId,
+                    required String firstName,
+                    required String lastName,
+                    required String phone,
+                    String email = '',
+                  }) async {
+                    await _addCustomer(
+                      clientId: clientId,
+                      firstName: firstName,
+                      lastName: lastName,
+                      phone: phone,
+                      email: email,
+                    );
+                    if (ctx.mounted) Navigator.pop(ctx);
+                  },
+            ),
+          ),
+        ),
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final db = FirebaseFirestore.instance;
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        AddPanel(
-          label: l10n.addCustomer,
-          builder: (context, close) => CustomerForm(
-            onSubmit:
-                ({
-                  int? clientId,
-                  required String firstName,
-                  required String lastName,
-                  required String phone,
-                  String email = '',
-                }) async {
-                  await _addCustomer(
-                    clientId: clientId,
-                    firstName: firstName,
-                    lastName: lastName,
-                    phone: phone,
-                    email: email,
-                  );
-                  close();
-                },
-          ),
-        ),
-        const SizedBox(height: 24),
-        Text(
-          l10n.searchCustomers,
-          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-        ),
-        const SizedBox(height: 14),
-        TextField(
-          controller: _searchController,
-          onChanged: (v) => setState(() => _query = v),
-          decoration: InputDecoration(
-            labelText: l10n.searchCustomersLabel,
-            hintText: l10n.searchCustomersHint,
-            prefixIcon: const Icon(Icons.search),
-            suffixIcon: _query.isEmpty
-                ? null
-                : IconButton(
-                    tooltip: l10n.clearSearch,
-                    icon: const Icon(Icons.clear),
-                    onPressed: () => setState(() {
-                      _searchController.clear();
-                      _query = '';
-                    }),
-                  ),
-          ),
-        ),
-        const SizedBox(height: 12),
-        StreamBuilder<QuerySnapshot>(
-          stream: customersRef.snapshots(),
-          builder: (context, customerSnap) {
+    return StreamBuilder<QuerySnapshot>(
+      stream: _customerStream,
+      builder: (context, customerSnap) {
+        return StreamBuilder<QuerySnapshot>(
+          stream: _transactionStream,
+          builder: (context, txSnap) {
             return StreamBuilder<QuerySnapshot>(
-              stream: db.collection('transactions').snapshots(),
-              builder: (context, txSnap) {
-                return StreamBuilder<QuerySnapshot>(
-                  stream: db.collection('offices').snapshots(),
-                  builder: (context, officeSnap) {
-                    final error =
-                        customerSnap.error ?? txSnap.error ?? officeSnap.error;
-                    if (error != null) {
-                      return Text(l10n.errorWithDetails('$error'));
-                    }
-                    if (!customerSnap.hasData) {
-                      return const Center(child: CircularProgressIndicator());
-                    }
-                    final all = _entries(
-                      customerSnap.data!.docs,
-                      txSnap.data?.docs ?? const [],
-                      officeSnap.data?.docs ?? const [],
-                    );
-                    final muted = TextStyle(
-                      color: AppColors.textMuted,
-                      fontSize: 13,
-                    );
-
-                    // Ingen lista förrän admin skriver något, annars blir den
-                    // lång när det finns många kunder.
-                    if (_query.trim().isEmpty) {
-                      return Text(
-                        l10n.typeToSearchCustomers(all.length),
-                        style: muted,
-                      );
-                    }
-
-                    final results = searchCustomers(all, _query);
-                    final shown = results.take(_maxResults).toList();
-
-                    return Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          results.length > shown.length
-                              ? l10n.customersShownLimited(
-                                  shown.length,
-                                  results.length,
-                                )
-                              : l10n.customersShown(results.length, all.length),
-                          style: muted,
-                        ),
-                        const SizedBox(height: 8),
-                        if (results.isEmpty)
-                          Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 16),
-                            child: Text(
-                              l10n.noCustomersMatch,
-                              style: const TextStyle(color: Colors.grey),
-                            ),
-                          ),
-                        for (final c in shown) _resultCard(c),
-                      ],
-                    );
-                  },
+              stream: _officeStream,
+              builder: (context, officeSnap) {
+                final error =
+                    customerSnap.error ?? txSnap.error ?? officeSnap.error;
+                if (error != null) {
+                  return Text(l10n.errorWithDetails('$error'));
+                }
+                if (!customerSnap.hasData) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+                final all = _entries(
+                  customerSnap.data!.docs,
+                  txSnap.data?.docs ?? const [],
+                  officeSnap.data?.docs ?? const [],
                 );
+                return _content(all);
               },
             );
           },
+        );
+      },
+    );
+  }
+
+  Widget _content(List<CustomerSearchEntry> all) {
+    final l10n = context.l10n;
+    final now = DateTime.now();
+    final monthStart = DateTime(now.year, now.month);
+    final withAccount = all.where((e) => e.hasAccount).length;
+    final withTier = all.where((e) => e.tier != null).length;
+    final newThisMonth = all
+        .where((e) => e.createdAt != null && !e.createdAt!.isBefore(monthStart))
+        .length;
+    final results = _filter.apply(all, _query, now: now);
+    final pages = (results.length / _pageSize).ceil().clamp(1, 1 << 20);
+    final page = _page.clamp(0, pages - 1);
+    final shown = results.skip(page * _pageSize).take(_pageSize).toList();
+    final places = {for (final e in all) ...e.places}.toList()..sort();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Wrap(
+          spacing: 12,
+          runSpacing: 12,
+          crossAxisAlignment: WrapCrossAlignment.center,
+          alignment: WrapAlignment.spaceBetween,
+          children: [
+            Text(
+              l10n.customersSummary(all.length, withAccount),
+              style: TextStyle(color: AppColors.textMuted),
+            ),
+            ElevatedButton.icon(
+              icon: const Icon(Icons.add),
+              label: Text(l10n.addCustomer),
+              onPressed: _openAddDialog,
+            ),
+          ],
+        ),
+        const SizedBox(height: 16),
+        StatRow(
+          stats: [
+            StatData(
+              l10n.statAll,
+              '${all.length}',
+              AppColors.textPrimary,
+              onTap: () => _setFilter(const CustomerFilter()),
+            ),
+            StatData(
+              l10n.filterWithAccount,
+              '$withAccount',
+              AppColors.primary,
+              onTap: () => _setFilter(_filter.copyWith(account: true)),
+            ),
+            StatData(
+              l10n.filterWithTier,
+              '$withTier',
+              AppColors.warning,
+              onTap: () => _setFilter(_filter.copyWith(tier: 'any')),
+            ),
+            StatData(
+              l10n.newThisMonth,
+              '$newThisMonth',
+              AppColors.info,
+              onTap: () => _setFilter(
+                _filter.copyWith(createdFrom: monthStart, createdTo: null),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 16),
+        Card(
+          margin: EdgeInsets.zero,
+          clipBehavior: Clip.antiAlias,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Padding(padding: const EdgeInsets.all(12), child: _searchBar()),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
+                child: _quickFilters(),
+              ),
+              AnimatedSize(
+                duration: const Duration(milliseconds: 200),
+                alignment: Alignment.topCenter,
+                child: _showAdvanced
+                    ? _advancedPanel(places)
+                    : const SizedBox(width: double.infinity),
+              ),
+              Divider(height: 1, color: AppColors.surfaceBorder),
+              if (results.isEmpty)
+                Padding(
+                  padding: const EdgeInsets.all(24),
+                  child: Text(
+                    l10n.noCustomersMatch,
+                    textAlign: TextAlign.center,
+                    style: TextStyle(color: AppColors.textMuted),
+                  ),
+                ),
+              for (final c in shown) _row(c),
+              if (results.isNotEmpty) _pager(page, pages, results.length),
+            ],
+          ),
         ),
       ],
     );
   }
 
-  Widget _resultCard(CustomerSearchEntry c) {
+  Widget _searchBar() {
     final l10n = context.l10n;
-    final id = c.formattedClientId;
+    final count = _filter.advancedCount;
+    return TextField(
+      controller: _searchController,
+      onChanged: (v) => setState(() {
+        _query = v;
+        _page = 0;
+      }),
+      decoration: InputDecoration(
+        hintText: l10n.searchCustomersHint,
+        prefixIcon: const Icon(Icons.search),
+        suffixIcon: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (_query.isNotEmpty)
+              IconButton(
+                tooltip: l10n.clearSearch,
+                icon: const Icon(Icons.clear),
+                onPressed: () => setState(() {
+                  _searchController.clear();
+                  _query = '';
+                  _page = 0;
+                }),
+              ),
+            IconButton(
+              tooltip: l10n.advancedFilters,
+              icon: Badge(
+                isLabelVisible: count > 0,
+                label: Text('$count'),
+                child: Icon(
+                  Icons.tune,
+                  color: _showAdvanced || count > 0
+                      ? AppColors.primary
+                      : AppColors.textMuted,
+                ),
+              ),
+              onPressed: () => setState(() => _showAdvanced = !_showAdvanced),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _quickFilters() {
+    final l10n = context.l10n;
+    Widget chip(String label, bool selected, CustomerFilter Function() next) =>
+        ChoiceChip(
+          label: Text(label),
+          selected: selected,
+          showCheckmark: false,
+          onSelected: (_) => _setFilter(next()),
+        );
+    return Wrap(
+      spacing: 8,
+      runSpacing: 8,
+      children: [
+        chip(
+          l10n.statAll,
+          _filter.account == null && _filter.tier == null,
+          () => _filter.copyWith(account: null, tier: null),
+        ),
+        chip(
+          l10n.filterWithAccount,
+          _filter.account == true,
+          () =>
+              _filter.copyWith(account: _filter.account == true ? null : true),
+        ),
+        chip(
+          l10n.filterWithoutAccount,
+          _filter.account == false,
+          () => _filter.copyWith(
+            account: _filter.account == false ? null : false,
+          ),
+        ),
+        for (final t in CustomerTier.values)
+          chip(
+            '${t.emoji} ${t.label(l10n)}',
+            _filter.tier == t.name,
+            () =>
+                _filter.copyWith(tier: _filter.tier == t.name ? null : t.name),
+          ),
+      ],
+    );
+  }
+
+  Widget _advancedPanel(List<String> places) {
+    final l10n = context.l10n;
+    final f = _filter;
+    String day(DateTime d) =>
+        formatDateTime(context, d).split(' ').take(3).join(' ');
+    final created = f.createdFrom == null && f.createdTo == null
+        ? l10n.filterAnyDate
+        : '${f.createdFrom == null ? '…' : day(f.createdFrom!)} – '
+              '${f.createdTo == null ? '…' : day(f.createdTo!)}';
+    Widget field(String label, Widget child) => SizedBox(
+      width: 230,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            label,
+            style: TextStyle(color: AppColors.textMuted, fontSize: 12),
+          ),
+          const SizedBox(height: 6),
+          child,
+        ],
+      ),
+    );
+    return Container(
+      width: double.infinity,
+      color: AppColors.surface2,
+      padding: const EdgeInsets.all(12),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Wrap(
+            spacing: 16,
+            runSpacing: 14,
+            children: [
+              field(
+                l10n.filterTier,
+                DropdownButtonFormField<String?>(
+                  key: ValueKey('tier-${f.tier}'),
+                  initialValue: f.tier,
+                  isExpanded: true,
+                  items: [
+                    DropdownMenuItem(value: null, child: Text(l10n.statAll)),
+                    DropdownMenuItem(
+                      value: 'any',
+                      child: Text(l10n.filterWithTier),
+                    ),
+                    DropdownMenuItem(value: 'none', child: Text(l10n.tierNone)),
+                    for (final t in CustomerTier.values)
+                      DropdownMenuItem(
+                        value: t.name,
+                        child: Text('${t.emoji} ${t.label(l10n)}'),
+                      ),
+                  ],
+                  onChanged: (v) => _setFilter(f.copyWith(tier: v)),
+                ),
+              ),
+              field(
+                l10n.filterPlace,
+                DropdownButtonFormField<String?>(
+                  key: ValueKey('place-${f.place}'),
+                  initialValue: f.place,
+                  isExpanded: true,
+                  items: [
+                    DropdownMenuItem(value: null, child: Text(l10n.statAll)),
+                    for (final p in places)
+                      DropdownMenuItem(value: p, child: Text(p)),
+                  ],
+                  onChanged: (v) => _setFilter(f.copyWith(place: v)),
+                ),
+              ),
+              field(
+                l10n.filterLastTransaction,
+                DropdownButtonFormField<int?>(
+                  key: ValueKey('active-${f.activeWithinDays}'),
+                  initialValue: f.activeWithinDays,
+                  isExpanded: true,
+                  items: [
+                    DropdownMenuItem(
+                      value: null,
+                      child: Text(l10n.filterAnyDate),
+                    ),
+                    for (final days in const [7, 30, 90])
+                      DropdownMenuItem(
+                        value: days,
+                        child: Text(l10n.filterWithinDays(days)),
+                      ),
+                    DropdownMenuItem(value: 0, child: Text(l10n.filterNever)),
+                  ],
+                  onChanged: (v) => _setFilter(f.copyWith(activeWithinDays: v)),
+                ),
+              ),
+              field(
+                l10n.filterCreated,
+                OutlinedButton.icon(
+                  icon: const Icon(Icons.date_range, size: 18),
+                  label: Text(created, overflow: TextOverflow.ellipsis),
+                  onPressed: () async {
+                    final range = await showDateRangePicker(
+                      context: context,
+                      firstDate: DateTime(2020),
+                      lastDate: DateTime.now(),
+                      initialDateRange:
+                          f.createdFrom != null && f.createdTo != null
+                          ? DateTimeRange(
+                              start: f.createdFrom!,
+                              end: f.createdTo!,
+                            )
+                          : null,
+                    );
+                    if (range != null) {
+                      _setFilter(
+                        f.copyWith(
+                          createdFrom: range.start,
+                          createdTo: range.end,
+                        ),
+                      );
+                    }
+                  },
+                ),
+              ),
+              field(
+                l10n.sortBy,
+                DropdownButtonFormField<CustomerSort>(
+                  key: ValueKey('sort-${f.sort}'),
+                  initialValue: f.sort,
+                  isExpanded: true,
+                  items: [
+                    DropdownMenuItem(
+                      value: CustomerSort.newest,
+                      child: Text(l10n.sortNewest),
+                    ),
+                    DropdownMenuItem(
+                      value: CustomerSort.name,
+                      child: Text(l10n.sortName),
+                    ),
+                    DropdownMenuItem(
+                      value: CustomerSort.clientId,
+                      child: Text(l10n.sortClientId),
+                    ),
+                  ],
+                  onChanged: (v) => _setFilter(f.copyWith(sort: v)),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
+          TextButton.icon(
+            icon: const Icon(Icons.filter_alt_off_outlined),
+            label: Text(l10n.clearFilters),
+            onPressed: f.isEmpty && f.sort == CustomerSort.newest
+                ? null
+                : () => _setFilter(const CustomerFilter()),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _pager(int page, int pages, int total) {
+    final l10n = context.l10n;
+    final from = page * _pageSize + 1;
+    final to = (from + _pageSize - 1).clamp(1, total);
+    return Container(
+      decoration: BoxDecoration(
+        border: Border(top: BorderSide(color: AppColors.surfaceBorder)),
+      ),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      child: Row(
+        children: [
+          Expanded(
+            child: Text(
+              l10n.showingRange(from, to, total),
+              style: TextStyle(color: AppColors.textMuted, fontSize: 13),
+            ),
+          ),
+          IconButton(
+            tooltip: l10n.previousPage,
+            icon: const Icon(Icons.chevron_left),
+            onPressed: page == 0
+                ? null
+                : () => setState(() => _page = page - 1),
+          ),
+          Text('${page + 1} / $pages'),
+          IconButton(
+            tooltip: l10n.nextPage,
+            icon: const Icon(Icons.chevron_right),
+            onPressed: page >= pages - 1
+                ? null
+                : () => setState(() => _page = page + 1),
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// En kund i listan: tabellrad på bred skärm, kompakt rad på mobil.
+  Widget _row(CustomerSearchEntry c) {
+    final l10n = context.l10n;
     final tierInfo = _tiers.forCustomer({
       'tier': c.tier,
       'tierDiscount': c.tierDiscount,
     });
-    return Card(
-      margin: const EdgeInsets.only(bottom: 8),
-      child: ListTile(
-        leading: CircleAvatar(
-          backgroundColor: AppColors.primaryDim,
-          child: Text(
-            id.isEmpty ? '?' : id,
-            style: TextStyle(
-              color: AppColors.primary,
-              fontSize: 12,
-              fontWeight: FontWeight.w700,
-            ),
+    final initials = [c.firstName, c.lastName]
+        .where((s) => s.trim().isNotEmpty)
+        .map((s) => s.trim()[0].toUpperCase())
+        .join();
+    final (label, color) = tierInfo != null
+        ? (
+            '${tierInfo.tier.emoji} ${tierInfo.tier.label(l10n)}',
+            AppColors.warning,
+          )
+        : c.hasAccount
+        ? (l10n.hasAppAccount, AppColors.primary)
+        : (l10n.noAppAccount, AppColors.textMuted);
+    final detail = [
+      'ID ${c.formattedClientId}',
+      if (c.lastActivity != null)
+        l10n.lastActivityValue(
+          formatDateTime(context, c.lastActivity!).split(' ').take(3).join(' '),
+        ),
+    ].join(' · ');
+    final menu = PopupMenuButton<String>(
+      tooltip: l10n.moreActions,
+      icon: Icon(Icons.more_vert, color: AppColors.textMuted),
+      onSelected: (v) => switch (v) {
+        'edit' => _openEditDialog(c),
+        'tier' => _openTierDialog(c),
+        _ => _deleteCustomer(c),
+      },
+      itemBuilder: (_) => [
+        PopupMenuItem(
+          value: 'edit',
+          child: ListTile(
+            leading: const Icon(Icons.edit_outlined),
+            title: Text(l10n.edit),
           ),
         ),
-        title: Text(c.fullName.isEmpty ? l10n.unknownClient : c.fullName),
-        subtitle: Text(
-          [
-            if (tierInfo != null)
-              '${tierInfo.tier.emoji} ${tierInfo.tier.label(l10n)} – '
-                  '${l10n.tierDiscountShort(formatPercent(tierInfo.discount))}',
-            if (c.phone.isNotEmpty) l10n.phoneValue(c.phone),
-            if (c.email.isNotEmpty) l10n.emailValue(c.email),
-            if (c.places.isNotEmpty) l10n.placesValue(c.places.join(', ')),
-          ].join('\n'),
+        PopupMenuItem(
+          value: 'tier',
+          child: ListTile(
+            leading: const Icon(Icons.workspace_premium_outlined),
+            title: Text(l10n.tierLabel),
+          ),
         ),
-        isThreeLine:
-            c.email.isNotEmpty || c.places.isNotEmpty || tierInfo != null,
-        trailing: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            IconButton(
-              tooltip: l10n.tierLabel,
-              icon: Icon(
-                Icons.workspace_premium_outlined,
-                color: tierInfo == null
-                    ? AppColors.textMuted
-                    : AppColors.warning,
-              ),
-              onPressed: () => _openTierDialog(c),
-            ),
-            IconButton(
-              tooltip: l10n.edit,
-              icon: const Icon(Icons.edit, color: Colors.blue),
-              onPressed: () => _openEditDialog(c),
-            ),
-            IconButton(
-              tooltip: l10n.delete,
-              icon: const Icon(Icons.delete, color: Colors.red),
-              onPressed: () => _deleteCustomer(c),
-            ),
-          ],
+        PopupMenuItem(
+          value: 'delete',
+          child: ListTile(
+            leading: Icon(Icons.delete_outline, color: AppColors.error),
+            title: Text(l10n.delete, style: TextStyle(color: AppColors.error)),
+          ),
+        ),
+      ],
+    );
+    final avatar = CircleAvatar(
+      radius: 18,
+      backgroundColor: AppColors.primaryDim,
+      child: Text(
+        initials.isEmpty ? '?' : initials,
+        style: TextStyle(
+          color: AppColors.primary,
+          fontSize: 13,
+          fontWeight: FontWeight.w700,
+        ),
+      ),
+    );
+    final name = Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          c.fullName.isEmpty ? l10n.unknownClient : c.fullName,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: TextStyle(
+            color: AppColors.textPrimary,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        Text(
+          detail,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: TextStyle(color: AppColors.textMuted, fontSize: 12),
+        ),
+      ],
+    );
+    final pill = Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.14),
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Text(
+        label,
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+        style: TextStyle(color: color, fontSize: 12),
+      ),
+    );
+    return InkWell(
+      onTap: () => _openEditDialog(c),
+      child: Container(
+        decoration: BoxDecoration(
+          border: Border(bottom: BorderSide(color: AppColors.surfaceBorder)),
+        ),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        child: LayoutBuilder(
+          builder: (context, box) {
+            final wide = box.maxWidth >= 700;
+            return Row(
+              children: [
+                avatar,
+                const SizedBox(width: 12),
+                Expanded(flex: 3, child: name),
+                if (wide) ...[
+                  Expanded(
+                    flex: 2,
+                    child: Text(
+                      c.phone,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                  Expanded(
+                    flex: 2,
+                    child: Text(
+                      c.places.join(', '),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(color: AppColors.textMuted),
+                    ),
+                  ),
+                ],
+                const SizedBox(width: 8),
+                ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 140),
+                  child: pill,
+                ),
+                menu,
+              ],
+            );
+          },
         ),
       ),
     );

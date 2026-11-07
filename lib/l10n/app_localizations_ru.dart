@@ -2448,4 +2448,81 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get addPartner => 'Добавить партнёра';
+
+  @override
+  String customersSummary(Object total, Object withAccount) {
+    return 'Клиентов: $total · с аккаунтом: $withAccount';
+  }
+
+  @override
+  String get filterWithAccount => 'С аккаунтом';
+
+  @override
+  String get filterWithoutAccount => 'Без аккаунта';
+
+  @override
+  String get filterWithTier => 'С уровнем';
+
+  @override
+  String get newThisMonth => 'Новые за месяц';
+
+  @override
+  String get advancedFilters => 'Расширенные фильтры';
+
+  @override
+  String get filterTier => 'Уровень';
+
+  @override
+  String get filterPlace => 'Город';
+
+  @override
+  String get filterLastTransaction => 'Последний перевод';
+
+  @override
+  String get filterAnyDate => 'Когда угодно';
+
+  @override
+  String filterWithinDays(Object days) {
+    return 'За последние $days дн.';
+  }
+
+  @override
+  String get filterNever => 'Никогда';
+
+  @override
+  String get filterCreated => 'Создан';
+
+  @override
+  String get sortBy => 'Сортировка';
+
+  @override
+  String get sortNewest => 'Сначала новые';
+
+  @override
+  String get sortName => 'Имя А–Я';
+
+  @override
+  String get sortClientId => 'ID клиента';
+
+  @override
+  String get clearFilters => 'Сбросить фильтры';
+
+  @override
+  String showingRange(Object from, Object to, Object total) {
+    return 'Показано $from–$to из $total';
+  }
+
+  @override
+  String get previousPage => 'Предыдущая страница';
+
+  @override
+  String get nextPage => 'Следующая страница';
+
+  @override
+  String lastActivityValue(Object date) {
+    return 'последний $date';
+  }
+
+  @override
+  String get moreActions => 'Ещё';
 }

@@ -1723,5 +1723,65 @@
   "addOffice": "Lägg till kontor",
   "addManager": "Lägg till manager",
   "addCashier": "Lägg till kassör",
-  "addPartner": "Lägg till partner"
+  "addPartner": "Lägg till partner",
+  "customersSummary": "{total} kunder · {withAccount} med konto i appen",
+  "@customersSummary": {
+    "placeholders": {
+      "total": {
+        "type": "Object"
+      },
+      "withAccount": {
+        "type": "Object"
+      }
+    }
+  },
+  "filterWithAccount": "Med konto",
+  "filterWithoutAccount": "Utan konto",
+  "filterWithTier": "Med nivå",
+  "newThisMonth": "Nya denna månad",
+  "advancedFilters": "Avancerade filter",
+  "filterTier": "Nivå",
+  "filterPlace": "Ort",
+  "filterLastTransaction": "Senaste transaktion",
+  "filterAnyDate": "När som helst",
+  "filterWithinDays": "Senaste {days} dagarna",
+  "@filterWithinDays": {
+    "placeholders": {
+      "days": {
+        "type": "Object"
+      }
+    }
+  },
+  "filterNever": "Aldrig",
+  "filterCreated": "Skapad",
+  "sortBy": "Sortera",
+  "sortNewest": "Nyast först",
+  "sortName": "Namn A–Ö",
+  "sortClientId": "Klient-ID",
+  "clearFilters": "Rensa filter",
+  "showingRange": "Visar {from}–{to} av {total}",
+  "@showingRange": {
+    "placeholders": {
+      "from": {
+        "type": "Object"
+      },
+      "to": {
+        "type": "Object"
+      },
+      "total": {
+        "type": "Object"
+      }
+    }
+  },
+  "previousPage": "Föregående sida",
+  "nextPage": "Nästa sida",
+  "lastActivityValue": "senast {date}",
+  "@lastActivityValue": {
+    "placeholders": {
+      "date": {
+        "type": "Object"
+      }
+    }
+  },
+  "moreActions": "Fler val"
 }
