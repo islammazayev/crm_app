@@ -737,5 +737,13 @@
   "filterTo": "En çok",
   "showArchivedShort": "Arşivlenenleri göster",
   "reportTitle": "Rapor ve kâr",
-  "ordersSummary": "{total} işlem · {archived} arşivlenen"
+  "ordersSummary": "{total} işlem · {archived} arşivlenen",
+  "adminInviteTitle": "Uygulama bağlantısı gönderilsin mi?",
+  "adminInviteText": "Müşterinin numarası {clientId}. {phone} numarasına bağlantılı bir SMS gönderin; müşteri uygulamayı indirip şifre oluşturur ve aynı müşteri numarasını korur.",
+  "sendSms": "SMS gönder",
+  "notNow": "Şimdi değil",
+  "sendAppInvite": "Uygulama bağlantısı gönder (SMS)",
+  "lockedClientId": "Müşteri no",
+  "adminInviteWelcome": "Merhaba {name}! {clientId} müşteri numarasıyla zaten müşterimizsiniz. Bilgileriniz hazır, giriş yapmak için sadece bir şifre oluşturmanız yeterli.",
+  "createPasswordAction": "Hesap oluştur"
 }

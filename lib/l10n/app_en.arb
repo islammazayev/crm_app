@@ -737,5 +737,13 @@
   "filterTo": "To",
   "showArchivedShort": "Show archived",
   "reportTitle": "Report and profit",
-  "ordersSummary": "{total} transactions · {archived} archived"
+  "ordersSummary": "{total} transactions · {archived} archived",
+  "adminInviteTitle": "Send a link to the app?",
+  "adminInviteText": "The customer has client ID {clientId}. Send an SMS to {phone} with a link so the customer can get the app, create a password and keep the same client ID.",
+  "sendSms": "Send SMS",
+  "notNow": "Not now",
+  "sendAppInvite": "Send app link (SMS)",
+  "lockedClientId": "Client ID",
+  "adminInviteWelcome": "Hi {name}! You are already our customer with client ID {clientId}. Your details are ready, you only need to create a password to sign in.",
+  "createPasswordAction": "Create account"
 }

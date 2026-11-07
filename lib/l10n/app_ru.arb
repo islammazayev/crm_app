@@ -737,5 +737,13 @@
   "filterTo": "До",
   "showArchivedShort": "Показать архив",
   "reportTitle": "Отчёт и прибыль",
-  "ordersSummary": "Транзакций: {total} · в архиве: {archived}"
+  "ordersSummary": "Транзакций: {total} · в архиве: {archived}",
+  "adminInviteTitle": "Отправить ссылку на приложение?",
+  "adminInviteText": "У клиента ID {clientId}. Отправьте SMS на {phone} со ссылкой: клиент установит приложение, создаст пароль и сохранит тот же ID.",
+  "sendSms": "Отправить SMS",
+  "notNow": "Не сейчас",
+  "sendAppInvite": "Отправить ссылку (SMS)",
+  "lockedClientId": "ID клиента",
+  "adminInviteWelcome": "Здравствуйте, {name}! Вы уже наш клиент с ID {clientId}. Ваши данные готовы, нужно только создать пароль для входа.",
+  "createPasswordAction": "Создать аккаунт"
 }

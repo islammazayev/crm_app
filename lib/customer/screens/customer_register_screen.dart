@@ -7,6 +7,8 @@ import '../../l10n/auth_error_text.dart';
 import '../../l10n/locale_controller.dart';
 import '../../screens/auth_gate.dart';
 import '../../screens/login_screen.dart';
+import '../../theme/app_theme.dart';
+import '../../utils/client_id.dart';
 import '../../widgets/language_button.dart';
 
 class CustomerRegisterScreen extends StatefulWidget {
@@ -42,6 +44,14 @@ class _CustomerRegisterScreenState extends State<CustomerRegisterScreen> {
   Map<String, dynamic>? _invited;
   bool _inviteInvalid = false;
 
+  /// Admin skapade kunden och skickade länken: namn, telefon och klient-ID
+  /// är klara, kunden skapar bara lösenord (och e-post om admin inte skrev
+  /// någon).
+  bool get _locked => _invited?['inviteByAdmin'] == true;
+
+  bool get _lockedEmail =>
+      _locked && '${_invited?['email'] ?? ''}'.trim().contains('@');
+
   @override
   void initState() {
     super.initState();
@@ -66,6 +76,12 @@ class _CustomerRegisterScreenState extends State<CustomerRegisterScreen> {
         _firstNameCtrl.text = '${d['firstName'] ?? ''}';
         _lastNameCtrl.text = '${d['lastName'] ?? ''}';
         _phoneCtrl.text = '${d['phone'] ?? ''}';
+        // Admins inbjudan: e-posten admin skrev gäller, kunden skriver
+        // bara lösenord.
+        if (_lockedEmail) {
+          _emailCtrl.text = '${d['email']}'.trim();
+          _emailConfirmCtrl.text = _emailCtrl.text;
+        }
       });
     } catch (_) {
       if (mounted) setState(() => _inviteInvalid = true);
@@ -195,6 +211,56 @@ class _CustomerRegisterScreenState extends State<CustomerRegisterScreen> {
     }
   }
 
+  /// Kundens uppgifter från admin, visas låsta.
+  Widget _lockedDetails() {
+    final l10n = context.l10n;
+    final rows = [
+      (l10n.lockedClientId, formatClientId(_invited!['clientId'])),
+      (l10n.name, '${_firstNameCtrl.text} ${_lastNameCtrl.text}'.trim()),
+      if (_phoneCtrl.text.trim().isNotEmpty) (l10n.phone, _phoneCtrl.text),
+      if (_lockedEmail) (l10n.email, _emailCtrl.text),
+    ];
+    return Card(
+      margin: EdgeInsets.zero,
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          children: [
+            for (final (label, value) in rows)
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 4),
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.lock_outline,
+                      size: 16,
+                      color: AppColors.textMuted,
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        label,
+                        style: TextStyle(color: AppColors.textMuted),
+                      ),
+                    ),
+                    Flexible(
+                      flex: 2,
+                      child: Text(
+                        value,
+                        textAlign: TextAlign.end,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(fontWeight: FontWeight.w600),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+
   /// Knapp som visar (öga) eller döljer (överstruket öga) lösenordet.
   Widget _eye(bool hidden, VoidCallback onPressed) => IconButton(
     tooltip: hidden ? context.l10n.showPassword : context.l10n.hidePassword,
@@ -224,11 +290,20 @@ class _CustomerRegisterScreenState extends State<CustomerRegisterScreen> {
                   Text(
                     _inviteInvalid
                         ? l10n.inviteInvalid
+                        : _locked
+                        ? l10n.adminInviteWelcome(
+                            _firstNameCtrl.text,
+                            formatClientId(_invited!['clientId']),
+                          )
                         : l10n.inviteWelcome(
                             _invited == null ? '' : '${_invited!['clientId']}',
                           ),
                     style: const TextStyle(fontSize: 15, height: 1.4),
                   ),
+                  if (_locked) ...[
+                    const SizedBox(height: 14),
+                    _lockedDetails(),
+                  ],
                   const SizedBox(height: 8),
                   Align(
                     alignment: Alignment.centerLeft,
@@ -247,45 +322,52 @@ class _CustomerRegisterScreenState extends State<CustomerRegisterScreen> {
                   ),
                   const SizedBox(height: 14),
                 ],
-                TextFormField(
-                  controller: _firstNameCtrl,
-                  decoration: InputDecoration(labelText: l10n.firstName),
-                  validator: (v) => v == null || v.trim().isEmpty
-                      ? l10n.enterFirstName
-                      : null,
-                ),
-                const SizedBox(height: 14),
-                TextFormField(
-                  controller: _lastNameCtrl,
-                  decoration: InputDecoration(labelText: l10n.lastName),
-                  validator: (v) =>
-                      v == null || v.trim().isEmpty ? l10n.enterLastName : null,
-                ),
-                const SizedBox(height: 14),
-                TextFormField(
-                  controller: _emailCtrl,
-                  decoration: InputDecoration(labelText: l10n.email),
-                  keyboardType: TextInputType.emailAddress,
-                  validator: (v) => v == null || !v.contains('@')
-                      ? l10n.enterValidEmail
-                      : null,
-                ),
-                const SizedBox(height: 14),
-                TextFormField(
-                  controller: _emailConfirmCtrl,
-                  decoration: InputDecoration(labelText: l10n.confirmEmail),
-                  keyboardType: TextInputType.emailAddress,
-                  // Måste vara exakt likadan, även stora och små bokstäver.
-                  validator: (v) => (v ?? '').trim() != _emailCtrl.text.trim()
-                      ? l10n.emailsDoNotMatch
-                      : null,
-                ),
-                const SizedBox(height: 14),
-                TextFormField(
-                  controller: _phoneCtrl,
-                  decoration: InputDecoration(labelText: l10n.phone),
-                ),
-                const SizedBox(height: 14),
+                if (!_locked) ...[
+                  TextFormField(
+                    controller: _firstNameCtrl,
+                    decoration: InputDecoration(labelText: l10n.firstName),
+                    validator: (v) => v == null || v.trim().isEmpty
+                        ? l10n.enterFirstName
+                        : null,
+                  ),
+                  const SizedBox(height: 14),
+                  TextFormField(
+                    controller: _lastNameCtrl,
+                    decoration: InputDecoration(labelText: l10n.lastName),
+                    validator: (v) => v == null || v.trim().isEmpty
+                        ? l10n.enterLastName
+                        : null,
+                  ),
+                  const SizedBox(height: 14),
+                ],
+                if (!_lockedEmail) ...[
+                  TextFormField(
+                    controller: _emailCtrl,
+                    decoration: InputDecoration(labelText: l10n.email),
+                    keyboardType: TextInputType.emailAddress,
+                    validator: (v) => v == null || !v.contains('@')
+                        ? l10n.enterValidEmail
+                        : null,
+                  ),
+                  const SizedBox(height: 14),
+                  TextFormField(
+                    controller: _emailConfirmCtrl,
+                    decoration: InputDecoration(labelText: l10n.confirmEmail),
+                    keyboardType: TextInputType.emailAddress,
+                    // Måste vara exakt likadan, även stora och små bokstäver.
+                    validator: (v) => (v ?? '').trim() != _emailCtrl.text.trim()
+                        ? l10n.emailsDoNotMatch
+                        : null,
+                  ),
+                  const SizedBox(height: 14),
+                ],
+                if (!_locked) ...[
+                  TextFormField(
+                    controller: _phoneCtrl,
+                    decoration: InputDecoration(labelText: l10n.phone),
+                  ),
+                  const SizedBox(height: 14),
+                ],
                 TextFormField(
                   controller: _passwordCtrl,
                   decoration: InputDecoration(
@@ -334,7 +416,9 @@ class _CustomerRegisterScreenState extends State<CustomerRegisterScreen> {
                             height: 20,
                             child: CircularProgressIndicator(strokeWidth: 2),
                           )
-                        : Text(l10n.register),
+                        : Text(
+                            _locked ? l10n.createPasswordAction : l10n.register,
+                          ),
                   ),
                 ),
               ],

@@ -2646,4 +2646,32 @@ class AppLocalizationsEn extends AppLocalizations {
   String ordersSummary(Object total, Object archived) {
     return '$total transactions · $archived archived';
   }
+
+  @override
+  String get adminInviteTitle => 'Send a link to the app?';
+
+  @override
+  String adminInviteText(Object clientId, Object phone) {
+    return 'The customer has client ID $clientId. Send an SMS to $phone with a link so the customer can get the app, create a password and keep the same client ID.';
+  }
+
+  @override
+  String get sendSms => 'Send SMS';
+
+  @override
+  String get notNow => 'Not now';
+
+  @override
+  String get sendAppInvite => 'Send app link (SMS)';
+
+  @override
+  String get lockedClientId => 'Client ID';
+
+  @override
+  String adminInviteWelcome(Object name, Object clientId) {
+    return 'Hi $name! You are already our customer with client ID $clientId. Your details are ready, you only need to create a password to sign in.';
+  }
+
+  @override
+  String get createPasswordAction => 'Create account';
 }
