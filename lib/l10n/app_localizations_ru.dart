@@ -2525,4 +2525,45 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get moreActions => 'Ещё';
+
+  @override
+  String get filterWithOffice => 'С офисом';
+
+  @override
+  String get filterWithoutOffice => 'Без офиса';
+
+  @override
+  String get filterWithBalance => 'С балансом';
+
+  @override
+  String get filterWithManager => 'С менеджером';
+
+  @override
+  String get filterWithoutManager => 'Без менеджера';
+
+  @override
+  String managersSummary(Object total, Object withOffice) {
+    return 'Менеджеров: $total · с офисом: $withOffice';
+  }
+
+  @override
+  String cashiersSummary(Object total, Object withOffice) {
+    return 'Кассиров: $total · с офисом: $withOffice';
+  }
+
+  @override
+  String partnersSummary(Object total, Object withOffice) {
+    return 'Партнёров: $total · с офисом: $withOffice';
+  }
+
+  @override
+  String officesSummary(Object total, Object withoutManager) {
+    return 'Офисов: $total · без менеджера: $withoutManager';
+  }
+
+  @override
+  String get showExchanges => 'Показать обмены';
+
+  @override
+  String get showTransfers => 'Показать переводы';
 }

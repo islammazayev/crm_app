@@ -6,9 +6,9 @@ import '../../l10n/locale_controller.dart';
 import '../../services/cashier_service.dart';
 import '../../theme/app_theme.dart';
 import '../../utils/search_match.dart';
-import '../../widgets/add_panel.dart';
+import '../../widgets/admin_list.dart';
 import '../../widgets/confirm_delete.dart';
-import '../../widgets/search_summary.dart';
+import '../../widgets/overview_widgets.dart';
 
 /// Admin: skapa managers och se vilka som finns och vilket kontor de har.
 class AdminManagersPage extends StatefulWidget {
@@ -19,15 +19,6 @@ class AdminManagersPage extends StatefulWidget {
 }
 
 class _AdminManagersPageState extends State<AdminManagersPage> {
-  final _searchController = TextEditingController();
-  String _query = '';
-
-  @override
-  void dispose() {
-    _searchController.dispose();
-    super.dispose();
-  }
-
   Future<void> _editManager(
     QueryDocumentSnapshot doc,
     List<QueryDocumentSnapshot> officeDocs,
@@ -175,177 +166,177 @@ class _AdminManagersPageState extends State<AdminManagersPage> {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(text)));
   }
 
+  late final _officeStream = FirebaseFirestore.instance
+      .collection('offices')
+      .snapshots();
+  late final _managerStream = FirebaseFirestore.instance
+      .collection('users')
+      .where('role', isEqualTo: 'manager')
+      .snapshots();
+
+  /// Valt snabbfilter (index), null = alla.
+  int? _filter;
+
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final db = FirebaseFirestore.instance;
 
     return Scaffold(
       appBar: AppBar(title: Text(l10n.managers)),
       body: StreamBuilder<QuerySnapshot>(
-        stream: db.collection('offices').snapshots(),
+        stream: _officeStream,
         builder: (context, officeSnap) {
-          if (!officeSnap.hasData) {
-            return const Center(child: CircularProgressIndicator());
-          }
-          final officeDocs = officeSnap.data!.docs;
-          final officeLabels = {
-            for (final d in officeDocs)
-              d.id: () {
-                final data = d.data() as Map<String, dynamic>;
-                return '${data['country'] ?? ''} – ${data['city'] ?? ''}';
-              }(),
-          };
+          return StreamBuilder<QuerySnapshot>(
+            stream: _managerStream,
+            builder: (context, snap) {
+              final error = officeSnap.error ?? snap.error;
+              if (error != null) {
+                return Center(child: Text(l10n.errorWithDetails('$error')));
+              }
+              if (!officeSnap.hasData || !snap.hasData) {
+                return const Center(child: CircularProgressIndicator());
+              }
+              final officeDocs = officeSnap.data!.docs;
+              final officeLabels = {
+                for (final d in officeDocs)
+                  d.id: () {
+                    final data = d.data() as Map<String, dynamic>;
+                    return '${data['country'] ?? ''} – ${data['city'] ?? ''}';
+                  }(),
+              };
+              String nameOf(Map<String, dynamic> d) =>
+                  '${d['firstName'] ?? ''} ${d['lastName'] ?? ''}'.trim();
+              String? officeOf(Map<String, dynamic> d) =>
+                  officeLabels[d['officeId']?.toString()];
+              Map<String, dynamic> data(QueryDocumentSnapshot doc) =>
+                  doc.data() as Map<String, dynamic>;
 
-          return SingleChildScrollView(
-            padding: const EdgeInsets.all(24),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                AddPanel(
-                  label: l10n.addManager,
-                  builder: (context, close) => CreateManagerForm(
-                    officeDocs: officeDocs,
-                    onCreated: close,
-                  ),
+              final all = List<QueryDocumentSnapshot>.from(snap.data!.docs)
+                ..sort(
+                  (a, b) => nameOf(
+                    data(a),
+                  ).toLowerCase().compareTo(nameOf(data(b)).toLowerCase()),
+                );
+              final filters = [
+                AdminFilter<QueryDocumentSnapshot>(
+                  l10n.filterWithOffice,
+                  (d) => officeOf(data(d)) != null,
                 ),
-                const SizedBox(height: 32),
-                Text(
-                  l10n.existingManagers,
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
+                AdminFilter<QueryDocumentSnapshot>(
+                  l10n.filterWithoutOffice,
+                  (d) => officeOf(data(d)) == null,
                 ),
-                const SizedBox(height: 14),
-                TextField(
-                  controller: _searchController,
-                  onChanged: (v) => setState(() => _query = v),
-                  decoration: InputDecoration(
-                    labelText: l10n.searchManagersLabel,
-                    prefixIcon: const Icon(Icons.search),
-                  ),
+                AdminFilter<QueryDocumentSnapshot>(
+                  l10n.alsoCashier,
+                  (d) => data(d)['alsoCashier'] == true,
                 ),
-                StreamBuilder<QuerySnapshot>(
-                  stream: db
-                      .collection('users')
-                      .where('role', isEqualTo: 'manager')
-                      .snapshots(),
-                  builder: (context, snap) {
-                    if (snap.hasError) {
-                      return Text(l10n.errorWithDetails('${snap.error}'));
-                    }
-                    if (!snap.hasData) {
-                      return const Center(child: CircularProgressIndicator());
-                    }
-                    final all = snap.data!.docs;
-                    if (all.isEmpty) {
-                      return Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 8),
-                        child: Text(
-                          l10n.noManagersYet,
-                          style: const TextStyle(color: Colors.grey),
+              ];
+              int count(int i) => all.where(filters[i].test).length;
+
+              return SingleChildScrollView(
+                padding: const EdgeInsets.all(24),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    AdminListHeader(
+                      summary: l10n.managersSummary(all.length, count(0)),
+                      addLabel: l10n.addManager,
+                      onAdd: () => showFormDialog(
+                        context,
+                        (ctx, close) => CreateManagerForm(
+                          officeDocs: officeDocs,
+                          onCreated: close,
                         ),
-                      );
-                    }
-                    String officeOf(Map<String, dynamic> d) {
-                      final officeId = d['officeId']?.toString();
-                      return officeLabels[officeId] ?? l10n.noOfficeAssigned;
-                    }
-
-                    final empty = isEmptySearch(_query);
-                    final matches = empty
-                        ? <QueryDocumentSnapshot>[]
-                        : all.where((doc) {
-                            final d = doc.data() as Map<String, dynamic>;
-                            return matchesSearch(
-                              _query,
-                              phones: ['${d['phone'] ?? ''}'],
-                              texts: [
-                                '${d['firstName'] ?? ''}',
-                                '${d['lastName'] ?? ''}',
-                                '${d['email'] ?? ''}',
-                                '${d['phone'] ?? ''}',
-                                officeOf(d),
-                              ],
-                            );
-                          }).toList();
-                    final docs = matches.take(maxSearchResults).toList();
-
-                    return Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        SearchSummary(
-                          empty: empty,
-                          total: all.length,
-                          matches: matches.length,
-                          shown: docs.length,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    StatRow(
+                      stats: [
+                        StatData(
+                          l10n.statAll,
+                          '${all.length}',
+                          AppColors.textPrimary,
+                          onTap: () => setState(() => _filter = null),
                         ),
-                        for (final doc in docs)
-                          Builder(
-                            builder: (context) {
-                              final d = doc.data() as Map<String, dynamic>;
-                              final name =
-                                  '${d['firstName'] ?? ''} ${d['lastName'] ?? ''}'
-                                      .trim();
-                              final email = (d['email'] ?? '').toString();
-                              final phone = (d['phone'] ?? '').toString();
-                              final office = officeOf(d);
-                              return Card(
-                                margin: const EdgeInsets.only(bottom: 10),
-                                child: ListTile(
-                                  leading: Icon(
-                                    Icons.badge_outlined,
-                                    color: AppColors.warning,
-                                  ),
-                                  title: Text(name.isEmpty ? email : name),
-                                  subtitle: Text(
-                                    [
-                                      l10n.officeValue(office),
-                                      if (d['alsoCashier'] == true)
-                                        l10n.alsoCashierBadge,
-                                      if (email.isNotEmpty)
-                                        l10n.emailValue(email),
-                                      if (phone.isNotEmpty)
-                                        l10n.phoneValue(phone),
-                                    ].join('\n'),
-                                  ),
-                                  isThreeLine: true,
-                                  trailing: Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      IconButton(
-                                        tooltip: l10n.edit,
-                                        icon: const Icon(
-                                          Icons.edit,
-                                          color: Colors.blue,
-                                        ),
-                                        onPressed: () =>
-                                            _editManager(doc, officeDocs),
-                                      ),
-                                      IconButton(
-                                        tooltip: l10n.deleteAction,
-                                        icon: const Icon(
-                                          Icons.delete,
-                                          color: Colors.red,
-                                        ),
-                                        onPressed: () => _deleteManager(
-                                          doc,
-                                          name.isEmpty ? email : name,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              );
-                            },
+                        for (final (i, color) in [
+                          AppColors.primary,
+                          AppColors.warning,
+                          AppColors.info,
+                        ].indexed)
+                          StatData(
+                            filters[i].label,
+                            '${count(i)}',
+                            color,
+                            onTap: () => setState(() => _filter = i),
                           ),
                       ],
-                    );
-                  },
+                    ),
+                    const SizedBox(height: 16),
+                    AdminList<QueryDocumentSnapshot>(
+                      items: all,
+                      searchHint: l10n.searchManagersLabel,
+                      filters: filters,
+                      filter: _filter,
+                      onFilter: (i) => setState(() => _filter = i),
+                      emptyText: all.isEmpty
+                          ? l10n.noManagersYet
+                          : l10n.noSearchMatches,
+                      matches: (doc, q) {
+                        final d = data(doc);
+                        return matchesSearch(
+                          q,
+                          phones: ['${d['phone'] ?? ''}'],
+                          texts: [
+                            '${d['firstName'] ?? ''}',
+                            '${d['lastName'] ?? ''}',
+                            '${d['email'] ?? ''}',
+                            '${d['phone'] ?? ''}',
+                            officeOf(d) ?? '',
+                          ],
+                        );
+                      },
+                      rowBuilder: (doc) {
+                        final d = data(doc);
+                        final email = '${d['email'] ?? ''}';
+                        final name = nameOf(d).isEmpty ? email : nameOf(d);
+                        final office = officeOf(d);
+                        return AdminRow(
+                          avatar: AdminAvatar(name: nameOf(d)),
+                          title: name,
+                          subtitle: email,
+                          columns: [
+                            '${d['phone'] ?? ''}',
+                            office ?? l10n.noOfficeAssigned,
+                          ],
+                          pill: d['alsoCashier'] == true
+                              ? AdminPill(l10n.alsoCashierBadge, AppColors.info)
+                              : office == null
+                              ? AdminPill(
+                                  l10n.noOfficeAssigned,
+                                  AppColors.warning,
+                                )
+                              : null,
+                          onTap: () => _editManager(doc, officeDocs),
+                          actions: [
+                            AdminAction(
+                              l10n.edit,
+                              Icons.edit_outlined,
+                              () => _editManager(doc, officeDocs),
+                            ),
+                            AdminAction(
+                              l10n.deleteAction,
+                              Icons.delete_outline,
+                              () => _deleteManager(doc, name),
+                              danger: true,
+                            ),
+                          ],
+                        );
+                      },
+                    ),
+                  ],
                 ),
-              ],
-            ),
+              );
+            },
           );
         },
       ),

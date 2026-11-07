@@ -2518,4 +2518,45 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get moreActions => 'More actions';
+
+  @override
+  String get filterWithOffice => 'With office';
+
+  @override
+  String get filterWithoutOffice => 'Without office';
+
+  @override
+  String get filterWithBalance => 'With balance';
+
+  @override
+  String get filterWithManager => 'With manager';
+
+  @override
+  String get filterWithoutManager => 'Without manager';
+
+  @override
+  String managersSummary(Object total, Object withOffice) {
+    return '$total managers · $withOffice with an office';
+  }
+
+  @override
+  String cashiersSummary(Object total, Object withOffice) {
+    return '$total cashiers · $withOffice with an office';
+  }
+
+  @override
+  String partnersSummary(Object total, Object withOffice) {
+    return '$total partners · $withOffice with an office';
+  }
+
+  @override
+  String officesSummary(Object total, Object withoutManager) {
+    return '$total offices · $withoutManager without a manager';
+  }
+
+  @override
+  String get showExchanges => 'Show exchanges';
+
+  @override
+  String get showTransfers => 'Show transfers';
 }

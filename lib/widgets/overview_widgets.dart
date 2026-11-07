@@ -275,6 +275,12 @@ String formatDateTime(BuildContext context, DateTime at) {
   return DateFormat.yMMMd(locale).add_Hm().format(at.toLocal());
 }
 
+/// Bara datum efter appens språk, t.ex. "7 nov. 2026".
+String formatDay(BuildContext context, DateTime at) {
+  final locale = Localizations.localeOf(context).toString();
+  return DateFormat.yMMMd(locale).format(at.toLocal());
+}
+
 /// En rad i [ListPanel]: text till vänster, färgad etikett och datum till
 /// höger.
 class StatusRow extends StatelessWidget {

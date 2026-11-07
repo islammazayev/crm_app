@@ -2508,4 +2508,45 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get moreActions => 'Diğer işlemler';
+
+  @override
+  String get filterWithOffice => 'Ofisi olan';
+
+  @override
+  String get filterWithoutOffice => 'Ofisi olmayan';
+
+  @override
+  String get filterWithBalance => 'Bakiyesi olan';
+
+  @override
+  String get filterWithManager => 'Müdürü olan';
+
+  @override
+  String get filterWithoutManager => 'Müdürü olmayan';
+
+  @override
+  String managersSummary(Object total, Object withOffice) {
+    return '$total müdür · $withOffice ofisli';
+  }
+
+  @override
+  String cashiersSummary(Object total, Object withOffice) {
+    return '$total kasiyer · $withOffice ofisli';
+  }
+
+  @override
+  String partnersSummary(Object total, Object withOffice) {
+    return '$total ortak · $withOffice ofisli';
+  }
+
+  @override
+  String officesSummary(Object total, Object withoutManager) {
+    return '$total ofis · $withoutManager müdürsüz';
+  }
+
+  @override
+  String get showExchanges => 'Döviz işlemlerini göster';
+
+  @override
+  String get showTransfers => 'Transferleri göster';
 }
