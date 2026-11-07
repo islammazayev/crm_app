@@ -2692,4 +2692,22 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get inviteEmailSubject => 'Uygulamada hesabınızı oluşturun';
+
+  @override
+  String get invitePhoneNeedsCountryCode =>
+      'Numarada ülke kodu yok. Müşteriyi düzenleyip önce ülke kodunu seçin.';
+
+  @override
+  String inviteSmsSent(Object phone) {
+    return 'Bağlantılı SMS $phone numarasına gönderildi.';
+  }
+
+  @override
+  String inviteSmsFailed(Object error) {
+    return 'SMS gönderilemedi: $error';
+  }
+
+  @override
+  String get adminInviteHintAuto =>
+      'Müşteri bağlantılı bir SMS alır, sadece şifre oluşturur ve müşteri numarasını korur. Kaydettiğinizde gönderilir.';
 }

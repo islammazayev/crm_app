@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/material.dart';
 
 import '../../forms/customer_form.dart';
@@ -241,19 +242,41 @@ class _AdminCustomersSectionState extends State<AdminCustomersSection> {
 
   /// Skickar en länk via SMS eller e-post så att kunden kan skapa konto i
   /// appen och behålla sitt klient-ID. Kunden skapar bara lösenord.
+  ///
+  /// SMS skickas automatiskt av servern (46elks, se functions/index.js).
+  /// E-post öppnar admins e-postapp med länken ifylld.
   Future<void> _sendInvite(String docId, {bool email = false}) async {
     final l10n = context.l10n;
     try {
       final snap = await customersRef.doc(docId).get();
       final d = snap.data() as Map<String, dynamic>?;
       if (d == null || d['userId'] != null) return;
+      final name = '${d['firstName'] ?? ''}'.trim();
       final phone = '${d['phone'] ?? ''}'.trim();
       final address = '${d['email'] ?? ''}'.trim();
-      if (!email && phone.isEmpty) {
-        _snack(l10n.invitePhoneRequired);
+
+      if (!email) {
+        if (phone.isEmpty) {
+          _snack(l10n.invitePhoneRequired);
+          return;
+        }
+        if (!phone.startsWith('+')) {
+          _snack(l10n.invitePhoneNeedsCountryCode);
+          return;
+        }
+        final result =
+            await FirebaseFunctions.instanceFor(
+              region: 'europe-west1',
+            ).httpsCallable('sendCustomerInvite').call<Map<String, dynamic>>({
+              'docId': docId,
+              'origin': Uri.base.origin,
+              'message': l10n.inviteSmsText(name, '{link}'),
+            });
+        _snack(l10n.inviteSmsSent('${result.data['to'] ?? phone}'));
         return;
       }
-      if (email && !address.contains('@')) {
+
+      if (!address.contains('@')) {
         _snack(l10n.inviteEmailRequired);
         return;
       }
@@ -264,19 +287,17 @@ class _AdminCustomersSectionState extends State<AdminCustomersSection> {
         docId,
         d['inviteCode'] as String?,
       );
-      final message = l10n.inviteSmsText(
-        '${d['firstName'] ?? ''}'.trim(),
-        CustomerInviteService.inviteLink(docId, code),
+      await CustomerInviteService.openEmail(
+        address,
+        l10n.inviteEmailSubject,
+        l10n.inviteSmsText(name, CustomerInviteService.inviteLink(docId, code)),
       );
-      if (email) {
-        await CustomerInviteService.openEmail(
-          address,
-          l10n.inviteEmailSubject,
-          message,
-        );
-      } else {
-        await CustomerInviteService.openSms(phone, message);
-      }
+    } on FirebaseFunctionsException catch (e) {
+      _snack(
+        e.message == 'phone-needs-country-code'
+            ? l10n.invitePhoneNeedsCountryCode
+            : l10n.inviteSmsFailed(e.message ?? e.code),
+      );
     } catch (e) {
       _snack(l10n.errorWithDetails('$e'));
     }

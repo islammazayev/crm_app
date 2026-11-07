@@ -753,5 +753,9 @@
   "sendAppInviteEmail": "Uygulama bağlantısı gönder (e-posta)",
   "adminInviteEmailHint": "Aynı bağlantı e-postayla. Kaydettiğinizde e-posta uygulaması açılır.",
   "inviteEmailRequired": "Bağlantıyı göndermek için müşterinin e-postasını yazın.",
-  "inviteEmailSubject": "Uygulamada hesabınızı oluşturun"
+  "inviteEmailSubject": "Uygulamada hesabınızı oluşturun",
+  "invitePhoneNeedsCountryCode": "Numarada ülke kodu yok. Müşteriyi düzenleyip önce ülke kodunu seçin.",
+  "inviteSmsSent": "Bağlantılı SMS {phone} numarasına gönderildi.",
+  "inviteSmsFailed": "SMS gönderilemedi: {error}",
+  "adminInviteHintAuto": "Müşteri bağlantılı bir SMS alır, sadece şifre oluşturur ve müşteri numarasını korur. Kaydettiğinizde gönderilir."
 }

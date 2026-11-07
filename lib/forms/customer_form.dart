@@ -161,7 +161,7 @@ class _CustomerFormState extends State<CustomerForm> {
               onChanged: (v) => setState(() => _sendInvite = v ?? false),
               secondary: const Icon(Icons.sms_outlined),
               title: Text(l10n.sendAppInvite),
-              subtitle: Text(l10n.adminInviteHint),
+              subtitle: Text(l10n.adminInviteHintAuto),
             ),
           if (_canEmailInvite)
             CheckboxListTile(

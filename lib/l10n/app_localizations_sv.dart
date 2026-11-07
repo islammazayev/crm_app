@@ -2707,4 +2707,22 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String get inviteEmailSubject => 'Skapa ditt konto i appen';
+
+  @override
+  String get invitePhoneNeedsCountryCode =>
+      'Numret saknar landskod. Ändra kunden och välj landskod först.';
+
+  @override
+  String inviteSmsSent(Object phone) {
+    return 'SMS med länken skickat till $phone.';
+  }
+
+  @override
+  String inviteSmsFailed(Object error) {
+    return 'SMS kunde inte skickas: $error';
+  }
+
+  @override
+  String get adminInviteHintAuto =>
+      'Kunden får ett SMS med en länk, skapar bara lösenord och behåller klient-ID:t. Skickas när du sparar.';
 }

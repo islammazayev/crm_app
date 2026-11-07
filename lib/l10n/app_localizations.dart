@@ -4631,6 +4631,30 @@ abstract class AppLocalizations {
   /// In sv, this message translates to:
   /// **'Skapa ditt konto i appen'**
   String get inviteEmailSubject;
+
+  /// No description provided for @invitePhoneNeedsCountryCode.
+  ///
+  /// In sv, this message translates to:
+  /// **'Numret saknar landskod. Ändra kunden och välj landskod först.'**
+  String get invitePhoneNeedsCountryCode;
+
+  /// No description provided for @inviteSmsSent.
+  ///
+  /// In sv, this message translates to:
+  /// **'SMS med länken skickat till {phone}.'**
+  String inviteSmsSent(Object phone);
+
+  /// No description provided for @inviteSmsFailed.
+  ///
+  /// In sv, this message translates to:
+  /// **'SMS kunde inte skickas: {error}'**
+  String inviteSmsFailed(Object error);
+
+  /// No description provided for @adminInviteHintAuto.
+  ///
+  /// In sv, this message translates to:
+  /// **'Kunden får ett SMS med en länk, skapar bara lösenord och behåller klient-ID:t. Skickas när du sparar.'**
+  String get adminInviteHintAuto;
 }
 
 class _AppLocalizationsDelegate

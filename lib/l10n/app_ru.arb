@@ -753,5 +753,9 @@
   "sendAppInviteEmail": "Отправить ссылку (e-mail)",
   "adminInviteEmailHint": "Та же ссылка по e-mail. Почтовое приложение откроется после сохранения.",
   "inviteEmailRequired": "Укажите e-mail клиента, чтобы отправить ссылку.",
-  "inviteEmailSubject": "Создайте аккаунт в приложении"
+  "inviteEmailSubject": "Создайте аккаунт в приложении",
+  "invitePhoneNeedsCountryCode": "У номера нет кода страны. Измените клиента и выберите код страны.",
+  "inviteSmsSent": "SMS со ссылкой отправлено на {phone}.",
+  "inviteSmsFailed": "Не удалось отправить SMS: {error}",
+  "adminInviteHintAuto": "Клиент получит SMS со ссылкой, создаст только пароль и сохранит ID. Отправляется при сохранении."
 }

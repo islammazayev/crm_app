@@ -2702,4 +2702,22 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get inviteEmailSubject => 'Create your account in the app';
+
+  @override
+  String get invitePhoneNeedsCountryCode =>
+      'The number has no country code. Edit the customer and choose a country code first.';
+
+  @override
+  String inviteSmsSent(Object phone) {
+    return 'SMS with the link sent to $phone.';
+  }
+
+  @override
+  String inviteSmsFailed(Object error) {
+    return 'Could not send SMS: $error';
+  }
+
+  @override
+  String get adminInviteHintAuto =>
+      'The customer gets an SMS with a link, only creates a password and keeps the client ID. Sent when you save.';
 }

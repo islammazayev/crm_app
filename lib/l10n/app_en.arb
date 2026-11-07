@@ -753,5 +753,9 @@
   "sendAppInviteEmail": "Send app link (email)",
   "adminInviteEmailHint": "The same link by email. Your email app opens when you save.",
   "inviteEmailRequired": "Enter the customer's email to send the link.",
-  "inviteEmailSubject": "Create your account in the app"
+  "inviteEmailSubject": "Create your account in the app",
+  "invitePhoneNeedsCountryCode": "The number has no country code. Edit the customer and choose a country code first.",
+  "inviteSmsSent": "SMS with the link sent to {phone}.",
+  "inviteSmsFailed": "Could not send SMS: {error}",
+  "adminInviteHintAuto": "The customer gets an SMS with a link, only creates a password and keeps the client ID. Sent when you save."
 }

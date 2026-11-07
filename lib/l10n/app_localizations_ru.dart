@@ -2709,4 +2709,22 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get inviteEmailSubject => 'Создайте аккаунт в приложении';
+
+  @override
+  String get invitePhoneNeedsCountryCode =>
+      'У номера нет кода страны. Измените клиента и выберите код страны.';
+
+  @override
+  String inviteSmsSent(Object phone) {
+    return 'SMS со ссылкой отправлено на $phone.';
+  }
+
+  @override
+  String inviteSmsFailed(Object error) {
+    return 'Не удалось отправить SMS: $error';
+  }
+
+  @override
+  String get adminInviteHintAuto =>
+      'Клиент получит SMS со ссылкой, создаст только пароль и сохранит ID. Отправляется при сохранении.';
 }

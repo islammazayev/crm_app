@@ -1921,5 +1921,23 @@
   "sendAppInviteEmail": "Skicka länk till appen (e-post)",
   "adminInviteEmailHint": "Samma länk via e-post. E-postappen öppnas när du sparar.",
   "inviteEmailRequired": "Skriv kundens e-post för att kunna skicka länken.",
-  "inviteEmailSubject": "Skapa ditt konto i appen"
+  "inviteEmailSubject": "Skapa ditt konto i appen",
+  "invitePhoneNeedsCountryCode": "Numret saknar landskod. Ändra kunden och välj landskod först.",
+  "inviteSmsSent": "SMS med länken skickat till {phone}.",
+  "@inviteSmsSent": {
+    "placeholders": {
+      "phone": {
+        "type": "Object"
+      }
+    }
+  },
+  "inviteSmsFailed": "SMS kunde inte skickas: {error}",
+  "@inviteSmsFailed": {
+    "placeholders": {
+      "error": {
+        "type": "Object"
+      }
+    }
+  },
+  "adminInviteHintAuto": "Kunden får ett SMS med en länk, skapar bara lösenord och behåller klient-ID:t. Skickas när du sparar."
 }
