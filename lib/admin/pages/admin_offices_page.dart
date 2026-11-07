@@ -199,6 +199,15 @@ class _AdminOfficesPageState extends State<AdminOfficesPage> {
   /// Valt snabbfilter (index), null = alla.
   int? _filter;
 
+  // Avancerade filter (⚙).
+  String? _country;
+  String? _currency;
+  bool? _hasBalance;
+  String _sort = 'oldest';
+
+  int get _advancedCount =>
+      [_country, _currency, _hasBalance].where((v) => v != null).length;
+
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
@@ -256,6 +265,44 @@ class _AdminOfficesPageState extends State<AdminOfficesPage> {
                 ),
               ];
               int count(int i) => docs.where(filters[i].test).length;
+              bool hasBalance(QueryDocumentSnapshot d) => parseBalances(
+                data(d)['balances'],
+                officeId: d.id,
+              ).values.any((v) => v != 0);
+              String title(QueryDocumentSnapshot d) =>
+                  '${data(d)['country'] ?? ''} – ${data(d)['city'] ?? ''}';
+              final countries = {
+                for (final d in docs) '${data(d)['country'] ?? ''}'.trim(),
+              }.where((c) => c.isNotEmpty).toList()..sort();
+              final allCurrencies = {
+                for (final d in docs)
+                  ...List<String>.from(data(d)['currencies'] ?? []),
+              }.toList()..sort();
+              final items = docs.where((d) {
+                final o = data(d);
+                if (_country != null &&
+                    '${o['country'] ?? ''}'.trim() != _country) {
+                  return false;
+                }
+                if (_currency != null &&
+                    !List<String>.from(
+                      o['currencies'] ?? [],
+                    ).contains(_currency)) {
+                  return false;
+                }
+                if (_hasBalance != null && hasBalance(d) != _hasBalance) {
+                  return false;
+                }
+                return true;
+              }).toList();
+              if (_sort == 'newest') {
+                items.replaceRange(0, items.length, items.reversed.toList());
+              } else if (_sort == 'name') {
+                items.sort(
+                  (a, b) =>
+                      title(a).toLowerCase().compareTo(title(b).toLowerCase()),
+                );
+              }
               final currencyCount = {
                 for (final d in docs)
                   ...List<String>.from(data(d)['currencies'] ?? []),
@@ -301,7 +348,60 @@ class _AdminOfficesPageState extends State<AdminOfficesPage> {
                     ),
                     const SizedBox(height: 16),
                     AdminList<QueryDocumentSnapshot>(
-                      items: docs,
+                      items: items,
+                      advancedCount: _advancedCount,
+                      filterKey: (_country, _currency, _hasBalance, _sort),
+                      onClearAdvanced: () => setState(() {
+                        _country = null;
+                        _currency = null;
+                        _hasBalance = null;
+                        _sort = 'oldest';
+                      }),
+                      advanced: Wrap(
+                        spacing: 16,
+                        runSpacing: 14,
+                        children: [
+                          AdminSelect<String>(
+                            label: l10n.country,
+                            value: _country,
+                            options: [
+                              (null, l10n.statAll),
+                              for (final c in countries) (c, c),
+                            ],
+                            onChanged: (v) => setState(() => _country = v),
+                          ),
+                          AdminSelect<String>(
+                            label: l10n.currency,
+                            value: _currency,
+                            options: [
+                              (null, l10n.statAll),
+                              for (final c in allCurrencies) (c, c),
+                            ],
+                            onChanged: (v) => setState(() => _currency = v),
+                          ),
+                          AdminSelect<bool>(
+                            label: l10n.filterBalance,
+                            value: _hasBalance,
+                            options: [
+                              (null, l10n.statAll),
+                              (true, l10n.filterWithBalance),
+                              (false, l10n.filterWithoutBalance),
+                            ],
+                            onChanged: (v) => setState(() => _hasBalance = v),
+                          ),
+                          AdminSelect<String>(
+                            label: l10n.sortBy,
+                            value: _sort,
+                            options: [
+                              ('oldest', l10n.sortOldest),
+                              ('newest', l10n.sortNewest),
+                              ('name', l10n.sortName),
+                            ],
+                            onChanged: (v) =>
+                                setState(() => _sort = v ?? 'oldest'),
+                          ),
+                        ],
+                      ),
                       searchHint: l10n.searchOfficesLabel,
                       filters: filters,
                       filter: _filter,

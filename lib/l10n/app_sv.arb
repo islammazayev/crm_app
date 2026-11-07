@@ -1834,5 +1834,56 @@
     }
   },
   "showExchanges": "Visa växlingar",
-  "showTransfers": "Visa överföringar"
+  "showTransfers": "Visa överföringar",
+  "filterBalance": "Saldo",
+  "filterWithoutBalance": "Utan saldo",
+  "sortOldest": "Äldst först",
+  "sortOffice": "Kontor",
+  "sortAmount": "Belopp, högst först",
+  "sortBalance": "Saldo i {currency}, högst först",
+  "@sortBalance": {
+    "placeholders": {
+      "currency": {
+        "type": "Object"
+      }
+    }
+  },
+  "filterYes": "Ja",
+  "filterNo": "Nej",
+  "filterCurrencyWithBalance": "Har saldo i valuta",
+  "tierCustomerCount": "{count} kunder",
+  "@tierCustomerCount": {
+    "placeholders": {
+      "count": {
+        "type": "Object"
+      }
+    }
+  },
+  "showCustomers": "Visa kunder",
+  "filterOngoing": "Pågående",
+  "filterCompleted": "Genomförda",
+  "filterRejected": "Avvisade",
+  "filterArchived": "Arkiverade",
+  "filterToday": "Idag",
+  "filterKind": "Typ",
+  "kindBuy": "Köp",
+  "kindSell": "Sälj",
+  "kindTransfer": "Överföring",
+  "filterDate": "Datum",
+  "filterAmount": "Belopp",
+  "filterFrom": "Från",
+  "filterTo": "Till",
+  "showArchivedShort": "Visa arkiverade",
+  "reportTitle": "Rapport och vinst",
+  "ordersSummary": "{total} transaktioner · {archived} arkiverade",
+  "@ordersSummary": {
+    "placeholders": {
+      "total": {
+        "type": "Object"
+      },
+      "archived": {
+        "type": "Object"
+      }
+    }
+  }
 }

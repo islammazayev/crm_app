@@ -2549,4 +2549,91 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get showTransfers => 'Transferleri göster';
+
+  @override
+  String get filterBalance => 'Bakiye';
+
+  @override
+  String get filterWithoutBalance => 'Bakiyesiz';
+
+  @override
+  String get sortOldest => 'Önce en eski';
+
+  @override
+  String get sortOffice => 'Ofis';
+
+  @override
+  String get sortAmount => 'Tutar, en yüksek önce';
+
+  @override
+  String sortBalance(Object currency) {
+    return '$currency bakiyesi, en yüksek önce';
+  }
+
+  @override
+  String get filterYes => 'Evet';
+
+  @override
+  String get filterNo => 'Hayır';
+
+  @override
+  String get filterCurrencyWithBalance => 'Para biriminde bakiyesi var';
+
+  @override
+  String tierCustomerCount(Object count) {
+    return '$count müşteri';
+  }
+
+  @override
+  String get showCustomers => 'Müşterileri göster';
+
+  @override
+  String get filterOngoing => 'Devam eden';
+
+  @override
+  String get filterCompleted => 'Tamamlanan';
+
+  @override
+  String get filterRejected => 'Reddedilen';
+
+  @override
+  String get filterArchived => 'Arşivlenen';
+
+  @override
+  String get filterToday => 'Bugün';
+
+  @override
+  String get filterKind => 'Tür';
+
+  @override
+  String get kindBuy => 'Alış';
+
+  @override
+  String get kindSell => 'Satış';
+
+  @override
+  String get kindTransfer => 'Transfer';
+
+  @override
+  String get filterDate => 'Tarih';
+
+  @override
+  String get filterAmount => 'Tutar';
+
+  @override
+  String get filterFrom => 'En az';
+
+  @override
+  String get filterTo => 'En çok';
+
+  @override
+  String get showArchivedShort => 'Arşivlenenleri göster';
+
+  @override
+  String get reportTitle => 'Rapor ve kâr';
+
+  @override
+  String ordersSummary(Object total, Object archived) {
+    return '$total işlem · $archived arşivlenen';
+  }
 }

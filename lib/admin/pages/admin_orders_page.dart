@@ -11,7 +11,6 @@ import 'package:pdf/widgets.dart' as pw;
 import '../../l10n/app_localizations.dart';
 import '../../l10n/locale_controller.dart';
 import '../../l10n/status_text.dart';
-import '../../lists/order_history_list.dart';
 import '../../models/transaction_model.dart';
 import '../../utils/client_id.dart';
 import '../../utils/csv.dart';
@@ -19,8 +18,11 @@ import '../../utils/search_match.dart';
 import '../../utils/transaction_kind.dart';
 import '../../utils/transaction_no.dart';
 import '../../widgets/confirm_delete.dart';
+import '../../theme/app_theme.dart';
+import '../../utils/money_format.dart';
+import '../../widgets/admin_list.dart';
 import '../../widgets/order_report.dart';
-import '../../widgets/search_summary.dart';
+import '../../widgets/overview_widgets.dart';
 
 /// Admin: orderhistorik med filter på kontor och datum, rapport och export.
 class AdminOrdersPage extends StatefulWidget {
@@ -31,17 +33,51 @@ class AdminOrdersPage extends StatefulWidget {
 }
 
 class _AdminOrdersPageState extends State<AdminOrdersPage> {
-  DateTimeRange? _selectedRange;
-  final _searchController = TextEditingController();
-  String _query = '';
+  /// Valt snabbfilter (index i statusfiltren), null = alla.
+  int? _filter;
+
+  // Avancerade filter (⚙).
+  String? _officeId;
+  String? _currency;
+  String? _kind; // 'buy', 'sell' eller 'transfer'
+  DateTimeRange? _range;
+  final _minCtrl = TextEditingController();
+  final _maxCtrl = TextEditingController();
+  String _sort = 'newest';
 
   @override
   void dispose() {
-    _searchController.dispose();
+    _minCtrl.dispose();
+    _maxCtrl.dispose();
     super.dispose();
   }
 
-  String? _selectedOfficeId; // null = alla kontor
+  double? _num(TextEditingController c) =>
+      double.tryParse(c.text.trim().replaceAll(',', '.').replaceAll(' ', ''));
+
+  int get _advancedCount => [
+    _officeId,
+    _currency,
+    _kind,
+    _range,
+    _num(_minCtrl),
+    _num(_maxCtrl),
+    _showArchived ? true : null,
+  ].where((v) => v != null).length;
+
+  void _clearAdvanced() => setState(() {
+    _officeId = null;
+    _currency = null;
+    _kind = null;
+    _range = null;
+    _minCtrl.clear();
+    _maxCtrl.clear();
+    _showArchived = false;
+    _sort = 'newest';
+  });
+
+  late final _officeStream = officesRef.snapshots();
+  late final _txStream = transactionsRef.snapshots();
 
   CollectionReference get officesRef =>
       FirebaseFirestore.instance.collection('offices');
@@ -404,321 +440,423 @@ class _AdminOrdersPageState extends State<AdminOrdersPage> {
     }
   }
 
+  static DateTime? _dateOf(Map<String, dynamic> data) =>
+      (data['createAt'] as Timestamp? ??
+              data['completedAt'] as Timestamp? ??
+              data['date'] as Timestamp?)
+          ?.toDate();
+
+  static String _kindOf(Map<String, dynamic> data) => isBuyTransaction(data)
+      ? 'buy'
+      : isSellTransaction(data)
+      ? 'sell'
+      : 'transfer';
+
+  static bool _isOpen(String status) =>
+      status != 'completed' && status != 'customer_rejected';
+
+  /// Bygger TransactionModel för rapporten. Läser det nuvarande schemat
+  /// (kundens förfrågningar) och faller tillbaka på äldre fält.
+  TransactionModel _toModel(AppLocalizations l10n, QueryDocumentSnapshot d) {
+    final data = d.data() as Map<String, dynamic>;
+    return TransactionModel(
+      sender: '${data['customerName'] ?? data['sender'] ?? ''}',
+      receiver: (data['receiver'] ?? '').toString(),
+      currency: (data['fromCurrency'] ?? data['currency'] ?? '').toString(),
+      amount: _toDouble(data['amountFrom'] ?? data['amount']),
+      fee: _toDouble(data['feeAmountFrom'] ?? data['fee']),
+      country: (data['country'] ?? '').toString(),
+      city: (data['city'] ?? '').toString(),
+      date: _dateOf(data) ?? DateTime.now(),
+      status: (data['status'] ?? '').toString(),
+      label: formatTransactionNo(data['transactionNo']),
+      toCurrency: (data['toCurrency'] ?? '').toString(),
+      archived: _isArchived(d),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
 
     return Scaffold(
       appBar: AppBar(title: Text(l10n.orderHistory)),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            TextField(
-              controller: _searchController,
-              onChanged: (v) => setState(() => _query = v),
-              decoration: InputDecoration(
-                labelText: l10n.searchTransactionsLabel,
-                hintText: l10n.searchTransactionsHint,
-                prefixIcon: const Icon(Icons.search),
+      body: StreamBuilder<QuerySnapshot>(
+        stream: _officeStream,
+        builder: (context, offSnap) => StreamBuilder<QuerySnapshot>(
+          stream: _txStream,
+          builder: (context, snapshot) {
+            final error = offSnap.error ?? snapshot.error;
+            if (error != null) {
+              return Center(child: Text(l10n.errorWithDetails('$error')));
+            }
+            if (!snapshot.hasData) {
+              return const Center(child: CircularProgressIndicator());
+            }
+            return _content(
+              snapshot.data!.docs,
+              offSnap.data?.docs ?? const [],
+            );
+          },
+        ),
+      ),
+    );
+  }
+
+  Widget _content(
+    List<QueryDocumentSnapshot> txDocs,
+    List<QueryDocumentSnapshot> officeDocs,
+  ) {
+    final l10n = context.l10n;
+    Map<String, dynamic> data(QueryDocumentSnapshot d) =>
+        d.data() as Map<String, dynamic>;
+    final officeLabels = {
+      for (final o in officeDocs)
+        o.id: '${data(o)['country'] ?? ''} – ${data(o)['city'] ?? ''}',
+    };
+    String status(QueryDocumentSnapshot d) => '${data(d)['status'] ?? ''}';
+
+    final now = DateTime.now();
+    final today = DateTimeRange(
+      start: DateTime(now.year, now.month, now.day),
+      end: DateTime(now.year, now.month, now.day),
+    );
+    final active = txDocs.where((d) => !_isArchived(d)).toList();
+    final archived = txDocs.length - active.length;
+    final filters = [
+      AdminFilter<QueryDocumentSnapshot>(
+        l10n.filterOngoing,
+        (d) => _isOpen(status(d)),
+      ),
+      AdminFilter<QueryDocumentSnapshot>(
+        l10n.filterCompleted,
+        (d) => status(d) == 'completed',
+      ),
+      AdminFilter<QueryDocumentSnapshot>(
+        l10n.filterRejected,
+        (d) => status(d) == 'customer_rejected',
+      ),
+    ];
+    final currencies = {
+      for (final d in txDocs) ...[
+        '${data(d)['fromCurrency'] ?? data(d)['currency'] ?? ''}',
+        '${data(d)['toCurrency'] ?? ''}',
+      ],
+    }.where((c) => c.isNotEmpty).toList()..sort();
+
+    final min = _num(_minCtrl);
+    final max = _num(_maxCtrl);
+    final items = txDocs.where((d) {
+      final t = data(d);
+      if (!_showArchived && _isArchived(d)) return false;
+      if (_officeId != null && '${t['officeId'] ?? ''}' != _officeId) {
+        return false;
+      }
+      if (_currency != null &&
+          '${t['fromCurrency'] ?? t['currency'] ?? ''}' != _currency &&
+          '${t['toCurrency'] ?? ''}' != _currency) {
+        return false;
+      }
+      if (_kind != null && _kindOf(t) != _kind) return false;
+      if (!inDateRange(_dateOf(t), _range)) return false;
+      final amount = _toDouble(t['amountFrom'] ?? t['amount']);
+      if (min != null && amount < min) return false;
+      if (max != null && amount > max) return false;
+      return true;
+    }).toList();
+    final epoch = DateTime(2000);
+    switch (_sort) {
+      case 'oldest':
+        items.sort(
+          (a, b) =>
+              (_dateOf(data(a)) ?? epoch).compareTo(_dateOf(data(b)) ?? epoch),
+        );
+      case 'amount':
+        items.sort(
+          (a, b) => _toDouble(
+            data(b)['amountFrom'] ?? data(b)['amount'],
+          ).compareTo(_toDouble(data(a)['amountFrom'] ?? data(a)['amount'])),
+        );
+      default:
+        items.sort(
+          (a, b) =>
+              (_dateOf(data(b)) ?? epoch).compareTo(_dateOf(data(a)) ?? epoch),
+        );
+    }
+
+    Widget amountField(TextEditingController c, String hint) => Expanded(
+      child: TextField(
+        controller: c,
+        keyboardType: const TextInputType.numberWithOptions(decimal: true),
+        onChanged: (_) => setState(() {}),
+        decoration: InputDecoration(hintText: hint, isDense: true),
+      ),
+    );
+
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(24),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            crossAxisAlignment: WrapCrossAlignment.center,
+            alignment: WrapAlignment.spaceBetween,
+            children: [
+              Text(
+                l10n.ordersSummary(active.length, archived),
+                style: TextStyle(color: AppColors.textMuted),
               ),
-            ),
-            const SizedBox(height: 12),
-
-            // Office-filter
-            StreamBuilder<QuerySnapshot>(
-              stream: officesRef.snapshots(),
-              builder: (context, offSnap) {
-                final officeDocs = offSnap.hasData
-                    ? offSnap.data!.docs
-                    : <QueryDocumentSnapshot>[];
-
-                return DropdownButtonFormField<String?>(
-                  key: ValueKey(_selectedOfficeId),
-                  initialValue: _selectedOfficeId,
-                  decoration: InputDecoration(
-                    labelText: l10n.filterByOffice,
-                    border: const OutlineInputBorder(),
-                    contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 8,
-                    ),
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: [
+                  OutlinedButton.icon(
+                    onPressed: _exportToCSV,
+                    icon: const Icon(Icons.table_chart_outlined),
+                    label: Text(l10n.exportCsv),
                   ),
-                  items: [
-                    DropdownMenuItem<String?>(
-                      value: null,
-                      child: Text(l10n.allOffices),
-                    ),
-                    ...officeDocs.map((d) {
-                      final data = d.data() as Map<String, dynamic>;
-                      final label =
-                          '${data['country'] ?? ''} – ${data['city'] ?? ''}';
-                      return DropdownMenuItem<String?>(
-                        value: d.id,
-                        child: Text(label),
-                      );
-                    }),
-                  ],
-                  onChanged: (v) => setState(() => _selectedOfficeId = v),
-                );
-              },
+                  OutlinedButton.icon(
+                    onPressed: _exportToPDF,
+                    icon: const Icon(Icons.picture_as_pdf_outlined),
+                    label: Text(l10n.exportPdf),
+                  ),
+                ],
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          StatRow(
+            stats: [
+              StatData(
+                l10n.filterToday,
+                '${active.where((d) => inDateRange(_dateOf(data(d)), today)).length}',
+                AppColors.textPrimary,
+                onTap: () => setState(() {
+                  _filter = null;
+                  _range = today;
+                }),
+              ),
+              StatData(
+                filters[0].label,
+                '${active.where(filters[0].test).length}',
+                AppColors.warning,
+                onTap: () => setState(() => _filter = 0),
+              ),
+              StatData(
+                filters[1].label,
+                '${active.where(filters[1].test).length}',
+                AppColors.success,
+                onTap: () => setState(() => _filter = 1),
+              ),
+              StatData(
+                l10n.filterArchived,
+                '$archived',
+                AppColors.textMuted,
+                onTap: () => setState(() => _showArchived = true),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          AdminList<QueryDocumentSnapshot>(
+            items: items,
+            searchHint: l10n.searchTransactionsHint,
+            filters: filters,
+            filter: _filter,
+            onFilter: (i) => setState(() => _filter = i),
+            emptyText: l10n.noSearchMatches,
+            advancedCount: _advancedCount,
+            filterKey: (
+              _officeId,
+              _currency,
+              _kind,
+              _range,
+              min,
+              max,
+              _showArchived,
+              _sort,
             ),
-
-            const SizedBox(height: 12),
-
-            // Datumintervall + export
-            Row(
+            onClearAdvanced: _clearAdvanced,
+            advanced: Wrap(
+              spacing: 16,
+              runSpacing: 14,
               children: [
-                ElevatedButton(
-                  onPressed: () async {
-                    final now = DateTime.now();
-                    final picked = await showDateRangePicker(
-                      context: context,
-                      firstDate: DateTime(now.year - 3),
-                      lastDate: DateTime(now.year + 1),
-                      initialDateRange:
-                          _selectedRange ??
-                          DateTimeRange(
-                            start: DateTime(now.year, now.month, now.day),
-                            end: DateTime(now.year, now.month, now.day),
-                          ),
-                    );
-                    if (picked != null) {
-                      setState(() => _selectedRange = picked);
-                    }
-                  },
-                  child: Text(
-                    _selectedRange == null
-                        ? l10n.chooseDateRange
-                        : '${_selectedRange!.start.toLocal().toString().split(' ').first} – ${_selectedRange!.end.toLocal().toString().split(' ').first}',
+                AdminSelect<String>(
+                  label: l10n.office,
+                  value: _officeId,
+                  options: [
+                    (null, l10n.allOffices),
+                    for (final e in officeLabels.entries) (e.key, e.value),
+                  ],
+                  onChanged: (v) => setState(() => _officeId = v),
+                ),
+                AdminSelect<String>(
+                  label: l10n.currency,
+                  value: _currency,
+                  options: [
+                    (null, l10n.statAll),
+                    for (final c in currencies) (c, c),
+                  ],
+                  onChanged: (v) => setState(() => _currency = v),
+                ),
+                AdminSelect<String>(
+                  label: l10n.filterKind,
+                  value: _kind,
+                  options: [
+                    (null, l10n.statAll),
+                    ('buy', l10n.kindBuy),
+                    ('sell', l10n.kindSell),
+                    ('transfer', l10n.kindTransfer),
+                  ],
+                  onChanged: (v) => setState(() => _kind = v),
+                ),
+                AdminDateRange(
+                  label: l10n.filterDate,
+                  range: _range,
+                  onChanged: (r) => setState(() => _range = r),
+                ),
+                AdminFilterField(
+                  l10n.filterAmount,
+                  Row(
+                    children: [
+                      amountField(_minCtrl, l10n.filterFrom),
+                      const Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 6),
+                        child: Text('–'),
+                      ),
+                      amountField(_maxCtrl, l10n.filterTo),
+                    ],
                   ),
                 ),
-                if (_selectedRange != null)
-                  IconButton(
-                    icon: const Icon(Icons.clear),
-                    tooltip: l10n.clearDates,
-                    onPressed: () => setState(() => _selectedRange = null),
-                  ),
-                const Spacer(),
-                ElevatedButton.icon(
-                  onPressed: _exportToCSV,
-                  icon: const Icon(Icons.table_chart),
-                  label: Text(l10n.exportCsv),
+                AdminSelect<String>(
+                  label: l10n.sortBy,
+                  value: _sort,
+                  options: [
+                    ('newest', l10n.sortNewest),
+                    ('oldest', l10n.sortOldest),
+                    ('amount', l10n.sortAmount),
+                  ],
+                  onChanged: (v) => setState(() => _sort = v ?? 'newest'),
                 ),
-                const SizedBox(width: 8),
-                ElevatedButton.icon(
-                  onPressed: _exportToPDF,
-                  icon: const Icon(Icons.picture_as_pdf),
-                  label: Text(l10n.exportPdf),
+                AdminFilterField(
+                  l10n.filterArchived,
+                  SwitchListTile(
+                    contentPadding: EdgeInsets.zero,
+                    dense: true,
+                    title: Text(l10n.showArchivedShort),
+                    value: _showArchived,
+                    onChanged: (v) => setState(() => _showArchived = v),
+                  ),
                 ),
               ],
             ),
-
-            const SizedBox(height: 8),
-
-            // Visa ingenting förrän admin har sökt eller valt datumintervall
-            if (_selectedRange == null && isEmptySearch(_query))
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 32),
-                child: Center(
-                  child: Text(
-                    l10n.searchOrChooseDatesHint,
-                    style: const TextStyle(color: Colors.grey),
-                  ),
+            matches: (d, q) {
+              final t = data(d);
+              final phone = '${t['customerPhone'] ?? ''}';
+              return matchesSearch(
+                q,
+                ids: [
+                  formatClientId(t['clientId']),
+                  '${t['clientId'] ?? ''}',
+                  '${t['transactionNo'] ?? ''}',
+                  '${t['pickupCode'] ?? ''}'.replaceAll('-', ''),
+                  formatTransactionNo(
+                    t['transactionNo'],
+                  ).replaceFirst('T-', ''),
+                ],
+                phones: [phone],
+                texts: [
+                  formatTransactionNo(t['transactionNo']),
+                  '${t['pickupCode'] ?? ''}',
+                  '${t['customerName'] ?? t['sender'] ?? ''}',
+                  phone,
+                  officeLabels['${t['officeId']}'] ?? '',
+                  '${t['fromCurrency'] ?? t['currency'] ?? ''}',
+                  '${t['toCurrency'] ?? ''}',
+                  statusText(l10n, '${t['status'] ?? ''}'),
+                ],
+              );
+            },
+            rowBuilder: (d) => _row(d, officeLabels),
+            footer: (results) => ExpansionTile(
+              leading: const Icon(Icons.insights_outlined),
+              title: Text(l10n.reportTitle),
+              children: [
+                OrderReport(
+                  transactions: results.map((r) => _toModel(l10n, r)).toList(),
                 ),
-              )
-            else
-              // Transaktionslista: kontor, datum och sökning
-              StreamBuilder<QuerySnapshot>(
-                stream: officesRef.snapshots(),
-                builder: (context, offSnap) => StreamBuilder<QuerySnapshot>(
-                  stream: transactionsRef
-                      .orderBy('createAt', descending: true)
-                      .snapshots(),
-                  builder: (context, snapshot) {
-                    if (!snapshot.hasData) {
-                      return const Padding(
-                        padding: EdgeInsets.all(16),
-                        child: Center(child: CircularProgressIndicator()),
-                      );
-                    }
-                    final docs = snapshot.data!.docs;
-
-                    // Filtrera på officeId
-                    var filtered = _selectedOfficeId == null
-                        ? List.of(docs)
-                        : docs
-                              .where(
-                                (d) =>
-                                    (d.data()
-                                        as Map<String, dynamic>)['officeId'] ==
-                                    _selectedOfficeId,
-                              )
-                              .toList();
-
-                    // Filtrera på datum
-                    // Använder createAt (primärt), sedan completedAt, sedan date
-                    if (_selectedRange != null) {
-                      filtered = filtered.where((d) {
-                        final data = d.data() as Map<String, dynamic>;
-                        final date =
-                            (data['createAt'] as Timestamp? ??
-                                    data['completedAt'] as Timestamp? ??
-                                    data['date'] as Timestamp?)
-                                ?.toDate();
-                        if (date == null) return false;
-                        final rangeStart = DateTime(
-                          _selectedRange!.start.year,
-                          _selectedRange!.start.month,
-                          _selectedRange!.start.day,
-                        );
-                        final rangeEnd = DateTime(
-                          _selectedRange!.end.year,
-                          _selectedRange!.end.month,
-                          _selectedRange!.end.day,
-                          23,
-                          59,
-                          59,
-                        );
-                        return !date.isBefore(rangeStart) &&
-                            !date.isAfter(rangeEnd);
-                      }).toList();
-                    }
-
-                    // Filtrera på sökningen
-                    final allMatches = filtered.length;
-                    if (!isEmptySearch(_query)) {
-                      final officeLabels = {
-                        for (final o in offSnap.data?.docs ?? const [])
-                          o.id: () {
-                            final od = o.data() as Map<String, dynamic>;
-                            return '${od['country'] ?? ''} ${od['city'] ?? ''}';
-                          }(),
-                      };
-                      filtered = filtered.where((d) {
-                        final data = d.data() as Map<String, dynamic>;
-                        final phone = '${data['customerPhone'] ?? ''}';
-                        return matchesSearch(
-                          _query,
-                          ids: [
-                            formatClientId(data['clientId']),
-                            '${data['clientId'] ?? ''}',
-                            '${data['transactionNo'] ?? ''}',
-                            '${data['pickupCode'] ?? ''}'.replaceAll('-', ''),
-                            formatTransactionNo(
-                              data['transactionNo'],
-                            ).replaceFirst('T-', ''),
-                          ],
-                          phones: [phone],
-                          texts: [
-                            formatTransactionNo(data['transactionNo']),
-                            '${data['pickupCode'] ?? ''}',
-                            '${data['customerName'] ?? data['sender'] ?? ''}',
-                            phone,
-                            officeLabels['${data['officeId']}'] ?? '',
-                            '${data['fromCurrency'] ?? data['currency'] ?? ''}',
-                            '${data['toCurrency'] ?? ''}',
-                            statusText(l10n, '${data['status'] ?? ''}'),
-                          ],
-                        );
-                      }).toList();
-                    }
-                    // Arkiverade döljs i listan (om de inte ska visas), men
-                    // räknas alltid i rapporten nedan.
-                    final visible = _showArchived
-                        ? filtered
-                        : filtered.where((d) => !_isArchived(d)).toList();
-                    final shown = visible.take(maxSearchResults).toList();
-
-                    // Bygg TransactionModel. Läser det nuvarande schemat
-                    // (kundens förfrågningar) och faller tillbaka på äldre fält.
-                    TransactionModel toModel(QueryDocumentSnapshot d) {
-                      final data = d.data() as Map<String, dynamic>;
-                      final clientId = formatClientId(data['clientId']);
-                      final customerName = (data['customerName'] ?? '')
-                          .toString()
-                          .trim();
-                      final no = formatTransactionNo(data['transactionNo']);
-                      final label = [
-                        if (no.isNotEmpty) no,
-                        if (clientId.isNotEmpty) l10n.clientShort(clientId),
-                        if (customerName.isNotEmpty) customerName,
-                        if (isBuyTransaction(data) || isSellTransaction(data))
-                          transactionSummary(l10n, data),
-                      ].join(' · ');
-
-                      return TransactionModel(
-                        sender: customerName.isNotEmpty
-                            ? customerName
-                            : (data['sender'] ?? '').toString(),
-                        receiver: (data['receiver'] ?? '').toString(),
-                        currency:
-                            (data['fromCurrency'] ?? data['currency'] ?? '')
-                                .toString(),
-                        amount: _toDouble(data['amountFrom'] ?? data['amount']),
-                        fee: _toDouble(data['feeAmountFrom'] ?? data['fee']),
-                        country: (data['country'] ?? '').toString(),
-                        city: (data['city'] ?? '').toString(),
-                        date:
-                            (data['createAt'] as Timestamp? ??
-                                    data['completedAt'] as Timestamp? ??
-                                    data['date'] as Timestamp?)
-                                ?.toDate() ??
-                            DateTime.now(),
-                        status: (data['status'] ?? '').toString(),
-                        label: label,
-                        toCurrency: (data['toCurrency'] ?? '').toString(),
-                        archived: _isArchived(d),
-                      );
-                    }
-
-                    final archivedCount = filtered
-                        .where((d) => _isArchived(d))
-                        .length;
-
-                    return Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        // Rapporten räknar alla träffar (även arkiverade),
-                        // listan visar högst 50.
-                        OrderReport(
-                          transactions: filtered.map(toModel).toList(),
-                        ),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: SearchSummary(
-                                empty: false,
-                                total: allMatches,
-                                matches: visible.length,
-                                shown: shown.length,
-                              ),
-                            ),
-                            if (archivedCount > 0)
-                              FilterChip(
-                                label: Text(l10n.showArchived(archivedCount)),
-                                selected: _showArchived,
-                                onSelected: (v) =>
-                                    setState(() => _showArchived = v),
-                              ),
-                          ],
-                        ),
-                        // Ingen fast höjd: listan växer och sidan scrollar.
-                        OrderHistoryList(
-                          transactions: shown.map(toModel).toList(),
-                          onDelete: (index) => _deleteOrArchive(shown[index]),
-                          onRestore: (index) => _restore(shown[index]),
-                          onEdit: (index) => _editTransaction(shown[index]),
-                        ),
-                      ],
-                    );
-                  },
-                ),
-              ),
-          ],
-        ),
+              ],
+            ),
+          ),
+        ],
       ),
+    );
+  }
+
+  /// En transaktion i listan.
+  Widget _row(QueryDocumentSnapshot d, Map<String, String> officeLabels) {
+    final l10n = context.l10n;
+    final t = d.data() as Map<String, dynamic>;
+    final status = '${t['status'] ?? ''}';
+    final no = formatTransactionNo(t['transactionNo']);
+    final name = '${t['customerName'] ?? t['sender'] ?? ''}'.trim();
+    final clientId = formatClientId(t['clientId']);
+    final at = _dateOf(t);
+    final from = '${t['fromCurrency'] ?? t['currency'] ?? ''}';
+    final to = '${t['toCurrency'] ?? ''}';
+    final amount = _toDouble(t['amountFrom'] ?? t['amount']);
+    final kind = _kindOf(t);
+    final archived = _isArchived(d);
+    return AdminRow(
+      avatar: AdminAvatar(
+        icon: switch (kind) {
+          'buy' => Icons.south_west,
+          'sell' => Icons.north_east,
+          _ => Icons.swap_horiz,
+        },
+      ),
+      title: [
+        if (no.isNotEmpty) no,
+        if (name.isNotEmpty)
+          name
+        else if (clientId.isNotEmpty)
+          l10n.clientShort(clientId),
+      ].join(' · '),
+      subtitle: [
+        if (at != null) formatDateTime(context, at),
+        if (officeLabels['${t['officeId']}'] != null)
+          officeLabels['${t['officeId']}']!,
+      ].join(' · '),
+      columns: [
+        '${formatMoney(amount)} $from${to.isEmpty ? '' : ' → $to'}',
+        if (isBuyTransaction(t) || isSellTransaction(t))
+          transactionSummary(l10n, t)
+        else
+          clientId.isEmpty ? '' : l10n.clientShort(clientId),
+      ],
+      pill: archived
+          ? AdminPill(l10n.filterArchived, AppColors.textMuted)
+          : AdminPill(statusText(l10n, status), statusColor(status)),
+      onTap: () => _editTransaction(d),
+      actions: [
+        AdminAction(l10n.edit, Icons.edit_outlined, () => _editTransaction(d)),
+        if (archived)
+          AdminAction(
+            l10n.restoreAction,
+            Icons.unarchive_outlined,
+            () => _restore(d),
+          )
+        else
+          AdminAction(
+            status == 'completed' ? l10n.archiveAction : l10n.deleteAction,
+            status == 'completed'
+                ? Icons.archive_outlined
+                : Icons.delete_outline,
+            () => _deleteOrArchive(d),
+            danger: status != 'completed',
+          ),
+      ],
     );
   }
 }

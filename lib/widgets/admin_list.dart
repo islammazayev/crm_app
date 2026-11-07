@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../l10n/locale_controller.dart';
 import '../theme/app_theme.dart';
+import 'overview_widgets.dart';
 
 /// Gemensam design för admin-sidornas listor (kunder, kontor, managers,
 /// kassörer, partner): rubrikrad, sök med snabbfilter, rader och sidor.
@@ -320,6 +321,18 @@ class AdminList<T> extends StatefulWidget {
   final String emptyText;
   final int pageSize;
 
+  /// Panelen med avancerade filter (⚙), byggd av sidan. Sidan filtrerar
+  /// och sorterar `items` själv; `filterKey` ändras när filtren ändras så
+  /// att listan går tillbaka till första sidan.
+  final Widget? advanced;
+  final int advancedCount;
+  final VoidCallback? onClearAdvanced;
+  final Object? filterKey;
+
+  /// Visas under listan och får alla träffar (efter sök och filter),
+  /// t.ex. en rapport.
+  final Widget Function(List<T> results)? footer;
+
   const AdminList({
     super.key,
     required this.items,
@@ -331,6 +344,11 @@ class AdminList<T> extends StatefulWidget {
     this.filter,
     required this.onFilter,
     this.pageSize = 20,
+    this.advanced,
+    this.advancedCount = 0,
+    this.onClearAdvanced,
+    this.filterKey,
+    this.footer,
   });
 
   @override
@@ -341,11 +359,14 @@ class _AdminListState<T> extends State<AdminList<T>> {
   final _search = TextEditingController();
   String _query = '';
   int _page = 0;
+  bool _showAdvanced = false;
 
   @override
   void didUpdateWidget(AdminList<T> old) {
     super.didUpdateWidget(old);
-    if (old.filter != widget.filter) _page = 0;
+    if (old.filter != widget.filter || old.filterKey != widget.filterKey) {
+      _page = 0;
+    }
   }
 
   @override
@@ -392,9 +413,11 @@ class _AdminListState<T> extends State<AdminList<T>> {
               decoration: InputDecoration(
                 hintText: widget.searchHint,
                 prefixIcon: const Icon(Icons.search),
-                suffixIcon: _query.isEmpty
-                    ? null
-                    : IconButton(
+                suffixIcon: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    if (_query.isNotEmpty)
+                      IconButton(
                         tooltip: l10n.clearSearch,
                         icon: const Icon(Icons.clear),
                         onPressed: () => setState(() {
@@ -403,6 +426,24 @@ class _AdminListState<T> extends State<AdminList<T>> {
                           _page = 0;
                         }),
                       ),
+                    if (widget.advanced != null)
+                      IconButton(
+                        tooltip: l10n.advancedFilters,
+                        icon: Badge(
+                          isLabelVisible: widget.advancedCount > 0,
+                          label: Text('${widget.advancedCount}'),
+                          child: Icon(
+                            Icons.tune,
+                            color: _showAdvanced || widget.advancedCount > 0
+                                ? AppColors.primary
+                                : AppColors.textMuted,
+                          ),
+                        ),
+                        onPressed: () =>
+                            setState(() => _showAdvanced = !_showAdvanced),
+                      ),
+                  ],
+                ),
               ),
             ),
           ),
@@ -429,6 +470,30 @@ class _AdminListState<T> extends State<AdminList<T>> {
                 ],
               ),
             ),
+          if (widget.advanced != null)
+            AnimatedSize(
+              duration: const Duration(milliseconds: 200),
+              alignment: Alignment.topCenter,
+              child: _showAdvanced
+                  ? Container(
+                      width: double.infinity,
+                      color: AppColors.surface2,
+                      padding: const EdgeInsets.all(12),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          widget.advanced!,
+                          const SizedBox(height: 10),
+                          TextButton.icon(
+                            icon: const Icon(Icons.filter_alt_off_outlined),
+                            label: Text(l10n.clearFilters),
+                            onPressed: widget.onClearAdvanced,
+                          ),
+                        ],
+                      ),
+                    )
+                  : const SizedBox(width: double.infinity),
+            ),
           Divider(height: 1, color: AppColors.surfaceBorder),
           if (results.isEmpty)
             Padding(
@@ -447,8 +512,137 @@ class _AdminListState<T> extends State<AdminList<T>> {
               total: results.length,
               onPage: (p) => setState(() => _page = p),
             ),
+          if (widget.footer != null && results.isNotEmpty)
+            widget.footer!(results),
         ],
       ),
     );
   }
+}
+
+/// Ett fält i panelen med avancerade filter: rubrik och kontroll.
+class AdminFilterField extends StatelessWidget {
+  final String label;
+  final Widget child;
+
+  const AdminFilterField(this.label, this.child, {super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: 230,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            label,
+            style: TextStyle(color: AppColors.textMuted, fontSize: 12),
+          ),
+          const SizedBox(height: 6),
+          child,
+        ],
+      ),
+    );
+  }
+}
+
+/// Rullgardin i filterpanelen. Första valet (null) betyder "alla".
+class AdminSelect<V> extends StatelessWidget {
+  final String label;
+  final V? value;
+  final List<(V?, String)> options;
+  final ValueChanged<V?> onChanged;
+
+  const AdminSelect({
+    super.key,
+    required this.label,
+    required this.value,
+    required this.options,
+    required this.onChanged,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final known = options.any((o) => o.$1 == value);
+    return AdminFilterField(
+      label,
+      DropdownButtonFormField<V?>(
+        key: ValueKey('$label-$value'),
+        initialValue: known ? value : null,
+        isExpanded: true,
+        items: [
+          for (final (v, text) in options)
+            DropdownMenuItem<V?>(
+              value: v,
+              child: Text(text, overflow: TextOverflow.ellipsis),
+            ),
+        ],
+        onChanged: onChanged,
+      ),
+    );
+  }
+}
+
+/// Datumintervall i filterpanelen.
+class AdminDateRange extends StatelessWidget {
+  final String label;
+  final DateTimeRange? range;
+  final ValueChanged<DateTimeRange?> onChanged;
+
+  const AdminDateRange({
+    super.key,
+    required this.label,
+    required this.range,
+    required this.onChanged,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    String day(DateTime d) => formatDay(context, d);
+    final r = range;
+    return AdminFilterField(
+      label,
+      Row(
+        children: [
+          Expanded(
+            child: OutlinedButton.icon(
+              icon: const Icon(Icons.date_range, size: 18),
+              label: Text(
+                r == null
+                    ? l10n.filterAnyDate
+                    : '${day(r.start)} – ${day(r.end)}',
+                overflow: TextOverflow.ellipsis,
+              ),
+              onPressed: () async {
+                final now = DateTime.now();
+                final picked = await showDateRangePicker(
+                  context: context,
+                  firstDate: DateTime(2020),
+                  lastDate: DateTime(now.year + 1),
+                  initialDateRange: r,
+                );
+                if (picked != null) onChanged(picked);
+              },
+            ),
+          ),
+          if (r != null)
+            IconButton(
+              tooltip: l10n.clearDates,
+              icon: const Icon(Icons.clear, size: 18),
+              onPressed: () => onChanged(null),
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Sant om [at] ligger inom [range] (slutdagen räknas med hela dagen).
+bool inDateRange(DateTime? at, DateTimeRange? range) {
+  if (range == null) return true;
+  if (at == null) return false;
+  final start = DateTime(range.start.year, range.start.month, range.start.day);
+  final end = DateTime(range.end.year, range.end.month, range.end.day + 1);
+  return !at.isBefore(start) && at.isBefore(end);
 }

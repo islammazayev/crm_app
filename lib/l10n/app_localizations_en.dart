@@ -2559,4 +2559,91 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get showTransfers => 'Show transfers';
+
+  @override
+  String get filterBalance => 'Balance';
+
+  @override
+  String get filterWithoutBalance => 'Without balance';
+
+  @override
+  String get sortOldest => 'Oldest first';
+
+  @override
+  String get sortOffice => 'Office';
+
+  @override
+  String get sortAmount => 'Amount, highest first';
+
+  @override
+  String sortBalance(Object currency) {
+    return 'Balance in $currency, highest first';
+  }
+
+  @override
+  String get filterYes => 'Yes';
+
+  @override
+  String get filterNo => 'No';
+
+  @override
+  String get filterCurrencyWithBalance => 'Has balance in currency';
+
+  @override
+  String tierCustomerCount(Object count) {
+    return '$count customers';
+  }
+
+  @override
+  String get showCustomers => 'Show customers';
+
+  @override
+  String get filterOngoing => 'Ongoing';
+
+  @override
+  String get filterCompleted => 'Completed';
+
+  @override
+  String get filterRejected => 'Rejected';
+
+  @override
+  String get filterArchived => 'Archived';
+
+  @override
+  String get filterToday => 'Today';
+
+  @override
+  String get filterKind => 'Type';
+
+  @override
+  String get kindBuy => 'Buy';
+
+  @override
+  String get kindSell => 'Sell';
+
+  @override
+  String get kindTransfer => 'Transfer';
+
+  @override
+  String get filterDate => 'Date';
+
+  @override
+  String get filterAmount => 'Amount';
+
+  @override
+  String get filterFrom => 'From';
+
+  @override
+  String get filterTo => 'To';
+
+  @override
+  String get showArchivedShort => 'Show archived';
+
+  @override
+  String get reportTitle => 'Report and profit';
+
+  @override
+  String ordersSummary(Object total, Object archived) {
+    return '$total transactions · $archived archived';
+  }
 }

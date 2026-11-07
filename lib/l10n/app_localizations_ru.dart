@@ -2566,4 +2566,91 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get showTransfers => 'Показать переводы';
+
+  @override
+  String get filterBalance => 'Баланс';
+
+  @override
+  String get filterWithoutBalance => 'Без баланса';
+
+  @override
+  String get sortOldest => 'Сначала старые';
+
+  @override
+  String get sortOffice => 'Офис';
+
+  @override
+  String get sortAmount => 'Сумма, по убыванию';
+
+  @override
+  String sortBalance(Object currency) {
+    return 'Баланс в $currency, по убыванию';
+  }
+
+  @override
+  String get filterYes => 'Да';
+
+  @override
+  String get filterNo => 'Нет';
+
+  @override
+  String get filterCurrencyWithBalance => 'Есть баланс в валюте';
+
+  @override
+  String tierCustomerCount(Object count) {
+    return 'Клиентов: $count';
+  }
+
+  @override
+  String get showCustomers => 'Показать клиентов';
+
+  @override
+  String get filterOngoing => 'В процессе';
+
+  @override
+  String get filterCompleted => 'Завершённые';
+
+  @override
+  String get filterRejected => 'Отклонённые';
+
+  @override
+  String get filterArchived => 'В архиве';
+
+  @override
+  String get filterToday => 'Сегодня';
+
+  @override
+  String get filterKind => 'Тип';
+
+  @override
+  String get kindBuy => 'Покупка';
+
+  @override
+  String get kindSell => 'Продажа';
+
+  @override
+  String get kindTransfer => 'Перевод';
+
+  @override
+  String get filterDate => 'Дата';
+
+  @override
+  String get filterAmount => 'Сумма';
+
+  @override
+  String get filterFrom => 'От';
+
+  @override
+  String get filterTo => 'До';
+
+  @override
+  String get showArchivedShort => 'Показать архив';
+
+  @override
+  String get reportTitle => 'Отчёт и прибыль';
+
+  @override
+  String ordersSummary(Object total, Object archived) {
+    return 'Транзакций: $total · в архиве: $archived';
+  }
 }
