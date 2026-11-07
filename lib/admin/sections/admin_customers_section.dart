@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 import '../../forms/customer_form.dart';
+import '../../widgets/add_panel.dart';
 import '../../l10n/locale_controller.dart';
 import '../../theme/app_theme.dart';
 import '../../utils/customer_search.dart';
@@ -379,23 +380,27 @@ class _AdminCustomersSectionState extends State<AdminCustomersSection> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        CustomerForm(
-          onSubmit:
-              ({
-                int? clientId,
-                required String firstName,
-                required String lastName,
-                required String phone,
-                String email = '',
-              }) async {
-                await _addCustomer(
-                  clientId: clientId,
-                  firstName: firstName,
-                  lastName: lastName,
-                  phone: phone,
-                  email: email,
-                );
-              },
+        AddPanel(
+          label: l10n.addCustomer,
+          builder: (context, close) => CustomerForm(
+            onSubmit:
+                ({
+                  int? clientId,
+                  required String firstName,
+                  required String lastName,
+                  required String phone,
+                  String email = '',
+                }) async {
+                  await _addCustomer(
+                    clientId: clientId,
+                    firstName: firstName,
+                    lastName: lastName,
+                    phone: phone,
+                    email: email,
+                  );
+                  close();
+                },
+          ),
         ),
         const SizedBox(height: 24),
         Text(

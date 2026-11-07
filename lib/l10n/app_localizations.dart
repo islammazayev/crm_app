@@ -4139,6 +4139,36 @@ abstract class AppLocalizations {
   /// In sv, this message translates to:
   /// **'Extra stor'**
   String get textSizeExtraLarge;
+
+  /// No description provided for @addCustomer.
+  ///
+  /// In sv, this message translates to:
+  /// **'Lägg till kund'**
+  String get addCustomer;
+
+  /// No description provided for @addOffice.
+  ///
+  /// In sv, this message translates to:
+  /// **'Lägg till kontor'**
+  String get addOffice;
+
+  /// No description provided for @addManager.
+  ///
+  /// In sv, this message translates to:
+  /// **'Lägg till manager'**
+  String get addManager;
+
+  /// No description provided for @addCashier.
+  ///
+  /// In sv, this message translates to:
+  /// **'Lägg till kassör'**
+  String get addCashier;
+
+  /// No description provided for @addPartner.
+  ///
+  /// In sv, this message translates to:
+  /// **'Lägg till partner'**
+  String get addPartner;
 }
 
 class _AppLocalizationsDelegate

@@ -2426,4 +2426,19 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get textSizeExtraLarge => 'Extra large';
+
+  @override
+  String get addCustomer => 'Add customer';
+
+  @override
+  String get addOffice => 'Add office';
+
+  @override
+  String get addManager => 'Add manager';
+
+  @override
+  String get addCashier => 'Add cashier';
+
+  @override
+  String get addPartner => 'Add partner';
 }

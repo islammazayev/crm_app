@@ -16,6 +16,7 @@ import '../../utils/balances.dart';
 import '../../utils/currencies.dart';
 import '../../utils/merged_query.dart';
 import '../../utils/search_match.dart';
+import '../../widgets/add_panel.dart';
 import '../../widgets/confirm_delete.dart';
 import '../../widgets/partner_exchanges.dart';
 import '../../widgets/search_summary.dart';
@@ -37,6 +38,7 @@ class _StaffTexts {
   final String create;
   final String created;
   final String Function(String error) couldNotCreate;
+  final String add;
 
   const _StaffTexts({
     required this.title,
@@ -51,6 +53,7 @@ class _StaffTexts {
     required this.create,
     required this.created,
     required this.couldNotCreate,
+    required this.add,
   });
 
   factory _StaffTexts.of(StaffType type, AppLocalizations l10n) =>
@@ -68,6 +71,7 @@ class _StaffTexts {
           create: l10n.createCashier,
           created: l10n.cashierCreated,
           couldNotCreate: l10n.couldNotCreateCashier,
+          add: l10n.addCashier,
         )
       : _StaffTexts(
           title: l10n.partners,
@@ -82,6 +86,7 @@ class _StaffTexts {
           create: l10n.createPartner,
           created: l10n.partnerCreated,
           couldNotCreate: l10n.couldNotCreatePartner,
+          add: l10n.addPartner,
         );
 }
 
@@ -467,10 +472,14 @@ class _AdminCashiersPageState extends State<AdminCashiersPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _CreateCashierForm(
-                  type: widget.type,
-                  links: links,
-                  saveLinks: _saveLinks,
+                AddPanel(
+                  label: texts.add,
+                  builder: (context, close) => _CreateCashierForm(
+                    type: widget.type,
+                    links: links,
+                    saveLinks: _saveLinks,
+                    onCreated: close,
+                  ),
                 ),
                 const SizedBox(height: 32),
                 Text(
@@ -745,10 +754,14 @@ class _CreateCashierForm extends StatefulWidget {
   })
   saveLinks;
 
+  /// Anropas när kontot är skapat (t.ex. för att stänga formuläret).
+  final VoidCallback? onCreated;
+
   const _CreateCashierForm({
     required this.type,
     required this.links,
     required this.saveLinks,
+    this.onCreated,
   });
 
   @override
@@ -830,6 +843,7 @@ class _CreateCashierFormState extends State<_CreateCashierForm> {
         _officeId = null;
         _managerId = null;
       });
+      widget.onCreated?.call();
     } on FirebaseAuthException catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(

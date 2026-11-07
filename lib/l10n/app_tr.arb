@@ -671,5 +671,10 @@
   "textSizeSmall": "Küçük",
   "textSizeNormal": "Normal",
   "textSizeLarge": "Büyük",
-  "textSizeExtraLarge": "Çok büyük"
+  "textSizeExtraLarge": "Çok büyük",
+  "addCustomer": "Müşteri ekle",
+  "addOffice": "Ofis ekle",
+  "addManager": "Yönetici ekle",
+  "addCashier": "Kasiyer ekle",
+  "addPartner": "Ortak ekle"
 }

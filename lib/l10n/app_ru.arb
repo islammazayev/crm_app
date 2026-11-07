@@ -671,5 +671,10 @@
   "textSizeSmall": "Мелкий",
   "textSizeNormal": "Обычный",
   "textSizeLarge": "Крупный",
-  "textSizeExtraLarge": "Очень крупный"
+  "textSizeExtraLarge": "Очень крупный",
+  "addCustomer": "Добавить клиента",
+  "addOffice": "Добавить офис",
+  "addManager": "Добавить менеджера",
+  "addCashier": "Добавить кассира",
+  "addPartner": "Добавить партнёра"
 }

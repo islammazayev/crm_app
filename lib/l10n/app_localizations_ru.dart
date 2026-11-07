@@ -2433,4 +2433,19 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get textSizeExtraLarge => 'Очень крупный';
+
+  @override
+  String get addCustomer => 'Добавить клиента';
+
+  @override
+  String get addOffice => 'Добавить офис';
+
+  @override
+  String get addManager => 'Добавить менеджера';
+
+  @override
+  String get addCashier => 'Добавить кассира';
+
+  @override
+  String get addPartner => 'Добавить партнёра';
 }
