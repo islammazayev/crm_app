@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 import '../l10n/app_localizations.dart';
 import '../l10n/locale_controller.dart';
@@ -268,12 +269,20 @@ class ListPanel extends StatelessWidget {
   }
 }
 
-/// En rad i [ListPanel]: text till vänster, färgad etikett till höger.
+/// Datum och tid efter appens språk, t.ex. "7 nov. 2026 14:32".
+String formatDateTime(BuildContext context, DateTime at) {
+  final locale = Localizations.localeOf(context).toString();
+  return DateFormat.yMMMd(locale).add_Hm().format(at.toLocal());
+}
+
+/// En rad i [ListPanel]: text till vänster, färgad etikett och datum till
+/// höger.
 class StatusRow extends StatelessWidget {
   final String title;
   final String subtitle;
   final String status;
   final Color color;
+  final DateTime? date;
   final VoidCallback? onTap;
 
   const StatusRow({
@@ -282,6 +291,7 @@ class StatusRow extends StatelessWidget {
     required this.status,
     required this.color,
     this.subtitle = '',
+    this.date,
     this.onTap,
   });
 
@@ -317,19 +327,34 @@ class StatusRow extends StatelessWidget {
               ),
             ),
             const SizedBox(width: 10),
-            Container(
-              constraints: const BoxConstraints(maxWidth: 140),
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-              decoration: BoxDecoration(
-                color: color.withValues(alpha: 0.14),
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: Text(
-                status,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: TextStyle(color: color, fontSize: 12),
-              ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Container(
+                  constraints: const BoxConstraints(maxWidth: 140),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 4,
+                  ),
+                  decoration: BoxDecoration(
+                    color: color.withValues(alpha: 0.14),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Text(
+                    status,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(color: color, fontSize: 12),
+                  ),
+                ),
+                if (date != null) ...[
+                  const SizedBox(height: 4),
+                  Text(
+                    formatDateTime(context, date!),
+                    style: TextStyle(color: AppColors.textMuted, fontSize: 12),
+                  ),
+                ],
+              ],
             ),
           ],
         ),

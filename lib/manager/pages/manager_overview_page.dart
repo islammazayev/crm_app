@@ -196,6 +196,7 @@ class _ManagerOverviewPageState extends State<ManagerOverviewPage> {
                   rows: [
                     for (final d in needs.take(8))
                       StatusRow(
+                        date: (d.data()['createAt'] as Timestamp?)?.toDate(),
                         title: [
                           formatTransactionNo(d.data()['transactionNo']),
                           '${d.data()['customerName'] ?? ''}'.trim(),
