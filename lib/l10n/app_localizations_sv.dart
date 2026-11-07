@@ -2446,4 +2446,81 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String get addPartner => 'Lägg till partner';
+
+  @override
+  String customersSummary(Object total, Object withAccount) {
+    return '$total kunder · $withAccount med konto i appen';
+  }
+
+  @override
+  String get filterWithAccount => 'Med konto';
+
+  @override
+  String get filterWithoutAccount => 'Utan konto';
+
+  @override
+  String get filterWithTier => 'Med nivå';
+
+  @override
+  String get newThisMonth => 'Nya denna månad';
+
+  @override
+  String get advancedFilters => 'Avancerade filter';
+
+  @override
+  String get filterTier => 'Nivå';
+
+  @override
+  String get filterPlace => 'Ort';
+
+  @override
+  String get filterLastTransaction => 'Senaste transaktion';
+
+  @override
+  String get filterAnyDate => 'När som helst';
+
+  @override
+  String filterWithinDays(Object days) {
+    return 'Senaste $days dagarna';
+  }
+
+  @override
+  String get filterNever => 'Aldrig';
+
+  @override
+  String get filterCreated => 'Skapad';
+
+  @override
+  String get sortBy => 'Sortera';
+
+  @override
+  String get sortNewest => 'Nyast först';
+
+  @override
+  String get sortName => 'Namn A–Ö';
+
+  @override
+  String get sortClientId => 'Klient-ID';
+
+  @override
+  String get clearFilters => 'Rensa filter';
+
+  @override
+  String showingRange(Object from, Object to, Object total) {
+    return 'Visar $from–$to av $total';
+  }
+
+  @override
+  String get previousPage => 'Föregående sida';
+
+  @override
+  String get nextPage => 'Nästa sida';
+
+  @override
+  String lastActivityValue(Object date) {
+    return 'senast $date';
+  }
+
+  @override
+  String get moreActions => 'Fler val';
 }

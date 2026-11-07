@@ -4169,6 +4169,144 @@ abstract class AppLocalizations {
   /// In sv, this message translates to:
   /// **'Lägg till partner'**
   String get addPartner;
+
+  /// No description provided for @customersSummary.
+  ///
+  /// In sv, this message translates to:
+  /// **'{total} kunder · {withAccount} med konto i appen'**
+  String customersSummary(Object total, Object withAccount);
+
+  /// No description provided for @filterWithAccount.
+  ///
+  /// In sv, this message translates to:
+  /// **'Med konto'**
+  String get filterWithAccount;
+
+  /// No description provided for @filterWithoutAccount.
+  ///
+  /// In sv, this message translates to:
+  /// **'Utan konto'**
+  String get filterWithoutAccount;
+
+  /// No description provided for @filterWithTier.
+  ///
+  /// In sv, this message translates to:
+  /// **'Med nivå'**
+  String get filterWithTier;
+
+  /// No description provided for @newThisMonth.
+  ///
+  /// In sv, this message translates to:
+  /// **'Nya denna månad'**
+  String get newThisMonth;
+
+  /// No description provided for @advancedFilters.
+  ///
+  /// In sv, this message translates to:
+  /// **'Avancerade filter'**
+  String get advancedFilters;
+
+  /// No description provided for @filterTier.
+  ///
+  /// In sv, this message translates to:
+  /// **'Nivå'**
+  String get filterTier;
+
+  /// No description provided for @filterPlace.
+  ///
+  /// In sv, this message translates to:
+  /// **'Ort'**
+  String get filterPlace;
+
+  /// No description provided for @filterLastTransaction.
+  ///
+  /// In sv, this message translates to:
+  /// **'Senaste transaktion'**
+  String get filterLastTransaction;
+
+  /// No description provided for @filterAnyDate.
+  ///
+  /// In sv, this message translates to:
+  /// **'När som helst'**
+  String get filterAnyDate;
+
+  /// No description provided for @filterWithinDays.
+  ///
+  /// In sv, this message translates to:
+  /// **'Senaste {days} dagarna'**
+  String filterWithinDays(Object days);
+
+  /// No description provided for @filterNever.
+  ///
+  /// In sv, this message translates to:
+  /// **'Aldrig'**
+  String get filterNever;
+
+  /// No description provided for @filterCreated.
+  ///
+  /// In sv, this message translates to:
+  /// **'Skapad'**
+  String get filterCreated;
+
+  /// No description provided for @sortBy.
+  ///
+  /// In sv, this message translates to:
+  /// **'Sortera'**
+  String get sortBy;
+
+  /// No description provided for @sortNewest.
+  ///
+  /// In sv, this message translates to:
+  /// **'Nyast först'**
+  String get sortNewest;
+
+  /// No description provided for @sortName.
+  ///
+  /// In sv, this message translates to:
+  /// **'Namn A–Ö'**
+  String get sortName;
+
+  /// No description provided for @sortClientId.
+  ///
+  /// In sv, this message translates to:
+  /// **'Klient-ID'**
+  String get sortClientId;
+
+  /// No description provided for @clearFilters.
+  ///
+  /// In sv, this message translates to:
+  /// **'Rensa filter'**
+  String get clearFilters;
+
+  /// No description provided for @showingRange.
+  ///
+  /// In sv, this message translates to:
+  /// **'Visar {from}–{to} av {total}'**
+  String showingRange(Object from, Object to, Object total);
+
+  /// No description provided for @previousPage.
+  ///
+  /// In sv, this message translates to:
+  /// **'Föregående sida'**
+  String get previousPage;
+
+  /// No description provided for @nextPage.
+  ///
+  /// In sv, this message translates to:
+  /// **'Nästa sida'**
+  String get nextPage;
+
+  /// No description provided for @lastActivityValue.
+  ///
+  /// In sv, this message translates to:
+  /// **'senast {date}'**
+  String lastActivityValue(Object date);
+
+  /// No description provided for @moreActions.
+  ///
+  /// In sv, this message translates to:
+  /// **'Fler val'**
+  String get moreActions;
 }
 
 class _AppLocalizationsDelegate
