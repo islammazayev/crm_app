@@ -471,7 +471,7 @@ class _ManagerTransactionDetailScreenState
     return showDialog<void>(
       context: context,
       builder: (ctx) => AlertDialog(
-        icon: const Icon(
+        icon: Icon(
           Icons.account_balance_wallet_outlined,
           color: AppColors.warning,
           size: 40,
@@ -498,7 +498,7 @@ class _ManagerTransactionDetailScreenState
             Text(
               l10n.lowBalancePartnerHint(currency),
               textAlign: TextAlign.center,
-              style: const TextStyle(color: AppColors.textMuted),
+              style: TextStyle(color: AppColors.textMuted),
             ),
           ],
         ),

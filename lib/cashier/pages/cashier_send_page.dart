@@ -198,10 +198,7 @@ class _CashierSendPageState extends State<CashierSendPage> {
                 const SizedBox(height: 8),
                 Text(
                   l10n.transferReservedHint,
-                  style: const TextStyle(
-                    color: AppColors.textMuted,
-                    fontSize: 12,
-                  ),
+                  style: TextStyle(color: AppColors.textMuted, fontSize: 12),
                 ),
                 const SizedBox(height: 16),
                 SizedBox(

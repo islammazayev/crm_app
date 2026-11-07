@@ -61,7 +61,7 @@ class PayMethodPicker extends StatelessWidget {
                     ? l10n.walkInCashHint
                     : l10n.walkInBankHint)
               : (value == PayMethod.cash ? l10n.payCashHint : l10n.payBankHint),
-          style: const TextStyle(color: AppColors.textMuted, fontSize: 13),
+          style: TextStyle(color: AppColors.textMuted, fontSize: 13),
         ),
       ],
     );
@@ -107,7 +107,7 @@ class OfficeAddressCard extends StatelessWidget {
                 // Liten informationsrad, inte en rubrik.
                 Row(
                   children: [
-                    const Icon(
+                    Icon(
                       Icons.place_outlined,
                       size: 16,
                       color: AppColors.textMuted,
@@ -116,7 +116,7 @@ class OfficeAddressCard extends StatelessWidget {
                     Expanded(
                       child: Text(
                         title,
-                        style: const TextStyle(
+                        style: TextStyle(
                           color: AppColors.textMuted,
                           fontSize: 13,
                         ),

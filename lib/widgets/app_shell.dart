@@ -122,7 +122,7 @@ class AppShellState extends State<AppShell> {
                   onTap: () => Navigator.pop(ctx, a.onTap),
                 ),
               ListTile(
-                leading: const Icon(Icons.logout, color: AppColors.error),
+                leading: Icon(Icons.logout, color: AppColors.error),
                 title: Text(l10n.logout),
                 onTap: () => Navigator.pop(ctx, () => signOutToLogin(context)),
               ),
@@ -253,7 +253,7 @@ class _BottomMenu extends StatelessWidget {
               onTap: action.onTap,
               child: Padding(
                 padding: const EdgeInsets.all(10),
-                child: Icon(action.icon, color: const Color(0xFF003300)),
+                child: Icon(action.icon, color: AppColors.onPrimary),
               ),
             ),
           ),
@@ -274,7 +274,7 @@ class _BottomMenu extends StatelessWidget {
       ),
     );
     return Container(
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         color: AppColors.surface,
         border: Border(top: BorderSide(color: AppColors.surfaceBorder)),
       ),
@@ -301,7 +301,7 @@ class GreenTexLogo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Text.rich(
-      const TextSpan(
+      TextSpan(
         text: 'Green',
         children: [
           TextSpan(
@@ -336,7 +336,7 @@ class _SideMenu extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: 232,
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         color: AppColors.surface,
         border: Border(right: BorderSide(color: AppColors.surfaceBorder)),
       ),
@@ -362,7 +362,7 @@ class _SideMenu extends StatelessWidget {
                 ],
               ),
             ),
-            const Divider(height: 1, color: AppColors.surfaceBorder),
+            Divider(height: 1, color: AppColors.surfaceBorder),
             Padding(
               padding: const EdgeInsets.all(12),
               child: Column(
@@ -434,7 +434,7 @@ class _SideItem extends StatelessWidget {
                 if (badge > 0)
                   Text(
                     '$badge',
-                    style: const TextStyle(
+                    style: TextStyle(
                       color: AppColors.warning,
                       fontWeight: FontWeight.w600,
                     ),

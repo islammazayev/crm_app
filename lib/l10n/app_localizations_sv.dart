@@ -2395,4 +2395,40 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String get statAll => 'Alla';
+
+  @override
+  String get settingsAppearance => 'Utseende';
+
+  @override
+  String get settingsTheme => 'Tema';
+
+  @override
+  String get themeGreentex => 'GreenTex (mörkt grönt)';
+
+  @override
+  String get themeOcean => 'Ocean (mörkblått)';
+
+  @override
+  String get themeGold => 'Guld (mörkt med guld)';
+
+  @override
+  String get themeViolet => 'Violett (mörkt lila)';
+
+  @override
+  String get themeLight => 'Ljust';
+
+  @override
+  String get settingsTextSize => 'Textstorlek';
+
+  @override
+  String get textSizeSmall => 'Liten';
+
+  @override
+  String get textSizeNormal => 'Normal';
+
+  @override
+  String get textSizeLarge => 'Stor';
+
+  @override
+  String get textSizeExtraLarge => 'Extra stor';
 }

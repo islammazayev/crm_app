@@ -2397,4 +2397,40 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get statAll => 'Все';
+
+  @override
+  String get settingsAppearance => 'Оформление';
+
+  @override
+  String get settingsTheme => 'Тема';
+
+  @override
+  String get themeGreentex => 'GreenTex (тёмно-зелёная)';
+
+  @override
+  String get themeOcean => 'Океан (тёмно-синяя)';
+
+  @override
+  String get themeGold => 'Золото (тёмная с золотом)';
+
+  @override
+  String get themeViolet => 'Фиолетовая (тёмная)';
+
+  @override
+  String get themeLight => 'Светлая';
+
+  @override
+  String get settingsTextSize => 'Размер текста';
+
+  @override
+  String get textSizeSmall => 'Мелкий';
+
+  @override
+  String get textSizeNormal => 'Обычный';
+
+  @override
+  String get textSizeLarge => 'Крупный';
+
+  @override
+  String get textSizeExtraLarge => 'Очень крупный';
 }

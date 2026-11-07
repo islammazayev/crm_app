@@ -38,7 +38,7 @@ class OverviewPage extends StatelessWidget {
       children: [
         Text(
           title,
-          style: const TextStyle(
+          style: TextStyle(
             color: AppColors.textPrimary,
             fontSize: 24,
             fontWeight: FontWeight.w700,
@@ -46,7 +46,7 @@ class OverviewPage extends StatelessWidget {
         ),
         if (subtitle.isNotEmpty) ...[
           const SizedBox(height: 2),
-          Text(subtitle, style: const TextStyle(color: AppColors.textMuted)),
+          Text(subtitle, style: TextStyle(color: AppColors.textMuted)),
         ],
       ],
     );
@@ -122,11 +122,11 @@ class BalanceHero extends StatelessWidget {
                   Expanded(
                     child: Text(
                       title,
-                      style: const TextStyle(color: AppColors.textMuted),
+                      style: TextStyle(color: AppColors.textMuted),
                     ),
                   ),
                   if (onTap != null)
-                    const Icon(Icons.chevron_right, color: AppColors.textMuted),
+                    Icon(Icons.chevron_right, color: AppColors.textMuted),
                 ],
               ),
               const SizedBox(height: 8),
@@ -140,7 +140,7 @@ class BalanceHero extends StatelessWidget {
                     for (final e in entries)
                       Text(
                         '${formatMoney(e.value, decimals: e.value.abs() >= 1000 ? 0 : 2)} ${e.key}',
-                        style: const TextStyle(
+                        style: TextStyle(
                           color: AppColors.textPrimary,
                           fontSize: 19,
                           fontWeight: FontWeight.w700,
@@ -193,7 +193,7 @@ class StatRow extends StatelessWidget {
                         stats[i].label,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
+                        style: TextStyle(
                           color: AppColors.textMuted,
                           fontSize: 13,
                         ),
@@ -244,7 +244,7 @@ class ListPanel extends StatelessWidget {
             padding: const EdgeInsets.fromLTRB(16, 14, 16, 10),
             child: Text(
               title,
-              style: const TextStyle(
+              style: TextStyle(
                 color: AppColors.textPrimary,
                 fontWeight: FontWeight.w600,
               ),
@@ -255,11 +255,11 @@ class ListPanel extends StatelessWidget {
               padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
               child: Text(
                 emptyText,
-                style: const TextStyle(color: AppColors.textMuted),
+                style: TextStyle(color: AppColors.textMuted),
               ),
             ),
           for (final r in rows) ...[
-            const Divider(height: 1, color: AppColors.surfaceBorder),
+            Divider(height: 1, color: AppColors.surfaceBorder),
             r,
           ],
         ],
@@ -301,14 +301,14 @@ class StatusRow extends StatelessWidget {
                     title,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(color: AppColors.textPrimary),
+                    style: TextStyle(color: AppColors.textPrimary),
                   ),
                   if (subtitle.isNotEmpty)
                     Text(
                       subtitle,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
+                      style: TextStyle(
                         color: AppColors.textMuted,
                         fontSize: 13,
                       ),

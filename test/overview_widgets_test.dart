@@ -10,7 +10,7 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   Widget app(Locale locale) => MaterialApp(
     locale: locale,
-    theme: AppTheme.dark,
+    theme: AppTheme.current,
     localizationsDelegates: AppLocalizations.localizationsDelegates,
     supportedLocales: AppLocalizations.supportedLocales,
     home: AppShell(
@@ -80,6 +80,22 @@ void main() {
       expect(tester.takeException(), isNull);
       expect(find.text('Totalt saldo'), findsOneWidget);
       expect(find.textContaining('571 682 EUR'), findsOneWidget);
+    });
+  }
+
+  // Extra stor text (1.3) gånger stor text på telefonen (1.2).
+  for (final width in [320.0, 375.0, 840.0, 1400.0]) {
+    testWidgets('extra stor text flödar inte över i bredd $width', (
+      tester,
+    ) async {
+      tester.view.physicalSize = Size(width, 900);
+      tester.view.devicePixelRatio = 1;
+      tester.platformDispatcher.textScaleFactorTestValue = 1.3 * 1.2;
+      addTearDown(tester.view.reset);
+      addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
+      await tester.pumpWidget(app(const Locale('ru')));
+      await tester.pumpAndSettle();
+      expect(tester.takeException(), isNull);
     });
   }
 

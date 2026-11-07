@@ -92,7 +92,7 @@ class PartnerExchangeList extends StatelessWidget {
             padding: const EdgeInsets.symmetric(vertical: 16),
             child: Text(
               l10n.noExchangesYet,
-              style: const TextStyle(color: AppColors.textMuted),
+              style: TextStyle(color: AppColors.textMuted),
             ),
           );
         }
@@ -263,7 +263,7 @@ class _ExchangeCardState extends State<_ExchangeCard> {
           children: [
             Row(
               children: [
-                const Icon(Icons.currency_exchange, color: AppColors.warning),
+                Icon(Icons.currency_exchange, color: AppColors.warning),
                 const SizedBox(width: 10),
                 Expanded(
                   child: Text(
@@ -275,10 +275,7 @@ class _ExchangeCardState extends State<_ExchangeCard> {
                 ),
                 Text(
                   exchangeStatusText(l10n, status),
-                  style: const TextStyle(
-                    color: AppColors.textMuted,
-                    fontSize: 13,
-                  ),
+                  style: TextStyle(color: AppColors.textMuted, fontSize: 13),
                 ),
                 // Chatt mellan kontoret och partnern om växlingen.
                 ChatButton(
@@ -358,7 +355,7 @@ class _ExchangeCardState extends State<_ExchangeCard> {
                   if (status == 'proposed' && !myTurn) ...[
                     Text(
                       l10n.waitingForAnswer,
-                      style: const TextStyle(color: AppColors.textMuted),
+                      style: TextStyle(color: AppColors.textMuted),
                     ),
                     TextButton(
                       onPressed: () =>
@@ -413,7 +410,7 @@ class _ExchangeCardState extends State<_ExchangeCard> {
                       d['${other}Received'] != true)
                     Text(
                       l10n.waitingForOtherReceived,
-                      style: const TextStyle(color: AppColors.textMuted),
+                      style: TextStyle(color: AppColors.textMuted),
                     ),
                 ],
               ),

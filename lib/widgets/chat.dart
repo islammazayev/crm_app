@@ -128,7 +128,7 @@ class _ChatPageState extends State<ChatPage> {
                       child: Text(
                         l10n.chatEmpty,
                         textAlign: TextAlign.center,
-                        style: const TextStyle(color: AppColors.textMuted),
+                        style: TextStyle(color: AppColors.textMuted),
                       ),
                     ),
                   );
@@ -198,7 +198,7 @@ class _ChatPageState extends State<ChatPage> {
                                   strokeWidth: 2,
                                 ),
                               )
-                            : const Icon(Icons.send, color: AppColors.primary),
+                            : Icon(Icons.send, color: AppColors.primary),
                         onPressed: _sending ? null : _send,
                       ),
                     ],
@@ -245,7 +245,7 @@ class _Bubble extends StatelessWidget {
             if (!mine)
               Text(
                 '${data['senderName'] ?? ''}',
-                style: const TextStyle(
+                style: TextStyle(
                   color: AppColors.primary,
                   fontSize: 12,
                   fontWeight: FontWeight.w600,
@@ -259,7 +259,7 @@ class _Bubble extends StatelessWidget {
               ),
             Text(
               time,
-              style: const TextStyle(color: AppColors.textMuted, fontSize: 11),
+              style: TextStyle(color: AppColors.textMuted, fontSize: 11),
             ),
           ],
         ),
@@ -319,7 +319,7 @@ class _MessagesPageState extends State<MessagesPage> {
                     leading: Badge(
                       isLabelVisible: ChatService.isUnread(d.data()),
                       smallSize: 10,
-                      child: const Icon(
+                      child: Icon(
                         Icons.chat_bubble_outline,
                         color: AppColors.primary,
                       ),

@@ -2380,4 +2380,40 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get statAll => 'Tümü';
+
+  @override
+  String get settingsAppearance => 'Görünüm';
+
+  @override
+  String get settingsTheme => 'Tema';
+
+  @override
+  String get themeGreentex => 'GreenTex (koyu yeşil)';
+
+  @override
+  String get themeOcean => 'Okyanus (koyu mavi)';
+
+  @override
+  String get themeGold => 'Altın (koyu, altın)';
+
+  @override
+  String get themeViolet => 'Mor (koyu mor)';
+
+  @override
+  String get themeLight => 'Açık';
+
+  @override
+  String get settingsTextSize => 'Yazı boyutu';
+
+  @override
+  String get textSizeSmall => 'Küçük';
+
+  @override
+  String get textSizeNormal => 'Normal';
+
+  @override
+  String get textSizeLarge => 'Büyük';
+
+  @override
+  String get textSizeExtraLarge => 'Çok büyük';
 }

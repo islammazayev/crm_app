@@ -659,5 +659,17 @@
   "recentTransactions": "Recent transactions",
   "statWaitingForYou": "Waiting for reply",
   "statReadyForPickup": "Ready for pickup",
-  "statAll": "All"
+  "statAll": "All",
+  "settingsAppearance": "Appearance",
+  "settingsTheme": "Theme",
+  "themeGreentex": "GreenTex (dark green)",
+  "themeOcean": "Ocean (dark blue)",
+  "themeGold": "Gold (dark with gold)",
+  "themeViolet": "Violet (dark purple)",
+  "themeLight": "Light",
+  "settingsTextSize": "Text size",
+  "textSizeSmall": "Small",
+  "textSizeNormal": "Normal",
+  "textSizeLarge": "Large",
+  "textSizeExtraLarge": "Extra large"
 }

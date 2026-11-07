@@ -36,7 +36,7 @@ class SearchSummary extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: Text(
         text,
-        style: const TextStyle(color: AppColors.textMuted, fontSize: 13),
+        style: TextStyle(color: AppColors.textMuted, fontSize: 13),
       ),
     );
   }

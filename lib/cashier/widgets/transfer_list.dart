@@ -94,7 +94,7 @@ class TransferList extends StatelessWidget {
               onlyIncomingPending
                   ? l10n.noIncomingTransfers
                   : l10n.noTransfersYet,
-              style: const TextStyle(color: AppColors.textMuted),
+              style: TextStyle(color: AppColors.textMuted),
             ),
           );
         }
@@ -310,10 +310,7 @@ class BalancesCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            l10n.cashBalance,
-            style: const TextStyle(color: AppColors.textMuted),
-          ),
+          Text(l10n.cashBalance, style: TextStyle(color: AppColors.textMuted)),
           const SizedBox(height: 8),
           if (entries.isEmpty)
             Text(l10n.noBalanceYet)
@@ -325,7 +322,7 @@ class BalancesCard extends StatelessWidget {
                 for (final e in entries)
                   Text(
                     '${e.value.toStringAsFixed(2)} ${e.key}',
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.w700,
                       color: AppColors.primary,

@@ -128,7 +128,7 @@ class _AdminCustomersSectionState extends State<AdminCustomersSection> {
                     const SizedBox(height: 14),
                     Text(
                       l10n.tierNoAccountNote,
-                      style: const TextStyle(
+                      style: TextStyle(
                         color: AppColors.textMuted,
                         fontSize: 13,
                       ),
@@ -445,7 +445,7 @@ class _AdminCustomersSectionState extends State<AdminCustomersSection> {
                       txSnap.data?.docs ?? const [],
                       officeSnap.data?.docs ?? const [],
                     );
-                    const muted = TextStyle(
+                    final muted = TextStyle(
                       color: AppColors.textMuted,
                       fontSize: 13,
                     );
@@ -510,7 +510,7 @@ class _AdminCustomersSectionState extends State<AdminCustomersSection> {
           backgroundColor: AppColors.primaryDim,
           child: Text(
             id.isEmpty ? '?' : id,
-            style: const TextStyle(
+            style: TextStyle(
               color: AppColors.primary,
               fontSize: 12,
               fontWeight: FontWeight.w700,

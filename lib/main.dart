@@ -7,7 +7,10 @@ import 'firebase_options.dart';
 import 'l10n/app_localizations.dart';
 import 'l10n/locale_controller.dart';
 import 'screens/auth_gate.dart';
+import 'theme/app_palettes.dart';
 import 'theme/app_theme.dart';
+import 'theme/text_size_controller.dart';
+import 'theme/theme_controller.dart';
 
 final FlutterLocalNotificationsPlugin localNotifications =
     FlutterLocalNotificationsPlugin();
@@ -34,6 +37,8 @@ void main() async {
   await localNotifications.initialize(initSettings);
 
   await LocaleController.instance.load();
+  await ThemeController.instance.load();
+  await TextSizeController.instance.load();
 
   runApp(const MyApp());
 }
@@ -43,22 +48,43 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ValueListenableBuilder<Locale?>(
-      valueListenable: LocaleController.instance,
-      builder: (context, locale, _) => MaterialApp(
-        onGenerateTitle: (context) => context.l10n.appTitle,
-        debugShowCheckedModeBanner: false,
-        theme: AppTheme.dark,
-        locale: locale,
-        localizationsDelegates: const [
-          AppLocalizations.delegate,
-          GlobalMaterialLocalizations.delegate,
-          GlobalWidgetsLocalizations.delegate,
-          GlobalCupertinoLocalizations.delegate,
-        ],
-        supportedLocales: AppLocalizations.supportedLocales,
-        localeListResolutionCallback: LocaleController.resolve,
-        home: const AuthGate(),
+    // Färgerna läses direkt av alla sidor, så hela appen byggs om när
+    // temat byts (nyckeln). Man hamnar då på sin startsida igen.
+    return ValueListenableBuilder<AppPalette>(
+      valueListenable: ThemeController.instance,
+      builder: (context, palette, _) => ValueListenableBuilder<Locale?>(
+        valueListenable: LocaleController.instance,
+        builder: (context, locale, _) => MaterialApp(
+          key: ValueKey(palette.id),
+          onGenerateTitle: (context) => context.l10n.appTitle,
+          debugShowCheckedModeBanner: false,
+          theme: AppTheme.current,
+          locale: locale,
+          localizationsDelegates: const [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: AppLocalizations.supportedLocales,
+          localeListResolutionCallback: LocaleController.resolve,
+          // Vald textstorlek gånger telefonens egen.
+          builder: (context, child) => ValueListenableBuilder<double>(
+            valueListenable: TextSizeController.instance,
+            builder: (context, size, _) {
+              final media = MediaQuery.of(context);
+              return MediaQuery(
+                data: media.copyWith(
+                  textScaler: TextScaler.linear(
+                    media.textScaler.scale(14) / 14 * size,
+                  ),
+                ),
+                child: child!,
+              );
+            },
+          ),
+          home: const AuthGate(),
+        ),
       ),
     );
   }

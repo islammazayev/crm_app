@@ -4,7 +4,10 @@ import 'package:flutter/material.dart';
 
 import '../l10n/app_localizations.dart';
 import '../l10n/locale_controller.dart';
+import '../theme/app_palettes.dart';
 import '../theme/app_theme.dart';
+import '../theme/text_size_controller.dart';
+import '../theme/theme_controller.dart';
 import 'auth_gate.dart';
 
 /// Inställningar för alla roller: konto, språk, lösenord och om appen.
@@ -58,6 +61,71 @@ class SettingsPage extends StatelessWidget {
     await LocaleController.instance.setLocale(
       code.isEmpty ? null : Locale(code),
     );
+  }
+
+  /// Väljer tema. Hela appen ritas om och man hamnar på startsidan.
+  Future<void> _chooseTheme(BuildContext context) async {
+    final l10n = context.l10n;
+    final current = ThemeController.instance.value;
+    final chosen = await showDialog<AppPalette>(
+      context: context,
+      builder: (ctx) => SimpleDialog(
+        title: Text(l10n.settingsTheme),
+        children: [
+          for (final p in AppPalette.all)
+            SimpleDialogOption(
+              onPressed: () => Navigator.pop(ctx, p),
+              child: Row(
+                children: [
+                  _Swatch(palette: p),
+                  const SizedBox(width: 14),
+                  Expanded(child: Text(themeName(l10n, p))),
+                  if (p.id == current.id)
+                    Icon(Icons.check, color: AppColors.primary),
+                ],
+              ),
+            ),
+        ],
+      ),
+    );
+    if (chosen == null || chosen.id == current.id) return;
+    await ThemeController.instance.setPalette(chosen);
+  }
+
+  /// Väljer textstorlek. Varje val visas i sin egen storlek.
+  Future<void> _chooseTextSize(BuildContext context) async {
+    final l10n = context.l10n;
+    final current = TextSizeController.instance.value;
+    final chosen = await showDialog<double>(
+      context: context,
+      builder: (ctx) => SimpleDialog(
+        title: Text(l10n.settingsTextSize),
+        children: [
+          for (final size in TextSizeController.sizes)
+            SimpleDialogOption(
+              onPressed: () => Navigator.pop(ctx, size),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      textSizeName(l10n, size),
+                      textScaler: TextScaler.linear(
+                        MediaQuery.textScalerOf(ctx).scale(14) /
+                            14 /
+                            current *
+                            size,
+                      ),
+                    ),
+                  ),
+                  if (size == current)
+                    Icon(Icons.check, color: AppColors.primary),
+                ],
+              ),
+            ),
+        ],
+      ),
+    );
+    if (chosen != null) await TextSizeController.instance.setSize(chosen);
   }
 
   /// Skickar en länk till den egna e-posten där man väljer nytt lösenord.
@@ -128,7 +196,7 @@ class SettingsPage extends StatelessWidget {
                           backgroundColor: AppColors.primaryDim,
                           child: Text(
                             name.isEmpty ? '?' : name[0].toUpperCase(),
-                            style: const TextStyle(color: AppColors.primary),
+                            style: TextStyle(color: AppColors.primary),
                           ),
                         ),
                         title: Text(name.isEmpty ? (user?.email ?? '') : name),
@@ -160,6 +228,30 @@ class SettingsPage extends StatelessWidget {
                         ),
                         trailing: const Icon(Icons.chevron_right),
                         onTap: () => _chooseLanguage(context),
+                      ),
+                    ],
+                  ),
+                  _Section(
+                    title: l10n.settingsAppearance,
+                    children: [
+                      ListTile(
+                        leading: const Icon(Icons.palette_outlined),
+                        title: Text(l10n.settingsTheme),
+                        subtitle: Text(
+                          themeName(l10n, ThemeController.instance.value),
+                        ),
+                        trailing: const Icon(Icons.chevron_right),
+                        onTap: () => _chooseTheme(context),
+                      ),
+                      ValueListenableBuilder<double>(
+                        valueListenable: TextSizeController.instance,
+                        builder: (context, size, _) => ListTile(
+                          leading: const Icon(Icons.format_size),
+                          title: Text(l10n.settingsTextSize),
+                          subtitle: Text(textSizeName(l10n, size)),
+                          trailing: const Icon(Icons.chevron_right),
+                          onTap: () => _chooseTextSize(context),
+                        ),
                       ),
                     ],
                   ),
@@ -221,7 +313,7 @@ class _Section extends StatelessWidget {
             padding: const EdgeInsets.only(left: 4, bottom: 8),
             child: Text(
               title,
-              style: const TextStyle(
+              style: TextStyle(
                 color: AppColors.textMuted,
                 fontSize: 13,
                 fontWeight: FontWeight.w600,
@@ -238,3 +330,61 @@ class _Section extends StatelessWidget {
     );
   }
 }
+
+/// Temats namn i valt språk.
+String themeName(AppLocalizations l10n, AppPalette p) => switch (p.id) {
+  'ocean' => l10n.themeOcean,
+  'gold' => l10n.themeGold,
+  'violet' => l10n.themeViolet,
+  'light' => l10n.themeLight,
+  _ => l10n.themeGreentex,
+};
+
+/// Liten förhandsvisning av ett tema: bakgrund, yta och accentfärg.
+class _Swatch extends StatelessWidget {
+  final AppPalette palette;
+
+  const _Swatch({required this.palette});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 46,
+      height: 30,
+      padding: const EdgeInsets.all(4),
+      decoration: BoxDecoration(
+        color: palette.bg,
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: palette.surfaceBorder),
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: Container(
+              decoration: BoxDecoration(
+                color: palette.surface,
+                borderRadius: BorderRadius.circular(4),
+              ),
+            ),
+          ),
+          const SizedBox(width: 4),
+          Container(
+            width: 12,
+            decoration: BoxDecoration(
+              color: palette.primary,
+              borderRadius: BorderRadius.circular(4),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Textstorlekens namn i valt språk.
+String textSizeName(AppLocalizations l10n, double size) => switch (size) {
+  TextSizeController.small => l10n.textSizeSmall,
+  TextSizeController.large => l10n.textSizeLarge,
+  TextSizeController.extraLarge => l10n.textSizeExtraLarge,
+  _ => l10n.textSizeNormal,
+};
