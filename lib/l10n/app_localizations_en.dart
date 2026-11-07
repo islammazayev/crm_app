@@ -2663,4 +2663,15 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get sendAppInvite => 'Send app link (SMS)';
+
+  @override
+  String get lockedClientId => 'Client ID';
+
+  @override
+  String adminInviteWelcome(Object name, Object clientId) {
+    return 'Hi $name! You are already our customer with client ID $clientId. Your details are ready, you only need to create a password to sign in.';
+  }
+
+  @override
+  String get createPasswordAction => 'Create account';
 }

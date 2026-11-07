@@ -2653,4 +2653,15 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get sendAppInvite => 'Uygulama bağlantısı gönder (SMS)';
+
+  @override
+  String get lockedClientId => 'Müşteri no';
+
+  @override
+  String adminInviteWelcome(Object name, Object clientId) {
+    return 'Merhaba $name! $clientId müşteri numarasıyla zaten müşterimizsiniz. Bilgileriniz hazır, giriş yapmak için sadece bir şifre oluşturmanız yeterli.';
+  }
+
+  @override
+  String get createPasswordAction => 'Hesap oluştur';
 }

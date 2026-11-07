@@ -2670,4 +2670,15 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get sendAppInvite => 'Отправить ссылку (SMS)';
+
+  @override
+  String get lockedClientId => 'ID клиента';
+
+  @override
+  String adminInviteWelcome(Object name, Object clientId) {
+    return 'Здравствуйте, $name! Вы уже наш клиент с ID $clientId. Ваши данные готовы, нужно только создать пароль для входа.';
+  }
+
+  @override
+  String get createPasswordAction => 'Создать аккаунт';
 }

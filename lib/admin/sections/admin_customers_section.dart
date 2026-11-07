@@ -252,6 +252,9 @@ class _AdminCustomersSectionState extends State<AdminCustomersSection> {
         _snack(l10n.invitePhoneRequired);
         return;
       }
+      // Admins inbjudan: kunden har redan sina uppgifter och skapar bara
+      // lösenord (se kundens registreringssida).
+      await customersRef.doc(docId).update({'inviteByAdmin': true});
       final code = await CustomerInviteService.inviteExisting(
         docId,
         d['inviteCode'] as String?,

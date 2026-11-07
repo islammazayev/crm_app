@@ -1900,5 +1900,18 @@
   },
   "sendSms": "Skicka SMS",
   "notNow": "Inte nu",
-  "sendAppInvite": "Skicka länk till appen (SMS)"
+  "sendAppInvite": "Skicka länk till appen (SMS)",
+  "lockedClientId": "Klient-ID",
+  "adminInviteWelcome": "Hej {name}! Du är redan kund hos oss med klient-ID {clientId}. Dina uppgifter är klara, du behöver bara skapa ett lösenord för att logga in.",
+  "@adminInviteWelcome": {
+    "placeholders": {
+      "name": {
+        "type": "Object"
+      },
+      "clientId": {
+        "type": "Object"
+      }
+    }
+  },
+  "createPasswordAction": "Skapa konto"
 }

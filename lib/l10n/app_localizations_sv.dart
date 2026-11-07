@@ -2668,4 +2668,15 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String get sendAppInvite => 'Skicka länk till appen (SMS)';
+
+  @override
+  String get lockedClientId => 'Klient-ID';
+
+  @override
+  String adminInviteWelcome(Object name, Object clientId) {
+    return 'Hej $name! Du är redan kund hos oss med klient-ID $clientId. Dina uppgifter är klara, du behöver bara skapa ett lösenord för att logga in.';
+  }
+
+  @override
+  String get createPasswordAction => 'Skapa konto';
 }

@@ -4565,6 +4565,24 @@ abstract class AppLocalizations {
   /// In sv, this message translates to:
   /// **'Skicka länk till appen (SMS)'**
   String get sendAppInvite;
+
+  /// No description provided for @lockedClientId.
+  ///
+  /// In sv, this message translates to:
+  /// **'Klient-ID'**
+  String get lockedClientId;
+
+  /// No description provided for @adminInviteWelcome.
+  ///
+  /// In sv, this message translates to:
+  /// **'Hej {name}! Du är redan kund hos oss med klient-ID {clientId}. Dina uppgifter är klara, du behöver bara skapa ett lösenord för att logga in.'**
+  String adminInviteWelcome(Object name, Object clientId);
+
+  /// No description provided for @createPasswordAction.
+  ///
+  /// In sv, this message translates to:
+  /// **'Skapa konto'**
+  String get createPasswordAction;
 }
 
 class _AppLocalizationsDelegate
