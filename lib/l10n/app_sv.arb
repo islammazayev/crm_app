@@ -1713,5 +1713,10 @@
   "themeOcean": "Ocean (mörkblått)",
   "themeGold": "Guld (mörkt med guld)",
   "themeViolet": "Violett (mörkt lila)",
-  "themeLight": "Ljust"
+  "themeLight": "Ljust",
+  "settingsTextSize": "Textstorlek",
+  "textSizeSmall": "Liten",
+  "textSizeNormal": "Normal",
+  "textSizeLarge": "Stor",
+  "textSizeExtraLarge": "Extra stor"
 }

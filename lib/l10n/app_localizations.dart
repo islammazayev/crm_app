@@ -4109,6 +4109,36 @@ abstract class AppLocalizations {
   /// In sv, this message translates to:
   /// **'Ljust'**
   String get themeLight;
+
+  /// No description provided for @settingsTextSize.
+  ///
+  /// In sv, this message translates to:
+  /// **'Textstorlek'**
+  String get settingsTextSize;
+
+  /// No description provided for @textSizeSmall.
+  ///
+  /// In sv, this message translates to:
+  /// **'Liten'**
+  String get textSizeSmall;
+
+  /// No description provided for @textSizeNormal.
+  ///
+  /// In sv, this message translates to:
+  /// **'Normal'**
+  String get textSizeNormal;
+
+  /// No description provided for @textSizeLarge.
+  ///
+  /// In sv, this message translates to:
+  /// **'Stor'**
+  String get textSizeLarge;
+
+  /// No description provided for @textSizeExtraLarge.
+  ///
+  /// In sv, this message translates to:
+  /// **'Extra stor'**
+  String get textSizeExtraLarge;
 }
 
 class _AppLocalizationsDelegate

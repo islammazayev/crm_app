@@ -6,6 +6,7 @@ import '../l10n/app_localizations.dart';
 import '../l10n/locale_controller.dart';
 import '../theme/app_palettes.dart';
 import '../theme/app_theme.dart';
+import '../theme/text_size_controller.dart';
 import '../theme/theme_controller.dart';
 import 'auth_gate.dart';
 
@@ -89,6 +90,42 @@ class SettingsPage extends StatelessWidget {
     );
     if (chosen == null || chosen.id == current.id) return;
     await ThemeController.instance.setPalette(chosen);
+  }
+
+  /// Väljer textstorlek. Varje val visas i sin egen storlek.
+  Future<void> _chooseTextSize(BuildContext context) async {
+    final l10n = context.l10n;
+    final current = TextSizeController.instance.value;
+    final chosen = await showDialog<double>(
+      context: context,
+      builder: (ctx) => SimpleDialog(
+        title: Text(l10n.settingsTextSize),
+        children: [
+          for (final size in TextSizeController.sizes)
+            SimpleDialogOption(
+              onPressed: () => Navigator.pop(ctx, size),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      textSizeName(l10n, size),
+                      textScaler: TextScaler.linear(
+                        MediaQuery.textScalerOf(ctx).scale(14) /
+                            14 /
+                            current *
+                            size,
+                      ),
+                    ),
+                  ),
+                  if (size == current)
+                    Icon(Icons.check, color: AppColors.primary),
+                ],
+              ),
+            ),
+        ],
+      ),
+    );
+    if (chosen != null) await TextSizeController.instance.setSize(chosen);
   }
 
   /// Skickar en länk till den egna e-posten där man väljer nytt lösenord.
@@ -205,6 +242,16 @@ class SettingsPage extends StatelessWidget {
                         ),
                         trailing: const Icon(Icons.chevron_right),
                         onTap: () => _chooseTheme(context),
+                      ),
+                      ValueListenableBuilder<double>(
+                        valueListenable: TextSizeController.instance,
+                        builder: (context, size, _) => ListTile(
+                          leading: const Icon(Icons.format_size),
+                          title: Text(l10n.settingsTextSize),
+                          subtitle: Text(textSizeName(l10n, size)),
+                          trailing: const Icon(Icons.chevron_right),
+                          onTap: () => _chooseTextSize(context),
+                        ),
                       ),
                     ],
                   ),
@@ -333,3 +380,11 @@ class _Swatch extends StatelessWidget {
     );
   }
 }
+
+/// Textstorlekens namn i valt språk.
+String textSizeName(AppLocalizations l10n, double size) => switch (size) {
+  TextSizeController.small => l10n.textSizeSmall,
+  TextSizeController.large => l10n.textSizeLarge,
+  TextSizeController.extraLarge => l10n.textSizeExtraLarge,
+  _ => l10n.textSizeNormal,
+};

@@ -2411,4 +2411,19 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get themeLight => 'Light';
+
+  @override
+  String get settingsTextSize => 'Text size';
+
+  @override
+  String get textSizeSmall => 'Small';
+
+  @override
+  String get textSizeNormal => 'Normal';
+
+  @override
+  String get textSizeLarge => 'Large';
+
+  @override
+  String get textSizeExtraLarge => 'Extra large';
 }

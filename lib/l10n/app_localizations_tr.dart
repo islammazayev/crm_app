@@ -2401,4 +2401,19 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get themeLight => 'Açık';
+
+  @override
+  String get settingsTextSize => 'Yazı boyutu';
+
+  @override
+  String get textSizeSmall => 'Küçük';
+
+  @override
+  String get textSizeNormal => 'Normal';
+
+  @override
+  String get textSizeLarge => 'Büyük';
+
+  @override
+  String get textSizeExtraLarge => 'Çok büyük';
 }

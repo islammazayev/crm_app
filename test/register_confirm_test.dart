@@ -67,4 +67,16 @@ void main() {
     expect(hidden(5), isFalse);
     expect(hidden(6), isTrue);
   });
+
+  testWidgets('registreringen klarar extra stor text på smal mobil', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(320, 700);
+    tester.view.devicePixelRatio = 1;
+    tester.platformDispatcher.textScaleFactorTestValue = 1.3 * 1.2;
+    addTearDown(tester.view.reset);
+    addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
+    await fill(tester, email2: 'islam@gmail.com', password2: 'hemligt1');
+    expect(tester.takeException(), isNull);
+  });
 }

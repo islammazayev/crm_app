@@ -666,5 +666,10 @@
   "themeOcean": "Okyanus (koyu mavi)",
   "themeGold": "Altın (koyu, altın)",
   "themeViolet": "Mor (koyu mor)",
-  "themeLight": "Açık"
+  "themeLight": "Açık",
+  "settingsTextSize": "Yazı boyutu",
+  "textSizeSmall": "Küçük",
+  "textSizeNormal": "Normal",
+  "textSizeLarge": "Büyük",
+  "textSizeExtraLarge": "Çok büyük"
 }

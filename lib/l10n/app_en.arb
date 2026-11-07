@@ -666,5 +666,10 @@
   "themeOcean": "Ocean (dark blue)",
   "themeGold": "Gold (dark with gold)",
   "themeViolet": "Violet (dark purple)",
-  "themeLight": "Light"
+  "themeLight": "Light",
+  "settingsTextSize": "Text size",
+  "textSizeSmall": "Small",
+  "textSizeNormal": "Normal",
+  "textSizeLarge": "Large",
+  "textSizeExtraLarge": "Extra large"
 }

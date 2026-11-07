@@ -9,6 +9,7 @@ import 'l10n/locale_controller.dart';
 import 'screens/auth_gate.dart';
 import 'theme/app_palettes.dart';
 import 'theme/app_theme.dart';
+import 'theme/text_size_controller.dart';
 import 'theme/theme_controller.dart';
 
 final FlutterLocalNotificationsPlugin localNotifications =
@@ -37,6 +38,7 @@ void main() async {
 
   await LocaleController.instance.load();
   await ThemeController.instance.load();
+  await TextSizeController.instance.load();
 
   runApp(const MyApp());
 }
@@ -66,6 +68,21 @@ class MyApp extends StatelessWidget {
           ],
           supportedLocales: AppLocalizations.supportedLocales,
           localeListResolutionCallback: LocaleController.resolve,
+          // Vald textstorlek gånger telefonens egen.
+          builder: (context, child) => ValueListenableBuilder<double>(
+            valueListenable: TextSizeController.instance,
+            builder: (context, size, _) {
+              final media = MediaQuery.of(context);
+              return MediaQuery(
+                data: media.copyWith(
+                  textScaler: TextScaler.linear(
+                    media.textScaler.scale(14) / 14 * size,
+                  ),
+                ),
+                child: child!,
+              );
+            },
+          ),
           home: const AuthGate(),
         ),
       ),

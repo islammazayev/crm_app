@@ -666,5 +666,10 @@
   "themeOcean": "Океан (тёмно-синяя)",
   "themeGold": "Золото (тёмная с золотом)",
   "themeViolet": "Фиолетовая (тёмная)",
-  "themeLight": "Светлая"
+  "themeLight": "Светлая",
+  "settingsTextSize": "Размер текста",
+  "textSizeSmall": "Мелкий",
+  "textSizeNormal": "Обычный",
+  "textSizeLarge": "Крупный",
+  "textSizeExtraLarge": "Очень крупный"
 }

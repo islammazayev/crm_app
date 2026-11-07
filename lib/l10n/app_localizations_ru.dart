@@ -2418,4 +2418,19 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get themeLight => 'Светлая';
+
+  @override
+  String get settingsTextSize => 'Размер текста';
+
+  @override
+  String get textSizeSmall => 'Мелкий';
+
+  @override
+  String get textSizeNormal => 'Обычный';
+
+  @override
+  String get textSizeLarge => 'Крупный';
+
+  @override
+  String get textSizeExtraLarge => 'Очень крупный';
 }

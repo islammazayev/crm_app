@@ -83,6 +83,22 @@ void main() {
     });
   }
 
+  // Extra stor text (1.3) gånger stor text på telefonen (1.2).
+  for (final width in [320.0, 375.0, 840.0, 1400.0]) {
+    testWidgets('extra stor text flödar inte över i bredd $width', (
+      tester,
+    ) async {
+      tester.view.physicalSize = Size(width, 900);
+      tester.view.devicePixelRatio = 1;
+      tester.platformDispatcher.textScaleFactorTestValue = 1.3 * 1.2;
+      addTearDown(tester.view.reset);
+      addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
+      await tester.pumpWidget(app(const Locale('ru')));
+      await tester.pumpAndSettle();
+      expect(tester.takeException(), isNull);
+    });
+  }
+
   testWidgets('översikten fyller hela skärmen bredvid menyn', (tester) async {
     tester.view.physicalSize = const Size(2000, 1000);
     tester.view.devicePixelRatio = 1;

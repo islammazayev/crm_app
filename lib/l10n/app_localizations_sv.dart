@@ -2416,4 +2416,19 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String get themeLight => 'Ljust';
+
+  @override
+  String get settingsTextSize => 'Textstorlek';
+
+  @override
+  String get textSizeSmall => 'Liten';
+
+  @override
+  String get textSizeNormal => 'Normal';
+
+  @override
+  String get textSizeLarge => 'Stor';
+
+  @override
+  String get textSizeExtraLarge => 'Extra stor';
 }
