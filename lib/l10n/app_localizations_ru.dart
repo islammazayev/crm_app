@@ -2681,4 +2681,12 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get createPasswordAction => 'Создать аккаунт';
+
+  @override
+  String get adminInviteHint =>
+      'Клиент получит ссылку, создаст только пароль и сохранит ID. SMS-приложение откроется после сохранения.';
+
+  @override
+  String get adminInvitePhoneHint =>
+      'Укажите телефон клиента, чтобы отправить ссылку на приложение по SMS.';
 }

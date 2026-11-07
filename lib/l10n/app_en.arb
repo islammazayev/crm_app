@@ -745,5 +745,7 @@
   "sendAppInvite": "Send app link (SMS)",
   "lockedClientId": "Client ID",
   "adminInviteWelcome": "Hi {name}! You are already our customer with client ID {clientId}. Your details are ready, you only need to create a password to sign in.",
-  "createPasswordAction": "Create account"
+  "createPasswordAction": "Create account",
+  "adminInviteHint": "The customer gets a link, only creates a password and keeps the client ID. Your SMS app opens when you save.",
+  "adminInvitePhoneHint": "Enter the customer's phone to send a link to the app by SMS."
 }

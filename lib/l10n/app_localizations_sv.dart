@@ -2679,4 +2679,12 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String get createPasswordAction => 'Skapa konto';
+
+  @override
+  String get adminInviteHint =>
+      'Kunden får en länk, skapar bara lösenord och behåller klient-ID:t. SMS-appen öppnas när du sparar.';
+
+  @override
+  String get adminInvitePhoneHint =>
+      'Skriv kundens telefon om du vill skicka en länk till appen via SMS.';
 }

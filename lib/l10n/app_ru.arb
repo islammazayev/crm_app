@@ -745,5 +745,7 @@
   "sendAppInvite": "Отправить ссылку (SMS)",
   "lockedClientId": "ID клиента",
   "adminInviteWelcome": "Здравствуйте, {name}! Вы уже наш клиент с ID {clientId}. Ваши данные готовы, нужно только создать пароль для входа.",
-  "createPasswordAction": "Создать аккаунт"
+  "createPasswordAction": "Создать аккаунт",
+  "adminInviteHint": "Клиент получит ссылку, создаст только пароль и сохранит ID. SMS-приложение откроется после сохранения.",
+  "adminInvitePhoneHint": "Укажите телефон клиента, чтобы отправить ссылку на приложение по SMS."
 }

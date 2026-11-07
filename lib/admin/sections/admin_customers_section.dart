@@ -8,7 +8,6 @@ import '../../l10n/locale_controller.dart';
 import '../../theme/app_theme.dart';
 import '../../utils/customer_search.dart';
 import '../../services/customer_invite_service.dart';
-import '../../utils/client_id.dart';
 import '../../utils/customer_filter.dart';
 import '../../utils/customer_tiers.dart';
 import '../../widgets/admin_list.dart';
@@ -271,36 +270,6 @@ class _AdminCustomersSectionState extends State<AdminCustomersSection> {
     }
   }
 
-  /// Efter "Spara kund" med eget klient-ID: fråga om kunden ska få SMS.
-  Future<void> _offerInvite(String docId, int clientId, String phone) async {
-    final l10n = context.l10n;
-    if (phone.trim().isEmpty) return;
-    final snap = await customersRef.doc(docId).get();
-    if ((snap.data() as Map<String, dynamic>?)?['userId'] != null) return;
-    if (!mounted) return;
-    final send = await showDialog<bool>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: Text(l10n.adminInviteTitle),
-        content: Text(
-          l10n.adminInviteText(formatClientId(clientId), phone.trim()),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, false),
-            child: Text(l10n.notNow),
-          ),
-          ElevatedButton.icon(
-            icon: const Icon(Icons.sms_outlined),
-            onPressed: () => Navigator.pop(ctx, true),
-            label: Text(l10n.sendSms),
-          ),
-        ],
-      ),
-    );
-    if (send == true) await _sendInvite(docId);
-  }
-
   void _snack(String text) {
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(text)));
@@ -502,6 +471,7 @@ class _AdminCustomersSectionState extends State<AdminCustomersSection> {
             required String lastName,
             required String phone,
             String email = '',
+            bool sendInvite = false,
           }) async {
             final docId = await _addCustomer(
               clientId: clientId,
@@ -511,8 +481,8 @@ class _AdminCustomersSectionState extends State<AdminCustomersSection> {
               email: email,
             );
             close();
-            // Bara när admin själv gav klient-ID:t.
-            if (clientId != null) await _offerInvite(docId, clientId, phone);
+            // Bara när admin själv gav klient-ID:t och bockade i SMS.
+            if (clientId != null && sendInvite) await _sendInvite(docId);
           },
     ),
   );
