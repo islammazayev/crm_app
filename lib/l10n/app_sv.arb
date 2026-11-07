@@ -1885,5 +1885,20 @@
         "type": "Object"
       }
     }
-  }
+  },
+  "adminInviteTitle": "Skicka länk till appen?",
+  "adminInviteText": "Kunden har klient-ID {clientId}. Skicka ett SMS till {phone} med en länk, så kan kunden ladda ner appen, skapa lösenord och behålla samma klient-ID.",
+  "@adminInviteText": {
+    "placeholders": {
+      "clientId": {
+        "type": "Object"
+      },
+      "phone": {
+        "type": "Object"
+      }
+    }
+  },
+  "sendSms": "Skicka SMS",
+  "notNow": "Inte nu",
+  "sendAppInvite": "Skicka länk till appen (SMS)"
 }

@@ -2653,4 +2653,21 @@ class AppLocalizationsRu extends AppLocalizations {
   String ordersSummary(Object total, Object archived) {
     return 'Транзакций: $total · в архиве: $archived';
   }
+
+  @override
+  String get adminInviteTitle => 'Отправить ссылку на приложение?';
+
+  @override
+  String adminInviteText(Object clientId, Object phone) {
+    return 'У клиента ID $clientId. Отправьте SMS на $phone со ссылкой: клиент установит приложение, создаст пароль и сохранит тот же ID.';
+  }
+
+  @override
+  String get sendSms => 'Отправить SMS';
+
+  @override
+  String get notNow => 'Не сейчас';
+
+  @override
+  String get sendAppInvite => 'Отправить ссылку (SMS)';
 }

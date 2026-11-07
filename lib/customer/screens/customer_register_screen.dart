@@ -66,6 +66,8 @@ class _CustomerRegisterScreenState extends State<CustomerRegisterScreen> {
         _firstNameCtrl.text = '${d['firstName'] ?? ''}';
         _lastNameCtrl.text = '${d['lastName'] ?? ''}';
         _phoneCtrl.text = '${d['phone'] ?? ''}';
+        // Admin kan ha skrivit kundens e-post; kunden bekräftar den själv.
+        _emailCtrl.text = '${d['email'] ?? ''}';
       });
     } catch (_) {
       if (mounted) setState(() => _inviteInvalid = true);

@@ -4535,6 +4535,36 @@ abstract class AppLocalizations {
   /// In sv, this message translates to:
   /// **'{total} transaktioner · {archived} arkiverade'**
   String ordersSummary(Object total, Object archived);
+
+  /// No description provided for @adminInviteTitle.
+  ///
+  /// In sv, this message translates to:
+  /// **'Skicka länk till appen?'**
+  String get adminInviteTitle;
+
+  /// No description provided for @adminInviteText.
+  ///
+  /// In sv, this message translates to:
+  /// **'Kunden har klient-ID {clientId}. Skicka ett SMS till {phone} med en länk, så kan kunden ladda ner appen, skapa lösenord och behålla samma klient-ID.'**
+  String adminInviteText(Object clientId, Object phone);
+
+  /// No description provided for @sendSms.
+  ///
+  /// In sv, this message translates to:
+  /// **'Skicka SMS'**
+  String get sendSms;
+
+  /// No description provided for @notNow.
+  ///
+  /// In sv, this message translates to:
+  /// **'Inte nu'**
+  String get notNow;
+
+  /// No description provided for @sendAppInvite.
+  ///
+  /// In sv, this message translates to:
+  /// **'Skicka länk till appen (SMS)'**
+  String get sendAppInvite;
 }
 
 class _AppLocalizationsDelegate

@@ -2636,4 +2636,21 @@ class AppLocalizationsTr extends AppLocalizations {
   String ordersSummary(Object total, Object archived) {
     return '$total işlem · $archived arşivlenen';
   }
+
+  @override
+  String get adminInviteTitle => 'Uygulama bağlantısı gönderilsin mi?';
+
+  @override
+  String adminInviteText(Object clientId, Object phone) {
+    return 'Müşterinin numarası $clientId. $phone numarasına bağlantılı bir SMS gönderin; müşteri uygulamayı indirip şifre oluşturur ve aynı müşteri numarasını korur.';
+  }
+
+  @override
+  String get sendSms => 'SMS gönder';
+
+  @override
+  String get notNow => 'Şimdi değil';
+
+  @override
+  String get sendAppInvite => 'Uygulama bağlantısı gönder (SMS)';
 }

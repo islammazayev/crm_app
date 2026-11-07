@@ -7,6 +7,8 @@ import '../../forms/customer_form.dart';
 import '../../l10n/locale_controller.dart';
 import '../../theme/app_theme.dart';
 import '../../utils/customer_search.dart';
+import '../../services/customer_invite_service.dart';
+import '../../utils/client_id.dart';
 import '../../utils/customer_filter.dart';
 import '../../utils/customer_tiers.dart';
 import '../../widgets/admin_list.dart';
@@ -201,7 +203,8 @@ class _AdminCustomersSectionState extends State<AdminCustomersSection> {
     });
   }
 
-  Future<void> _addCustomer({
+  /// Sparar kunden och returnerar kundpostens ID.
+  Future<String> _addCustomer({
     int? clientId,
     required String firstName,
     required String lastName,
@@ -222,10 +225,10 @@ class _AdminCustomersSectionState extends State<AdminCustomersSection> {
           'email': email,
           'updatedAt': FieldValue.serverTimestamp(),
         });
-        return;
+        return existing.docs.first.id;
       }
     }
-    await customersRef.add({
+    final ref = await customersRef.add({
       'clientId': id,
       'firstName': firstName,
       'lastName': lastName,
@@ -233,6 +236,71 @@ class _AdminCustomersSectionState extends State<AdminCustomersSection> {
       'email': email,
       'createdAt': FieldValue.serverTimestamp(),
     });
+    return ref.id;
+  }
+
+  /// Skickar en länk via SMS så att kunden kan skapa konto i appen och
+  /// behålla sitt klient-ID (samma inbjudan som kontoret använder).
+  Future<void> _sendInvite(String docId) async {
+    final l10n = context.l10n;
+    try {
+      final snap = await customersRef.doc(docId).get();
+      final d = snap.data() as Map<String, dynamic>?;
+      if (d == null || d['userId'] != null) return;
+      final phone = '${d['phone'] ?? ''}'.trim();
+      if (phone.isEmpty) {
+        _snack(l10n.invitePhoneRequired);
+        return;
+      }
+      final code = await CustomerInviteService.inviteExisting(
+        docId,
+        d['inviteCode'] as String?,
+      );
+      await CustomerInviteService.openSms(
+        phone,
+        l10n.inviteSmsText(
+          '${d['firstName'] ?? ''}'.trim(),
+          CustomerInviteService.inviteLink(docId, code),
+        ),
+      );
+    } catch (e) {
+      _snack(l10n.errorWithDetails('$e'));
+    }
+  }
+
+  /// Efter "Spara kund" med eget klient-ID: fråga om kunden ska få SMS.
+  Future<void> _offerInvite(String docId, int clientId, String phone) async {
+    final l10n = context.l10n;
+    if (phone.trim().isEmpty) return;
+    final snap = await customersRef.doc(docId).get();
+    if ((snap.data() as Map<String, dynamic>?)?['userId'] != null) return;
+    if (!mounted) return;
+    final send = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(l10n.adminInviteTitle),
+        content: Text(
+          l10n.adminInviteText(formatClientId(clientId), phone.trim()),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text(l10n.notNow),
+          ),
+          ElevatedButton.icon(
+            icon: const Icon(Icons.sms_outlined),
+            onPressed: () => Navigator.pop(ctx, true),
+            label: Text(l10n.sendSms),
+          ),
+        ],
+      ),
+    );
+    if (send == true) await _sendInvite(docId);
+  }
+
+  void _snack(String text) {
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(text)));
   }
 
   // Öppna redigeringsdialog med förifyllda fält
@@ -432,7 +500,7 @@ class _AdminCustomersSectionState extends State<AdminCustomersSection> {
             required String phone,
             String email = '',
           }) async {
-            await _addCustomer(
+            final docId = await _addCustomer(
               clientId: clientId,
               firstName: firstName,
               lastName: lastName,
@@ -440,6 +508,8 @@ class _AdminCustomersSectionState extends State<AdminCustomersSection> {
               email: email,
             );
             close();
+            // Bara när admin själv gav klient-ID:t.
+            if (clientId != null) await _offerInvite(docId, clientId, phone);
           },
     ),
   );
@@ -848,6 +918,12 @@ class _AdminCustomersSectionState extends State<AdminCustomersSection> {
       onTap: () => _openEditDialog(c),
       actions: [
         AdminAction(l10n.edit, Icons.edit_outlined, () => _openEditDialog(c)),
+        if (!c.hasAccount && c.phone.trim().isNotEmpty)
+          AdminAction(
+            l10n.sendAppInvite,
+            Icons.sms_outlined,
+            () => _sendInvite(c.docId),
+          ),
         AdminAction(
           l10n.tierLabel,
           Icons.workspace_premium_outlined,

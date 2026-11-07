@@ -2651,4 +2651,21 @@ class AppLocalizationsSv extends AppLocalizations {
   String ordersSummary(Object total, Object archived) {
     return '$total transaktioner · $archived arkiverade';
   }
+
+  @override
+  String get adminInviteTitle => 'Skicka länk till appen?';
+
+  @override
+  String adminInviteText(Object clientId, Object phone) {
+    return 'Kunden har klient-ID $clientId. Skicka ett SMS till $phone med en länk, så kan kunden ladda ner appen, skapa lösenord och behålla samma klient-ID.';
+  }
+
+  @override
+  String get sendSms => 'Skicka SMS';
+
+  @override
+  String get notNow => 'Inte nu';
+
+  @override
+  String get sendAppInvite => 'Skicka länk till appen (SMS)';
 }
