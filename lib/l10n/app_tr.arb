@@ -745,5 +745,7 @@
   "sendAppInvite": "Uygulama bağlantısı gönder (SMS)",
   "lockedClientId": "Müşteri no",
   "adminInviteWelcome": "Merhaba {name}! {clientId} müşteri numarasıyla zaten müşterimizsiniz. Bilgileriniz hazır, giriş yapmak için sadece bir şifre oluşturmanız yeterli.",
-  "createPasswordAction": "Hesap oluştur"
+  "createPasswordAction": "Hesap oluştur",
+  "adminInviteHint": "Müşteri bir bağlantı alır, sadece şifre oluşturur ve müşteri numarasını korur. Kaydettiğinizde SMS uygulaması açılır.",
+  "adminInvitePhoneHint": "Uygulama bağlantısını SMS ile göndermek için müşterinin telefonunu yazın."
 }

@@ -2674,4 +2674,12 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get createPasswordAction => 'Create account';
+
+  @override
+  String get adminInviteHint =>
+      'The customer gets a link, only creates a password and keeps the client ID. Your SMS app opens when you save.';
+
+  @override
+  String get adminInvitePhoneHint =>
+      'Enter the customer\'s phone to send a link to the app by SMS.';
 }

@@ -9,6 +9,7 @@ class CustomerForm extends StatefulWidget {
     required String lastName,
     required String phone,
     String email,
+    bool sendInvite,
   }) onSubmit;
 
   const CustomerForm({super.key, required this.onSubmit});
@@ -24,6 +25,14 @@ class _CustomerFormState extends State<CustomerForm> {
   final _lastNameController = TextEditingController();
   final _phoneController = TextEditingController();
   final _emailController = TextEditingController();
+
+  /// Skicka länk till appen via SMS (bara när admin själv ger klient-ID
+  /// och kunden har telefon).
+  bool _sendInvite = true;
+
+  bool get _canInvite =>
+      _clientIdController.text.trim().isNotEmpty &&
+      _phoneController.text.trim().isNotEmpty;
 
   @override
   void dispose() {
@@ -55,8 +64,11 @@ class _CustomerFormState extends State<CustomerForm> {
       lastName: _lastNameController.text.trim(),
       phone: _phoneController.text.trim(),
       email: _emailController.text.trim(),
+      sendInvite: _canInvite && _sendInvite,
     );
 
+    // Formuläret kan redan vara stängt (rutan stängs efter sparat).
+    if (!mounted) return;
     _clientIdController.clear();
     _firstNameController.clear();
     _lastNameController.clear();
@@ -91,6 +103,7 @@ class _CustomerFormState extends State<CustomerForm> {
               hintText: l10n.clientIdHint,
             ),
             keyboardType: TextInputType.number,
+            onChanged: (_) => setState(() {}),
           ),
           const SizedBox(height: 14),
           Row(
@@ -121,6 +134,7 @@ class _CustomerFormState extends State<CustomerForm> {
             controller: _phoneController,
             decoration: InputDecoration(labelText: l10n.phone),
             keyboardType: TextInputType.phone,
+            onChanged: (_) => setState(() {}),
           ),
           const SizedBox(height: 14),
           TextFormField(
@@ -128,7 +142,28 @@ class _CustomerFormState extends State<CustomerForm> {
             decoration: InputDecoration(labelText: l10n.email),
             keyboardType: TextInputType.emailAddress,
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 4),
+          // Admin gav klient-ID: kunden kan få en länk och bara skapa
+          // lösenord, så att klient-ID:t följer med.
+          if (_canInvite)
+            CheckboxListTile(
+              contentPadding: EdgeInsets.zero,
+              controlAffinity: ListTileControlAffinity.leading,
+              value: _sendInvite,
+              onChanged: (v) => setState(() => _sendInvite = v ?? false),
+              secondary: const Icon(Icons.sms_outlined),
+              title: Text(l10n.sendAppInvite),
+              subtitle: Text(l10n.adminInviteHint),
+            )
+          else if (_clientIdController.text.trim().isNotEmpty)
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8),
+              child: Text(
+                l10n.adminInvitePhoneHint,
+                style: const TextStyle(fontSize: 13),
+              ),
+            ),
+          const SizedBox(height: 8),
           ElevatedButton(
             onPressed: _submit,
             child: Text(l10n.saveCustomer),

@@ -4583,6 +4583,18 @@ abstract class AppLocalizations {
   /// In sv, this message translates to:
   /// **'Skapa konto'**
   String get createPasswordAction;
+
+  /// No description provided for @adminInviteHint.
+  ///
+  /// In sv, this message translates to:
+  /// **'Kunden får en länk, skapar bara lösenord och behåller klient-ID:t. SMS-appen öppnas när du sparar.'**
+  String get adminInviteHint;
+
+  /// No description provided for @adminInvitePhoneHint.
+  ///
+  /// In sv, this message translates to:
+  /// **'Skriv kundens telefon om du vill skicka en länk till appen via SMS.'**
+  String get adminInvitePhoneHint;
 }
 
 class _AppLocalizationsDelegate

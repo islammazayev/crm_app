@@ -2664,4 +2664,12 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get createPasswordAction => 'Hesap oluştur';
+
+  @override
+  String get adminInviteHint =>
+      'Müşteri bir bağlantı alır, sadece şifre oluşturur ve müşteri numarasını korur. Kaydettiğinizde SMS uygulaması açılır.';
+
+  @override
+  String get adminInvitePhoneHint =>
+      'Uygulama bağlantısını SMS ile göndermek için müşterinin telefonunu yazın.';
 }
