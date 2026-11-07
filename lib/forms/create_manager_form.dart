@@ -10,7 +10,10 @@ import '../l10n/locale_controller.dart';
 class CreateManagerForm extends StatefulWidget {
   final List<QueryDocumentSnapshot> officeDocs;
 
-  const CreateManagerForm({super.key, required this.officeDocs});
+  /// Anropas när managern är skapad (t.ex. för att stänga formuläret).
+  final VoidCallback? onCreated;
+
+  const CreateManagerForm({super.key, required this.officeDocs, this.onCreated});
 
   @override
   State<CreateManagerForm> createState() => _CreateManagerFormState();
@@ -102,6 +105,7 @@ class _CreateManagerFormState extends State<CreateManagerForm> {
       _phoneController.clear();
       _passwordController.clear();
       setState(() => _alsoCashier = false);
+      widget.onCreated?.call();
     } on FirebaseAuthException catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(

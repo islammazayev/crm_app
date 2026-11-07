@@ -2431,4 +2431,19 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String get textSizeExtraLarge => 'Extra stor';
+
+  @override
+  String get addCustomer => 'Lägg till kund';
+
+  @override
+  String get addOffice => 'Lägg till kontor';
+
+  @override
+  String get addManager => 'Lägg till manager';
+
+  @override
+  String get addCashier => 'Lägg till kassör';
+
+  @override
+  String get addPartner => 'Lägg till partner';
 }

@@ -6,6 +6,7 @@ import '../../l10n/locale_controller.dart';
 import '../../services/cashier_service.dart';
 import '../../theme/app_theme.dart';
 import '../../utils/search_match.dart';
+import '../../widgets/add_panel.dart';
 import '../../widgets/confirm_delete.dart';
 import '../../widgets/search_summary.dart';
 
@@ -201,7 +202,13 @@ class _AdminManagersPageState extends State<AdminManagersPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                CreateManagerForm(officeDocs: officeDocs),
+                AddPanel(
+                  label: l10n.addManager,
+                  builder: (context, close) => CreateManagerForm(
+                    officeDocs: officeDocs,
+                    onCreated: close,
+                  ),
+                ),
                 const SizedBox(height: 32),
                 Text(
                   l10n.existingManagers,

@@ -1718,5 +1718,10 @@
   "textSizeSmall": "Liten",
   "textSizeNormal": "Normal",
   "textSizeLarge": "Stor",
-  "textSizeExtraLarge": "Extra stor"
+  "textSizeExtraLarge": "Extra stor",
+  "addCustomer": "Lägg till kund",
+  "addOffice": "Lägg till kontor",
+  "addManager": "Lägg till manager",
+  "addCashier": "Lägg till kassör",
+  "addPartner": "Lägg till partner"
 }

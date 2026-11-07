@@ -671,5 +671,10 @@
   "textSizeSmall": "Small",
   "textSizeNormal": "Normal",
   "textSizeLarge": "Large",
-  "textSizeExtraLarge": "Extra large"
+  "textSizeExtraLarge": "Extra large",
+  "addCustomer": "Add customer",
+  "addOffice": "Add office",
+  "addManager": "Add manager",
+  "addCashier": "Add cashier",
+  "addPartner": "Add partner"
 }

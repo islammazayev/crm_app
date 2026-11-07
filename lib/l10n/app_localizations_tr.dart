@@ -2416,4 +2416,19 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get textSizeExtraLarge => 'Çok büyük';
+
+  @override
+  String get addCustomer => 'Müşteri ekle';
+
+  @override
+  String get addOffice => 'Ofis ekle';
+
+  @override
+  String get addManager => 'Yönetici ekle';
+
+  @override
+  String get addCashier => 'Kasiyer ekle';
+
+  @override
+  String get addPartner => 'Ortak ekle';
 }

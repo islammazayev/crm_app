@@ -8,6 +8,7 @@ import '../../models/office.dart';
 import '../../services/office_listing_service.dart';
 import '../../utils/balances.dart';
 import '../../utils/currencies.dart';
+import '../../widgets/add_panel.dart';
 import '../../widgets/confirm_delete.dart';
 import '../sections/admin_offices_section.dart' show EditOfficeDialog;
 
@@ -91,28 +92,27 @@ class _AdminOfficesPageState extends State<AdminOfficesPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              l10n.createOffice,
-              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            AddPanel(
+              label: l10n.addOffice,
+              builder: (context, close) => OfficeForm(
+                onSubmit:
+                    ({
+                      required country,
+                      required city,
+                      required currencies,
+                      required paymentMethods,
+                    }) async {
+                      await _addOffice(
+                        country: country,
+                        city: city,
+                        currencies: currencies,
+                        paymentMethods: paymentMethods,
+                      );
+                      close();
+                    },
+              ),
             ),
-            const SizedBox(height: 8),
-            OfficeForm(
-              onSubmit:
-                  ({
-                    required country,
-                    required city,
-                    required currencies,
-                    required paymentMethods,
-                  }) async {
-                    await _addOffice(
-                      country: country,
-                      city: city,
-                      currencies: currencies,
-                      paymentMethods: paymentMethods,
-                    );
-                  },
-            ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 20),
 
             StreamBuilder<QuerySnapshot>(
               stream: officesRef.snapshots(),
