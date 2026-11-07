@@ -4373,6 +4373,168 @@ abstract class AppLocalizations {
   /// In sv, this message translates to:
   /// **'Visa överföringar'**
   String get showTransfers;
+
+  /// No description provided for @filterBalance.
+  ///
+  /// In sv, this message translates to:
+  /// **'Saldo'**
+  String get filterBalance;
+
+  /// No description provided for @filterWithoutBalance.
+  ///
+  /// In sv, this message translates to:
+  /// **'Utan saldo'**
+  String get filterWithoutBalance;
+
+  /// No description provided for @sortOldest.
+  ///
+  /// In sv, this message translates to:
+  /// **'Äldst först'**
+  String get sortOldest;
+
+  /// No description provided for @sortOffice.
+  ///
+  /// In sv, this message translates to:
+  /// **'Kontor'**
+  String get sortOffice;
+
+  /// No description provided for @sortAmount.
+  ///
+  /// In sv, this message translates to:
+  /// **'Belopp, högst först'**
+  String get sortAmount;
+
+  /// No description provided for @sortBalance.
+  ///
+  /// In sv, this message translates to:
+  /// **'Saldo i {currency}, högst först'**
+  String sortBalance(Object currency);
+
+  /// No description provided for @filterYes.
+  ///
+  /// In sv, this message translates to:
+  /// **'Ja'**
+  String get filterYes;
+
+  /// No description provided for @filterNo.
+  ///
+  /// In sv, this message translates to:
+  /// **'Nej'**
+  String get filterNo;
+
+  /// No description provided for @filterCurrencyWithBalance.
+  ///
+  /// In sv, this message translates to:
+  /// **'Har saldo i valuta'**
+  String get filterCurrencyWithBalance;
+
+  /// No description provided for @tierCustomerCount.
+  ///
+  /// In sv, this message translates to:
+  /// **'{count} kunder'**
+  String tierCustomerCount(Object count);
+
+  /// No description provided for @showCustomers.
+  ///
+  /// In sv, this message translates to:
+  /// **'Visa kunder'**
+  String get showCustomers;
+
+  /// No description provided for @filterOngoing.
+  ///
+  /// In sv, this message translates to:
+  /// **'Pågående'**
+  String get filterOngoing;
+
+  /// No description provided for @filterCompleted.
+  ///
+  /// In sv, this message translates to:
+  /// **'Genomförda'**
+  String get filterCompleted;
+
+  /// No description provided for @filterRejected.
+  ///
+  /// In sv, this message translates to:
+  /// **'Avvisade'**
+  String get filterRejected;
+
+  /// No description provided for @filterArchived.
+  ///
+  /// In sv, this message translates to:
+  /// **'Arkiverade'**
+  String get filterArchived;
+
+  /// No description provided for @filterToday.
+  ///
+  /// In sv, this message translates to:
+  /// **'Idag'**
+  String get filterToday;
+
+  /// No description provided for @filterKind.
+  ///
+  /// In sv, this message translates to:
+  /// **'Typ'**
+  String get filterKind;
+
+  /// No description provided for @kindBuy.
+  ///
+  /// In sv, this message translates to:
+  /// **'Köp'**
+  String get kindBuy;
+
+  /// No description provided for @kindSell.
+  ///
+  /// In sv, this message translates to:
+  /// **'Sälj'**
+  String get kindSell;
+
+  /// No description provided for @kindTransfer.
+  ///
+  /// In sv, this message translates to:
+  /// **'Överföring'**
+  String get kindTransfer;
+
+  /// No description provided for @filterDate.
+  ///
+  /// In sv, this message translates to:
+  /// **'Datum'**
+  String get filterDate;
+
+  /// No description provided for @filterAmount.
+  ///
+  /// In sv, this message translates to:
+  /// **'Belopp'**
+  String get filterAmount;
+
+  /// No description provided for @filterFrom.
+  ///
+  /// In sv, this message translates to:
+  /// **'Från'**
+  String get filterFrom;
+
+  /// No description provided for @filterTo.
+  ///
+  /// In sv, this message translates to:
+  /// **'Till'**
+  String get filterTo;
+
+  /// No description provided for @showArchivedShort.
+  ///
+  /// In sv, this message translates to:
+  /// **'Visa arkiverade'**
+  String get showArchivedShort;
+
+  /// No description provided for @reportTitle.
+  ///
+  /// In sv, this message translates to:
+  /// **'Rapport och vinst'**
+  String get reportTitle;
+
+  /// No description provided for @ordersSummary.
+  ///
+  /// In sv, this message translates to:
+  /// **'{total} transaktioner · {archived} arkiverade'**
+  String ordersSummary(Object total, Object archived);
 }
 
 class _AppLocalizationsDelegate

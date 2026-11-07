@@ -177,6 +177,14 @@ class _AdminManagersPageState extends State<AdminManagersPage> {
   /// Valt snabbfilter (index), null = alla.
   int? _filter;
 
+  // Avancerade filter (⚙). _office: kontors-id, '' = inget kontor.
+  String? _office;
+  bool? _alsoCashier;
+  String _sort = 'name';
+
+  int get _advancedCount =>
+      [_office, _alsoCashier].where((v) => v != null).length;
+
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
@@ -232,6 +240,25 @@ class _AdminManagersPageState extends State<AdminManagersPage> {
                 ),
               ];
               int count(int i) => all.where(filters[i].test).length;
+              final items = all.where((doc) {
+                final d = data(doc);
+                final officeId = officeOf(d) == null
+                    ? ''
+                    : d['officeId'].toString();
+                if (_office != null && officeId != _office) return false;
+                if (_alsoCashier != null &&
+                    (d['alsoCashier'] == true) != _alsoCashier) {
+                  return false;
+                }
+                return true;
+              }).toList();
+              if (_sort == 'office') {
+                items.sort(
+                  (a, b) => (officeOf(data(a)) ?? '~').compareTo(
+                    officeOf(data(b)) ?? '~',
+                  ),
+                );
+              }
 
               return SingleChildScrollView(
                 padding: const EdgeInsets.all(24),
@@ -273,7 +300,51 @@ class _AdminManagersPageState extends State<AdminManagersPage> {
                     ),
                     const SizedBox(height: 16),
                     AdminList<QueryDocumentSnapshot>(
-                      items: all,
+                      items: items,
+                      advancedCount: _advancedCount,
+                      filterKey: (_office, _alsoCashier, _sort),
+                      onClearAdvanced: () => setState(() {
+                        _office = null;
+                        _alsoCashier = null;
+                        _sort = 'name';
+                      }),
+                      advanced: Wrap(
+                        spacing: 16,
+                        runSpacing: 14,
+                        children: [
+                          AdminSelect<String>(
+                            label: l10n.office,
+                            value: _office,
+                            options: [
+                              (null, l10n.statAll),
+                              ('', l10n.noOfficeAssigned),
+                              for (final e in officeLabels.entries)
+                                (e.key, e.value),
+                            ],
+                            onChanged: (v) => setState(() => _office = v),
+                          ),
+                          AdminSelect<bool>(
+                            label: l10n.alsoCashier,
+                            value: _alsoCashier,
+                            options: [
+                              (null, l10n.statAll),
+                              (true, l10n.filterYes),
+                              (false, l10n.filterNo),
+                            ],
+                            onChanged: (v) => setState(() => _alsoCashier = v),
+                          ),
+                          AdminSelect<String>(
+                            label: l10n.sortBy,
+                            value: _sort,
+                            options: [
+                              ('name', l10n.sortName),
+                              ('office', l10n.sortOffice),
+                            ],
+                            onChanged: (v) =>
+                                setState(() => _sort = v ?? 'name'),
+                          ),
+                        ],
+                      ),
                       searchHint: l10n.searchManagersLabel,
                       filters: filters,
                       filter: _filter,

@@ -91,4 +91,51 @@ void main() {
       expect(tester.takeException(), isNull);
     });
   }
+
+  testWidgets('⚙ öppnar avancerade filter med badge och Rensa filter', (
+    tester,
+  ) async {
+    var cleared = false;
+    await tester.pumpWidget(
+      MaterialApp(
+        locale: const Locale('sv'),
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: Scaffold(
+          body: SingleChildScrollView(
+            child: AdminList<String>(
+              items: names,
+              searchHint: 'Sök',
+              emptyText: 'Inga träffar',
+              matches: (n, q) => n.contains(q),
+              onFilter: (_) {},
+              rowBuilder: (n) => Text(n),
+              advanced: const Text('Mina filter'),
+              advancedCount: 2,
+              onClearAdvanced: () => cleared = true,
+            ),
+          ),
+        ),
+      ),
+    );
+    expect(find.text('2'), findsOneWidget);
+    expect(find.text('Mina filter'), findsNothing);
+    await tester.tap(find.byTooltip('Avancerade filter'));
+    await tester.pumpAndSettle();
+    expect(find.text('Mina filter'), findsOneWidget);
+    await tester.tap(find.text('Rensa filter'));
+    expect(cleared, isTrue);
+  });
+
+  test('inDateRange räknar med hela slutdagen', () {
+    final r = DateTimeRange(
+      start: DateTime(2026, 11, 1),
+      end: DateTime(2026, 11, 7),
+    );
+    expect(inDateRange(DateTime(2026, 11, 7, 23, 59), r), isTrue);
+    expect(inDateRange(DateTime(2026, 11, 8), r), isFalse);
+    expect(inDateRange(DateTime(2026, 10, 31, 23), r), isFalse);
+    expect(inDateRange(null, r), isFalse);
+    expect(inDateRange(null, null), isTrue);
+  });
 }

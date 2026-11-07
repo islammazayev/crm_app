@@ -2564,4 +2564,91 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String get showTransfers => 'Visa överföringar';
+
+  @override
+  String get filterBalance => 'Saldo';
+
+  @override
+  String get filterWithoutBalance => 'Utan saldo';
+
+  @override
+  String get sortOldest => 'Äldst först';
+
+  @override
+  String get sortOffice => 'Kontor';
+
+  @override
+  String get sortAmount => 'Belopp, högst först';
+
+  @override
+  String sortBalance(Object currency) {
+    return 'Saldo i $currency, högst först';
+  }
+
+  @override
+  String get filterYes => 'Ja';
+
+  @override
+  String get filterNo => 'Nej';
+
+  @override
+  String get filterCurrencyWithBalance => 'Har saldo i valuta';
+
+  @override
+  String tierCustomerCount(Object count) {
+    return '$count kunder';
+  }
+
+  @override
+  String get showCustomers => 'Visa kunder';
+
+  @override
+  String get filterOngoing => 'Pågående';
+
+  @override
+  String get filterCompleted => 'Genomförda';
+
+  @override
+  String get filterRejected => 'Avvisade';
+
+  @override
+  String get filterArchived => 'Arkiverade';
+
+  @override
+  String get filterToday => 'Idag';
+
+  @override
+  String get filterKind => 'Typ';
+
+  @override
+  String get kindBuy => 'Köp';
+
+  @override
+  String get kindSell => 'Sälj';
+
+  @override
+  String get kindTransfer => 'Överföring';
+
+  @override
+  String get filterDate => 'Datum';
+
+  @override
+  String get filterAmount => 'Belopp';
+
+  @override
+  String get filterFrom => 'Från';
+
+  @override
+  String get filterTo => 'Till';
+
+  @override
+  String get showArchivedShort => 'Visa arkiverade';
+
+  @override
+  String get reportTitle => 'Rapport och vinst';
+
+  @override
+  String ordersSummary(Object total, Object archived) {
+    return '$total transaktioner · $archived arkiverade';
+  }
 }

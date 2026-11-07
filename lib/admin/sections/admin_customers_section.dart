@@ -13,7 +13,10 @@ import '../../widgets/admin_list.dart';
 import '../../widgets/overview_widgets.dart';
 
 class AdminCustomersSection extends StatefulWidget {
-  const AdminCustomersSection({super.key});
+  /// Nivå att filtrera på från början (t.ex. från Kundnivåer).
+  final String? initialTier;
+
+  const AdminCustomersSection({super.key, this.initialTier});
 
   @override
   State<AdminCustomersSection> createState() => _AdminCustomersSectionState();
@@ -22,7 +25,7 @@ class AdminCustomersSection extends StatefulWidget {
 class _AdminCustomersSectionState extends State<AdminCustomersSection> {
   final TextEditingController _searchController = TextEditingController();
   String _query = '';
-  CustomerFilter _filter = const CustomerFilter();
+  late CustomerFilter _filter = CustomerFilter(tier: widget.initialTier);
   bool _showAdvanced = false;
   int _page = 0;
 

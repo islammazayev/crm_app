@@ -117,6 +117,15 @@ class _AdminCashiersPageState extends State<AdminCashiersPage> {
   /// Valt snabbfilter (index), null = alla.
   int? _filter;
 
+  // Avancerade filter (⚙). _office: kontors-id, '' = inget kontor.
+  String? _office;
+  String? _manager;
+  String? _currency;
+  String _sort = 'name';
+
+  int get _advancedCount =>
+      [_office, _manager, _currency].where((v) => v != null).length;
+
   bool get _isPartner => widget.type == StaffType.partner;
 
   CollectionReference<Map<String, dynamic>> get _collection =>
@@ -518,6 +527,34 @@ class _AdminCashiersPageState extends State<AdminCashiersPage> {
       ),
     ];
     int count(int i) => all.where(filters[i].test).length;
+    final currencies = {
+      for (final d in all)
+        ...balancesOf(d).entries.where((e) => e.value != 0).map((e) => e.key),
+    }.toList()..sort();
+    final items = all.where((doc) {
+      final d = doc.data();
+      final officeId = officeOf(d) == null ? '' : '${d['officeId']}';
+      if (_office != null && officeId != _office) return false;
+      if (_manager != null && '${d['managerId'] ?? ''}' != _manager) {
+        return false;
+      }
+      if (_currency != null && (balancesOf(doc)[_currency] ?? 0) == 0) {
+        return false;
+      }
+      return true;
+    }).toList();
+    if (_sort == 'office') {
+      items.sort(
+        (a, b) =>
+            (officeOf(a.data()) ?? '~').compareTo(officeOf(b.data()) ?? '~'),
+      );
+    } else if (_sort == 'balance' && _currency != null) {
+      items.sort(
+        (a, b) => (balancesOf(b)[_currency] ?? 0).compareTo(
+          balancesOf(a)[_currency] ?? 0,
+        ),
+      );
+    }
 
     void open(
       QueryDocumentSnapshot<Map<String, dynamic>> doc,
@@ -581,7 +618,61 @@ class _AdminCashiersPageState extends State<AdminCashiersPage> {
           ),
           const SizedBox(height: 16),
           AdminList<QueryDocumentSnapshot<Map<String, dynamic>>>(
-            items: all,
+            items: items,
+            advancedCount: _advancedCount,
+            filterKey: (_office, _manager, _currency, _sort),
+            onClearAdvanced: () => setState(() {
+              _office = null;
+              _manager = null;
+              _currency = null;
+              _sort = 'name';
+            }),
+            advanced: Wrap(
+              spacing: 16,
+              runSpacing: 14,
+              children: [
+                AdminSelect<String>(
+                  label: l10n.office,
+                  value: _office,
+                  options: [
+                    (null, l10n.statAll),
+                    ('', l10n.noOfficeAssigned),
+                    for (final e in links.offices.entries) (e.key, e.value),
+                  ],
+                  onChanged: (v) => setState(() => _office = v),
+                ),
+                AdminSelect<String>(
+                  label: l10n.manager,
+                  value: _manager,
+                  options: [
+                    (null, l10n.statAll),
+                    for (final e in links.managers.entries)
+                      (e.key, e.value.isEmpty ? e.key : e.value),
+                  ],
+                  onChanged: (v) => setState(() => _manager = v),
+                ),
+                AdminSelect<String>(
+                  label: l10n.filterCurrencyWithBalance,
+                  value: _currency,
+                  options: [
+                    (null, l10n.statAll),
+                    for (final c in currencies) (c, c),
+                  ],
+                  onChanged: (v) => setState(() => _currency = v),
+                ),
+                AdminSelect<String>(
+                  label: l10n.sortBy,
+                  value: _sort,
+                  options: [
+                    ('name', l10n.sortName),
+                    ('office', l10n.sortOffice),
+                    if (_currency != null)
+                      ('balance', l10n.sortBalance(_currency!)),
+                  ],
+                  onChanged: (v) => setState(() => _sort = v ?? 'name'),
+                ),
+              ],
+            ),
             searchHint: texts.searchLabel,
             filters: filters,
             filter: _filter,
