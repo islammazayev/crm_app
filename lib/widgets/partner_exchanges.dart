@@ -428,10 +428,13 @@ class _ExchangeCardState extends State<_ExchangeCard> {
 ///
 /// [initial] betyder motförslag: valutorna är låsta och belopp och kurs är
 /// förifyllda. [partnerChoices] visas för managern vid nytt förslag.
+/// För partnern är det i stället kontoren den får växla mot (väljs bara om
+/// de är fler än ett), och [choiceLabel] är rubriken.
 class NewExchangePage extends StatefulWidget {
   final ExchangeSide side;
   final ExchangeTerms? initial;
   final Map<String, String> partnerChoices;
+  final String? choiceLabel;
   final Future<void> Function(
     ExchangeTerms terms,
     String? partnerId,
@@ -445,6 +448,7 @@ class NewExchangePage extends StatefulWidget {
     required this.onSubmit,
     this.initial,
     this.partnerChoices = const {},
+    this.choiceLabel,
   });
 
   @override
@@ -464,9 +468,18 @@ class _NewExchangePageState extends State<NewExchangePage> {
 
   bool get _isCounter => widget.initial != null;
 
+  /// Managern väljer alltid partner; partnern väljer kontor om den har fler.
+  bool get _needsChoice =>
+      !_isCounter &&
+      (widget.side == ExchangeSide.office || widget.partnerChoices.isNotEmpty);
+
   @override
   void initState() {
     super.initState();
+    if (widget.side == ExchangeSide.partner &&
+        widget.partnerChoices.length == 1) {
+      _partnerId = widget.partnerChoices.keys.first;
+    }
     final t = widget.initial;
     if (t != null) {
       final v = _view(t, widget.side);
@@ -524,7 +537,7 @@ class _NewExchangePageState extends State<NewExchangePage> {
     final l10n = context.l10n;
     final give = parseRate(_give.text);
     final get = _getAmount;
-    final needsPartner = widget.side == ExchangeSide.office && !_isCounter;
+    final needsPartner = _needsChoice;
     if (_giveCur == null ||
         _getCur == null ||
         _giveCur == _getCur ||
@@ -592,10 +605,15 @@ class _NewExchangePageState extends State<NewExchangePage> {
         child: ListView(
           padding: const EdgeInsets.all(16),
           children: [
-            if (widget.side == ExchangeSide.office && !_isCounter) ...[
+            if (_needsChoice &&
+                (widget.side == ExchangeSide.office ||
+                    widget.partnerChoices.length > 1)) ...[
               DropdownButtonFormField<String>(
                 initialValue: _partnerId,
-                decoration: InputDecoration(labelText: l10n.choosePartner),
+                isExpanded: true,
+                decoration: InputDecoration(
+                  labelText: widget.choiceLabel ?? l10n.choosePartner,
+                ),
                 items: [
                   for (final e in widget.partnerChoices.entries)
                     DropdownMenuItem(value: e.key, child: Text(e.value)),

@@ -2692,4 +2692,17 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get inviteEmailSubject => 'Uygulamada hesabınızı oluşturun';
+
+  @override
+  String get partnerOffices => 'Ofisler';
+
+  @override
+  String get partnerManagers => 'Yöneticiler';
+
+  @override
+  String get partnerLinksHint =>
+      'Partner, bir döviz işleminin bu ofislerden (ve yöneticilerin ofislerinden) hangisi için olduğunu seçebilir.';
+
+  @override
+  String get partnerChooseOffice => 'İşlem için ofis';
 }

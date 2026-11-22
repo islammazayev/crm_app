@@ -37,6 +37,13 @@ beforeEach(async () => {
     await setDoc(doc(db, 'users', 'M2'), { role: 'manager', officeId: 'O2' });
     await setDoc(doc(db, 'users', 'P'), { role: 'partner' });
     await setDoc(doc(db, 'users', 'P2'), { role: 'partner' });
+    await setDoc(doc(db, 'users', 'M3'), { role: 'manager', officeId: 'O3' });
+    await setDoc(doc(db, 'users', 'PM'), { role: 'partner' });
+    // Ny form: flera kontor och managers.
+    await setDoc(doc(db, 'partners', 'PM'), {
+      officeIds: ['O2'], managerIds: ['M', 'M3'],
+      exchangeOfficeIds: ['O1', 'O2', 'O3'], balances: {},
+    });
     await setDoc(doc(db, 'partners', 'P'), {
       managerId: 'M', exchangeOfficeId: 'O1', balances: { EUR: 500 },
     });
@@ -88,6 +95,32 @@ describe('förslag', () => {
       officeId: 'O1', managerId: 'M', partnerId: 'P', proposedBy: 'office',
       officeGivesAmount: 0,
     })));
+  });
+});
+
+describe('partner med flera kontor och managers', () => {
+  test('alla kopplade managers och kontor kan föreslå', async () => {
+    for (const [m, o] of [['M', 'O1'], ['M2', 'O2'], ['M3', 'O3']]) {
+      await assertSucceeds(setDoc(doc(as(m), 'partnerExchanges', `pm-${m}`),
+        proposal({ officeId: o, managerId: m, partnerId: 'PM', proposedBy: 'office' })));
+    }
+  });
+
+  test('partnern väljer ett av sina kontor', async () => {
+    await assertSucceeds(setDoc(doc(as('PM'), 'partnerExchanges', 'a'),
+      proposal({ officeId: 'O3', managerId: '', partnerId: 'PM', proposedBy: 'partner' })));
+    await assertFails(setDoc(doc(as('PM'), 'partnerExchanges', 'b'),
+      proposal({ officeId: 'O9', managerId: '', partnerId: 'PM', proposedBy: 'partner' })));
+  });
+
+  test('managers listar sina partner med array-contains', async () => {
+    const { collection, query, where, getDocs } = await import('firebase/firestore');
+    await assertSucceeds(getDocs(query(collection(as('M3'), 'partners'),
+      where('managerIds', 'array-contains', 'M3'))));
+    await assertSucceeds(getDocs(query(collection(as('M2'), 'partners'),
+      where('officeIds', 'array-contains', 'O2'))));
+    await assertFails(getDocs(query(collection(as('M2'), 'partners'),
+      where('managerIds', 'array-contains', 'M'))));
   });
 });
 

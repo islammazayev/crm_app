@@ -1921,5 +1921,9 @@
   "sendAppInviteEmail": "Skicka länk till appen (e-post)",
   "adminInviteEmailHint": "Samma länk via e-post. E-postappen öppnas när du sparar.",
   "inviteEmailRequired": "Skriv kundens e-post för att kunna skicka länken.",
-  "inviteEmailSubject": "Skapa ditt konto i appen"
+  "inviteEmailSubject": "Skapa ditt konto i appen",
+  "partnerOffices": "Kontor",
+  "partnerManagers": "Managers",
+  "partnerLinksHint": "Partnern kan välja vilket av dessa kontor (och managernas kontor) en växling gäller.",
+  "partnerChooseOffice": "Kontor för växlingen"
 }
