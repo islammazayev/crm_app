@@ -85,12 +85,7 @@ class _PhoneFieldState extends State<PhoneField> {
   }
 
   Future<void> _pickCountry() async {
-    final picked = await showModalBottomSheet<Country>(
-      context: context,
-      isScrollControlled: true,
-      showDragHandle: true,
-      builder: (_) => const _CountryPicker(),
-    );
+    final picked = await pickCountry(context);
     if (picked == null) return;
     setState(() => _country = picked);
     if (_national.text.trim().isNotEmpty) _write();
@@ -127,6 +122,15 @@ class _PhoneFieldState extends State<PhoneField> {
     );
   }
 }
+
+/// Öppnar listan med länder (med sök) och ger det valda landet.
+Future<Country?> pickCountry(BuildContext context) =>
+    showModalBottomSheet<Country>(
+      context: context,
+      isScrollControlled: true,
+      showDragHandle: true,
+      builder: (_) => const _CountryPicker(),
+    );
 
 /// Lista med länder och sök. De vanligaste länderna ligger överst.
 class _CountryPicker extends StatefulWidget {

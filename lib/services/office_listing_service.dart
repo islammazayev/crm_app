@@ -7,7 +7,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 /// bara veta vilka kontor som finns och vilka valutor de hanterar, och det
 /// är exakt vad `officeListings/{officeId}` innehåller:
 ///
-///   country, city, address, mapUrl, currencies, updatedAt
+///   country, city, address, mapUrl, currencies, pickupCountries, updatedAt
+///
+/// pickupCountries: länderna där mottagaren kan hämta pengarna (landskoder).
 ///
 /// Adressen och kartlänken visas för kunder som betalar kontant.
 ///
@@ -24,6 +26,12 @@ class OfficeListingService {
         .toList();
   }
 
+  static List<String> _pickupOf(Map<String, dynamic> office) {
+    return (office['pickupCountries'] as List? ?? [])
+        .map((e) => e.toString())
+        .toList();
+  }
+
   static Map<String, dynamic> _publicFields(Map<String, dynamic> office) {
     return {
       'country': (office['country'] ?? '').toString(),
@@ -31,6 +39,7 @@ class OfficeListingService {
       'address': (office['address'] ?? '').toString(),
       'mapUrl': (office['mapUrl'] ?? '').toString(),
       'currencies': _currenciesOf(office),
+      'pickupCountries': _pickupOf(office),
       'updatedAt': FieldValue.serverTimestamp(),
     };
   }
@@ -63,7 +72,8 @@ class OfficeListingService {
       final data = office.data();
       final existing = listingById[office.id];
 
-      final inSync = existing != null &&
+      final inSync =
+          existing != null &&
           (existing['country'] ?? '').toString() ==
               (data['country'] ?? '').toString() &&
           (existing['city'] ?? '').toString() ==
@@ -72,7 +82,8 @@ class OfficeListingService {
               (data['address'] ?? '').toString() &&
           (existing['mapUrl'] ?? '').toString() ==
               (data['mapUrl'] ?? '').toString() &&
-          _sameSet(_currenciesOf(existing), _currenciesOf(data));
+          _sameSet(_currenciesOf(existing), _currenciesOf(data)) &&
+          _sameSet(_pickupOf(existing), _pickupOf(data));
 
       if (!inSync) {
         batch.set(_listings.doc(office.id), _publicFields(data));

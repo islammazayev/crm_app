@@ -757,5 +757,10 @@
   "partnerOffices": "Offices",
   "partnerManagers": "Managers",
   "partnerLinksHint": "The partner can choose which of these offices (and the managers' offices) an exchange is for.",
-  "partnerChooseOffice": "Office for the exchange"
+  "partnerChooseOffice": "Office for the exchange",
+  "pickupCountries": "Payout countries",
+  "pickupCountriesHelp": "Countries where the recipient can collect money from this office. The customer picks one when sending money.",
+  "addCountry": "Add country",
+  "pickupCountryRecipient": "Country where the recipient collects the money",
+  "pickupCountryValue": "Collected in: {country}"
 }

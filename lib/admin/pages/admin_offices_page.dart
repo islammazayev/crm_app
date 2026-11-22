@@ -32,6 +32,7 @@ class _AdminOfficesPageState extends State<AdminOfficesPage> {
     required String city,
     required List<String> currencies,
     required List<OfficePaymentMethod> paymentMethods,
+    required List<String> pickupCountries,
   }) async {
     final Map<String, double> balances = {for (final c in currencies) c: 0.0};
 
@@ -41,6 +42,7 @@ class _AdminOfficesPageState extends State<AdminOfficesPage> {
       'currencies': currencies,
       'balances': balances,
       'paymentMethods': paymentMethods.map((m) => m.toMap()).toList(),
+      'pickupCountries': pickupCountries,
       'createdAt': FieldValue.serverTimestamp(),
     });
 
@@ -49,6 +51,7 @@ class _AdminOfficesPageState extends State<AdminOfficesPage> {
       'country': country,
       'city': city,
       'currencies': currencies,
+      'pickupCountries': pickupCountries,
     });
   }
 
@@ -178,12 +181,14 @@ class _AdminOfficesPageState extends State<AdminOfficesPage> {
             required city,
             required currencies,
             required paymentMethods,
+            required pickupCountries,
           }) async {
             await _addOffice(
               country: country,
               city: city,
               currencies: currencies,
               paymentMethods: paymentMethods,
+              pickupCountries: pickupCountries,
             );
             close();
           },

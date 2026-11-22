@@ -2722,4 +2722,22 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get partnerChooseOffice => 'Офис для обмена';
+
+  @override
+  String get pickupCountries => 'Страны выплаты';
+
+  @override
+  String get pickupCountriesHelp =>
+      'Страны, где получатель может забрать деньги от этого офиса. Клиент выбирает одну при отправке денег.';
+
+  @override
+  String get addCountry => 'Добавить страну';
+
+  @override
+  String get pickupCountryRecipient => 'Страна, где получатель забирает деньги';
+
+  @override
+  String pickupCountryValue(Object country) {
+    return 'Получение в: $country';
+  }
 }

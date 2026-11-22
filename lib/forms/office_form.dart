@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../l10n/locale_controller.dart';
 import '../models/office.dart';
 import '../utils/currencies.dart';
+import '../widgets/pickup_countries_field.dart';
 
 class OfficeForm extends StatefulWidget {
   final Future<void> Function({
@@ -9,12 +10,11 @@ class OfficeForm extends StatefulWidget {
     required String city,
     required List<String> currencies,
     required List<OfficePaymentMethod> paymentMethods,
-  }) onSubmit;
+    required List<String> pickupCountries,
+  })
+  onSubmit;
 
-  const OfficeForm({
-    super.key,
-    required this.onSubmit,
-  });
+  const OfficeForm({super.key, required this.onSubmit});
 
   @override
   State<OfficeForm> createState() => _OfficeFormState();
@@ -25,6 +25,7 @@ class _OfficeFormState extends State<OfficeForm> {
   final _countryController = TextEditingController();
   final _cityController = TextEditingController();
   final Set<String> _selectedCurrencies = {};
+  List<String> _pickupCountries = [];
 
   // Betalningsmetoder som byggs upp dynamiskt
   final List<_PaymentMethodEntry> _methods = [];
@@ -76,12 +77,14 @@ class _OfficeFormState extends State<OfficeForm> {
 
       if (label.isEmpty) continue; // hoppa över tomma rader
 
-      paymentMethods.add(OfficePaymentMethod(
-        id: 'method_${DateTime.now().millisecondsSinceEpoch}_$i',
-        label: label,
-        details: details,
-        supportedFromCurrencies: supported,
-      ));
+      paymentMethods.add(
+        OfficePaymentMethod(
+          id: 'method_${DateTime.now().millisecondsSinceEpoch}_$i',
+          label: label,
+          details: details,
+          supportedFromCurrencies: supported,
+        ),
+      );
     }
 
     await widget.onSubmit(
@@ -89,6 +92,7 @@ class _OfficeFormState extends State<OfficeForm> {
       city: _cityController.text.trim(),
       currencies: currencies,
       paymentMethods: paymentMethods,
+      pickupCountries: _pickupCountries,
     );
 
     // Rensa formuläret
@@ -96,6 +100,7 @@ class _OfficeFormState extends State<OfficeForm> {
     _cityController.clear();
     setState(() {
       _selectedCurrencies.clear();
+      _pickupCountries = [];
       for (final m in _methods) {
         m.dispose();
       }
@@ -127,8 +132,10 @@ class _OfficeFormState extends State<OfficeForm> {
                 (v == null || v.trim().isEmpty) ? l10n.enterCity : null,
           ),
           const SizedBox(height: 8),
-          Text(l10n.currencies,
-              style: const TextStyle(fontSize: 12, color: Colors.grey)),
+          Text(
+            l10n.currencies,
+            style: const TextStyle(fontSize: 12, color: Colors.grey),
+          ),
           const SizedBox(height: 4),
           Wrap(
             spacing: 8,
@@ -137,10 +144,18 @@ class _OfficeFormState extends State<OfficeForm> {
                 label: Text(c),
                 selected: _selectedCurrencies.contains(c),
                 onSelected: (v) => setState(() {
-                  v ? _selectedCurrencies.add(c) : _selectedCurrencies.remove(c);
+                  v
+                      ? _selectedCurrencies.add(c)
+                      : _selectedCurrencies.remove(c);
                 }),
               );
             }).toList(),
+          ),
+
+          const SizedBox(height: 16),
+          PickupCountriesField(
+            selected: _pickupCountries,
+            onChanged: (v) => setState(() => _pickupCountries = v),
           ),
 
           // --- Betalningsmetoder ---
@@ -149,7 +164,10 @@ class _OfficeFormState extends State<OfficeForm> {
             children: [
               Text(
                 l10n.paymentMethods,
-                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
               const SizedBox(width: 12),
               TextButton.icon(
@@ -177,10 +195,7 @@ class _OfficeFormState extends State<OfficeForm> {
             ),
 
           const SizedBox(height: 16),
-          ElevatedButton(
-            onPressed: _submit,
-            child: Text(l10n.createOffice),
-          ),
+          ElevatedButton(onPressed: _submit, child: Text(l10n.createOffice)),
         ],
       ),
     );
@@ -256,8 +271,10 @@ class _PaymentMethodRow extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 8),
-            Text(l10n.supportsCurrencies,
-                style: const TextStyle(fontSize: 12, color: Colors.grey)),
+            Text(
+              l10n.supportsCurrencies,
+              style: const TextStyle(fontSize: 12, color: Colors.grey),
+            ),
             StatefulBuilder(
               builder: (context, setLocal) => Wrap(
                 spacing: 8,

@@ -2705,4 +2705,22 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get partnerChooseOffice => 'İşlem için ofis';
+
+  @override
+  String get pickupCountries => 'Ödeme ülkeleri';
+
+  @override
+  String get pickupCountriesHelp =>
+      'Alıcının bu ofisten parayı alabileceği ülkeler. Müşteri para gönderirken birini seçer.';
+
+  @override
+  String get addCountry => 'Ülke ekle';
+
+  @override
+  String get pickupCountryRecipient => 'Alıcının parayı alacağı ülke';
+
+  @override
+  String pickupCountryValue(Object country) {
+    return 'Teslim yeri: $country';
+  }
 }

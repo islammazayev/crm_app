@@ -295,8 +295,11 @@ service cloud.firestore {
         && before.status == 'payment_confirmed'
         && after.status == 'completed'
         && newB.diff(oldB).affectedKeys().hasOnly([before.fromCurrency, before.toCurrency])
-        && math.abs(newB.get(before.fromCurrency, 0) - (oldB.get(before.fromCurrency, 0) + before.amountFrom)) < 0.01
-        && math.abs(newB.get(before.toCurrency, 0) - (oldB.get(before.toCurrency, 0) - before.amountToNet)) < 0.01
+        // Samma valuta (t.ex. EUR → EUR): in och ut i samma saldo.
+        && (before.fromCurrency == before.toCurrency
+            ? math.abs(newB.get(before.toCurrency, 0) - (oldB.get(before.toCurrency, 0) + before.amountFrom - before.amountToNet)) < 0.01
+            : (math.abs(newB.get(before.fromCurrency, 0) - (oldB.get(before.fromCurrency, 0) + before.amountFrom)) < 0.01
+               && math.abs(newB.get(before.toCurrency, 0) - (oldB.get(before.toCurrency, 0) - before.amountToNet)) < 0.01))
         && newB.get(before.toCurrency, 0) >= 0;
     }
 
@@ -715,6 +718,20 @@ service cloud.firestore {
         : null;
     }
 
+    // Skicka pengar: samma valuta går, och har kontoret utbetalningsländer
+    // måste kunden välja ett av dem. Köp/sälj (kind): olika valutor och
+    // inget land.
+    function pickupCountryOk(tx) {
+      let countries = get(/databases/$(database)/documents/officeListings/$(tx.officeId)).data.get('pickupCountries', []);
+      return tx.get('kind', '') in ['buy', 'sell']
+        ? (tx.fromCurrency != tx.toCurrency
+           && !tx.keys().hasAny(['pickupCountry']))
+        : countries.size() == 0
+        ? !tx.keys().hasAny(['pickupCountry'])
+        : (tx.get('pickupCountry', null) is string
+           && tx.pickupCountry in countries);
+    }
+
     match /transactions/{docId} {
       // Kassören ser kontorets transaktioner (för kontanta inbetalningar).
       allow read: if isCashier()
@@ -754,7 +771,8 @@ service cloud.firestore {
                  /databases/$(database)/documents/customers/$(request.auth.uid)).data.clientId));
 
       // Kunden skickar en förfrågan. Kontoret måste finnas i officeListings
-      // och hantera både från- och tillvaluta.
+      // och hantera både från- och tillvaluta (samma valuta går också). Har
+      // kontoret utbetalningsländer måste kunden välja ett av dem.
       allow create: if isCustomer()
         && request.resource.data.customerId == request.auth.uid
         && request.resource.data.status == 'customer_requested'
@@ -765,9 +783,11 @@ service cloud.firestore {
              'amountTo', 'feePercent', 'feeAmount', 'paymentMethod',
              'status', 'createAt', 'transactionNo',
              'customerTier', 'tierDiscount',
-             'kind', 'buyAmount', 'deliveryMethod', 'payMethod'
+             'kind', 'buyAmount', 'deliveryMethod', 'payMethod',
+             'pickupCountry'
            ])
         && hasValidTransactionNo()
+        && pickupCountryOk(request.resource.data)
         // Kunden betalar kontant på kontoret eller via bank (som förut).
         && request.resource.data.get('payMethod', 'bank') in ['cash', 'bank']
         && hasValidTierSnapshot()
@@ -775,7 +795,6 @@ service cloud.firestore {
         && request.resource.data.officeId is string
         && request.resource.data.fromCurrency is string
         && request.resource.data.toCurrency is string
-        && request.resource.data.fromCurrency != request.resource.data.toCurrency
         && exists(/databases/$(database)/documents/officeListings/$(request.resource.data.officeId))
         && request.resource.data.fromCurrency in
              get(/databases/$(database)/documents/officeListings/$(request.resource.data.officeId)).data.currencies

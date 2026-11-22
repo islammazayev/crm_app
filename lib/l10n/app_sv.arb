@@ -1925,5 +1925,17 @@
   "partnerOffices": "Kontor",
   "partnerManagers": "Managers",
   "partnerLinksHint": "Partnern kan välja vilket av dessa kontor (och managernas kontor) en växling gäller.",
-  "partnerChooseOffice": "Kontor för växlingen"
+  "partnerChooseOffice": "Kontor för växlingen",
+  "pickupCountries": "Utbetalningsländer",
+  "pickupCountriesHelp": "Länder där mottagaren kan hämta pengarna från det här kontoret. Kunden väljer ett av dem när den skickar pengar.",
+  "addCountry": "Lägg till land",
+  "pickupCountryRecipient": "Land där mottagaren hämtar pengarna",
+  "pickupCountryValue": "Hämtas i: {country}",
+  "@pickupCountryValue": {
+    "placeholders": {
+      "country": {
+        "type": "Object"
+      }
+    }
+  }
 }

@@ -4655,6 +4655,36 @@ abstract class AppLocalizations {
   /// In sv, this message translates to:
   /// **'Kontor för växlingen'**
   String get partnerChooseOffice;
+
+  /// No description provided for @pickupCountries.
+  ///
+  /// In sv, this message translates to:
+  /// **'Utbetalningsländer'**
+  String get pickupCountries;
+
+  /// No description provided for @pickupCountriesHelp.
+  ///
+  /// In sv, this message translates to:
+  /// **'Länder där mottagaren kan hämta pengarna från det här kontoret. Kunden väljer ett av dem när den skickar pengar.'**
+  String get pickupCountriesHelp;
+
+  /// No description provided for @addCountry.
+  ///
+  /// In sv, this message translates to:
+  /// **'Lägg till land'**
+  String get addCountry;
+
+  /// No description provided for @pickupCountryRecipient.
+  ///
+  /// In sv, this message translates to:
+  /// **'Land där mottagaren hämtar pengarna'**
+  String get pickupCountryRecipient;
+
+  /// No description provided for @pickupCountryValue.
+  ///
+  /// In sv, this message translates to:
+  /// **'Hämtas i: {country}'**
+  String pickupCountryValue(Object country);
 }
 
 class _AppLocalizationsDelegate

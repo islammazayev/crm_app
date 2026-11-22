@@ -7,11 +7,13 @@ import '../../l10n/locale_controller.dart';
 import '../../services/transaction_number_service.dart';
 import '../../utils/customer_tiers.dart';
 import '../../widgets/pay_method.dart';
+import '../../widgets/pickup_countries_field.dart';
 import 'office_listing.dart';
 
 /// Skicka-flödet: kunden väljer först vilken valuta hen vill skicka. Därefter
 /// visas bara de kontor som hanterar den valutan, och sist väljer kunden
-/// vilken valuta mottagaren ska få (bland kontorets valutor).
+/// vilken valuta mottagaren ska få (bland kontorets valutor, samma valuta
+/// går också) och i vilket land mottagaren hämtar pengarna.
 class SendSection extends StatefulWidget {
   const SendSection({super.key});
 
@@ -23,6 +25,7 @@ class _SendSectionState extends State<SendSection> {
   String? _selectedFromCurrency;
   String? _selectedOfficeId;
   String? _selectedToCurrency;
+  String? _pickupCountry;
   PayMethod _payMethod = PayMethod.bank;
   final _amountCtrl = TextEditingController();
 
@@ -89,13 +92,12 @@ class _SendSectionState extends State<SendSection> {
     return null;
   }
 
-  /// Valutor mottagaren kan få: kontorets valutor utom den som skickas.
-  List<String> get _toCurrencies {
-    final office = _selectedOffice;
-    final from = _selectedFromCurrency;
-    if (office == null) return [];
-    return office.currencies.where((c) => c != from).toList();
-  }
+  /// Valutor mottagaren kan få: kontorets valutor (även den som skickas).
+  List<String> get _toCurrencies => _selectedOffice?.currencies ?? const [];
+
+  /// Länder där mottagaren kan hämta pengarna (från kontoret).
+  List<String> get _pickupCountries =>
+      _selectedOffice?.pickupCountries ?? const [];
 
   void _snack(String message) {
     ScaffoldMessenger.of(
@@ -115,6 +117,7 @@ class _SendSectionState extends State<SendSection> {
     if (from == null ||
         officeId == null ||
         to == null ||
+        (_pickupCountries.isNotEmpty && _pickupCountry == null) ||
         amount == null ||
         amount <= 0) {
       _snack(l10n.fillAllFieldsValidAmount);
@@ -153,6 +156,7 @@ class _SendSectionState extends State<SendSection> {
         'officeId': officeId,
         'fromCurrency': from,
         'toCurrency': to,
+        if (_pickupCountry != null) 'pickupCountry': _pickupCountry,
         'amountFrom': amount,
         'amountTo': null,
         'feePercent': null,
@@ -172,6 +176,7 @@ class _SendSectionState extends State<SendSection> {
         _selectedFromCurrency = null;
         _selectedOfficeId = null;
         _selectedToCurrency = null;
+        _pickupCountry = null;
       });
     } catch (e) {
       if (!mounted) return;
@@ -222,6 +227,7 @@ class _SendSectionState extends State<SendSection> {
                 _selectedFromCurrency = value;
                 _selectedOfficeId = null;
                 _selectedToCurrency = null;
+                _pickupCountry = null;
               });
             },
           ),
@@ -249,6 +255,7 @@ class _SendSectionState extends State<SendSection> {
                     setState(() {
                       _selectedOfficeId = value;
                       _selectedToCurrency = null;
+                      _pickupCountry = null;
                     });
                   },
           ),
@@ -269,6 +276,28 @@ class _SendSectionState extends State<SendSection> {
           ),
 
           const SizedBox(height: 16),
+
+          // 4. Land där mottagaren hämtar pengarna (om kontoret lagt in länder)
+          if (_pickupCountries.isNotEmpty) ...[
+            DropdownButtonFormField<String>(
+              key: ValueKey('pickup-$_selectedOfficeId-$_pickupCountry'),
+              initialValue: _pickupCountry,
+              isExpanded: true,
+              decoration: InputDecoration(
+                labelText: l10n.pickupCountryRecipient,
+              ),
+              items: _pickupCountries
+                  .map(
+                    (c) => DropdownMenuItem(
+                      value: c,
+                      child: Text(countryLabel(c)),
+                    ),
+                  )
+                  .toList(),
+              onChanged: (value) => setState(() => _pickupCountry = value),
+            ),
+            const SizedBox(height: 16),
+          ],
 
           // Kontant på kontoret eller via bank.
           PayMethodPicker(
