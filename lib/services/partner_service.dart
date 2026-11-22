@@ -60,9 +60,24 @@ class PartnerService {
     String managerId,
     String? officeId,
   ) => mergedQuery([
+    partners.where('managerIds', arrayContains: managerId),
     partners.where('managerId', isEqualTo: managerId),
-    if (officeId != null) partners.where('officeId', isEqualTo: officeId),
+    if (officeId != null) ...[
+      partners.where('officeIds', arrayContains: officeId),
+      partners.where('officeId', isEqualTo: officeId),
+    ],
   ]);
+
+  /// Kontoren partnern får växla mot (id → namn). Läser listan och, för
+  /// äldre poster, det enda kontoret.
+  static Map<String, String> exchangeOffices(Map<String, dynamic>? d) {
+    if (d == null) return const {};
+    final labels = (d['exchangeOffices'] as Map?) ?? const {};
+    final ids = (d['exchangeOfficeIds'] as List?)?.map((e) => '$e').toList();
+    if (ids != null) return {for (final id in ids) id: '${labels[id] ?? ''}'};
+    final one = '${d['exchangeOfficeId'] ?? ''}';
+    return one.isEmpty ? const {} : {one: '${d['exchangeOfficeLabel'] ?? ''}'};
+  }
 
   static Stream<List<QueryDocumentSnapshot<Map<String, dynamic>>>>
   exchangesForOffice(String officeId) =>

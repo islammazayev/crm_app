@@ -31,13 +31,17 @@ class _PartnerHomeScreenState extends State<PartnerHomeScreen> {
   late final _exchanges = PartnerService.exchangesForPartner(_uid);
   final _chats = ChatService.myChats();
 
-  NewExchangePage _newExchange(String officeId, String label, String name) =>
+  /// Nytt förslag. [offices] är kontoren partnern får växla mot (id → namn);
+  /// har den fler än ett väljer den kontor i formuläret.
+  NewExchangePage _newExchange(Map<String, String> offices, String name) =>
       NewExchangePage(
         side: ExchangeSide.partner,
-        onSubmit: (terms, _, note) => PartnerService.propose(
+        partnerChoices: offices,
+        choiceLabel: context.l10n.partnerChooseOffice,
+        onSubmit: (terms, officeId, note) => PartnerService.propose(
           by: ExchangeSide.partner,
-          officeId: officeId,
-          officeLabel: label,
+          officeId: officeId ?? offices.keys.first,
+          officeLabel: offices[officeId ?? offices.keys.first] ?? '',
           managerId: '',
           partnerId: _uid,
           partnerName: name,
@@ -53,9 +57,8 @@ class _PartnerHomeScreenState extends State<PartnerHomeScreen> {
       stream: _partner,
       builder: (context, snap) {
         final d = snap.data?.data();
-        final officeId = '${d?['exchangeOfficeId'] ?? ''}';
-        if (snap.hasError ||
-            (snap.hasData && (d == null || officeId.isEmpty))) {
+        final offices = PartnerService.exchangeOffices(d);
+        if (snap.hasError || (snap.hasData && (d == null || offices.isEmpty))) {
           return Scaffold(
             appBar: AppBar(
               title: Text(l10n.partnerAppBarTitle),
@@ -86,7 +89,9 @@ class _PartnerHomeScreenState extends State<PartnerHomeScreen> {
           );
         }
         final name = '${d!['firstName'] ?? ''} ${d['lastName'] ?? ''}'.trim();
-        final officeLabel = '${d['exchangeOfficeLabel'] ?? ''}';
+        final officeLabel = offices.values
+            .where((l) => l.isNotEmpty)
+            .join(', ');
         return StreamBuilder<List<QueryDocumentSnapshot<Map<String, dynamic>>>>(
           stream: _chats,
           builder: (context, chatSnap) {
@@ -112,9 +117,8 @@ class _PartnerHomeScreenState extends State<PartnerHomeScreen> {
                   primaryAction: ShellAction(
                     icon: Icons.add,
                     label: l10n.newExchange,
-                    onTap: () => _shell.currentState?.push(
-                      _newExchange(officeId, officeLabel, name),
-                    ),
+                    onTap: () =>
+                        _shell.currentState?.push(_newExchange(offices, name)),
                   ),
                   destinations: [
                     ShellDestination(
@@ -124,8 +128,7 @@ class _PartnerHomeScreenState extends State<PartnerHomeScreen> {
                         uid: _uid,
                         name: name,
                         officeLabel: officeLabel,
-                        newExchange: () =>
-                            _newExchange(officeId, officeLabel, name),
+                        newExchange: () => _newExchange(offices, name),
                       ),
                     ),
                     ShellDestination(

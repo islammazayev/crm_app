@@ -2707,4 +2707,17 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String get inviteEmailSubject => 'Skapa ditt konto i appen';
+
+  @override
+  String get partnerOffices => 'Kontor';
+
+  @override
+  String get partnerManagers => 'Managers';
+
+  @override
+  String get partnerLinksHint =>
+      'Partnern kan välja vilket av dessa kontor (och managernas kontor) en växling gäller.';
+
+  @override
+  String get partnerChooseOffice => 'Kontor för växlingen';
 }

@@ -100,6 +100,15 @@ class _Links {
   const _Links(this.offices, this.managers, this.managerOffices);
 }
 
+/// Kontoren eller managerna en post är kopplad till: listan (partner, ny
+/// form) eller det enda fältet (kassörer och äldre partnerposter).
+List<String> _linkedIds(Map<String, dynamic> d, String list, String single) {
+  final ids = (d[list] as List?)?.map((e) => '$e').toList();
+  if (ids != null) return ids;
+  final one = d[single];
+  return one == null ? const [] : ['$one'];
+}
+
 /// Admin: skapa kassörer (eller partner), koppla dem till kontor
 /// och/eller manager, fyll på saldo, ta bort och se deras överföringar
 /// (eller växlingar).
@@ -204,11 +213,13 @@ class _AdminCashiersPageState extends State<AdminCashiersPage> {
     required String firstName,
     required String lastName,
     required String phone,
-    required String? officeId,
-    required String? managerId,
+    required List<String> officeIds,
+    required List<String> managerIds,
     required _Links links,
   }) async {
     final name = '$firstName $lastName'.trim();
+    final officeId = officeIds.isEmpty ? null : officeIds.first;
+    final managerId = managerIds.isEmpty ? null : managerIds.first;
     final batch = _db.batch();
     batch.update(_db.collection('users').doc(uid), {
       'firstName': firstName,
@@ -216,20 +227,26 @@ class _AdminCashiersPageState extends State<AdminCashiersPage> {
       'phone': phone,
     });
     if (_isPartner) {
-      // Växlingarna går mot det kopplade kontoret, annars mot den kopplade
-      // managerns kontor.
-      final exchangeOfficeId =
-          officeId ??
-          (managerId == null ? null : links.managerOffices[managerId]);
+      // Partnern kan växla mot de kopplade kontoren och de kopplade
+      // managernas kontor.
+      final exchangeOfficeIds = <String>{
+        ...officeIds,
+        for (final m in managerIds) ?links.managerOffices[m],
+      }.toList();
       batch.update(PartnerService.partner(uid), {
         'firstName': firstName,
         'lastName': lastName,
-        'officeId': officeId ?? FieldValue.delete(),
-        'managerId': managerId ?? FieldValue.delete(),
-        'exchangeOfficeId': exchangeOfficeId ?? FieldValue.delete(),
-        'exchangeOfficeLabel': exchangeOfficeId == null
-            ? FieldValue.delete()
-            : (links.offices[exchangeOfficeId] ?? ''),
+        'officeIds': officeIds,
+        'managerIds': managerIds,
+        'exchangeOfficeIds': exchangeOfficeIds,
+        'exchangeOffices': {
+          for (final id in exchangeOfficeIds) id: links.offices[id] ?? '',
+        },
+        // Äldre fält (ett kontor, en manager) tas bort.
+        'officeId': FieldValue.delete(),
+        'managerId': FieldValue.delete(),
+        'exchangeOfficeId': FieldValue.delete(),
+        'exchangeOfficeLabel': FieldValue.delete(),
       });
       await batch.commit();
       return;
@@ -268,10 +285,16 @@ class _AdminCashiersPageState extends State<AdminCashiersPage> {
     final phoneCtrl = TextEditingController(
       text: '${user.data()?['phone'] ?? ''}',
     );
-    String? officeId = d['officeId'] as String?;
-    String? managerId = d['managerId'] as String?;
-    if (!links.offices.containsKey(officeId)) officeId = null;
-    if (!links.managers.containsKey(managerId)) managerId = null;
+    var officeIds = _linkedIds(
+      d,
+      'officeIds',
+      'officeId',
+    ).where(links.offices.containsKey).toList();
+    var managerIds = _linkedIds(
+      d,
+      'managerIds',
+      'managerId',
+    ).where(links.managers.containsKey).toList();
     if (!mounted) return;
 
     final ok = await showDialog<bool>(
@@ -298,12 +321,13 @@ class _AdminCashiersPageState extends State<AdminCashiersPage> {
                   decoration: InputDecoration(labelText: l10n.phone),
                 ),
                 const SizedBox(height: 14),
-                _LinkDropdowns(
+                _LinkPicker(
                   links: links,
-                  officeId: officeId,
-                  managerId: managerId,
-                  onOffice: (v) => setLocal(() => officeId = v),
-                  onManager: (v) => setLocal(() => managerId = v),
+                  multi: _isPartner,
+                  officeIds: officeIds,
+                  managerIds: managerIds,
+                  onOffices: (v) => setLocal(() => officeIds = v),
+                  onManagers: (v) => setLocal(() => managerIds = v),
                 ),
               ],
             ),
@@ -328,8 +352,8 @@ class _AdminCashiersPageState extends State<AdminCashiersPage> {
           firstName: firstCtrl.text.trim(),
           lastName: lastCtrl.text.trim(),
           phone: phoneCtrl.text.trim(),
-          officeId: officeId,
-          managerId: managerId,
+          officeIds: officeIds,
+          managerIds: managerIds,
           links: links,
         );
         _snack(_StaffTexts.of(widget.type, l10n).updated);
@@ -502,7 +526,21 @@ class _AdminCashiersPageState extends State<AdminCashiersPage> {
     final l10n = context.l10n;
     String nameOf(Map<String, dynamic> d) =>
         '${d['firstName'] ?? ''} ${d['lastName'] ?? ''}'.trim();
-    String? officeOf(Map<String, dynamic> d) => links.offices[d['officeId']];
+    List<String> officeIdsOf(Map<String, dynamic> d) => _linkedIds(
+      d,
+      'officeIds',
+      'officeId',
+    ).where(links.offices.containsKey).toList();
+    List<String> managerIdsOf(Map<String, dynamic> d) =>
+        _linkedIds(d, 'managerIds', 'managerId');
+    String? officeOf(Map<String, dynamic> d) {
+      final ids = officeIdsOf(d);
+      return ids.isEmpty ? null : ids.map((i) => links.offices[i]).join(', ');
+    }
+
+    String managersOf(Map<String, dynamic> d) => managerIdsOf(
+      d,
+    ).map((m) => links.managers[m] ?? '').where((n) => n.isNotEmpty).join(', ');
     Map<String, double> balancesOf(
       QueryDocumentSnapshot<Map<String, dynamic>> doc,
     ) => parseBalances(doc.data()['balances'], officeId: doc.id);
@@ -534,9 +572,14 @@ class _AdminCashiersPageState extends State<AdminCashiersPage> {
     }.toList()..sort();
     final items = all.where((doc) {
       final d = doc.data();
-      final officeId = officeOf(d) == null ? '' : '${d['officeId']}';
-      if (_office != null && officeId != _office) return false;
-      if (_manager != null && '${d['managerId'] ?? ''}' != _manager) {
+      final offices = officeIdsOf(d);
+      if (_office != null &&
+          (_office!.isEmpty
+              ? offices.isNotEmpty
+              : !offices.contains(_office))) {
+        return false;
+      }
+      if (_manager != null && !managerIdsOf(d).contains(_manager)) {
         return false;
       }
       if (_currency != null && (balancesOf(doc)[_currency] ?? 0) == 0) {
@@ -683,18 +726,14 @@ class _AdminCashiersPageState extends State<AdminCashiersPage> {
               final d = doc.data();
               return matchesSearch(
                 q,
-                texts: [
-                  nameOf(d),
-                  officeOf(d) ?? '',
-                  links.managers[d['managerId']] ?? '',
-                ],
+                texts: [nameOf(d), officeOf(d) ?? '', managersOf(d)],
               );
             },
             rowBuilder: (doc) {
               final d = doc.data();
               final name = nameOf(d);
               final office = officeOf(d);
-              final manager = links.managers[d['managerId']] ?? '';
+              final manager = managersOf(d);
               final balanceText = balancesOf(doc).entries
                   .where((e) => e.value != 0)
                   .map((e) => '${formatMoney(e.value)} ${e.key}')
@@ -768,57 +807,110 @@ class _PartnerExchangesPage extends StatelessWidget {
 }
 
 /// Val av kontor och manager; båda kan lämnas tomma.
-class _LinkDropdowns extends StatelessWidget {
+/// Val av kontor och manager. Kassörer: ett av varje (rullgardiner).
+/// Partner: flera av varje (chips). Allt kan lämnas tomt.
+class _LinkPicker extends StatelessWidget {
   final _Links links;
-  final String? officeId;
-  final String? managerId;
-  final ValueChanged<String?> onOffice;
-  final ValueChanged<String?> onManager;
+  final bool multi;
+  final List<String> officeIds;
+  final List<String> managerIds;
+  final ValueChanged<List<String>> onOffices;
+  final ValueChanged<List<String>> onManagers;
 
-  const _LinkDropdowns({
+  const _LinkPicker({
     required this.links,
-    required this.officeId,
-    required this.managerId,
-    required this.onOffice,
-    required this.onManager,
+    required this.multi,
+    required this.officeIds,
+    required this.managerIds,
+    required this.onOffices,
+    required this.onManagers,
   });
 
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    return Column(
-      children: [
-        DropdownButtonFormField<String?>(
-          initialValue: officeId,
-          isExpanded: true,
-          decoration: InputDecoration(labelText: l10n.officeOptional),
-          items: [
-            DropdownMenuItem<String?>(
-              value: null,
-              child: Text(l10n.noOfficeAssigned),
-            ),
-            for (final e in links.offices.entries)
-              DropdownMenuItem<String?>(value: e.key, child: Text(e.value)),
-          ],
-          onChanged: onOffice,
-        ),
-        const SizedBox(height: 14),
-        DropdownButtonFormField<String?>(
-          initialValue: managerId,
-          isExpanded: true,
-          decoration: InputDecoration(labelText: l10n.managerOptional),
-          items: [
-            DropdownMenuItem<String?>(
-              value: null,
-              child: Text(l10n.noManagerAssigned),
-            ),
-            for (final e in links.managers.entries)
+    final managers = {
+      for (final e in links.managers.entries)
+        e.key: e.value.isEmpty ? e.key : e.value,
+    };
+    if (!multi) {
+      return Column(
+        children: [
+          DropdownButtonFormField<String?>(
+            initialValue: officeIds.isEmpty ? null : officeIds.first,
+            isExpanded: true,
+            decoration: InputDecoration(labelText: l10n.officeOptional),
+            items: [
               DropdownMenuItem<String?>(
-                value: e.key,
-                child: Text(e.value.isEmpty ? e.key : e.value),
+                value: null,
+                child: Text(l10n.noOfficeAssigned),
               ),
-          ],
-          onChanged: onManager,
+              for (final e in links.offices.entries)
+                DropdownMenuItem<String?>(value: e.key, child: Text(e.value)),
+            ],
+            onChanged: (v) => onOffices(v == null ? const [] : [v]),
+          ),
+          const SizedBox(height: 14),
+          DropdownButtonFormField<String?>(
+            initialValue: managerIds.isEmpty ? null : managerIds.first,
+            isExpanded: true,
+            decoration: InputDecoration(labelText: l10n.managerOptional),
+            items: [
+              DropdownMenuItem<String?>(
+                value: null,
+                child: Text(l10n.noManagerAssigned),
+              ),
+              for (final e in managers.entries)
+                DropdownMenuItem<String?>(value: e.key, child: Text(e.value)),
+            ],
+            onChanged: (v) => onManagers(v == null ? const [] : [v]),
+          ),
+        ],
+      );
+    }
+
+    Widget chips(
+      String title,
+      Map<String, String> options,
+      List<String> selected,
+      ValueChanged<List<String>> onChanged,
+    ) => Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(title, style: const TextStyle(fontWeight: FontWeight.w600)),
+        const SizedBox(height: 6),
+        if (options.isEmpty)
+          Text('–', style: TextStyle(color: AppColors.textMuted))
+        else
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: [
+              for (final e in options.entries)
+                FilterChip(
+                  label: Text(e.value),
+                  selected: selected.contains(e.key),
+                  onSelected: (on) => onChanged(
+                    on
+                        ? [...selected, e.key]
+                        : selected.where((id) => id != e.key).toList(),
+                  ),
+                ),
+            ],
+          ),
+      ],
+    );
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        chips(l10n.partnerOffices, links.offices, officeIds, onOffices),
+        const SizedBox(height: 14),
+        chips(l10n.partnerManagers, managers, managerIds, onManagers),
+        const SizedBox(height: 6),
+        Text(
+          l10n.partnerLinksHint,
+          style: TextStyle(color: AppColors.textMuted, fontSize: 12),
         ),
       ],
     );
@@ -833,8 +925,8 @@ class _CreateCashierForm extends StatefulWidget {
     required String firstName,
     required String lastName,
     required String phone,
-    required String? officeId,
-    required String? managerId,
+    required List<String> officeIds,
+    required List<String> managerIds,
     required _Links links,
   })
   saveLinks;
@@ -860,8 +952,8 @@ class _CreateCashierFormState extends State<_CreateCashierForm> {
   final _email = TextEditingController();
   final _phone = TextEditingController();
   final _password = TextEditingController();
-  String? _officeId;
-  String? _managerId;
+  List<String> _officeIds = const [];
+  List<String> _managerIds = const [];
   bool _creating = false;
 
   @override
@@ -910,8 +1002,8 @@ class _CreateCashierFormState extends State<_CreateCashierForm> {
             firstName: _first.text.trim(),
             lastName: _last.text.trim(),
             phone: _phone.text.trim(),
-            officeId: _officeId,
-            managerId: _managerId,
+            officeIds: _officeIds,
+            managerIds: _managerIds,
             links: widget.links,
           );
         },
@@ -925,8 +1017,8 @@ class _CreateCashierFormState extends State<_CreateCashierForm> {
         c.clear();
       }
       setState(() {
-        _officeId = null;
-        _managerId = null;
+        _officeIds = const [];
+        _managerIds = const [];
       });
       widget.onCreated?.call();
     } on FirebaseAuthException catch (e) {
@@ -1000,12 +1092,13 @@ class _CreateCashierFormState extends State<_CreateCashierForm> {
                 (v == null || v.length < 6) ? l10n.passwordMinLength : null,
           ),
           const SizedBox(height: 14),
-          _LinkDropdowns(
+          _LinkPicker(
             links: widget.links,
-            officeId: _officeId,
-            managerId: _managerId,
-            onOffice: (v) => setState(() => _officeId = v),
-            onManager: (v) => setState(() => _managerId = v),
+            multi: widget.type == StaffType.partner,
+            officeIds: _officeIds,
+            managerIds: _managerIds,
+            onOffices: (v) => setState(() => _officeIds = v),
+            onManagers: (v) => setState(() => _managerIds = v),
           ),
           const SizedBox(height: 12),
           ElevatedButton.icon(

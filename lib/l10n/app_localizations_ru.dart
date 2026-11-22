@@ -2709,4 +2709,17 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get inviteEmailSubject => 'Создайте аккаунт в приложении';
+
+  @override
+  String get partnerOffices => 'Офисы';
+
+  @override
+  String get partnerManagers => 'Менеджеры';
+
+  @override
+  String get partnerLinksHint =>
+      'Партнёр может выбрать, к какому из этих офисов (и офисов менеджеров) относится обмен.';
+
+  @override
+  String get partnerChooseOffice => 'Офис для обмена';
 }

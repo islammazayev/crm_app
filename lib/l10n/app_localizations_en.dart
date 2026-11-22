@@ -2702,4 +2702,17 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get inviteEmailSubject => 'Create your account in the app';
+
+  @override
+  String get partnerOffices => 'Offices';
+
+  @override
+  String get partnerManagers => 'Managers';
+
+  @override
+  String get partnerLinksHint =>
+      'The partner can choose which of these offices (and the managers\' offices) an exchange is for.';
+
+  @override
+  String get partnerChooseOffice => 'Office for the exchange';
 }

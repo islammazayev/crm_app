@@ -417,9 +417,11 @@ service cloud.firestore {
     }
 
     // ─── PARTNER ────────────────────────────────────────────────
-    // partners/{uid}: privat (saldon, koppling till kontor/manager). Admin
-    // sparar också exchangeOfficeId: kontoret vars saldo växlingarna går mot
-    // (det kopplade kontoret, annars den kopplade managerns kontor).
+    // partners/{uid}: privat (saldon, koppling till kontor/manager). En
+    // partner kan kopplas till flera kontor (officeIds) och managers
+    // (managerIds). Admin sparar också exchangeOfficeIds: kontoren partnern
+    // kan växla mot (de kopplade kontoren och de kopplade managernas kontor).
+    // Äldre poster har i stället officeId, managerId och exchangeOfficeId.
     //
     // partnerExchanges/{id}: växling mellan ett kontor och en partner,
     // utan avgift. Sidan "office" ger officeGivesAmount i
@@ -439,9 +441,19 @@ service cloud.firestore {
     }
 
     function managesPartner(data) {
+      let office = myOfficeId();
       return isManager()
-        && (data.get('managerId', null) == request.auth.uid
-            || (myOfficeId() != null && data.get('officeId', null) == myOfficeId()));
+        && (request.auth.uid in data.get('managerIds', [])
+            || data.get('managerId', null) == request.auth.uid
+            || (office != null
+                && (office in data.get('officeIds', [])
+                    || data.get('officeId', null) == office)));
+    }
+
+    // Kontoren partnern får föreslå växlingar mot.
+    function partnerCanExchangeWith(data, officeId) {
+      return officeId in data.get('exchangeOfficeIds', [])
+        || officeId == data.get('exchangeOfficeId', '');
     }
 
     // Vilken sida den inloggade är i växlingen: 'office', 'partner' eller ''.
@@ -607,12 +619,12 @@ service cloud.firestore {
             && request.resource.data.officeId == myOfficeId()
             && request.resource.data.managerId == request.auth.uid
             && managesPartner(get(partnerPath(request.resource.data.partnerId)).data))
-          // Partnern föreslår till kontoret hen är kopplad till.
+          // Partnern föreslår till ett av kontoren hen är kopplad till.
           || (isPartner()
             && request.resource.data.proposedBy == 'partner'
             && request.resource.data.partnerId == request.auth.uid
-            && request.resource.data.officeId
-                 == get(partnerPath(request.auth.uid)).data.get('exchangeOfficeId', ''))
+            && partnerCanExchangeWith(get(partnerPath(request.auth.uid)).data,
+                 request.resource.data.officeId))
         );
 
       allow update: if exchangeUpdateAllowed(

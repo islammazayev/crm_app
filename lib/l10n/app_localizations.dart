@@ -4631,6 +4631,30 @@ abstract class AppLocalizations {
   /// In sv, this message translates to:
   /// **'Skapa ditt konto i appen'**
   String get inviteEmailSubject;
+
+  /// No description provided for @partnerOffices.
+  ///
+  /// In sv, this message translates to:
+  /// **'Kontor'**
+  String get partnerOffices;
+
+  /// No description provided for @partnerManagers.
+  ///
+  /// In sv, this message translates to:
+  /// **'Managers'**
+  String get partnerManagers;
+
+  /// No description provided for @partnerLinksHint.
+  ///
+  /// In sv, this message translates to:
+  /// **'Partnern kan välja vilket av dessa kontor (och managernas kontor) en växling gäller.'**
+  String get partnerLinksHint;
+
+  /// No description provided for @partnerChooseOffice.
+  ///
+  /// In sv, this message translates to:
+  /// **'Kontor för växlingen'**
+  String get partnerChooseOffice;
 }
 
 class _AppLocalizationsDelegate
