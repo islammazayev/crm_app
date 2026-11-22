@@ -2720,4 +2720,22 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String get partnerChooseOffice => 'Kontor för växlingen';
+
+  @override
+  String get pickupCountries => 'Utbetalningsländer';
+
+  @override
+  String get pickupCountriesHelp =>
+      'Länder där mottagaren kan hämta pengarna från det här kontoret. Kunden väljer ett av dem när den skickar pengar.';
+
+  @override
+  String get addCountry => 'Lägg till land';
+
+  @override
+  String get pickupCountryRecipient => 'Land där mottagaren hämtar pengarna';
+
+  @override
+  String pickupCountryValue(Object country) {
+    return 'Hämtas i: $country';
+  }
 }

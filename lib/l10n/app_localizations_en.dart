@@ -2715,4 +2715,23 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get partnerChooseOffice => 'Office for the exchange';
+
+  @override
+  String get pickupCountries => 'Payout countries';
+
+  @override
+  String get pickupCountriesHelp =>
+      'Countries where the recipient can collect money from this office. The customer picks one when sending money.';
+
+  @override
+  String get addCountry => 'Add country';
+
+  @override
+  String get pickupCountryRecipient =>
+      'Country where the recipient collects the money';
+
+  @override
+  String pickupCountryValue(Object country) {
+    return 'Collected in: $country';
+  }
 }

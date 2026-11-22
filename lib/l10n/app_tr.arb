@@ -757,5 +757,10 @@
   "partnerOffices": "Ofisler",
   "partnerManagers": "Yöneticiler",
   "partnerLinksHint": "Partner, bir döviz işleminin bu ofislerden (ve yöneticilerin ofislerinden) hangisi için olduğunu seçebilir.",
-  "partnerChooseOffice": "İşlem için ofis"
+  "partnerChooseOffice": "İşlem için ofis",
+  "pickupCountries": "Ödeme ülkeleri",
+  "pickupCountriesHelp": "Alıcının bu ofisten parayı alabileceği ülkeler. Müşteri para gönderirken birini seçer.",
+  "addCountry": "Ülke ekle",
+  "pickupCountryRecipient": "Alıcının parayı alacağı ülke",
+  "pickupCountryValue": "Teslim yeri: {country}"
 }

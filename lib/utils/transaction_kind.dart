@@ -1,4 +1,5 @@
 import '../l10n/app_localizations.dart';
+import '../widgets/pickup_countries_field.dart' show countryLabel;
 
 /// Sant om transaktionen är ett köp (se BuySection): kunden anger hur mycket
 /// hen vill få (buyAmount i toCurrency), och managern räknar ut amountFrom.
@@ -28,5 +29,8 @@ String transactionSummary(AppLocalizations l10n, Map<String, dynamic> data) {
     final delivery = isBankPayout(data) ? l10n.deliveryBank : l10n.deliveryCash;
     return '${l10n.sellSummary('$amount', from, to)} · $delivery';
   }
-  return '${data['amountFrom'] ?? 0} $from → $to';
+  // Skicka pengar: landet där mottagaren hämtar pengarna, om det valts.
+  final country = '${data['pickupCountry'] ?? ''}';
+  final base = '${data['amountFrom'] ?? 0} $from → $to';
+  return country.isEmpty ? base : '$base · ${countryLabel(country)}';
 }

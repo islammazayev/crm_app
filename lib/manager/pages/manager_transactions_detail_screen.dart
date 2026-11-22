@@ -19,6 +19,7 @@ import '../../utils/transaction_kind.dart';
 import '../../utils/transaction_no.dart';
 import '../../theme/app_theme.dart';
 import '../../utils/balances.dart';
+import '../../widgets/pickup_countries_field.dart' show countryLabel;
 
 class ManagerTransactionDetailScreen extends StatefulWidget {
   final String transactionId;
@@ -427,8 +428,13 @@ class _ManagerTransactionDetailScreenState
         if (toBank) 'paidOutToBankAt': FieldValue.serverTimestamp(),
       });
       batch.update(officeRef, {
-        'balances.$fromCurrency': FieldValue.increment(amountFrom),
-        'balances.$toCurrency': FieldValue.increment(-amountToNet),
+        // Samma valuta: kontoret får in beloppet och betalar ut, i ett fält.
+        if (fromCurrency == toCurrency)
+          'balances.$toCurrency': FieldValue.increment(amountFrom - amountToNet)
+        else ...{
+          'balances.$fromCurrency': FieldValue.increment(amountFrom),
+          'balances.$toCurrency': FieldValue.increment(-amountToNet),
+        },
         'lastBookedTransactionId': txRef.id,
       });
       await batch.commit();
@@ -717,6 +723,15 @@ class _ManagerTransactionDetailScreenState
                       const SizedBox(height: 8),
                       Text(l10n.toCurrencyValue(toCurrency)),
                       const SizedBox(height: 8),
+                      if ('${data['pickupCountry'] ?? ''}'.isNotEmpty) ...[
+                        Text(
+                          l10n.pickupCountryValue(
+                            countryLabel('${data['pickupCountry']}'),
+                          ),
+                          style: const TextStyle(fontWeight: FontWeight.w600),
+                        ),
+                        const SizedBox(height: 8),
+                      ],
                       Text(l10n.orderStatusLine(statusText(l10n, status))),
                       if (tierInfo != null) ...[
                         const SizedBox(height: 8),

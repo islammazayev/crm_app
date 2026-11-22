@@ -10,11 +10,16 @@ class OfficeListing {
   final String city;
   final List<String> currencies;
 
+  /// Länder där mottagaren kan hämta pengarna (landskoder). Tom = inte
+  /// inlagt, då frågas inte kunden.
+  final List<String> pickupCountries;
+
   OfficeListing({
     required this.id,
     required this.country,
     required this.city,
     required this.currencies,
+    this.pickupCountries = const [],
   });
 
   factory OfficeListing.fromDoc(
@@ -26,6 +31,9 @@ class OfficeListing {
       country: (data['country'] ?? '').toString(),
       city: (data['city'] ?? '').toString(),
       currencies: (data['currencies'] as List? ?? [])
+          .map((e) => e.toString())
+          .toList(),
+      pickupCountries: (data['pickupCountries'] as List? ?? [])
           .map((e) => e.toString())
           .toList(),
     );

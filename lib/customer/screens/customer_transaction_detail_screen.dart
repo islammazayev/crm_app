@@ -13,6 +13,7 @@ import '../../widgets/receipt_button.dart';
 import '../../utils/transaction_no.dart';
 import 'customer_transactions_screen.dart' show customerStatusText;
 import '../../widgets/phone_field.dart';
+import '../../widgets/pickup_countries_field.dart' show countryLabel;
 
 class CustomerTransactionDetailScreen extends StatelessWidget {
   final String transactionId;
@@ -119,6 +120,14 @@ class CustomerTransactionDetailScreen extends StatelessWidget {
                         )
                       else
                         Text(l10n.youSend(amountFrom, fromCurrency)),
+                      if ('${data['pickupCountry'] ?? ''}'.isNotEmpty) ...[
+                        const SizedBox(height: 8),
+                        Text(
+                          l10n.pickupCountryValue(
+                            countryLabel('${data['pickupCountry']}'),
+                          ),
+                        ),
+                      ],
                       const SizedBox(height: 8),
                       Text(
                         l10n.exchangeRateValue(

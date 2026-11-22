@@ -757,5 +757,10 @@
   "partnerOffices": "Офисы",
   "partnerManagers": "Менеджеры",
   "partnerLinksHint": "Партнёр может выбрать, к какому из этих офисов (и офисов менеджеров) относится обмен.",
-  "partnerChooseOffice": "Офис для обмена"
+  "partnerChooseOffice": "Офис для обмена",
+  "pickupCountries": "Страны выплаты",
+  "pickupCountriesHelp": "Страны, где получатель может забрать деньги от этого офиса. Клиент выбирает одну при отправке денег.",
+  "addCountry": "Добавить страну",
+  "pickupCountryRecipient": "Страна, где получатель забирает деньги",
+  "pickupCountryValue": "Получение в: {country}"
 }

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import '../../l10n/locale_controller.dart';
 import '../../services/office_listing_service.dart';
 import '../../utils/currencies.dart';
+import '../../widgets/pickup_countries_field.dart';
 
 // ─── Hjälpklass för betalningsmetod-formulär ─────────────────────────────────
 class PaymentMethodFormItem {
@@ -44,6 +45,7 @@ class _EditOfficeDialogState extends State<EditOfficeDialog> {
   late final TextEditingController _addressCtrl;
   late final TextEditingController _mapUrlCtrl;
   late Set<String> _selectedCurrencies;
+  late List<String> _pickupCountries;
   late List<PaymentMethodFormItem> _methods;
   bool _saving = false;
 
@@ -65,6 +67,9 @@ class _EditOfficeDialogState extends State<EditOfficeDialog> {
     _selectedCurrencies = Set<String>.from(
       (widget.data['currencies'] as List? ?? []).map((e) => e.toString()),
     );
+    _pickupCountries = (widget.data['pickupCountries'] as List? ?? [])
+        .map((e) => e.toString())
+        .toList();
     final rawMethods = widget.data['paymentMethods'] as List? ?? [];
     _methods = rawMethods.map((raw) {
       final m = Map<String, dynamic>.from(raw as Map);
@@ -73,8 +78,7 @@ class _EditOfficeDialogState extends State<EditOfficeDialog> {
       item.labelController.text = (m['label'] ?? '').toString();
       item.detailsController.text = (m['details'] ?? '').toString();
       item.supportedCurrencies = Set<String>.from(
-        (m['supportedFromCurrencies'] as List? ?? [])
-            .map((e) => e.toString()),
+        (m['supportedFromCurrencies'] as List? ?? []).map((e) => e.toString()),
       );
       return item;
     }).toList();
@@ -96,25 +100,28 @@ class _EditOfficeDialogState extends State<EditOfficeDialog> {
     setState(() => _saving = true);
     try {
       final paymentMethods = _methods
-          .map((m) => {
-                'id': m.idController.text.trim(),
-                'label': m.labelController.text.trim(),
-                'details': m.detailsController.text.trim(),
-                'supportedFromCurrencies': m.supportedCurrencies.toList(),
-              })
+          .map(
+            (m) => {
+              'id': m.idController.text.trim(),
+              'label': m.labelController.text.trim(),
+              'details': m.detailsController.text.trim(),
+              'supportedFromCurrencies': m.supportedCurrencies.toList(),
+            },
+          )
           .toList();
 
       await FirebaseFirestore.instance
           .collection('offices')
           .doc(widget.officeId)
           .update({
-        'country': _countryCtrl.text.trim(),
-        'city': _cityCtrl.text.trim(),
-        'address': _addressCtrl.text.trim(),
-        'mapUrl': _mapUrlCtrl.text.trim(),
-        'currencies': _selectedCurrencies.toList(),
-        'paymentMethods': paymentMethods,
-      });
+            'country': _countryCtrl.text.trim(),
+            'city': _cityCtrl.text.trim(),
+            'address': _addressCtrl.text.trim(),
+            'mapUrl': _mapUrlCtrl.text.trim(),
+            'currencies': _selectedCurrencies.toList(),
+            'pickupCountries': _pickupCountries,
+            'paymentMethods': paymentMethods,
+          });
 
       // Håll kundernas publika kontorslista i synk (land, stad, adress,
       // kartlänk, valutor).
@@ -124,17 +131,19 @@ class _EditOfficeDialogState extends State<EditOfficeDialog> {
         'address': _addressCtrl.text.trim(),
         'mapUrl': _mapUrlCtrl.text.trim(),
         'currencies': _selectedCurrencies.toList(),
+        'pickupCountries': _pickupCountries,
       });
 
       if (!mounted) return;
       Navigator.pop(context);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(context.l10n.officeUpdated)),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(context.l10n.officeUpdated)));
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text(context.l10n.errorWithDetails('$e'))));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(context.l10n.errorWithDetails('$e'))),
+      );
     } finally {
       if (mounted) setState(() => _saving = false);
     }
@@ -155,7 +164,10 @@ class _EditOfficeDialogState extends State<EditOfficeDialog> {
               children: [
                 Text(
                   l10n.editOfficeTitle,
-                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
                 const Spacer(),
                 IconButton(
@@ -201,7 +213,10 @@ class _EditOfficeDialogState extends State<EditOfficeDialog> {
               ),
             ),
             const SizedBox(height: 12),
-            Text(l10n.currencies, style: const TextStyle(fontWeight: FontWeight.bold)),
+            Text(
+              l10n.currencies,
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            ),
             const SizedBox(height: 6),
             Wrap(
               spacing: 8,
@@ -222,12 +237,20 @@ class _EditOfficeDialogState extends State<EditOfficeDialog> {
               }).toList(),
             ),
             const SizedBox(height: 16),
+            PickupCountriesField(
+              selected: _pickupCountries,
+              onChanged: (v) => setState(() => _pickupCountries = v),
+            ),
+            const SizedBox(height: 16),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
                   l10n.paymentMethods,
-                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 15,
+                  ),
                 ),
                 TextButton.icon(
                   onPressed: () =>
@@ -250,13 +273,16 @@ class _EditOfficeDialogState extends State<EditOfficeDialog> {
                     children: [
                       Row(
                         children: [
-                          Text(l10n.methodNumber(i + 1),
-                              style: const TextStyle(
-                                  fontWeight: FontWeight.bold)),
+                          Text(
+                            l10n.methodNumber(i + 1),
+                            style: const TextStyle(fontWeight: FontWeight.bold),
+                          ),
                           const Spacer(),
                           IconButton(
-                            icon: const Icon(Icons.delete_outline,
-                                color: Colors.red),
+                            icon: const Icon(
+                              Icons.delete_outline,
+                              color: Colors.red,
+                            ),
                             onPressed: () =>
                                 setState(() => _methods.removeAt(i)),
                           ),
@@ -289,8 +315,10 @@ class _EditOfficeDialogState extends State<EditOfficeDialog> {
                         ),
                       ),
                       const SizedBox(height: 10),
-                      Text(l10n.supportedFromCurrency,
-                          style: const TextStyle(fontWeight: FontWeight.w600)),
+                      Text(
+                        l10n.supportedFromCurrency,
+                        style: const TextStyle(fontWeight: FontWeight.w600),
+                      ),
                       const SizedBox(height: 6),
                       Wrap(
                         spacing: 8,
@@ -385,8 +413,7 @@ class _AdminOfficesSectionState extends State<AdminOfficesSection> {
   }
 
   void _snack(String msg) {
-    ScaffoldMessenger.of(context)
-        .showSnackBar(SnackBar(content: Text(msg)));
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
   }
 
   void _addPaymentMethod() {
@@ -411,31 +438,31 @@ class _AdminOfficesSectionState extends State<AdminOfficesSection> {
     try {
       final balances = <String, double>{};
       for (final c in _selectedCurrencies) {
-        final txt = _balanceControllers[c]
-                ?.text
-                .replaceAll(',', '.') ??
-            '0';
+        final txt = _balanceControllers[c]?.text.replaceAll(',', '.') ?? '0';
         balances[c] = double.tryParse(txt) ?? 0.0;
       }
 
       final paymentMethods = _paymentMethods
-          .map((m) => {
-                'id': m.idController.text.trim(),
-                'label': m.labelController.text.trim(),
-                'details': m.detailsController.text.trim(),
-                'supportedFromCurrencies': m.supportedCurrencies.toList(),
-              })
+          .map(
+            (m) => {
+              'id': m.idController.text.trim(),
+              'label': m.labelController.text.trim(),
+              'details': m.detailsController.text.trim(),
+              'supportedFromCurrencies': m.supportedCurrencies.toList(),
+            },
+          )
           .toList();
 
-      final officeRef =
-          await FirebaseFirestore.instance.collection('offices').add({
-        'country': _countryController.text.trim(),
-        'city': _cityController.text.trim(),
-        'currencies': _selectedCurrencies.toList(),
-        'balances': balances,
-        'paymentMethods': paymentMethods,
-        'createdAt': FieldValue.serverTimestamp(),
-      });
+      final officeRef = await FirebaseFirestore.instance
+          .collection('offices')
+          .add({
+            'country': _countryController.text.trim(),
+            'city': _cityController.text.trim(),
+            'currencies': _selectedCurrencies.toList(),
+            'balances': balances,
+            'paymentMethods': paymentMethods,
+            'createdAt': FieldValue.serverTimestamp(),
+          });
 
       if (_selectedManagerDocId != null) {
         await FirebaseFirestore.instance
@@ -478,8 +505,10 @@ class _AdminOfficesSectionState extends State<AdminOfficesSection> {
           ),
           TextButton(
             onPressed: () => Navigator.pop(ctx, true),
-            child: Text(l10n.deleteAction,
-                style: const TextStyle(color: Colors.red)),
+            child: Text(
+              l10n.deleteAction,
+              style: const TextStyle(color: Colors.red),
+            ),
           ),
         ],
       ),
@@ -517,12 +546,13 @@ class _AdminOfficesSectionState extends State<AdminOfficesSection> {
           children: [
             Row(
               children: [
-                Text(l10n.methodNumber(i + 1),
-                    style: const TextStyle(fontWeight: FontWeight.bold)),
+                Text(
+                  l10n.methodNumber(i + 1),
+                  style: const TextStyle(fontWeight: FontWeight.bold),
+                ),
                 const Spacer(),
                 IconButton(
-                  icon:
-                      const Icon(Icons.delete_outline, color: Colors.red),
+                  icon: const Icon(Icons.delete_outline, color: Colors.red),
                   onPressed: () => _removePaymentMethod(i),
                 ),
               ],
@@ -554,8 +584,10 @@ class _AdminOfficesSectionState extends State<AdminOfficesSection> {
               ),
             ),
             const SizedBox(height: 10),
-            Text(l10n.supportedFromCurrency,
-                style: const TextStyle(fontWeight: FontWeight.w600)),
+            Text(
+              l10n.supportedFromCurrency,
+              style: const TextStyle(fontWeight: FontWeight.w600),
+            ),
             const SizedBox(height: 6),
             Wrap(
               spacing: 8,
@@ -607,8 +639,9 @@ class _AdminOfficesSectionState extends State<AdminOfficesSection> {
                     labelText: l10n.country,
                     border: const OutlineInputBorder(),
                   ),
-                  validator: (v) =>
-                      (v == null || v.trim().isEmpty) ? l10n.enterCountry : null,
+                  validator: (v) => (v == null || v.trim().isEmpty)
+                      ? l10n.enterCountry
+                      : null,
                 ),
                 const SizedBox(height: 14),
                 TextFormField(
@@ -621,8 +654,10 @@ class _AdminOfficesSectionState extends State<AdminOfficesSection> {
                       (v == null || v.trim().isEmpty) ? l10n.enterCity : null,
                 ),
                 const SizedBox(height: 12),
-                Text(l10n.currencies,
-                    style: const TextStyle(fontWeight: FontWeight.bold)),
+                Text(
+                  l10n.currencies,
+                  style: const TextStyle(fontWeight: FontWeight.bold),
+                ),
                 const SizedBox(height: 6),
                 Wrap(
                   spacing: 8,
@@ -635,8 +670,7 @@ class _AdminOfficesSectionState extends State<AdminOfficesSection> {
                       onSelected: (v) => setState(() {
                         if (v) {
                           _selectedCurrencies.add(c);
-                          _balanceControllers[c] ??=
-                              TextEditingController();
+                          _balanceControllers[c] ??= TextEditingController();
                         } else {
                           _selectedCurrencies.remove(c);
                           _balanceControllers[c]?.dispose();
@@ -647,21 +681,26 @@ class _AdminOfficesSectionState extends State<AdminOfficesSection> {
                   }).toList(),
                 ),
                 const SizedBox(height: 12),
-                ..._selectedCurrencies.map((c) => Padding(
-                      padding: const EdgeInsets.only(bottom: 12),
-                      child: TextFormField(
-                        controller: _balanceControllers[c],
-                        keyboardType: const TextInputType.numberWithOptions(
-                            decimal: true),
-                        decoration: InputDecoration(
-                          labelText: l10n.startBalance(c),
-                          border: const OutlineInputBorder(),
-                        ),
+                ..._selectedCurrencies.map(
+                  (c) => Padding(
+                    padding: const EdgeInsets.only(bottom: 12),
+                    child: TextFormField(
+                      controller: _balanceControllers[c],
+                      keyboardType: const TextInputType.numberWithOptions(
+                        decimal: true,
                       ),
-                    )),
+                      decoration: InputDecoration(
+                        labelText: l10n.startBalance(c),
+                        border: const OutlineInputBorder(),
+                      ),
+                    ),
+                  ),
+                ),
                 const SizedBox(height: 4),
-                Text(l10n.assignManager,
-                    style: const TextStyle(fontWeight: FontWeight.bold)),
+                Text(
+                  l10n.assignManager,
+                  style: const TextStyle(fontWeight: FontWeight.bold),
+                ),
                 const SizedBox(height: 6),
                 StreamBuilder<QuerySnapshot>(
                   stream: FirebaseFirestore.instance
@@ -687,15 +726,13 @@ class _AdminOfficesSectionState extends State<AdminOfficesSection> {
                         border: const OutlineInputBorder(),
                       ),
                       items: docs.map((doc) {
-                        final d =
-                            doc.data() as Map<String, dynamic>;
+                        final d = doc.data() as Map<String, dynamic>;
                         final name =
                             '${d['firstName'] ?? ''} ${d['lastName'] ?? ''}'
                                 .trim();
                         return DropdownMenuItem(
                           value: doc.id,
-                          child: Text(
-                              name.isEmpty ? doc.id : name),
+                          child: Text(name.isEmpty ? doc.id : name),
                         );
                       }).toList(),
                       onChanged: (v) =>
@@ -710,7 +747,9 @@ class _AdminOfficesSectionState extends State<AdminOfficesSection> {
                     Text(
                       l10n.paymentMethods,
                       style: const TextStyle(
-                          fontWeight: FontWeight.bold, fontSize: 16),
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
                     ),
                     ElevatedButton.icon(
                       onPressed: _addPaymentMethod,
@@ -723,13 +762,11 @@ class _AdminOfficesSectionState extends State<AdminOfficesSection> {
                 if (_paymentMethods.isEmpty)
                   Text(
                     l10n.noPaymentMethodsAdded,
-                    style:
-                        const TextStyle(color: Colors.grey, fontSize: 13),
+                    style: const TextStyle(color: Colors.grey, fontSize: 13),
                   ),
-                ..._paymentMethods
-                    .asMap()
-                    .entries
-                    .map((e) => _buildMethodCard(e.key, e.value)),
+                ..._paymentMethods.asMap().entries.map(
+                  (e) => _buildMethodCard(e.key, e.value),
+                ),
                 const SizedBox(height: 20),
                 SizedBox(
                   width: double.infinity,
@@ -739,8 +776,7 @@ class _AdminOfficesSectionState extends State<AdminOfficesSection> {
                         ? const SizedBox(
                             width: 20,
                             height: 20,
-                            child:
-                                CircularProgressIndicator(strokeWidth: 2),
+                            child: CircularProgressIndicator(strokeWidth: 2),
                           )
                         : Text(l10n.createOffice),
                   ),
@@ -784,10 +820,10 @@ class _AdminOfficesSectionState extends State<AdminOfficesSection> {
                   ? allDocs
                   : allDocs.where((doc) {
                       final d = doc.data() as Map<String, dynamic>;
-                      final country =
-                          (d['country'] ?? '').toString().toLowerCase();
-                      final city =
-                          (d['city'] ?? '').toString().toLowerCase();
+                      final country = (d['country'] ?? '')
+                          .toString()
+                          .toLowerCase();
+                      final city = (d['city'] ?? '').toString().toLowerCase();
                       return country.contains(_searchQuery) ||
                           city.contains(_searchQuery);
                     }).toList();
@@ -809,8 +845,9 @@ class _AdminOfficesSectionState extends State<AdminOfficesSection> {
                   final data = doc.data() as Map<String, dynamic>;
                   final country = (data['country'] ?? '').toString();
                   final city = (data['city'] ?? '').toString();
-                  final currencies =
-                      (data['currencies'] as List? ?? []).join(', ');
+                  final currencies = (data['currencies'] as List? ?? []).join(
+                    ', ',
+                  );
                   final methodCount =
                       (data['paymentMethods'] as List? ?? []).length;
 
@@ -820,31 +857,35 @@ class _AdminOfficesSectionState extends State<AdminOfficesSection> {
                       leading: const Icon(Icons.business),
                       title: Text(
                         '$country - $city',
-                        style: const TextStyle(
-                            fontWeight: FontWeight.bold),
+                        style: const TextStyle(fontWeight: FontWeight.bold),
                       ),
-                      subtitle:
-                          Text(l10n.officeSummary(currencies, methodCount)),
+                      subtitle: Text(
+                        l10n.officeSummary(currencies, methodCount),
+                      ),
                       isThreeLine: true,
                       trailing: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           IconButton(
-                            icon: const Icon(Icons.edit_outlined,
-                                color: Colors.blue),
+                            icon: const Icon(
+                              Icons.edit_outlined,
+                              color: Colors.blue,
+                            ),
                             tooltip: l10n.edit,
                             onPressed: () => showDialog(
                               context: context,
                               builder: (ctx) => EditOfficeDialog(
                                 officeId: officeId,
-                                 data: data,
+                                data: data,
                                 availableCurrencies: _availableCurrencies,
                               ),
                             ),
                           ),
                           IconButton(
-                            icon: const Icon(Icons.delete_outline,
-                                color: Colors.red),
+                            icon: const Icon(
+                              Icons.delete_outline,
+                              color: Colors.red,
+                            ),
                             tooltip: l10n.deleteAction,
                             onPressed: () => _deleteOffice(officeId),
                           ),
